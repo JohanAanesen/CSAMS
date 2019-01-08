@@ -7,9 +7,9 @@
 * [Discord](https://discord.gg/rZ4zg2R)
 
 ## Members
-* Johan Aanesen
-* Brede Fritjof Klausen
-* Svein Are Danielsen
+* Johan Aanesen (johanaan@stud.ntnu.no)
+* Brede Fritjof Klausen (bredefk@stud.ntnu.no)
+* Svein Are Danielsen (sveiad@stud.ntnu.no)
 
 ## Project Owner
 * [Christopher Frantz](https://www.ntnu.no/ansatte/christopher.frantz)
