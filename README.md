@@ -6,14 +6,13 @@
 * [ShareLatex](https://www.overleaf.com/project/5c3491a162ba3128fda8c11d)
 * [Discord](https://discord.gg/rZ4zg2R)
 
-
 ## Members
 * Johan Aanesen
 * Brede Fritjof Klausen
 * Svein Are Danielsen
 
 ## Project Owner
-* Christopher Frantz
+* [Christopher Frantz](https://www.ntnu.no/ansatte/christopher.frantz)
 
 ## Supervisor
-* Ivar Farup
+* [Ivar Farup](https://www.ntnu.no/ansatte/ivar.farup)
