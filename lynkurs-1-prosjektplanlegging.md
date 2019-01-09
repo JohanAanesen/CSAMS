@@ -77,3 +77,13 @@ Tenk gjennom:
 * Motivasjonen og ferdighetene til deltagerne
 * Ønsker og krav fra oppdragsgiver
 
+# 10 velmente råd
+1. Lag en prosjektplan som blir et arbeidsredskap for gruppa, ikke en A4 plan/rapport som er “teoretisk korrekt”
+2. Jobb skikkelig med WBS (Work Breakdown Structure)
+3. Ha en prosjektleder
+4. Diskuter forventninger, ambisjonsnivå nå
+5. Benytt Oppdragsgiver og Veileder – dere må ta initativ, avtal møter tidlig
+6. Fokuser på det kritiske
+7. Bruk maler som “huskelister” / knaggrekker og ikke som tvangstrøye
+8. Før timelogg fra dag 1, lag alltid korte referater fra møter, dokumenter valg
+9. Les rapporter fra gode og “beslektede” prosjekter tidlig ! (spør veileder)
