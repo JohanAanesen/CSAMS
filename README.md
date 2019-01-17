@@ -6,6 +6,7 @@
 * [ShareLatex](https://www.overleaf.com/project/5c3491a162ba3128fda8c11d)
 * [Discord](https://discord.gg/rZ4zg2R)
 * [Google Drive](https://drive.google.com/drive/folders/1kiQiBj12zrn45q6QOfXefrzgNb4fZhyW?usp=sharing)
+* [Toggl](https://toggl.com)
 
 ## Members
 * Johan Aanesen (johanaan@stud.ntnu.no)
