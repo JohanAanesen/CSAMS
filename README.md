@@ -7,6 +7,7 @@
 * [Discord](https://discord.gg/rZ4zg2R)
 * [Google Drive](https://drive.google.com/drive/folders/1kiQiBj12zrn45q6QOfXefrzgNb4fZhyW?usp=sharing)
 * [Toggl](https://toggl.com)
+* [UML](https://www.lucidchart.com/invitations/accept/421b3f38-581e-4790-80f7-3d43604a717c)
 
 ## Members
 * Johan Aanesen (johanaan@stud.ntnu.no)
