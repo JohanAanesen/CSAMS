@@ -10,9 +10,11 @@
 * [UML](https://www.lucidchart.com/invitations/accept/421b3f38-581e-4790-80f7-3d43604a717c)
 
 ## Members
-* Johan Aanesen (johanaan@stud.ntnu.no)
-* Brede Fritjof Klausen (bredefk@stud.ntnu.no)
-* Svein Are Danielsen (sveiad@stud.ntnu.no)
+| Role | Name | E-mail |
+| -------- | -------- | ------- |
+| Project Leader | Johan Aanesen | johanaan@stud.ntnu.no |
+| Member | Brede Fritjof Klausen | bredefk@stud.ntnu.no |
+| Member | Svein Are Danielsen | sveiad@stud.ntnu.no |
 
 ## Project Owner
 * [Christopher Frantz](https://www.ntnu.no/ansatte/christopher.frantz)
