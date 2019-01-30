@@ -11,11 +11,15 @@ func AssignmentHandler(w http.ResponseWriter, r *http.Request){
 	if r.Method == http.MethodGet {
 
 		id := r.FormValue("id")
+		class := r.FormValue("class")
 
-		fmt.Fprintf(w, "Id is %s\n", id)
-		if id == "" {
+		if id == "" || class == "" {
 			//redirect to error page
+			ErrorHandler(w, r, http.StatusForbidden)
+			return
 		}
+
+		fmt.Fprintf(w, "Id is %s\nClass is %s\n", id, class)
 	}
 
 	//check that user is logged in
@@ -33,11 +37,15 @@ func AssignmentAutoHandler(w http.ResponseWriter, r *http.Request){
 	if r.Method == http.MethodGet {
 
 		id := r.FormValue("id")
+		class := r.FormValue("class")
 
-		fmt.Fprintf(w, "Id is %s\n", id)
-		if id == "" {
+		if id == "" || class == "" {
 			//redirect to error page
+			ErrorHandler(w, r, http.StatusForbidden)
+			return
 		}
+
+		fmt.Fprintf(w, "Id is %s\nClass is %s\n", id, class)
 	}
 
 	//check that user is logged in
@@ -55,11 +63,15 @@ func AssignmentPeerHandler(w http.ResponseWriter, r *http.Request){
 	if r.Method == http.MethodGet {
 
 		id := r.FormValue("id")
+		class := r.FormValue("class")
 
-		fmt.Fprintf(w, "Id is %s\n", id)
-		if id == "" {
+		if id == "" || class == "" {
 			//redirect to error page
+			ErrorHandler(w, r, http.StatusForbidden)
+			return
 		}
+
+		fmt.Fprintf(w, "Id is %s\nClass is %s\n", id, class)
 	}
 
 	//check that user is logged in

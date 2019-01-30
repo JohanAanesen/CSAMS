@@ -5,20 +5,12 @@ import (
 	"net/http"
 )
 
-func ErrorHandler(w http.ResponseWriter, r *http.Request){
+func ErrorHandler(w http.ResponseWriter, r *http.Request, status int){
 
-	//check that error is provided in uri
-	if r.Method == http.MethodGet{
+	w.WriteHeader(status)
 
-		msg := r.FormValue("error")
-
-		if msg != ""{
-			fmt.Fprintf(w, "%s\n", msg)
-		}else{
-			fmt.Fprintln(w, "This is an error page, but we don't know what the error is sorry.")
-		}
-
+	if status == http.StatusForbidden{
+		fmt.Fprint(w, "403 Forbidden")
 	}
-
 	//todo: html and stuff, link back to homepage/where you were
 }

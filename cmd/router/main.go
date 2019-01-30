@@ -14,7 +14,6 @@ func main() {
 	http.HandleFunc("/class/list", handlers.ClassListHandler)
 	http.HandleFunc("/user", handlers.UserHandler)
 	http.HandleFunc("/admin", handlers.AdminHandler)
-	http.HandleFunc("/error", handlers.ErrorHandler)
 	http.HandleFunc("/assignment", handlers.AssignmentHandler)
 	http.HandleFunc("/assignment/peer", handlers.AssignmentPeerHandler)
 	http.HandleFunc("/assignment/auto", handlers.AssignmentAutoHandler)
