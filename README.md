@@ -29,6 +29,7 @@ start med #69 der nummeret er nummeret på "kortet" du jobber på trello etterfu
 * fix	- fikset en bug
 * remove	- fjernet funksjon/fil
 * test	- lagt til test for en funksjon
+* refactor - endret kodestruktur, flyttet en fil eller endret visuell representasjon av kode
 
 Aka #CARDNR ACTION BRIEF_EXPLANATION
 
