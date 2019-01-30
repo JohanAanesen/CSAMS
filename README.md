@@ -21,3 +21,18 @@
 
 ## Supervisor
 * [Ivar Farup](https://www.ntnu.no/ansatte/ivar.farup)
+
+## Commit messages guideline
+start med #69 der nummeret er nummeret på "kortet" du jobber på trello etterfulgt av:
+* update	- oppdatert funksjon/fil
+* add	- lagt til funksjon/fil
+* fix	- fikset en bug
+* remove	- fjernet funksjon/fil
+* test	- lagt til test for en funksjon
+
+Aka #CARDNR ACTION BRIEF_EXPLANATION
+
+eksempler:
+* "#2 add database.sql initial table file"
+* "#8 fix changing password bug"
+* "#14 update weekly report for week 2"
