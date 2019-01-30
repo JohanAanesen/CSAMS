@@ -1,12 +1,28 @@
 package handlers
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 func ClassHandler(w http.ResponseWriter, r *http.Request){
 
 	//check if request has an classID
+	if r.Method == http.MethodGet{
 
-	//check if user is an participant of said class or a teacher
+		id := r.FormValue("id")
+
+		fmt.Fprintf(w, "Id is %s\n", id)
+		if id == ""{
+			//redirect to error page
+		}
+
+		//check if id is valid through database
+
+		//check if user is an participant of said class or a teacher
+
+	}
+
 
 	//get info from db
 
