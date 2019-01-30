@@ -40,7 +40,7 @@ func TestLoginHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(MainHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(LoginHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -58,7 +58,7 @@ func TestLogoutHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(MainHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(LogoutHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -69,14 +69,14 @@ func TestLogoutHandler(t *testing.T) {
 
 func TestClassHandler(t *testing.T) {
 
-	req, err := http.NewRequest("GET", "/class", nil)
+	req, err := http.NewRequest("GET", "/class?id=asdfcvgbhnjk", nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(MainHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(ClassHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -87,14 +87,14 @@ func TestClassHandler(t *testing.T) {
 
 func TestClassListHandler(t *testing.T) {
 
-	req, err := http.NewRequest("GET", "/class/list", nil)
+	req, err := http.NewRequest("GET", "/class/list?id=adsikjuh", nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(MainHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(ClassListHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -112,7 +112,7 @@ func TestUserHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(MainHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(UserHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -130,7 +130,7 @@ func TestAdminHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(MainHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(AdminHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -141,14 +141,14 @@ func TestAdminHandler(t *testing.T) {
 
 func TestAssignmentHandlerHandler(t *testing.T) {
 
-	req, err := http.NewRequest("GET", "/assignment", nil)
+	req, err := http.NewRequest("GET", "/assignment?id=ihadls&class=asdbjlid", nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(MainHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(AssignmentHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -159,14 +159,14 @@ func TestAssignmentHandlerHandler(t *testing.T) {
 
 func TestAssignmentAutoHandlerHandler(t *testing.T) {
 
-	req, err := http.NewRequest("GET", "/assignment/auto", nil)
+	req, err := http.NewRequest("GET", "/assignment/auto?id=ihadls&class=asdbjlid", nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(MainHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(AssignmentAutoHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -177,14 +177,14 @@ func TestAssignmentAutoHandlerHandler(t *testing.T) {
 
 func TestAssignmentPeerHandler(t *testing.T) {
 
-	req, err := http.NewRequest("GET", "/assignment/peer", nil)
+	req, err := http.NewRequest("GET", "/assignment/peer?id=ihadls&class=asdbjlid", nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(MainHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(AssignmentPeerHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 

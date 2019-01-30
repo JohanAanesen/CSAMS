@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"fmt"
+	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -30,7 +32,12 @@ func ClassHandler(w http.ResponseWriter, r *http.Request){
 	//get info from db
 
 	//parse info to html template
+	temp, err := template.ParseFiles("web/test.html")
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	temp.Execute(w, nil)
 }
 
 func ClassListHandler(w http.ResponseWriter, r *http.Request){
@@ -53,5 +60,10 @@ func ClassListHandler(w http.ResponseWriter, r *http.Request){
 	//get classlist from db
 
 	//parse info to html template
+	temp, err := template.ParseFiles("web/test.html")
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	temp.Execute(w, nil)
 }
