@@ -192,3 +192,20 @@ func TestAssignmentPeerHandler(t *testing.T) {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
 	}
 }
+
+func TestErrorHandler(t *testing.T) {
+	req, err := http.NewRequest("GET", "/class", nil) //class with no id should give 403
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	resp := httptest.NewRecorder()
+
+	http.HandlerFunc(AssignmentPeerHandler).ServeHTTP(resp, req)
+
+	status := resp.Code
+
+	if status != http.StatusForbidden {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusForbidden, status)
+	}
+}
