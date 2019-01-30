@@ -12,10 +12,13 @@ func ClassHandler(w http.ResponseWriter, r *http.Request){
 
 		id := r.FormValue("id")
 
-		fmt.Fprintf(w, "Id is %s\n", id)
 		if id == ""{
 			//redirect to error page
+			ErrorHandler(w, r, http.StatusForbidden)
+			return
 		}
+
+		fmt.Fprintf(w, "Id is %s\n", id)
 
 		//check if id is valid through database
 
@@ -37,10 +40,13 @@ func ClassListHandler(w http.ResponseWriter, r *http.Request){
 
 		id := r.FormValue("id")
 
-		fmt.Fprintf(w, "Id is %s\n", id)
 		if id == "" {
 			//redirect to error page
+			ErrorHandler(w, r, http.StatusForbidden)
+			return
 		}
+
+		fmt.Fprintf(w, "Id is %s\n", id)
 	}
 	//check if user is an participant of said class or a teacher
 
