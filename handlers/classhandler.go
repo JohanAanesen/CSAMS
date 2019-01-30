@@ -33,7 +33,15 @@ func ClassHandler(w http.ResponseWriter, r *http.Request){
 func ClassListHandler(w http.ResponseWriter, r *http.Request){
 
 	//check if request has an classID
+	if r.Method == http.MethodGet {
 
+		id := r.FormValue("id")
+
+		fmt.Fprintf(w, "Id is %s\n", id)
+		if id == "" {
+			//redirect to error page
+		}
+	}
 	//check if user is an participant of said class or a teacher
 
 	//get classlist from db
