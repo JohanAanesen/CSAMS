@@ -37,3 +37,11 @@ eksempler:
 * "#2 add database.sql initial table file"
 * "#8 fix changing password bug"
 * "#14 update weekly report for week 2"
+
+## Internal Peer Review Checklist
+- [ ] Compiles
+- [ ] Testing is sufficient and passing
+- [ ] Branch completes the assigned tasks (from trello card)
+- [ ] Code is well commented and tidy
+- [ ] Is there something that could be done better? propose update
+- [ ] Leave feedback as comment on the pull request :)
