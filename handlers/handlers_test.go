@@ -205,7 +205,7 @@ func TestErrorHandler(t *testing.T) {
 
 	status := resp.Code
 
-	if status != http.StatusForbidden {
-		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusForbidden, status)
+	if status != http.StatusBadRequest {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusBadRequest, status)
 	}
 }

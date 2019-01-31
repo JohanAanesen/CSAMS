@@ -16,7 +16,7 @@ func ClassHandler(w http.ResponseWriter, r *http.Request){
 
 		if id == ""{
 			//redirect to error page
-			ErrorHandler(w, r, http.StatusForbidden)
+			ErrorHandler(w, r, http.StatusBadRequest)
 			return
 		}
 
@@ -49,7 +49,7 @@ func ClassListHandler(w http.ResponseWriter, r *http.Request){
 
 		if id == "" {
 			//redirect to error page
-			ErrorHandler(w, r, http.StatusForbidden)
+			ErrorHandler(w, r, http.StatusBadRequest)
 			return
 		}
 
@@ -63,6 +63,7 @@ func ClassListHandler(w http.ResponseWriter, r *http.Request){
 	temp, err := template.ParseFiles("web/test.html")
 	if err != nil {
 		log.Fatal(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
 	}
 
 	temp.Execute(w, nil)
