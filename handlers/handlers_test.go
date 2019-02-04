@@ -29,6 +29,12 @@ func TestMainHandler(t *testing.T) {
 	if status != http.StatusOK {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
 	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
 }
 
 func TestLoginHandler(t *testing.T) {
@@ -46,6 +52,12 @@ func TestLoginHandler(t *testing.T) {
 
 	if status != http.StatusOK {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
 	}
 }
 
