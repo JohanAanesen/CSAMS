@@ -5,16 +5,18 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+	dbcon "../../db"
 )
 
 func init() {
-	if err := os.Chdir("../"); err != nil { //go out of /handlers folder
+	dbcon.InitDB(os.Getenv("SQLDB"))
+
+	if err := os.Chdir("../../"); err != nil { //go out of /handlers folder
 		panic(err)
 	}
 }
 
 func TestMainHandler(t *testing.T) {
-
 	req, err := http.NewRequest("GET", "/", nil)
 	if err != nil {
 		t.Fatal(err.Error())

@@ -3,10 +3,15 @@ package main
 import (
 	"net/http"
 	"os"
-	"../../handlers"
+	"../../internal/handlers"
+	dbcon "../../db"
 )
 
+
 func main() {
+
+	dbcon.InitDB(os.Getenv("SQLDB")) //env var SQLDB username:password@tcp(127.0.0.1:3306)/dbname 127.0.0.1 if run locally like xampp
+
 
 	http.HandleFunc("/", handlers.MainHandler)
 	http.HandleFunc("/login", handlers.LoginHandler)
@@ -18,13 +23,8 @@ func main() {
 	http.HandleFunc("/assignment/peer", handlers.AssignmentPeerHandler)
 	http.HandleFunc("/assignment/auto", handlers.AssignmentAutoHandler)
 
-	/*
-	r.HandleFunc("/posts", articlesHandler).Methods("GET", "POST")
-	r.HandleFunc("/posts/{id:[0-9]+}", articleHandler).Methods("GET")
-	r.HandleFunc("/posts/delete", deleteArticleHandler).Methods("DELETE")
-	*/
 
-	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))) //all files within /static are served as static files
+	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))) //all files within /assets are served as static files
 
 	port := os.Getenv("PORT")
 	http.ListenAndServe(":"+port, nil)
