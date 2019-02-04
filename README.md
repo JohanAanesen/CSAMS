@@ -48,3 +48,6 @@ eksempler:
 
 ## Go Get's
 * go get -u github.com/go-sql-driver/mysql
+* go get github.com/gorilla/sessions
+* go get -u github.com/gorilla/mux
+* go get github.com/gorilla/securecookie
