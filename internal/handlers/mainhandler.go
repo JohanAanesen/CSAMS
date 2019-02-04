@@ -4,7 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	dbcon "../../db"
+	"../../db"
 )
 
 
@@ -15,9 +15,25 @@ type User struct {
 
 func MainHandler(w http.ResponseWriter, r *http.Request){
 
+	session, err := db.CookieStore.Get(r, "login-session")
+	if err != nil {
+		log.Fatal(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+	//check if user is already logged in
+
+	if session.Values["username"] == ""{
+		http.Redirect(w, r, "/login", http.StatusFound)
+	}
+
+
+
+
+
 	var test User
 
-	err := dbcon.DB.QueryRow("SELECT id, name FROM users where id = ?", 1).Scan(&test.ID, &test.Name)
+	err = db.DB.QueryRow("SELECT id, name FROM users where id = ?", 1).Scan(&test.ID, &test.Name)
 	if err != nil {
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}

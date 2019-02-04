@@ -2,8 +2,10 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
+	"golang.org/x/crypto/bcrypt"
 	"os"
 )
 
@@ -27,19 +29,25 @@ func InitDB(dataSourceName string) {
 
 }
 
-func UserAuth(name string, password string)bool{
+func UserAuth(email string, password string)bool{
 
-	rows, _ := DB.Query("SELECT name FROM users WHERE name = ? AND password = ?", name, password)
+	rows, _ := DB.Query("SELECT password FROM users WHERE email = ?", email)
 
 	for rows.Next(){ //todo all of this lol
-		 var Name string
+		 var hash string
 
-		 rows.Scan(&Name)
+		 rows.Scan(&hash)
 
-		 if Name != ""{
+		 if CheckPasswordHash(password, hash){
+		 	fmt.Println("all guchi")
 		 	return true
 		 }
 	}
 
 	return false
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }

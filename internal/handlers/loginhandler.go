@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"../../db"
+	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"html/template"
 	"log"
 	"net/http"
@@ -16,7 +18,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 	}
 	//check if user is already logged in
 
-	if session.Values["username"] != ""{
+	if session.Values["username"] == ""{
+		session.Options.MaxAge = -1
+		session.Values["username"] = ""
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
 
@@ -45,7 +49,11 @@ func LoginRequest(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	if r.FormValue("email") == "" || r.FormValue("password") == ""{
+	email := r.FormValue("email")
+	password, _ := HashPassword(r.FormValue("password"))
+	fmt.Println(password)
+
+	if email == "" || r.FormValue("password") == ""{
 		return
 	}
 
@@ -54,7 +62,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	session.Values["username"] = r.FormValue("email")
+	session.Values["email"] = email
 
 
 	err = session.Save(r, w)
@@ -65,4 +73,9 @@ func LoginRequest(w http.ResponseWriter, r *http.Request){
 
 	http.Redirect(w, r, "/", http.StatusFound)
 
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
 }
