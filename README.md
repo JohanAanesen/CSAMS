@@ -45,3 +45,6 @@ eksempler:
 - [ ] Code is well commented and tidy
 - [ ] Is there something that could be done better? propose update
 - [ ] Leave feedback as comment on the pull request :)
+
+## Go Get's
+* go get -u github.com/go-sql-driver/mysql
