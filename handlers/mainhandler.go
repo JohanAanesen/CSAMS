@@ -8,6 +8,13 @@ import (
 
 type Course struct {
 	Name string
+	Assignments []Assignment
+}
+
+type Assignment struct {
+	Name string
+	Description string
+	Deadline string
 }
 
 type PageData struct {
@@ -22,9 +29,9 @@ func MainHandler(w http.ResponseWriter, r *http.Request){
 	data := PageData{
 		PageTitle: "Homepage",
 		Courses: []Course{
-			{"IMT1001"},
-			{"IMT2001"},
-			{"IMT3001"},
+			{Name: "IMT1001"},
+			{Name: "IMT2001"},
+			{Name: "IMT3001"},
 		},
 	}
 

@@ -10,6 +10,7 @@ func main() {
 
 	http.HandleFunc("/", handlers.MainHandler)
 	http.HandleFunc("/login", handlers.LoginHandler)
+	http.HandleFunc("/register", handlers.RegisterHandler)
 	http.HandleFunc("/class", handlers.ClassHandler)
 	http.HandleFunc("/class/list", handlers.ClassListHandler)
 	http.HandleFunc("/user", handlers.UserHandler)

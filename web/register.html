@@ -1,0 +1,25 @@
+{{ define "content" }}
+<link href="../assets/css/form.css" rel="stylesheet">
+<form action="#" class="form-register">
+    <h1 class="display-4 mb-3">Sign up</h1>
+
+    <div class="form-group">
+        <label for="inputEmail">Email address</label>
+        <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+    </div>
+
+    <div class="form-group">
+        <label for="inputPassword">Password</label>
+        <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
+    </div>
+
+    <div class="form-group">
+        <label for="inputPasswordConfirm">Confirm Password</label>
+        <input type="password" name="passwordConfirm" id="inputPasswordConfirm" class="form-control" placeholder="Confirm Password" required>
+    </div>
+
+    <button class="btn btn-lg btn-primary btn-block mb-3" type="submit">Sign up</button>
+
+    <a href="/login">Already have a user? Sign in</a>
+</form>
+{{ end }}
