@@ -23,3 +23,19 @@ func init() {
  }
 ```
 * Found out a designated error page would be nice so I added that to the UML and router too
+
+Mandag 4/2
+------------
+* Started doing the card #14 database connection class
+* Decided on a global approach to DB access, aka all the files that import the db package can access
+the global DB (dbcon*) variable :)
+* https://www.alexedwards.net/blog/organising-database-access
+* Svein reminded me with need some sort of session management, although GO doesn't include it's own
+session functionality
+* Could implement the functionality myself by creating unique values on cookies, and storing that
+value in the database, although this would cost IO operations
+* Decided on going with the Sessions package from Gorilla
+* https://www.gorillatoolkit.org/pkg/sessions
+* Together with the more powerful mux router package and secureCookies package, all part of the Gorilla
+Web Toolkit
+* Seems like the go-to toolkit for most people on stack overflow
