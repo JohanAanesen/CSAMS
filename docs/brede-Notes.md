@@ -8,6 +8,7 @@
 * Watched a tutorial about bootstrap.
 
 ### Tuesday - 05/02/19
+* Continued working on the design for the user profile page
 
 ### Wednesday - 06/02/19
 
