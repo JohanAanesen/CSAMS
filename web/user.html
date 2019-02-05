@@ -10,10 +10,9 @@
     <link href="../assets/offcanvas.css" rel="stylesheet">
 
     <style>
-        .beGone{
+        .beGone {
             display: none;
         }
-
     </style>
 </head>
 <body class="bg-light">
@@ -44,69 +43,76 @@
             <div class="col-sm-12">
                 <div class="col-xs-12">
 
-                    <!-- Make it possible to change name -->
-                    <div class="d-flex justify-content-between align-items-center border-bottom border-gray pb-2 mb-3">
-                        <input type="text" readonly class="form-control-plaintext form-control-lg col-sm-6" id="name"
-                               value={{.Name}}>
-                        <button type="submit" class="btn btn-primary" id="btn-edit" onclick="btnEdit()">Edit Profile
-                        </button>
-                    </div>
-
-                    <!-- If the user has an email -->
-                    {{if .PrimaryEmail}}
-                        <div class="form-group row">
-                            <label for="primaryEmail" class="col-sm-2 col-form-label"><strong>School
-                                    Email: </strong></label>
-                            <div class="col-sm-6">
-                                <input type="email" readonly class="form-control-plaintext" id="primaryEmail"
-                                       value={{.PrimaryEmail}}>
-                            </div>
-                        </div>
-                    {{else}}
-                        <p><strong>OBS! Can't find your email</strong></p>
-                    {{end}}
-
-                    <!-- If user has secondary email, show it and give option to change it-->
-                    {{if .SecondaryEmail}}
-                        <div class="form-group row">
-                            <label for="secondaryEmail" class="col-sm-2 col-form-label"><strong>Secondary
-                                    Email: </strong></label>
-                            <div class="col-sm-6">
-                                <input type="email" readonly class="form-control-plaintext" id="secondaryEmail"
-                                       value={{.SecondaryEmail}}>
-                            </div>
-                        </div>
-                    {{else}}
-                        <p><strong><a href="#">Add secondary email</a></strong>
-                        </p> <!-- TODO : add functionality here -->
-                    {{end}}
-
-                    <div id="passwords" class="beGone">
-                        <div class="form-group row">
-                            <label for="oldPass" class="col-sm-2 col-form-label"><strong>Old Password: </strong></label>
-                            <div class="col-sm-6">
-                                <input type="password" class="form-control" id="oldPass" placeholder="Old Password">
-                            </div>
+                    <!-- TODO : add action here -->
+                    <form action="#" method="post">
+                        <!-- Make it possible to change name -->
+                        <div class="d-flex justify-content-between align-items-center border-bottom border-gray pb-2 mb-3">
+                            <input id="usersName" type="text" readonly
+                                   class="form-control-plaintext form-control-lg col-sm-6"
+                                   value={{.Name}}>
+                            <button type="button" class="btn btn-primary" id="btn-edit" onclick="btnEdit()">Edit Profile
+                            </button>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="newPass" class="col-sm-2 col-form-label"><strong>New Password: </strong></label>
-                            <div class="col-sm-6">
-                                <input type="password" class="form-control" id="newPass" placeholder="New Password">
+                        <!-- If the user has an email -->
+                        {{if .PrimaryEmail}}
+                            <div class="form-group row">
+                                <label for="primaryEmail" class="col-sm-2 col-form-label"><strong>School
+                                        Email: </strong></label>
+                                <div class="col-sm-6">
+                                    <input type="email" readonly class="form-control-plaintext" id="primaryEmail"
+                                           value={{.PrimaryEmail}}>
+                                </div>
                             </div>
-                        </div>
+                        {{else}}
+                            <p><strong>OBS! Can't find your email</strong></p>
+                        {{end}}
 
-                        <div class="form-group row">
-                            <label for="repeatPass" class="col-sm-2 col-form-label"><strong>Repeat
-                                    Password: </strong></label>
-                            <div class="col-sm-6">
-                                <input type="password" class="form-control" id="repeatPass"
-                                       placeholder="Repeat New Password">
+                        <!-- If user has secondary email, show it and give option to change it-->
+                        {{if .SecondaryEmail}}
+                            <div class="form-group row">
+                                <label for="secondaryEmail" class="col-sm-2 col-form-label"><strong>Secondary
+                                        Email: </strong></label>
+                                <div class="col-sm-6">
+                                    <input type="email" readonly class="form-control-plaintext" id="secondaryEmail"
+                                           value={{.SecondaryEmail}}>
+                                </div>
                             </div>
-                        </div>
+                        {{else}}
+                            <p><strong><a href="#">Add secondary email</a></strong>
+                            </p> <!-- TODO : add functionality here -->
+                        {{end}}
 
-                        <button type="submit" class="btn btn-success" onclick="saveNewInfo()">Save</button>
-                    </div>
+                        <div id="passwords" class="beGone">
+                            <div class="form-group row">
+                                <label for="oldPass" class="col-sm-2 col-form-label"><strong>Old
+                                        Password: </strong></label>
+                                <div class="col-sm-6">
+                                    <input type="password" class="form-control" id="oldPass" placeholder="Old Password">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="newPass" class="col-sm-2 col-form-label"><strong>New
+                                        Password: </strong></label>
+                                <div class="col-sm-6">
+                                    <input type="password" class="form-control" id="newPass" placeholder="New Password">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="repeatPass" class="col-sm-2 col-form-label"><strong>Repeat
+                                        Password: </strong></label>
+                                <div class="col-sm-6">
+                                    <input type="password" class="form-control" id="repeatPass"
+                                           placeholder="Repeat New Password">
+                                </div>
+                            </div>
+
+                            <!-- TODO : check if new information is valid and give feedback either way-->
+                            <button type="submit" class="btn btn-success" onclick="saveNewInfo()">Save</button>
+                        </div>
+                    </form>
 
 
                     <!-- Show number of classes the user is a student in -->
@@ -147,18 +153,20 @@
 </div>
 
 <script>
-    var name = document.getElementById("name");
+
+    var userName = document.getElementById("usersName");
     var pEmail = document.getElementById("primaryEmail");
     var sEmail = document.getElementById("secondaryEmail");
     var passwords = document.getElementById("passwords");
     var noOfClasses = document.getElementById("noOfClasses");
 
     function btnEdit() {
-        name.readOnly = false;
+
+        userName.readOnly = false;
         pEmail.readOnly = false;
         sEmail.readOnly = false;
 
-        name.className = "form-control";
+        userName.className = "form-control form-control-lg col-sm-6";
         pEmail.className = "form-control";
         sEmail.className = "form-control";
         passwords.className = "";
@@ -167,13 +175,15 @@
 
     function saveNewInfo() {
         // Success save shit and revert
-        name.readOnly = true;
+        userName.readOnly = true;
         pEmail.readOnly = true;
         sEmail.readOnly = true;
 
-        name.className = "form-control-plaintext form-control-lg col-sm-6";
+        userName.className = "form-control-plaintext form-control-lg col-sm-6";
         pEmail.className = "form-control-plaintext";
         sEmail.className = "form-control-plaintext";
+        noOfClasses.className = "";
+        passwords.className = "beGone";
 
 
         // else, not success, give info to the user
