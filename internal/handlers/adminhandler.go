@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"../internal/page"
+	"../page"
 	"html/template"
 	"log"
 	"net/http"
