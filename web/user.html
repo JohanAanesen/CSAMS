@@ -8,6 +8,13 @@
           integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
     <link href="../assets/offcanvas.css" rel="stylesheet">
+
+    <style>
+        .beGone{
+            display: none;
+        }
+
+    </style>
 </head>
 <body class="bg-light">
 <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
@@ -39,33 +46,76 @@
 
                     <!-- Make it possible to change name -->
                     <div class="d-flex justify-content-between align-items-center border-bottom border-gray pb-2 mb-3">
-                        <h3>{{.Name}}</h3>
-                        <button type="button" class="btn btn-primary">Edit Profile</button>
+                        <input type="text" readonly class="form-control-plaintext form-control-lg col-sm-6" id="name"
+                               value={{.Name}}>
+                        <button type="submit" class="btn btn-primary" id="btn-edit" onclick="btnEdit()">Edit Profile
+                        </button>
                     </div>
 
                     <!-- If the user has an email -->
                     {{if .PrimaryEmail}}
-                        <p><strong>School Email: </strong>{{.PrimaryEmail}}</p>
+                        <div class="form-group row">
+                            <label for="primaryEmail" class="col-sm-2 col-form-label"><strong>School
+                                    Email: </strong></label>
+                            <div class="col-sm-6">
+                                <input type="email" readonly class="form-control-plaintext" id="primaryEmail"
+                                       value={{.PrimaryEmail}}>
+                            </div>
+                        </div>
                     {{else}}
                         <p><strong>OBS! Can't find your email</strong></p>
                     {{end}}
 
                     <!-- If user has secondary email, show it and give option to change it-->
                     {{if .SecondaryEmail}}
-                        <p><strong>Secondary Email: </strong>{{.SecondaryEmail}}</p>
+                        <div class="form-group row">
+                            <label for="secondaryEmail" class="col-sm-2 col-form-label"><strong>Secondary
+                                    Email: </strong></label>
+                            <div class="col-sm-6">
+                                <input type="email" readonly class="form-control-plaintext" id="secondaryEmail"
+                                       value={{.SecondaryEmail}}>
+                            </div>
+                        </div>
                     {{else}}
                         <p><strong><a href="#">Add secondary email</a></strong>
                         </p> <!-- TODO : add functionality here -->
                     {{end}}
 
+                    <div id="passwords" class="beGone">
+                        <div class="form-group row">
+                            <label for="oldPass" class="col-sm-2 col-form-label"><strong>Old Password: </strong></label>
+                            <div class="col-sm-6">
+                                <input type="password" class="form-control" id="oldPass" placeholder="Old Password">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="newPass" class="col-sm-2 col-form-label"><strong>New Password: </strong></label>
+                            <div class="col-sm-6">
+                                <input type="password" class="form-control" id="newPass" placeholder="New Password">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="repeatPass" class="col-sm-2 col-form-label"><strong>Repeat
+                                    Password: </strong></label>
+                            <div class="col-sm-6">
+                                <input type="password" class="form-control" id="repeatPass"
+                                       placeholder="Repeat New Password">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success" onclick="saveNewInfo()">Save</button>
+                    </div>
 
 
                     <!-- Show number of classes the user is a student in -->
+                    {{if .NoOfClasses}}
+                        <p id="noOfClasses"><strong>Number of classes: </strong>{{.NoOfClasses}}</p>
+                    {{else}}
+                        <p id="noOfClasses"><strong>You don't have any active classes</strong></p>
+                    {{end}}
 
-                    <p><strong>Number of classes: </strong>10</p>
-
-                    <!-- Else not classes-->
-                    <!-- <p><strong>You don't have any active classes</strong></p> -->
                 </div>
             </div>
         </div>
@@ -96,6 +146,40 @@
     </div>
 </div>
 
+<script>
+    var name = document.getElementById("name");
+    var pEmail = document.getElementById("primaryEmail");
+    var sEmail = document.getElementById("secondaryEmail");
+    var passwords = document.getElementById("passwords");
+    var noOfClasses = document.getElementById("noOfClasses");
+
+    function btnEdit() {
+        name.readOnly = false;
+        pEmail.readOnly = false;
+        sEmail.readOnly = false;
+
+        name.className = "form-control";
+        pEmail.className = "form-control";
+        sEmail.className = "form-control";
+        passwords.className = "";
+        noOfClasses.className = "beGone";
+    }
+
+    function saveNewInfo() {
+        // Success save shit and revert
+        name.readOnly = true;
+        pEmail.readOnly = true;
+        sEmail.readOnly = true;
+
+        name.className = "form-control-plaintext form-control-lg col-sm-6";
+        pEmail.className = "form-control-plaintext";
+        sEmail.className = "form-control-plaintext";
+
+
+        // else, not success, give info to the user
+
+    }
+</script>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"

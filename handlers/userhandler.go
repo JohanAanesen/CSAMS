@@ -6,16 +6,12 @@ import (
 	"net/http"
 )
 
-func UserHandler(w http.ResponseWriter, r *http.Request){
-
+func UserHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check that user is logged in
-		// code
-
-
+	// code
 
 	//fetch users information from server
-
 
 	// TODO remove this with actual information
 	type class struct {
@@ -25,33 +21,34 @@ func UserHandler(w http.ResponseWriter, r *http.Request){
 	}
 
 	type user struct {
-		Name string
-		PrimaryEmail string
+		Name           string
+		PrimaryEmail   string
 		SecondaryEmail string
-		Classes []class
+		Classes        []class
+		NoOfClasses    int
 	}
-
-	mobile := class{"IMT1337", "Mobile Development", "#"}
-	app := class{"IMT4200", "Application Development", "#"}
-	cloud := class{"IMT8008", "Cloud Technologies", "/"}
-	www := class{"IMT0880", "WWW technology", "/"}
 
 	classes := []class{
-		mobile,
-		app,
-		cloud,
-		www,
+		{"IMT1337", "Mobile Development", "#"},
+		{"IMT4200", "Application Development", "#"},
+		{"IMT8008", "Cloud Technologies", "#"},
+		{"IMT0880", "WWW technology", "#"},
 	}
 
-	data := user{"Ola Nordmann", "olano@stud.ntnu.no", "", classes}
-	// TODO : end here
+	// I'm a bit unsure if this is the best solution, but it works for now
+	var i = 0
+	for i = range classes {
+		i++
+	}
 
+	data := user{"Ola Nordmann", "olano@stud.ntnu.no", "olameister@gmail.com", classes, i}
+	// TODO : end here
 
 	//parse information with template
 	w.WriteHeader(http.StatusOK)
 
 	temp, err := template.ParseFiles("web/user.html")
-	if err != nil{
+	if err != nil {
 		log.Fatal(err)
 	}
 
