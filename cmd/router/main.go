@@ -15,16 +15,18 @@ func main() {
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/", handlers.MainHandler)
+	router.HandleFunc("/", handlers.MainHandler).Methods("GET")
 	router.HandleFunc("/login", handlers.LoginHandler).Methods("GET")
 	router.HandleFunc("/login", handlers.LoginRequest).Methods("POST")
-	router.HandleFunc("/class", handlers.ClassHandler)
-	router.HandleFunc("/class/list", handlers.ClassListHandler)
-	router.HandleFunc("/user", handlers.UserHandler)
-	router.HandleFunc("/admin", handlers.AdminHandler)
-	router.HandleFunc("/assignment", handlers.AssignmentHandler)
-	router.HandleFunc("/assignment/peer", handlers.AssignmentPeerHandler)
-	router.HandleFunc("/assignment/auto", handlers.AssignmentAutoHandler)
+	router.HandleFunc("/register", handlers.RegisterRequest).Methods("POST")
+	router.HandleFunc("/logout", handlers.LogoutHandler).Methods("GET")
+	router.HandleFunc("/class", handlers.ClassHandler).Methods("GET")
+	router.HandleFunc("/class/list", handlers.ClassListHandler).Methods("GET")
+	router.HandleFunc("/user", handlers.UserHandler).Methods("GET")
+	router.HandleFunc("/admin", handlers.AdminHandler).Methods("GET")
+	router.HandleFunc("/assignment", handlers.AssignmentHandler).Methods("GET")
+	router.HandleFunc("/assignment/peer", handlers.AssignmentPeerHandler).Methods("GET")
+	router.HandleFunc("/assignment/auto", handlers.AssignmentAutoHandler).Methods("GET")
 
 
 	router.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))) //all files within /assets are served as static files

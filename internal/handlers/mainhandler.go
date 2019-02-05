@@ -8,7 +8,7 @@ import (
 )
 
 
-type User struct {
+type Test struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
@@ -21,26 +21,25 @@ func MainHandler(w http.ResponseWriter, r *http.Request){
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-	//check if user is already logged in
+	//check if user is logged in
 
-	if session.Values["username"] == ""{
+
+	if getUser(session).Authenticated == false { //redirect to /login if not logged in
+		//send user to login if no valid login cookies exist
 		http.Redirect(w, r, "/login", http.StatusFound)
+		return
 	}
 
+	/////////////////test///////////////////
 
-
-
-
-	var test User
+	var test Test
 
 	err = db.DB.QueryRow("SELECT id, name FROM users where id = ?", 1).Scan(&test.ID, &test.Name)
 	if err != nil {
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}
 
-	//send user to login if no valid login cookies exist
 
-	w.WriteHeader(http.StatusOK)
 
 	temp, err := template.ParseFiles("web/test.html")
 	if err != nil {

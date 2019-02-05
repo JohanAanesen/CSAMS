@@ -24,7 +24,7 @@ func init() {
 ```
 * Found out a designated error page would be nice so I added that to the UML and router too
 
-Mandag 4/2
+Monday 4/2
 ------------
 * Started doing the card #14 database connection class
 * Decided on a global approach to DB access, aka all the files that import the db package can access
@@ -39,3 +39,8 @@ value in the database, although this would cost IO operations
 * Together with the more powerful mux router package and secureCookies package, all part of the Gorilla
 Web Toolkit
 * Seems like the go-to toolkit for most people on stack overflow
+* Password encryption added with bcrypt https://godoc.org/golang.org/x/crypto/bcrypt
+
+Tuesday 5/2
+-----------
+* Link to execute go commands on scripts: https://github.com/gojp/goreportcard/blob/master/check/utils.go
