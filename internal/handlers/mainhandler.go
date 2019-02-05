@@ -1,21 +1,46 @@
 package handlers
 
 import (
-	"../internal/page"
+	"../../db"
+	"../page"
 	"html/template"
 	"log"
-	"math/rand"
 	"net/http"
 )
 
+
+type Test struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 func MainHandler(w http.ResponseWriter, r *http.Request){
 
-	//send user to login if no valid login cookies exist
+	session, err := db.CookieStore.Get(r, "login-session")
+	if err != nil {
+		log.Fatal(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+	//check if user is logged in
 
-	if i := rand.Int(); i % 2 == 0 && i % 3 == 0 { // Check if random int is special
+
+	if getUser(session).Authenticated == false { //redirect to /login if not logged in
+		//send user to login if no valid login cookies exist
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
+
+	/////////////////test///////////////////
+
+	var test Test
+
+	err = db.DB.QueryRow("SELECT id, name FROM users where id = ?", 1).Scan(&test.ID, &test.Name)
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+
+
 
 	data := struct {
 		PageTitle string
