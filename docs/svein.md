@@ -1,5 +1,11 @@
 Svein's log
 ============
+## 05/02/2019
+
+
+## 04/02/2019
+Worked on nested templates, and design for the website, both for the main site, and the dashboard for admin.
+Created one more test for the HTTP-requests, checking for response body-size.
 
 ## 01/02/2019
 Worked on the project plan:
