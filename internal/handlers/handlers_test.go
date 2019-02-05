@@ -1,35 +1,24 @@
 package handlers
 
 import (
+	dbcon "../../db"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
+	"strings"
 	"testing"
 )
 
 func init() {
-	if err := os.Chdir("../"); err != nil { //go out of /handlers folder
+	dbcon.InitDB(os.Getenv("SQLDB"))
+
+	if err := os.Chdir("../../"); err != nil { //go out of /handlers folder
 		panic(err)
 	}
 }
 
-func TestMainHandler(t *testing.T) {
 
-	req, err := http.NewRequest("GET", "/", nil)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-
-	resp := httptest.NewRecorder()
-
-	http.HandlerFunc(MainHandler).ServeHTTP(resp, req)
-
-	status := resp.Code
-
-	if status != http.StatusOK {
-		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
-	}
-}
 
 func TestLoginHandler(t *testing.T) {
 
@@ -49,21 +38,38 @@ func TestLoginHandler(t *testing.T) {
 	}
 }
 
-func TestLogoutHandler(t *testing.T) {
+func TestLoggingIn(t *testing.T){
+	form := url.Values{}
+	form.Add("email", "hei@gmail.com")
+	form.Add("password", "hei")
+	req := httptest.NewRequest("POST", "/login", strings.NewReader(form.Encode()))
+	req.Form = form
 
-	req, err := http.NewRequest("GET", "/logout", nil)
+	resp := httptest.NewRecorder()
+
+	http.HandlerFunc(LoginRequest).ServeHTTP(resp, req)
+
+	status := resp.Code
+
+	if status != http.StatusFound { //todo update code, although it works, not definitive test
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusFound, status)
+	}
+}
+
+func TestMainHandler(t *testing.T) {
+	req, err := http.NewRequest("GET", "/", nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(LogoutHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(MainHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
-	if status != http.StatusOK {
-		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	if status != http.StatusFound { //todo update this somehow, site isn't available for unauthorized users
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusFound, status)
 	}
 }
 
@@ -207,5 +213,23 @@ func TestErrorHandler(t *testing.T) {
 
 	if status != http.StatusBadRequest {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusBadRequest, status)
+	}
+}
+
+func TestLogoutHandler(t *testing.T) {
+
+	req, err := http.NewRequest("GET", "/logout", nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	resp := httptest.NewRecorder()
+
+	http.HandlerFunc(LogoutHandler).ServeHTTP(resp, req)
+
+	status := resp.Code
+
+	if status != http.StatusFound {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusFound, status)
 	}
 }

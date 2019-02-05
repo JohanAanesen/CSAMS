@@ -45,3 +45,9 @@ eksempler:
 - [ ] Code is well commented and tidy
 - [ ] Is there something that could be done better? propose update
 - [ ] Leave feedback as comment on the pull request :)
+
+## Go Get's
+* go get -u github.com/go-sql-driver/mysql
+* go get github.com/gorilla/sessions
+* go get -u github.com/gorilla/mux
+* go get github.com/gorilla/securecookie
