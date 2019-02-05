@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func LoginHandler(w http.ResponseWriter, r *http.Request){
+func RegisterHandler(w http.ResponseWriter, r *http.Request){
 
 	//check if user is logged in
 
@@ -16,7 +16,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 	w.WriteHeader(http.StatusOK)
 
 	//parse template
-	temp, err := template.ParseFiles("web/layout.html", "web/navbar.html", "web/login.html")
+	temp, err := template.ParseFiles("web/layout.html", "web/navbar.html", "web/register.html")
 
 	if err != nil {
 		log.Fatal(err)
@@ -25,7 +25,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 	if err = temp.ExecuteTemplate(w, "layout", struct {
 		PageTitle string
 	}{
-		PageTitle: "Sign In",
+		PageTitle: "Sign Up",
 	}); err != nil {
 		log.Fatal(err)
 	}
