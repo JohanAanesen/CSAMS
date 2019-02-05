@@ -27,7 +27,8 @@ func main() {
 	router.HandleFunc("/assignment/peer", handlers.AssignmentPeerHandler).Methods("GET")
 	router.HandleFunc("/assignment/auto", handlers.AssignmentAutoHandler).Methods("GET")
 
-	router.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))) //all files within /assets are served as static files
+	//serve /assets as a static, always available folder
+	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 
 	port := os.Getenv("PORT")
 	http.ListenAndServe(":"+port, router)
