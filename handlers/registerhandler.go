@@ -22,7 +22,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 		log.Fatal(err)
 	}
 
-	if err = temp.ExecuteTemplate(w, "layout", PageData{PageTitle: "Sign Up"}); err != nil {
+	if err = temp.ExecuteTemplate(w, "layout", struct {
+		PageTitle string
+	}{
+		PageTitle: "Sign Up",
+	}); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -1,7 +1,7 @@
 Svein's log
 ============
 ## 05/02/2019
-
+ * Made some simple data-structures for page-data, and made a more agile template for the page-title, menu and content.
 
 ## 04/02/2019
 Worked on nested templates, and design for the website, both for the main site, and the dashboard for admin.

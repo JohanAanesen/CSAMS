@@ -22,7 +22,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 		log.Fatal(err)
 	}
 
-	if err = temp.ExecuteTemplate(w, "layout", PageData{PageTitle: "Sign In"}); err != nil {
+	if err = temp.ExecuteTemplate(w, "layout", struct {
+		PageTitle string
+	}{
+		PageTitle: "Sign In",
+	}); err != nil {
 		log.Fatal(err)
 	}
 }

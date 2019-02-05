@@ -17,19 +17,23 @@
         </div><!-- /.row -->
 
         <div class="row">
-
-            {{ range .Courses }}
-            <div class="col-12 col-md-6 col-xl mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h2 class="card-title">{{ .Name }}</h2>
-                        <a href="#" class="btn btn-dark">See assignments</a>
+            <div class="col">
+                <div class="card-columns">
+                {{ range .Courses }}
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <strong>{{ .Code }}</strong>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title mb-3">{{ .Name }}</h3>
+                            <a href="/class?id={{ .Code }}" class="btn btn-dark btn-sm">See assignments</a>
+                        </div>
                     </div>
+                {{ end }}
                 </div>
             </div>
-            {{ end }}
-
         </div><!-- /.row -->
+
     </div><!-- /.container -->
 </main>
 {{ end }}

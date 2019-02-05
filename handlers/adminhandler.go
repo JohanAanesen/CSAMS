@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
 	"html/template"
 	"log"
 	"net/http"
@@ -11,42 +12,29 @@ func AdminHandler(w http.ResponseWriter, r *http.Request){
 
 	//find classes admin/teacher own
 
-	data := PageData{
+	data := struct {
+		PageTitle string
+		Menu page.Menu
+		Courses []page.Course
+		Assignments []page.Assignment
+	}{
 		PageTitle: "Homepage",
-		Courses: []Course{
+
+		Menu: page.Menu{
+			Items: []page.MenuItem{
+				{Name: "Courses", Href: "/"},
+				{Name: "Profile", Href: "/user"},
+				{Name: "Admin Dashboard", Href: "/admin"},
+			},
+		},
+
+		Courses: []page.Course{
 			{
 				Name: "IMT1001",
-				Assignments: []Assignment{
-					{
-						Name: "Assignment 1",
-						Description: "Lorem ipsum dolor sit amet",
-						Deadline: "20190516T120000Z",
-					},
-					{
-						Name: "Assignment 2",
-						Description: "Lorem ipsum dolor sit amet",
-						Deadline: "20190516T120000Z",
-					},
-					{
-						Name: "Assignment 3",
-						Description: "Lorem ipsum dolor sit amet",
-						Deadline: "20190516T120000Z",
-					},
-				},
-			},
-			{
-				Name: "IMT2014",
-				Assignments: []Assignment{
-					{
-						Name: "Assignment 1",
-						Description: "Lorem ipsum dolor sit amet",
-						Deadline: "20190516T120000Z",
-					},
-					{
-						Name: "Assignment 2",
-						Description: "Lorem ipsum dolor sit amet",
-						Deadline: "20190516T120000Z",
-					},
+				Assignments: []page.Assignment{
+					{Name: "Task 1", Description: "Code a \"Hello World program in Go\"", Deadline: "06/02/2019"},
+					{Name: "Task 2", Description: "Code a Fibonacci-sequence both in a loop and a recursive functions", Deadline: "12/02/2019"},
+					{Name: "Task 3", Description: "Make a Facebook-clone in Go", Deadline: "16/05/2019"},
 				},
 			},
 		},
