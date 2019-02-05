@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
+	"../internal/page"
 	"html/template"
 	"log"
 	"net/http"
