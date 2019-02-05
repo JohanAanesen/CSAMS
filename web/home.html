@@ -1,0 +1,39 @@
+{{ define "content" }}
+
+{{ template "navbar" . }}
+
+<main>
+    <div class="container pt-3">
+
+        <div class="row">
+            <div class="col">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control form-control-sm border-secondary" placeholder="Course code">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary btn-sm" type="button">Add course</button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.row -->
+
+        <div class="row">
+            <div class="col">
+                <div class="card-columns">
+                {{ range .Courses }}
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <strong>{{ .Code }}</strong>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title mb-3">{{ .Name }}</h3>
+                            <a href="/class?id={{ .Code }}" class="btn btn-dark btn-sm">See assignments</a>
+                        </div>
+                    </div>
+                {{ end }}
+                </div>
+            </div>
+        </div><!-- /.row -->
+
+    </div><!-- /.container -->
+</main>
+{{ end }}

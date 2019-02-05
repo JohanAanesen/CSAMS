@@ -1,0 +1,33 @@
+{{ define "content" }}
+    <h2 class="display-4 mb-3">Courses <a href="#" class="btn btn-success btn-sm px-3">New</a></h2>
+    <div class="row">
+        {{ range .Courses }}
+        <div class="col-12 col-md-6 col-xl mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">{{ .Code }}: {{ .Name }}</h2>
+                    <a href="#" class="btn btn-dark">See assignments</a>
+                </div>
+            </div>
+        </div>
+        {{ end }}
+    </div>
+
+    <h2 class="display-4 mb-3">Assignments <a href="#" class="btn btn-success btn-sm px-3">New</a></h2>
+    <div class="row">
+        {{ range $c := .Courses }}
+        {{ range .Assignments }}
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">{{ $c.Code }}: {{ .Name }}</h2>
+                    <p><strong>Deadline: </strong> {{ .Deadline }}</p>
+                    <p class="card-text">{{ .Description }}</p>
+                    <a href="#" class="btn btn-outline-dark btn-sm">See details</a>
+                </div>
+            </div>
+        </div>
+        {{ end }}
+        {{ end }}
+    </div>
+{{ end }}

@@ -14,7 +14,7 @@ func AssignmentHandler(w http.ResponseWriter, r *http.Request){
 		class := r.FormValue("class")
 
 		if id == "" || class == "" {
-			//redirect to error page
+			//redirect to error pageinfo
 			ErrorHandler(w, r, http.StatusBadRequest)
 			return
 		}
@@ -40,7 +40,7 @@ func AssignmentAutoHandler(w http.ResponseWriter, r *http.Request){
 		class := r.FormValue("class")
 
 		if id == "" || class == "" {
-			//redirect to error page
+			//redirect to error pageinfo
 			ErrorHandler(w, r, http.StatusBadRequest)
 			return
 		}
@@ -66,7 +66,7 @@ func AssignmentPeerHandler(w http.ResponseWriter, r *http.Request){
 		class := r.FormValue("class")
 
 		if id == "" || class == "" {
-			//redirect to error page
+			//redirect to error pageinfo
 			ErrorHandler(w, r, http.StatusBadRequest)
 			return
 		}

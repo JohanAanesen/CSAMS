@@ -39,13 +39,21 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 	//if there is, add the user logging in to the class and redirect
 
 	//parse template
-	temp, err := template.ParseFiles("web/login.html")
+	temp, err := template.ParseFiles("web/layout.html", "web/navbar.html", "web/login.html")
+
 	if err != nil {
 		log.Fatal(err)
-		//todo log this event
 	}
 
-	temp.Execute(w, nil)
+	if err = temp.ExecuteTemplate(w, "layout", struct {
+		PageTitle string
+		LoadFormCSS bool
+	}{
+		PageTitle: "Sign In",
+		LoadFormCSS: true,
+	}); err != nil {
+		log.Fatal(err)
+	}
 
 
 }

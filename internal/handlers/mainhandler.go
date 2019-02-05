@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
 	"html/template"
 	"log"
 	"net/http"
-	"../../db"
 )
 
 
@@ -41,10 +43,55 @@ func MainHandler(w http.ResponseWriter, r *http.Request){
 
 
 
-	temp, err := template.ParseFiles("web/test.html")
+	data := struct {
+		PageTitle string
+		Menu page.Menu
+		Courses []page.Course
+		LoadFormCSS bool
+	}{
+		PageTitle: "Homepage",
+
+		Menu: util.LoadMenuConfig("configs/menu/site.json"),
+
+		Courses: []page.Course{
+			{
+				Name: "Grunnleggende programmering",
+				Code: "IMT1031",
+			},
+			{
+				Name: "Objekt-orienbtert programmering",
+				Code: "IMT1082",
+			},
+			{
+				Name: "Algoritmiske metoder",
+				Code: "IMT2021",
+			},
+			{
+				Name: "Datamodellering og databasesystemer",
+				Code: "IMT2571",
+			},
+			{
+				Name: "Vitenskalig programmering",
+				Code: "IMT3881",
+			},
+			{
+				Name: "Operativsystemer",
+				Code: "IMT2282",
+			},
+		},
+
+		LoadFormCSS: false,
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+	temp, err := template.ParseFiles("web/layout.html", "web/navbar.html", "web/index.html")
+
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	temp.Execute(w, test)
+	if err = temp.ExecuteTemplate(w, "layout", data); err != nil {
+		log.Fatal(err)
+	}
 }
