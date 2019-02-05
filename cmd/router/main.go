@@ -10,7 +10,6 @@ import (
 
 
 func main() {
-
 	dbcon.InitDB(os.Getenv("SQLDB")) //env var SQLDB username:password@tcp(127.0.0.1:3306)/dbname 127.0.0.1 if run locally like xampp
 
 	router := mux.NewRouter()
@@ -28,10 +27,8 @@ func main() {
 	router.HandleFunc("/assignment/peer", handlers.AssignmentPeerHandler).Methods("GET")
 	router.HandleFunc("/assignment/auto", handlers.AssignmentAutoHandler).Methods("GET")
 
-
 	router.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))) //all files within /assets are served as static files
 
 	port := os.Getenv("PORT")
 	http.ListenAndServe(":"+port, router)
-
 }
