@@ -1,9 +1,10 @@
 package main
 
 import (
-	"net/http"
-	"os"
 	"../../handlers"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
+	"log"
+	"net/http"
 )
 
 func main() {
@@ -27,7 +28,5 @@ func main() {
 
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))) //all files within /static are served as static files
 
-	port := os.Getenv("PORT")
-	http.ListenAndServe(":"+port, nil)
-
+	log.Fatal(http.ListenAndServe(util.GetPort(), nil))
 }
