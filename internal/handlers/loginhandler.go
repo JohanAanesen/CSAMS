@@ -12,6 +12,7 @@ import (
 
 type User struct {
 	ID 				int
+	Name 			string
 	Email      		string
 	Authenticated 	bool
 }
@@ -78,10 +79,10 @@ func LoginRequest(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	userid, ok := db.UserAuth(email, password) //authenticate user
+	userid, name, ok := db.UserAuth(email, password) //authenticate user
 
 	if ok {
-		session.Values["user"] = User{ID: userid, Email: email, Authenticated: true}
+		session.Values["user"] = User{ID: userid, Name: name, Email: email, Authenticated: true}
 	}else{
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event
@@ -94,48 +95,6 @@ func LoginRequest(w http.ResponseWriter, r *http.Request){
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		//todo log this event
 		fmt.Println(err.Error())
-		return
-	}
-
-	http.Redirect(w, r, "/", http.StatusFound)
-
-}
-
-func RegisterRequest(w http.ResponseWriter, r *http.Request){
-	session, err := db.CookieStore.Get(r, "login-session") //get session
-	if err != nil {
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		//todo log this event
-		return
-	}
-
-	user := getUser(session)
-	if user.Authenticated { //already logged in, no need to register
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
-	}
-
-	email := r.FormValue("email")
-	password := r.FormValue("password")
-
-	if email == "" || password == ""{  //login credentials cannot be empty
-		return
-	}
-
-	userid, ok := db.RegisterUser(email, password) //register user in database
-
-	if ok {
-		session.Values["user"] = User{ID: userid, Email: email, Authenticated: true}
-	}else{
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		//todo log this event
-		return
-	}
-
-	err = session.Save(r, w)	//save data to session
-	if err != nil{
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		//todo log this event
 		return
 	}
 

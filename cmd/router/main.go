@@ -17,6 +17,7 @@ func main() {
 	router.HandleFunc("/", handlers.MainHandler).Methods("GET")
 	router.HandleFunc("/login", handlers.LoginHandler).Methods("GET")
 	router.HandleFunc("/login", handlers.LoginRequest).Methods("POST")
+	router.HandleFunc("/register", handlers.RegisterHandler).Methods("GET")
 	router.HandleFunc("/register", handlers.RegisterRequest).Methods("POST")
 	router.HandleFunc("/logout", handlers.LogoutHandler).Methods("GET")
 	router.HandleFunc("/class", handlers.ClassHandler).Methods("GET")

@@ -6,6 +6,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 	"os"
 )
 
@@ -27,45 +28,45 @@ func InitDB(dataSourceName string) {
 
 }
 
-func UserAuth(email string, password string)(int, bool) {
+func UserAuth(email string, password string)(int, string, bool) {
 
-	rows, err := DB.Query("SELECT id, password FROM users WHERE email = ?", email)
+	rows, err := DB.Query("SELECT id, name, password FROM users WHERE email = ?", email)
 	if err != nil{
 		//todo log error
 		fmt.Println(err.Error())
-		return 0, false
+		return 0, "", false
 	}
 
 	for rows.Next() {
 		var id int
 		var hash string
+		var name string
 
-		rows.Scan(&id, &hash)
+		rows.Scan(&id, &name, &hash)
 
 		if CheckPasswordHash(password, hash) {
-			fmt.Println("all guchi")
-			return id, true
+			return id, name, true
 		}
 	}
 
 	defer rows.Close()
 
-	return 0, false
+	return 0, "", false
 }
 
-func RegisterUser(email string, password string)(int, bool){
+func RegisterUser(name string, email string, password string)(int, string, bool){
 	pass, err := HashPassword(password)
 	if err != nil{
 		//todo log error
-		fmt.Println(err.Error())
-		return 0, false
+		log.Fatal(err.Error())
+		return 0, "", false
 	}
 
-	rows, err := DB.Query("INSERT INTO users(email, teacher, password) VALUES(?, 0, ?)", email, pass)
+	rows, err := DB.Query("INSERT INTO users(name, email, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
 	if err != nil{
 		//todo log error
-		fmt.Println(err.Error())
-		return 0, false
+		log.Fatal(err.Error())
+		return 0, "", false
 	}
 
 	defer rows.Close()
