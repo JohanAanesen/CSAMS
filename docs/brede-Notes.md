@@ -15,6 +15,9 @@
 * information is displayed in input element for making the changes easier.
 
 ### Wednesday - 06/02/19
+*I overslept 45min today, but that's fine, I'm just working 45min longer :)*
+* I found a bug yesterday with adding a secondary email, that I need to fix today
+
 
 ### Thursday - 07/02/19
 

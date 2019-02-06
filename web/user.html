@@ -31,6 +31,7 @@
 
 <!-- TODO : Get actual user information and display it -->
 <!-- TODO : Add option to add/update name, email and password -->
+<!-- TODO : fix bug that if there is no secondary email it doesnt work to edit info-->
 
 <!-- Show user the name, email-1, email-2 and number of classes-->
 <!-- Functionality: Change password, add/change name, add/change email -->
@@ -48,40 +49,45 @@
                         <!-- Make it possible to change name -->
                         <div class="d-flex justify-content-between align-items-center border-bottom border-gray pb-2 mb-3">
                             <input id="usersName" type="text" readonly
-                                   class="form-control-plaintext form-control-lg col-sm-6"
+                                   class="form-control-plaintext form-control-lg col-sm-6" placeholder="Name"
                                    value={{.Name}}>
                             <button type="button" class="btn btn-primary" id="btn-edit" onclick="btnEdit()">Edit Profile
                             </button>
                         </div>
 
                         <!-- If the user has an email -->
-                        {{if .PrimaryEmail}}
-                            <div class="form-group row">
-                                <label for="primaryEmail" class="col-sm-2 col-form-label"><strong>School
-                                        Email: </strong></label>
-                                <div class="col-sm-6">
+
+                        <div class="form-group row">
+                            <label for="primaryEmail" class="col-sm-2 col-form-label"><strong>School
+                                    Email: </strong></label>
+                            <div class="col-sm-6">
+                                {{if .PrimaryEmail}}
                                     <input type="email" readonly class="form-control-plaintext" id="primaryEmail"
+                                           placeholder="School Email"
                                            value={{.PrimaryEmail}}>
-                                </div>
+                                {{else}}
+                                    <input type="email" readonly class="form-control-plaintext" id="primaryEmail"
+                                           placeholder="School Email">
+                                {{end}}
                             </div>
-                        {{else}}
-                            <p><strong>OBS! Can't find your email</strong></p>
-                        {{end}}
+                        </div>
+
 
                         <!-- If user has secondary email, show it and give option to change it-->
-                        {{if .SecondaryEmail}}
-                            <div class="form-group row">
-                                <label for="secondaryEmail" class="col-sm-2 col-form-label"><strong>Secondary
-                                        Email: </strong></label>
-                                <div class="col-sm-6">
+
+                        <div class="form-group row">
+                            <label for="secondaryEmail" class="col-sm-2 col-form-label"><strong>Secondary
+                                    Email: </strong></label>
+                            <div class="col-sm-6">
+                                {{if .SecondaryEmail}}
                                     <input type="email" readonly class="form-control-plaintext" id="secondaryEmail"
                                            value={{.SecondaryEmail}}>
-                                </div>
+                                {{else}}
+                                    <input type="email" readonly class="form-control-plaintext" id="secondaryEmail"
+                                           placeholder="Secondary Email">
+                                {{end}}
                             </div>
-                        {{else}}
-                            <p><strong><a href="#">Add secondary email</a></strong>
-                            </p> <!-- TODO : add functionality here -->
-                        {{end}}
+                        </div>
 
                         <div id="passwords" class="beGone">
                             <div class="form-group row">
@@ -154,11 +160,12 @@
 
 <script>
 
-    var userName = document.getElementById("usersName");
-    var pEmail = document.getElementById("primaryEmail");
-    var sEmail = document.getElementById("secondaryEmail");
-    var passwords = document.getElementById("passwords");
-    var noOfClasses = document.getElementById("noOfClasses");
+    let userName = document.getElementById("usersName");
+    let pEmail = document.getElementById("primaryEmail");
+    let sEmail = document.getElementById("secondaryEmail");
+    let passwords = document.getElementById("passwords");
+    let noOfClasses = document.getElementById("noOfClasses");
+    let noSecondary = document.getElementById("noSecondaryEmail");
 
     function btnEdit() {
 
@@ -171,6 +178,7 @@
         sEmail.className = "form-control";
         passwords.className = "";
         noOfClasses.className = "beGone";
+        noSecondary.className = "beGone";
     }
 
     function saveNewInfo() {
@@ -189,6 +197,7 @@
         // else, not success, give info to the user
 
     }
+
 </script>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
