@@ -9,6 +9,7 @@ import (
 	"net/http"
 )
 
+//User struct to hold session data
 type User struct {
 	ID            int
 	Name          string
@@ -20,6 +21,7 @@ func init() {
 	gob.Register(User{})
 }
 
+//LoginHandler serves login page to users
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
@@ -54,6 +56,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//LoginRequest validates login requests
 func LoginRequest(w http.ResponseWriter, r *http.Request) {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {

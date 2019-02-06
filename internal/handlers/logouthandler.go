@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+//LogoutHandler logs out logged in users
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {

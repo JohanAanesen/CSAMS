@@ -8,11 +8,13 @@ import (
 	"net/http"
 )
 
+//Test struct, should be removed soon
 type Test struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
+//MainHandler serves homepage to users
 func MainHandler(w http.ResponseWriter, r *http.Request) {
 
 	session, err := db.CookieStore.Get(r, "login-session")

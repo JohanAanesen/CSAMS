@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+//RegisterHandler serves register page to users
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check if user is logged in
@@ -43,6 +44,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//RegisterRequest validates register requests from users
 func RegisterRequest(w http.ResponseWriter, r *http.Request) {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
