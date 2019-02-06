@@ -55,3 +55,50 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 	temp.Execute(w, data)
 
 }
+
+func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
+
+	// TODO : get user information and compare
+	// TODO : actually change information
+	// TODO : return errors
+
+	// TODO : remove this
+	uName := "Ola Nordmann"
+	uSemail := "olameister@gmail.com"
+	uPass := "123abc"
+
+	name := r.FormValue("usersName")
+	secondaryEmail := r.FormValue("secondaryEmail")
+	oldPass := r.FormValue("oldPass")
+	newPass := r.FormValue("newPass")
+	repeatPass := r.FormValue("repeatPass")
+
+	// Name can not be changed to blank!
+	if name == "" {
+		// TODO : Return with error
+	} else if name == uName {
+		// Do nothing, name is not changed
+	} else {
+		// TODO : Change name
+	}
+
+	// If email is empty, the user doesn't want to change it
+	if secondaryEmail == "" {
+		// Do nothing
+	} else if secondaryEmail == uSemail {
+		// Do nothing, nothing is changed
+	} else {
+		// TODO : Change secondary email
+	}
+
+	// If it's empty, the user doesn't want to change it
+	if oldPass == "" {
+		// Do nothing
+	} else if oldPass != uPass {
+		// TODO : Return with error, not matching the old password
+	} else if newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass {
+		// TODO : Change password
+	} else {
+		// TODO : Return with error
+	}
+}

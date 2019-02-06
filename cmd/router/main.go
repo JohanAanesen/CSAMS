@@ -22,6 +22,7 @@ func main() {
 	router.HandleFunc("/class", handlers.ClassHandler).Methods("GET")
 	router.HandleFunc("/class/list", handlers.ClassListHandler).Methods("GET")
 	router.HandleFunc("/user", handlers.UserHandler).Methods("GET")
+	router.HandleFunc("/user", handlers.UserUpdateRequest).Methods("POST")
 	router.HandleFunc("/admin", handlers.AdminHandler).Methods("GET")
 	router.HandleFunc("/assignment", handlers.AssignmentHandler).Methods("GET")
 	router.HandleFunc("/assignment/peer", handlers.AssignmentPeerHandler).Methods("GET")
