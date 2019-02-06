@@ -1,7 +1,7 @@
 package page
 
 type Assignment struct {
-	Name string
-	Description string
-	Deadline string
+	Name string `json:"name"`
+	Description string `json:"description"`
+	Deadline string `json:"deadline"`
 }

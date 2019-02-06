@@ -32,3 +32,20 @@ func LoadMenuConfig(file string) page.Menu {
 
 	return menu
 }
+
+func LoadCoursesConfig(file string) page.Courses {
+	var course page.Courses
+	configFile, err := os.Open(file)
+	defer configFile.Close()
+
+	if err != nil {
+		log.Fatal(err)
+		return page.Courses{}
+	}
+
+	jsonParser := json.NewDecoder(configFile)
+	jsonParser.Decode(&course)
+
+	return course
+}
+

@@ -32,3 +32,11 @@ func TestLoadMenuConfig(t *testing.T) {
 		}
 	}
 }
+
+func TestLoadCoursesConfig(t *testing.T) {
+	courses := LoadCoursesConfig("../../configs/dd.json")
+
+	if len(courses.Items) == 0 {
+		t.Error("No courses loaded from \"dd.json\". Expected more then 0, got 0")
+	}
+}

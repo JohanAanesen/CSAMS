@@ -16,23 +16,12 @@ func AdminHandler(w http.ResponseWriter, r *http.Request){
 	data := struct {
 		PageTitle string
 		Menu page.Menu
-		Courses []page.Course
+		Courses page.Courses
 		Assignments []page.Assignment
 	}{
 		PageTitle: "Homepage",
 		Menu: util.LoadMenuConfig("configs/menu/dashboard.json"),
-
-		Courses: []page.Course{
-			{
-				Code: "IMT1001",
-				Name: "Programming for dummies",
-				Assignments: []page.Assignment{
-					{Name: "Task 1", Description: "Code a \"Hello World program in Go\"", Deadline: "06/02/2019"},
-					{Name: "Task 2", Description: "Code a Fibonacci-sequence both in a loop and a recursive functions", Deadline: "12/02/2019"},
-					{Name: "Task 3", Description: "Make a Facebook-clone in Go", Deadline: "16/05/2019"},
-				},
-			},
-		},
+		Courses: util.LoadCoursesConfig("configs/dd.json"),
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -59,7 +48,13 @@ func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	if err = temp.ExecuteTemplate(w, "layout", nil); err != nil {
+	if err = temp.ExecuteTemplate(w, "layout", struct {
+		PageTitle string
+		Menu page.Menu
+	}{
+		PageTitle: "Dashboard - Courses",
+		Menu: util.LoadMenuConfig("configs/menu/dashboard.json"),
+	}); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -74,7 +69,13 @@ func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	if err = temp.ExecuteTemplate(w, "layout", nil); err != nil {
+	if err = temp.ExecuteTemplate(w, "layout", struct {
+		PageTitle string
+		Menu page.Menu
+	}{
+		PageTitle: "Dashboard - Create course",
+		Menu: util.LoadMenuConfig("configs/menu/dashboard.json"),
+	}); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -89,7 +90,13 @@ func AdminUpdateCourseHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	if err = temp.ExecuteTemplate(w, "layout", nil); err != nil {
+	if err = temp.ExecuteTemplate(w, "layout", struct {
+		PageTitle string
+		Menu page.Menu
+	}{
+		PageTitle: "Dashboard - Update course",
+		Menu: util.LoadMenuConfig("configs/menu/dashboard.json"),
+	}); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -104,7 +111,13 @@ func AdminAssignmentHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	if err = temp.ExecuteTemplate(w, "layout", nil); err != nil {
+	if err = temp.ExecuteTemplate(w, "layout", struct {
+		PageTitle string
+		Menu page.Menu
+	}{
+		PageTitle: "Dashboard - Assignments",
+		Menu: util.LoadMenuConfig("configs/menu/dashboard.json"),
+	}); err != nil {
 		log.Fatal(err)
 	}
 }
