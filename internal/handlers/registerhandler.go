@@ -60,9 +60,9 @@ func RegisterRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	name := r.FormValue("name")			//get form value name
-	email := r.FormValue("email")		//get form value email
-	password := r.FormValue("password")	//get form value password
+	name := r.FormValue("name")         //get form value name
+	email := r.FormValue("email")       //get form value email
+	password := r.FormValue("password") //get form value password
 
 	//check that nothing is empty and password match passwordConfirm
 	if name == "" || email == "" || password == "" || password != r.FormValue("passwordConfirm") { //login credentials cannot be empty
