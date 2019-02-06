@@ -8,7 +8,6 @@ import (
 	"os"
 )
 
-
 func main() {
 	dbcon.InitDB(os.Getenv("SQLDB")) //env var SQLDB username:password@tcp(127.0.0.1:3306)/dbname 127.0.0.1 if run locally like xampp
 
