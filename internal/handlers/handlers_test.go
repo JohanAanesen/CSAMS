@@ -1,35 +1,24 @@
 package handlers
 
 import (
+	dbcon "../../db"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
+	"strings"
 	"testing"
 )
 
 func init() {
-	if err := os.Chdir("../"); err != nil { //go out of /handlers folder
+	dbcon.InitDB(os.Getenv("SQLDB"))
+
+	if err := os.Chdir("../../"); err != nil { //go out of /handlers folder
 		panic(err)
 	}
 }
 
-func TestMainHandler(t *testing.T) {
 
-	req, err := http.NewRequest("GET", "/", nil)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-
-	resp := httptest.NewRecorder()
-
-	http.HandlerFunc(MainHandler).ServeHTTP(resp, req)
-
-	status := resp.Code
-
-	if status != http.StatusOK {
-		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
-	}
-}
 
 func TestLoginHandler(t *testing.T) {
 
@@ -47,23 +36,58 @@ func TestLoginHandler(t *testing.T) {
 	if status != http.StatusOK {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
 	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
 }
 
-func TestLogoutHandler(t *testing.T) {
+func TestLoggingIn(t *testing.T){
+	form := url.Values{}
+	form.Add("email", "hei@gmail.com")
+	form.Add("password", "hei")
+	req := httptest.NewRequest("POST", "/login", strings.NewReader(form.Encode()))
+	req.Form = form
 
-	req, err := http.NewRequest("GET", "/logout", nil)
+	resp := httptest.NewRecorder()
+
+	http.HandlerFunc(LoginRequest).ServeHTTP(resp, req)
+
+	status := resp.Code
+
+	if status != http.StatusFound { //todo update code, although it works, not definitive test
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusFound, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
+}
+
+func TestMainHandler(t *testing.T) {
+	req, err := http.NewRequest("GET", "/", nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(LogoutHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(MainHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
-	if status != http.StatusOK {
-		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	if status != http.StatusFound { //todo update this somehow, site isn't available for unauthorized users
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusFound, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
 	}
 }
 
@@ -83,6 +107,12 @@ func TestClassHandler(t *testing.T) {
 	if status != http.StatusOK {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
 	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
 }
 
 func TestClassListHandler(t *testing.T) {
@@ -100,6 +130,12 @@ func TestClassListHandler(t *testing.T) {
 
 	if status != http.StatusOK {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
 	}
 }
 
@@ -119,6 +155,12 @@ func TestUserHandler(t *testing.T) {
 	if status != http.StatusOK {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
 	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
 }
 
 func TestAdminHandler(t *testing.T) {
@@ -136,6 +178,12 @@ func TestAdminHandler(t *testing.T) {
 
 	if status != http.StatusOK {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
 	}
 }
 
@@ -155,6 +203,12 @@ func TestAssignmentHandlerHandler(t *testing.T) {
 	if status != http.StatusOK {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
 	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
 }
 
 func TestAssignmentAutoHandlerHandler(t *testing.T) {
@@ -172,6 +226,12 @@ func TestAssignmentAutoHandlerHandler(t *testing.T) {
 
 	if status != http.StatusOK {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
 	}
 }
 
@@ -191,6 +251,12 @@ func TestAssignmentPeerHandler(t *testing.T) {
 	if status != http.StatusOK {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
 	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
 }
 
 func TestErrorHandler(t *testing.T) {
@@ -207,5 +273,29 @@ func TestErrorHandler(t *testing.T) {
 
 	if status != http.StatusBadRequest {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusBadRequest, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
+}
+
+func TestLogoutHandler(t *testing.T) {
+
+	req, err := http.NewRequest("GET", "/logout", nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	resp := httptest.NewRecorder()
+
+	http.HandlerFunc(LogoutHandler).ServeHTTP(resp, req)
+
+	status := resp.Code
+
+	if status != http.StatusFound {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusFound, status)
 	}
 }

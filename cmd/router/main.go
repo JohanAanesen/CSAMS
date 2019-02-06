@@ -1,32 +1,34 @@
 package main
 
 import (
+	dbcon "../../db"
+	"../../internal/handlers"
+	"github.com/gorilla/mux"
 	"net/http"
 	"os"
-	"../../handlers"
 )
 
+
 func main() {
+	dbcon.InitDB(os.Getenv("SQLDB")) //env var SQLDB username:password@tcp(127.0.0.1:3306)/dbname 127.0.0.1 if run locally like xampp
 
-	http.HandleFunc("/", handlers.MainHandler)
-	http.HandleFunc("/login", handlers.LoginHandler)
-	http.HandleFunc("/class", handlers.ClassHandler)
-	http.HandleFunc("/class/list", handlers.ClassListHandler)
-	http.HandleFunc("/user", handlers.UserHandler)
-	http.HandleFunc("/admin", handlers.AdminHandler)
-	http.HandleFunc("/assignment", handlers.AssignmentHandler)
-	http.HandleFunc("/assignment/peer", handlers.AssignmentPeerHandler)
-	http.HandleFunc("/assignment/auto", handlers.AssignmentAutoHandler)
+	router := mux.NewRouter()
 
-	/*
-	r.HandleFunc("/posts", articlesHandler).Methods("GET", "POST")
-	r.HandleFunc("/posts/{id:[0-9]+}", articleHandler).Methods("GET")
-	r.HandleFunc("/posts/delete", deleteArticleHandler).Methods("DELETE")
-	*/
+	router.HandleFunc("/", handlers.MainHandler).Methods("GET")
+	router.HandleFunc("/login", handlers.LoginHandler).Methods("GET")
+	router.HandleFunc("/login", handlers.LoginRequest).Methods("POST")
+	router.HandleFunc("/register", handlers.RegisterRequest).Methods("POST")
+	router.HandleFunc("/logout", handlers.LogoutHandler).Methods("GET")
+	router.HandleFunc("/class", handlers.ClassHandler).Methods("GET")
+	router.HandleFunc("/class/list", handlers.ClassListHandler).Methods("GET")
+	router.HandleFunc("/user", handlers.UserHandler).Methods("GET")
+	router.HandleFunc("/admin", handlers.AdminHandler).Methods("GET")
+	router.HandleFunc("/assignment", handlers.AssignmentHandler).Methods("GET")
+	router.HandleFunc("/assignment/peer", handlers.AssignmentPeerHandler).Methods("GET")
+	router.HandleFunc("/assignment/auto", handlers.AssignmentAutoHandler).Methods("GET")
 
-	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))) //all files within /static are served as static files
+	router.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))) //all files within /assets are served as static files
 
 	port := os.Getenv("PORT")
-	http.ListenAndServe(":"+port, nil)
-
+	http.ListenAndServe(":"+port, router)
 }

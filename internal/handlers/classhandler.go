@@ -15,7 +15,7 @@ func ClassHandler(w http.ResponseWriter, r *http.Request){
 		id := r.FormValue("id")
 
 		if id == ""{
-			//redirect to error page
+			//redirect to error pageinfo
 			ErrorHandler(w, r, http.StatusBadRequest)
 			return
 		}
@@ -48,7 +48,7 @@ func ClassListHandler(w http.ResponseWriter, r *http.Request){
 		id := r.FormValue("id")
 
 		if id == "" {
-			//redirect to error page
+			//redirect to error pageinfo
 			ErrorHandler(w, r, http.StatusBadRequest)
 			return
 		}
