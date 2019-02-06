@@ -1,8 +1,8 @@
 package main
 
 import (
-	dbcon "../../db"
-	"../../internal/handlers"
+	dbcon "github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/handlers"
 	"github.com/gorilla/mux"
 	"net/http"
 	"os"

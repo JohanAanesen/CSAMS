@@ -4,7 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"../../db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 )
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request){

@@ -1,9 +1,8 @@
 package handlers
 
 import (
-	"../../db"
 	"encoding/gob"
-	"fmt"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"github.com/gorilla/sessions"
 	"html/template"
 	"log"
@@ -54,13 +53,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 		log.Fatal(err)
 	}
 
-
 }
 
 func LoginRequest(w http.ResponseWriter, r *http.Request){
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
-		log.Fatal(err)//todo log this event
+		log.Fatal(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -86,7 +84,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request){
 	}else{
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event
-		fmt.Println(err.Error())
+		log.Fatal(err)
 		return
 	}
 
@@ -94,7 +92,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request){
 	if err != nil{
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		//todo log this event
-		fmt.Println(err.Error())
+		log.Fatal(err)
 		return
 	}
 
