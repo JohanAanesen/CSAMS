@@ -1,26 +1,35 @@
 package handlers
 
 import (
-	"fmt"
+	"html/template"
+	"log"
 	"net/http"
 )
 
-func ErrorHandler(w http.ResponseWriter, r *http.Request, status int){
-
+// ErrorHandler handles displaying errors for the clients
+func ErrorHandler(w http.ResponseWriter, r *http.Request, status int) {
 	w.WriteHeader(status)
 
-	if status == http.StatusForbidden{
-		fmt.Fprint(w, "403 Forbidden")
-	}else if status == http.StatusBadRequest{
-		fmt.Fprint(w, "400 Bad Request")
-	}else if status == http.StatusInternalServerError{
-		fmt.Fprint(w, "500 Internal Server Error")
-	}else if status == http.StatusNotFound{
-		fmt.Fprint(w, "404 Not Found")
-	}else if status == http.StatusNotImplemented{
-		fmt.Fprint(w, "501 Not Implemented")
-	}else if status == http.StatusUnauthorized{
-		fmt.Fprint(w, "401 Unauthorized")
+	temp, err := template.ParseFiles("web/layout.html", "web/navbar.html", "web/error.html")
+
+	if err != nil {
+		log.Fatal(err)
 	}
-	//todo: html and stuff, link back to homepage/where you were
+
+	if err = temp.ExecuteTemplate(w, "layout", struct {
+		PageTitle   string
+		LoadFormCSS bool
+
+		ErrorCode    int
+		ErrorMessage string
+	}{
+		PageTitle:   "Error: " + string(status),
+		LoadFormCSS: true,
+
+		ErrorCode:    status,
+		ErrorMessage: http.StatusText(status),
+	}); err != nil {
+		log.Fatal(err)
+	}
+
 }

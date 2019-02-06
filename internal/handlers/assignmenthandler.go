@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func AssignmentHandler(w http.ResponseWriter, r *http.Request){
+func AssignmentHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check if request has a id
 	if r.Method == http.MethodGet {
@@ -31,7 +31,7 @@ func AssignmentHandler(w http.ResponseWriter, r *http.Request){
 	//parse info with template
 }
 
-func AssignmentAutoHandler(w http.ResponseWriter, r *http.Request){
+func AssignmentAutoHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check if request has a id
 	if r.Method == http.MethodGet {
@@ -57,7 +57,7 @@ func AssignmentAutoHandler(w http.ResponseWriter, r *http.Request){
 	//parse info with template
 }
 
-func AssignmentPeerHandler(w http.ResponseWriter, r *http.Request){
+func AssignmentPeerHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check if request has a id
 	if r.Method == http.MethodGet {

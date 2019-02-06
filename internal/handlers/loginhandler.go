@@ -11,16 +11,16 @@ import (
 )
 
 type User struct {
-	ID 				int
-	Email      		string
-	Authenticated 	bool
+	ID            int
+	Email         string
+	Authenticated bool
 }
 
-func init(){
+func init() {
 	gob.Register(User{})
 }
 
-func LoginHandler(w http.ResponseWriter, r *http.Request){
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
 		log.Fatal(err)
@@ -46,22 +46,21 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 	}
 
 	if err = temp.ExecuteTemplate(w, "layout", struct {
-		PageTitle string
+		PageTitle   string
 		LoadFormCSS bool
 	}{
-		PageTitle: "Sign In",
+		PageTitle:   "Sign In",
 		LoadFormCSS: true,
 	}); err != nil {
 		log.Fatal(err)
 	}
 
-
 }
 
-func LoginRequest(w http.ResponseWriter, r *http.Request){
+func LoginRequest(w http.ResponseWriter, r *http.Request) {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
-		log.Fatal(err)//todo log this event
+		log.Fatal(err) //todo log this event
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -75,8 +74,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request){
 	email := r.FormValue("email")
 	password := r.FormValue("password") //password
 
-
-	if email == "" || password == ""{  //login credentials cannot be empty
+	if email == "" || password == "" { //login credentials cannot be empty
 		return
 	}
 
@@ -84,15 +82,15 @@ func LoginRequest(w http.ResponseWriter, r *http.Request){
 
 	if ok {
 		session.Values["user"] = User{ID: userid, Email: email, Authenticated: true}
-	}else{
+	} else {
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event
 		fmt.Println(err.Error())
 		return
 	}
 
-	err = session.Save(r, w)	//save data to session
-	if err != nil{
+	err = session.Save(r, w) //save data to session
+	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		//todo log this event
 		fmt.Println(err.Error())
@@ -103,7 +101,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request){
 
 }
 
-func RegisterRequest(w http.ResponseWriter, r *http.Request){
+func RegisterRequest(w http.ResponseWriter, r *http.Request) {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -120,7 +118,7 @@ func RegisterRequest(w http.ResponseWriter, r *http.Request){
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
-	if email == "" || password == ""{  //login credentials cannot be empty
+	if email == "" || password == "" { //login credentials cannot be empty
 		return
 	}
 
@@ -128,14 +126,14 @@ func RegisterRequest(w http.ResponseWriter, r *http.Request){
 
 	if ok {
 		session.Values["user"] = User{ID: userid, Email: email, Authenticated: true}
-	}else{
+	} else {
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event
 		return
 	}
 
-	err = session.Save(r, w)	//save data to session
-	if err != nil{
+	err = session.Save(r, w) //save data to session
+	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		//todo log this event
 		return
@@ -145,7 +143,7 @@ func RegisterRequest(w http.ResponseWriter, r *http.Request){
 
 }
 
-func getUser(s *sessions.Session) User{
+func getUser(s *sessions.Session) User {
 	val := s.Values["user"]
 	var user = User{}
 	user, ok := val.(User)
@@ -154,4 +152,3 @@ func getUser(s *sessions.Session) User{
 	}
 	return user
 }
-

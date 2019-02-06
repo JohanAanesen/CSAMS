@@ -18,8 +18,6 @@ func init() {
 	}
 }
 
-
-
 func TestLoginHandler(t *testing.T) {
 
 	req, err := http.NewRequest("GET", "/login", nil)
@@ -44,7 +42,7 @@ func TestLoginHandler(t *testing.T) {
 	}
 }
 
-func TestLoggingIn(t *testing.T){
+func TestLoggingIn(t *testing.T) {
 	form := url.Values{}
 	form.Add("email", "hei@gmail.com")
 	form.Add("password", "hei")

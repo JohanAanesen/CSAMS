@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func LogoutHandler(w http.ResponseWriter, r *http.Request){
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)

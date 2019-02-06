@@ -1,0 +1,13 @@
+{{ define "content" }}
+
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <h1 class="display-1">Error {{ .ErrorCode }}</h1>
+            <h2 class="display-4">{{ .ErrorMessage }}</h2>
+            <a href="/"><p class="lead">Go back to the front page</p></a>
+        </div>
+    </div>
+</div>
+
+{{ end }}

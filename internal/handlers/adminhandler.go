@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
 	"html/template"
@@ -9,21 +10,21 @@ import (
 )
 
 // AdminHandler handles GET-request at /admin
-func AdminHandler(w http.ResponseWriter, r *http.Request){
+func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	//check that user is logged in and is admin/teacher
 
 	//find classes admin/teacher own
 
 	// Data for displaying on screen
 	data := struct {
-		PageTitle string
-		Menu page.Menu
-		Courses page.Courses
+		PageTitle   string
+		Menu        page.Menu
+		Courses     page.Courses
 		Assignments []page.Assignment
 	}{
 		PageTitle: "Homepage",
-		Menu: util.LoadMenuConfig("configs/menu/dashboard.json"),
-		Courses: util.LoadCoursesConfig("configs/dd.json"), // dd = dummy data
+		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Courses:   util.LoadCoursesConfig("configs/dd.json"), // dd = dummy data
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -44,14 +45,14 @@ func AdminHandler(w http.ResponseWriter, r *http.Request){
 func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
 	// Data for displaying on screen
 	data := struct {
-		PageTitle string
-		Menu page.Menu
-		Courses page.Courses
+		PageTitle   string
+		Menu        page.Menu
+		Courses     page.Courses
 		Assignments []page.Assignment
 	}{
 		PageTitle: "Dashboard - Courses",
-		Menu: util.LoadMenuConfig("configs/menu/dashboard.json"),
-		Courses: util.LoadCoursesConfig("configs/dd.json"), // dd = dummy data
+		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Courses:   util.LoadCoursesConfig("configs/dd.json"), // dd = dummy data
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -76,15 +77,16 @@ func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/course/create.html")
 
 	if err != nil {
+		ErrorHandler(w, r, 404)
 		log.Fatal(err)
 	}
 
 	if err = temp.ExecuteTemplate(w, "layout", struct {
 		PageTitle string
-		Menu page.Menu
+		Menu      page.Menu
 	}{
 		PageTitle: "Dashboard - Create course",
-		Menu: util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
 	}); err != nil {
 		log.Fatal(err)
 	}
@@ -94,6 +96,15 @@ func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 // Inserts a new course to the database
 func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 	// TODO: talk to database and stuff
+	course := page.Course{
+		Code:        r.FormValue("code"),
+		Name:        r.FormValue("name"),
+		Description: r.FormValue("description"),
+		Year:        r.FormValue("year"),
+		Semester:    r.FormValue("semester"),
+	}
+
+	fmt.Printf("%v", course)
 }
 
 // AdminUpdateCourseHandler handles GET-request at /admin/course/update/{id}
@@ -109,10 +120,10 @@ func AdminUpdateCourseHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err = temp.ExecuteTemplate(w, "layout", struct {
 		PageTitle string
-		Menu page.Menu
+		Menu      page.Menu
 	}{
 		PageTitle: "Dashboard - Update course",
-		Menu: util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
 	}); err != nil {
 		log.Fatal(err)
 	}
@@ -136,10 +147,10 @@ func AdminAssignmentHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err = temp.ExecuteTemplate(w, "layout", struct {
 		PageTitle string
-		Menu page.Menu
+		Menu      page.Menu
 	}{
 		PageTitle: "Dashboard - Assignments",
-		Menu: util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
 	}); err != nil {
 		log.Fatal(err)
 	}
