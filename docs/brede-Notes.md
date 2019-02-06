@@ -17,8 +17,24 @@
 ### Wednesday - 06/02/19
 *I overslept 45min today, but that's fine, I'm just working 45min longer :)*
 * I found a bug yesterday with adding a secondary email, that I need to fix today
-
+* A new bug about the form in `user.html` is sending unvalidated input to the handler. I/we choose to not fix this not, but added an TODO to fix it later :) 
+* We were a bit unsure how to update user user information. Since you can choose to only change one thing or all the information, should we request a change to the db for each change or all together every time?
+    * Solution: Different queries to different changes
+* Another bug with getting the password-hash from the DB, it only works when the secondary-email is not NULL (*I think*).
+    * Solution: 
 
 ### Thursday - 07/02/19
 
 ### Friday - 08/02/19
+
+## Week Two
+### Monday - 11/02/19
+
+### Tuesday - 12/02/19
+
+### Wednesday - *Birthday edition* 13/02/19
+
+### Thursday - 14/02/19
+
+### Friday - 15/02/19
+

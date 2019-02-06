@@ -8,9 +8,8 @@
 -- PHP Version: 7.1.10
 
 DROP SCHEMA
-
-IF EXISTS cs53;
-	CREATE SCHEMA cs53 COLLATE = utf8_general_ci;
+  IF EXISTS cs53;
+CREATE SCHEMA cs53 COLLATE = utf8_general_ci;
 
 USE cs53;
 
@@ -20,9 +19,9 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT = @@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS = @@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION = @@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
 --
@@ -35,17 +34,20 @@ SET time_zone = "+00:00";
 -- Tabellstruktur for tabell `assignments`
 --
 
-CREATE TABLE `assignments` (
-  `id` int(11) NOT NULL,
-  `courseid` int(11) NOT NULL,
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `due` date NOT NULL,
-  `peer` tinyint(1) NOT NULL DEFAULT '0',
-  `auto` tinyint(1) NOT NULL DEFAULT '0',
+CREATE TABLE `assignments`
+(
+  `id`       int(11)    NOT NULL,
+  `courseid` int(11)    NOT NULL,
+  `created`  timestamp  NOT NULL                DEFAULT CURRENT_TIMESTAMP,
+  `due`      date       NOT NULL,
+  `peer`     tinyint(1) NOT NULL                DEFAULT '0',
+  `auto`     tinyint(1) NOT NULL                DEFAULT '0',
   `language` varchar(20) COLLATE utf8_danish_ci DEFAULT NULL,
   `tasktext` text COLLATE utf8_danish_ci,
-  `payload` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+  `payload`  int(11)                            DEFAULT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_danish_ci;
 
 -- --------------------------------------------------------
 
@@ -53,16 +55,19 @@ CREATE TABLE `assignments` (
 -- Tabellstruktur for tabell `course`
 --
 
-CREATE TABLE `course` (
-  `id` int(11) NOT NULL,
+CREATE TABLE `course`
+(
+  `id`         int(11)                            NOT NULL,
   `coursecode` varchar(10) COLLATE utf8_danish_ci NOT NULL,
   `coursename` varchar(64) COLLATE utf8_danish_ci NOT NULL,
-  `teacher` int(11) NOT NULL,
-  `info` text COLLATE utf8_danish_ci,
-  `link1` varchar(128) COLLATE utf8_danish_ci DEFAULT NULL,
-  `link2` varchar(128) COLLATE utf8_danish_ci DEFAULT NULL,
-  `link3` varchar(128) COLLATE utf8_danish_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+  `teacher`    int(11)                            NOT NULL,
+  `info`       text COLLATE utf8_danish_ci,
+  `link1`      varchar(128) COLLATE utf8_danish_ci DEFAULT NULL,
+  `link2`      varchar(128) COLLATE utf8_danish_ci DEFAULT NULL,
+  `link3`      varchar(128) COLLATE utf8_danish_ci DEFAULT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_danish_ci;
 
 -- --------------------------------------------------------
 
@@ -70,10 +75,13 @@ CREATE TABLE `course` (
 -- Tabellstruktur for tabell `logs`
 --
 
-CREATE TABLE `logs` (
-  `userid` int(11) NOT NULL,
-  `log` varchar(256) COLLATE utf8_danish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+CREATE TABLE `logs`
+(
+  `userid` int(11)                             NOT NULL,
+  `log`    varchar(256) COLLATE utf8_danish_ci NOT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_danish_ci;
 
 -- --------------------------------------------------------
 
@@ -81,13 +89,16 @@ CREATE TABLE `logs` (
 -- Tabellstruktur for tabell `peerreviews`
 --
 
-CREATE TABLE `peerreviews` (
-  `assignmentid` int(11) NOT NULL,
-  `submissionid` int(11) NOT NULL,
-  `userid` int(11) NOT NULL,
-  `grade` int(11) NOT NULL,
-  `feedback` varchar(512) COLLATE utf8_danish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+CREATE TABLE `peerreviews`
+(
+  `assignmentid` int(11)                             NOT NULL,
+  `submissionid` int(11)                             NOT NULL,
+  `userid`       int(11)                             NOT NULL,
+  `grade`        int(11)                             NOT NULL,
+  `feedback`     varchar(512) COLLATE utf8_danish_ci NOT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_danish_ci;
 
 -- --------------------------------------------------------
 
@@ -95,12 +106,15 @@ CREATE TABLE `peerreviews` (
 -- Tabellstruktur for tabell `reviewerpairs`
 --
 
-CREATE TABLE `reviewerpairs` (
-  `assignmentid` int(11) NOT NULL,
-  `userid` int(11) NOT NULL,
+CREATE TABLE `reviewerpairs`
+(
+  `assignmentid`   int(11) NOT NULL,
+  `userid`         int(11) NOT NULL,
   `submissionsid1` int(11) NOT NULL,
-  `submissionid2` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+  `submissionid2`  int(11) NOT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_danish_ci;
 
 -- --------------------------------------------------------
 
@@ -108,18 +122,21 @@ CREATE TABLE `reviewerpairs` (
 -- Tabellstruktur for tabell `submissions`
 --
 
-CREATE TABLE `submissions` (
-  `id` int(11) NOT NULL,
-  `userid` int(11) NOT NULL,
-  `assignmentid` int(11) NOT NULL,
-  `repo` varchar(128) COLLATE utf8_danish_ci NOT NULL,
-  `deploy` varchar(128) COLLATE utf8_danish_ci NOT NULL,
-  `comment` varchar(512) COLLATE utf8_danish_ci NOT NULL,
-  `grade` int(11) DEFAULT NULL,
-  `test` int(11) DEFAULT NULL,
-  `vet` int(11) DEFAULT NULL,
-  `cycle` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+CREATE TABLE `submissions`
+(
+  `id`           int(11)                             NOT NULL,
+  `userid`       int(11)                             NOT NULL,
+  `assignmentid` int(11)                             NOT NULL,
+  `repo`         varchar(128) COLLATE utf8_danish_ci NOT NULL,
+  `deploy`       varchar(128) COLLATE utf8_danish_ci NOT NULL,
+  `comment`      varchar(512) COLLATE utf8_danish_ci NOT NULL,
+  `grade`        int(11) DEFAULT NULL,
+  `test`         int(11) DEFAULT NULL,
+  `vet`          int(11) DEFAULT NULL,
+  `cycle`        int(11) DEFAULT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_danish_ci;
 
 -- --------------------------------------------------------
 
@@ -127,10 +144,13 @@ CREATE TABLE `submissions` (
 -- Tabellstruktur for tabell `usercourse`
 --
 
-CREATE TABLE `usercourse` (
-  `userid` int(11) NOT NULL,
+CREATE TABLE `usercourse`
+(
+  `userid`   int(11) NOT NULL,
   `courseid` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_danish_ci;
 
 -- --------------------------------------------------------
 
@@ -138,14 +158,17 @@ CREATE TABLE `usercourse` (
 -- Tabellstruktur for tabell `users`
 --
 
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
-  `name` varchar(64) COLLATE utf8_danish_ci DEFAULT NULL,
-  `email` varchar(64) COLLATE utf8_danish_ci NOT NULL,
-  `teacher` tinyint(1) NOT NULL,
-  `email2` varchar(64) COLLATE utf8_danish_ci DEFAULT NULL,
-  `password` varchar(64) COLLATE utf8_danish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+CREATE TABLE `users`
+(
+  `id`            int(11)                            NOT NULL,
+  `name`          varchar(64) COLLATE utf8_danish_ci DEFAULT NULL,
+  `email_student` varchar(64) COLLATE utf8_danish_ci NOT NULL,
+  `teacher`       tinyint(1)                         NOT NULL,
+  `email_private` varchar(64) COLLATE utf8_danish_ci DEFAULT NULL,
+  `password`      varchar(64) COLLATE utf8_danish_ci NOT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_danish_ci;
 
 --
 -- Indexes for dumped tables
@@ -208,8 +231,8 @@ ALTER TABLE `usercourse`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `email2` (`email2`);
+  ADD UNIQUE KEY `email_student` (`email_student`),
+  ADD UNIQUE KEY `email_private` (`email_private`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -293,6 +316,6 @@ ALTER TABLE `usercourse`
   ADD CONSTRAINT `usercourse_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION = @OLD_COLLATION_CONNECTION */;

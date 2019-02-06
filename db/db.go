@@ -35,7 +35,7 @@ func InitDB(dataSourceName string) {
 //UserAuth authenticates users
 func UserAuth(email string, password string) (int, string, bool) {
 
-	rows, err := DB.Query("SELECT id, name, password FROM users WHERE email = ?", email)
+	rows, err := DB.Query("SELECT id, name, password FROM users WHERE email_student = ?", email)
 	if err != nil {
 		//todo log error
 		fmt.Println(err.Error())
@@ -49,7 +49,7 @@ func UserAuth(email string, password string) (int, string, bool) {
 
 		rows.Scan(&id, &name, &hash)
 
-		if checkPasswordHash(password, hash) {
+		if CheckPasswordHash(password, hash) {
 			return id, name, true
 		}
 	}
@@ -68,7 +68,7 @@ func RegisterUser(name string, email string, password string) (int, string, bool
 		return 0, "", false
 	}
 
-	rows, err := DB.Query("INSERT INTO users(name, email, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
+	rows, err := DB.Query("INSERT INTO users(name, email_student, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
 	if err != nil {
 		//todo log error
 		log.Fatal(err.Error())
@@ -80,7 +80,35 @@ func RegisterUser(name string, email string, password string) (int, string, bool
 	return UserAuth(email, password) //fetch userid through existing method
 }
 
-func checkPasswordHash(password, hash string) bool {
+// GetUSer returns the email_private and teacherid
+func GetUser(userID int) (int, string, string){
+
+	rows, err := DB.Query("SELECT teacher, email_private, password FROM users WHERE id = ?", userID)
+	if err != nil {
+		// TODO : log error
+		fmt.Println(err.Error())
+		return -1, "", ""
+	}
+
+	// TODO : usikker på om dette er riktig
+	for rows.Next() {
+		var teacher int
+		var emailPrivate string
+		var hash string
+
+		rows.Scan(&teacher, &emailPrivate, &hash)
+
+		return teacher, emailPrivate, hash
+	}
+
+	defer rows.Close()
+
+	return -1, "", ""
+
+
+}
+
+func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
