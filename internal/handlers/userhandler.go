@@ -58,6 +58,8 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 
 func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 
+	// TODO BUG : the form is sending unvalidated input, this should not happen >:(
+
 	// TODO : get user information and compare
 	// TODO : actually change information
 	// TODO : return errors
@@ -76,6 +78,8 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 	// Name can not be changed to blank!
 	if name == "" {
 		// TODO : Return with error
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
 	} else if name == uName {
 		// Do nothing, name is not changed
 	} else {
@@ -96,9 +100,9 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 		// Do nothing
 	} else if oldPass != uPass {
 		// TODO : Return with error, not matching the old password
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
 	} else if newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass {
 		// TODO : Change password
-	} else {
-		// TODO : Return with error
 	}
 }
