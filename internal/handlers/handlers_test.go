@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	dbcon "../../db"
+	dbcon "github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"net/http"
 	"net/http/httptest"
 	"net/url"

@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"../../db"
 	"encoding/gob"
 	"fmt"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"github.com/gorilla/sessions"
 	"html/template"
 	"log"

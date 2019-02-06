@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+// AdminHandler handles GET-request at /admin
 func AdminHandler(w http.ResponseWriter, r *http.Request){
 	//check that user is logged in and is admin/teacher
 
@@ -39,6 +40,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request){
 	}
 }
 
+// AdminCourseHandler handles GET-request at /admin/course
 func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
 	// Data for displaying on screen
 	data := struct {
@@ -66,6 +68,7 @@ func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// AdminCreateCourseHandler handles GET-request at /admin/course/create
 func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
@@ -87,10 +90,13 @@ func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// AdminCreateCourseRequest handles POST-request at /admin/course/create
+// Inserts a new course to the database
 func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 	// TODO: talk to database and stuff
 }
 
+// AdminUpdateCourseHandler handles GET-request at /admin/course/update/{id}
 func AdminUpdateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
@@ -112,6 +118,12 @@ func AdminUpdateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// AdminUpdateCourseRequest handles POST-request at /admin/course/update/{id}
+func AdminUpdateCourseRequest(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// AdminAssignmentHandler handles GET-request at /admin/assignment
 func AdminAssignmentHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
