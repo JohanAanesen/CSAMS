@@ -44,46 +44,49 @@
             <div class="col-sm-12">
                 <div class="col-xs-12">
 
-                    <!-- TODO : add action here -->
-                    <form action="#" method="post">
-                        <!-- Make it possible to change name -->
+                    <form method="post">
+
+                        <!-- Name of the user-->
                         <div class="d-flex justify-content-between align-items-center border-bottom border-gray pb-2 mb-3">
-                            <input id="usersName" type="text" readonly
-                                   class="form-control-plaintext form-control-lg col-sm-6" placeholder="Name"
+                            <input id="name" name="usersName" type="text" readonly
+                                   class="form-control-plaintext form-control-lg col-sm-6" placeholder="Name" required
                                    value={{.Name}}>
                             <button type="button" class="btn btn-primary" id="btn-edit" onclick="btnEdit()">Edit Profile
                             </button>
                         </div>
 
                         <!-- If the user has an email -->
-
                         <div class="form-group row">
                             <label for="primaryEmail" class="col-sm-2 col-form-label"><strong>School
                                     Email: </strong></label>
                             <div class="col-sm-6">
                                 {{if .PrimaryEmail}}
-                                    <input type="email" readonly class="form-control-plaintext" id="primaryEmail"
-                                           placeholder="School Email"
+                                    <input type="email" readonly class="form-control-plaintext" name="primaryEmail"
+                                           id="email"
+                                           placeholder="School Email" required
                                            value={{.PrimaryEmail}}>
                                 {{else}}
-                                    <input type="email" readonly class="form-control-plaintext" id="primaryEmail"
-                                           placeholder="School Email">
+                                    <input type="email" readonly class="form-control-plaintext" name="primaryEmail"
+                                           id="email"
+                                           required placeholder="School Email">
                                 {{end}}
                             </div>
                         </div>
 
 
                         <!-- If user has secondary email, show it and give option to change it-->
-
                         <div class="form-group row">
                             <label for="secondaryEmail" class="col-sm-2 col-form-label"><strong>Secondary
                                     Email: </strong></label>
                             <div class="col-sm-6">
                                 {{if .SecondaryEmail}}
-                                    <input type="email" readonly class="form-control-plaintext" id="secondaryEmail"
+                                    <input type="email" readonly class="form-control-plaintext" name="secondaryEmail"
+                                           id="email2"
+                                           placeholder="Secondary Email"
                                            value={{.SecondaryEmail}}>
                                 {{else}}
-                                    <input type="email" readonly class="form-control-plaintext" id="secondaryEmail"
+                                    <input type="email" readonly class="form-control-plaintext" name="secondaryEmail"
+                                           id="email2"
                                            placeholder="Secondary Email">
                                 {{end}}
                             </div>
@@ -94,15 +97,17 @@
                                 <label for="oldPass" class="col-sm-2 col-form-label"><strong>Old
                                         Password: </strong></label>
                                 <div class="col-sm-6">
-                                    <input type="password" class="form-control" id="oldPass" placeholder="Old Password">
+                                    <input type="password" class="form-control" id="oldPass" name="oldPass"
+                                           placeholder="Old Password">
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label for="newPass" class="col-sm-2 col-form-label"><strong>New
+                                <label for="password" class="col-sm-2 col-form-label"><strong>New
                                         Password: </strong></label>
                                 <div class="col-sm-6">
-                                    <input type="password" class="form-control" id="newPass" placeholder="New Password">
+                                    <input type="password" class="form-control" id="password" name="newPass"
+                                           placeholder="New Password">
                                 </div>
                             </div>
 
@@ -110,7 +115,7 @@
                                 <label for="repeatPass" class="col-sm-2 col-form-label"><strong>Repeat
                                         Password: </strong></label>
                                 <div class="col-sm-6">
-                                    <input type="password" class="form-control" id="repeatPass"
+                                    <input type="password" class="form-control" id="repeatPass" name="repeatPass"
                                            placeholder="Repeat New Password">
                                 </div>
                             </div>
@@ -160,42 +165,45 @@
 
 <script>
 
-    let userName = document.getElementById("usersName");
-    let pEmail = document.getElementById("primaryEmail");
-    let sEmail = document.getElementById("secondaryEmail");
+    let userName = document.getElementById("name");
+    let sEmail = document.getElementById("email2");
     let passwords = document.getElementById("passwords");
     let noOfClasses = document.getElementById("noOfClasses");
     let noSecondary = document.getElementById("noSecondaryEmail");
 
+    /**
+     * btnEdit()
+     *
+     * Changes the design from information to be viewed to a form to a form to change/add information.
+     *
+     * */
     function btnEdit() {
 
         userName.readOnly = false;
-        pEmail.readOnly = false;
         sEmail.readOnly = false;
 
         userName.className = "form-control form-control-lg col-sm-6";
-        pEmail.className = "form-control";
         sEmail.className = "form-control";
         passwords.className = "";
         noOfClasses.className = "beGone";
         noSecondary.className = "beGone";
     }
 
+    /**
+     * saveNewInfo()
+     *
+     * Changes the design from a form to fill in to information to be only viewed.
+     *
+     */
     function saveNewInfo() {
         // Success save shit and revert
         userName.readOnly = true;
-        pEmail.readOnly = true;
         sEmail.readOnly = true;
 
         userName.className = "form-control-plaintext form-control-lg col-sm-6";
-        pEmail.className = "form-control-plaintext";
         sEmail.className = "form-control-plaintext";
         noOfClasses.className = "";
         passwords.className = "beGone";
-
-
-        // else, not success, give info to the user
-
     }
 
 </script>
