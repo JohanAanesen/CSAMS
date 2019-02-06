@@ -21,7 +21,9 @@
 * We were a bit unsure how to update user user information. Since you can choose to only change one thing or all the information, should we request a change to the db for each change or all together every time?
     * Solution: Different queries to different changes
 * Another bug with getting the password-hash from the DB, it only works when the secondary-email is not NULL (*I think*).
-    * Solution: 
+    * Solution: Ask Johan for help.
+    * He kinda fixed it with `sql.Nullstring`, it still doesn't work right :/
+* Today was just bug after bug, not a fun day, I also worked an hour longer so I can leave earlier on Friday.
 
 ### Thursday - 07/02/19
 

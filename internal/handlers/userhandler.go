@@ -46,6 +46,7 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 
 	// TODO BUG : the form is sending unvalidated input, this should not happen >:(
+	// TODO BUG : hash is empty in this function, but not the payload even if I add the hash to the payload :/
 
 	// TODO : actually change information
 	// TODO : return errors
@@ -58,6 +59,7 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 	repeatPass := r.FormValue("repeatPass")
 
 	ok, hash, payload := checkUserStatus(w, r)
+	fmt.Println(payload)
 
 	// Only do all this if it's a POST and it was possible to get userdata from DB
 	if r.Method == http.MethodPost && ok {
@@ -83,8 +85,6 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 		if oldPass == "" { // If it's empty, the user doesn't want to change it
 			// Do nothing
 		} else if !db.CheckPasswordHash(oldPass, hash) { // TODO : Return with error, not matching the old password
-			fmt.Println(oldPass)
-			fmt.Println(hash)
 			ErrorHandler(w, r, http.StatusBadRequest)
 
 		} else if newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass {
@@ -105,8 +105,8 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, string, user
 	}
 
 	//check if user is logged in
-	user_ := getUser(session)
-	if user_.Authenticated == false { //redirect to /login if not logged in
+	user := getUser(session)
+	if user.Authenticated == false { //redirect to /login if not logged in
 		//send user to login if no valid login cookies exist
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return false, "", userProfile{}
@@ -126,11 +126,10 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, string, user
 		i++
 	}
 
-	teacher, email2, hash := db.GetUser(user_.ID)
-	fmt.Println("Hash is: " + hash)
+	_, name, emailStudent, teacher, emailPrivate, hash := db.GetUser(user.ID)
 
 	if teacher != -1 {
-		return true, hash, userProfile{user_.Name, user_.Email, email2, courses, i}
+		return true, hash, userProfile{name, emailStudent, emailPrivate, courses, i}
 	}
 
 	return false, "", userProfile{}

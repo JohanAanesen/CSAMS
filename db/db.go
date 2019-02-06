@@ -77,35 +77,38 @@ func RegisterUser(name string, email string, password string) (int, string, bool
 
 	defer rows.Close()
 
-	return UserAuth(email, password) //fetch userid through existing method
+	return UserAuth(email, password) //fetch user-id through existing method
 }
 
-// GetUSer returns the email_private and teacherid
-func GetUser(userID int) (int, string, string){
+// GetUSer returns the email_private and teacher-id
+func GetUser(userID int) (int, string, string, int, string, string) {
 
-	rows, err := DB.Query("SELECT teacher, email_private, password FROM users WHERE id = ?", userID)
+	rows, err := DB.Query("SELECT id, name, email_student, teacher, email_private, password FROM users WHERE id = ?", userID)
 	if err != nil {
 		// TODO : log error
 		fmt.Println(err.Error())
-		return -1, "", ""
+		return -1, "", "", -1, "", ""
 	}
 
 	// TODO : usikker på om dette er riktig
 	for rows.Next() {
+		var id int
+		var name string
+		var emailStudent sql.NullString // Johan fixed: https://golang.org/pkg/database/sql/#NullString
 		var teacher int
 		var emailPrivate string
-		var hash string
+		var password string
 
-		rows.Scan(&teacher, &emailPrivate, &hash)
+		rows.Scan(&id, &name, &emailStudent, &teacher, &emailPrivate, &password)
 
-		return teacher, emailPrivate, hash
+		fmt.Println("Hash in 'db.go' is: " + password)
+		fmt.Println("Name in 'db.go' is: " + name)
+		return id, name, emailStudent.String, teacher, emailPrivate, password
 	}
 
 	defer rows.Close()
 
-	return -1, "", ""
-
-
+	return -1, "", "", -1, "", ""
 }
 
 func CheckPasswordHash(password, hash string) bool {
