@@ -34,8 +34,8 @@ func InitDB(dataSourceName string) {
 
 //UserAuth authenticates users
 func UserAuth(email string, password string) (int, string, bool) {
-
 	rows, err := DB.Query("SELECT id, name, password FROM users WHERE email = ?", email)
+
 	if err != nil {
 		//todo log error
 		fmt.Println(err.Error())
@@ -62,6 +62,7 @@ func UserAuth(email string, password string) (int, string, bool) {
 //RegisterUser registers users to database
 func RegisterUser(name string, email string, password string) (int, string, bool) {
 	pass, err := hashPassword(password)
+
 	if err != nil {
 		//todo log error
 		log.Fatal(err.Error())
@@ -69,6 +70,7 @@ func RegisterUser(name string, email string, password string) (int, string, bool
 	}
 
 	rows, err := DB.Query("INSERT INTO users(name, email, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
+
 	if err != nil {
 		//todo log error
 		log.Fatal(err.Error())

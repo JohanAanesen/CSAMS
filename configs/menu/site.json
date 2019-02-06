@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "name": "Courses",
+      "href": "/"
+    },
+    {
+      "name": "Profile",
+      "href": "/user"
+    },
+    {
+      "name": "Admin Dashboard",
+      "href": "/admin"
+    },
+    {
+      "name": "Sign out",
+      "href": "/logout"
+    }
+  ]
+}
