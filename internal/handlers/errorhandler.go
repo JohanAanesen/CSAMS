@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+//ErrorHandler serves error page to users
 func ErrorHandler(w http.ResponseWriter, r *http.Request, status int) {
 
 	w.WriteHeader(status)
