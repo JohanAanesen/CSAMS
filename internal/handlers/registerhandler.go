@@ -1,19 +1,19 @@
 package handlers
 
 import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"html/template"
 	"log"
 	"net/http"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 )
 
-func RegisterHandler(w http.ResponseWriter, r *http.Request){
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check if user is logged in
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
 		log.Fatal(err)
-		ErrorHandler(w, r, http.StatusInternalServerError)
+		ErrorHandler(w, r, http.StatusInternalServerError) //error getting session 500
 		return
 	}
 
@@ -26,8 +26,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 
 	//todo check if there is a class id in request
 	//if there is, add the user logging in to the class and redirect
-
-	w.WriteHeader(http.StatusOK)
 
 	//parse template
 	temp, err := template.ParseFiles("web/layout.html", "web/navbar.html", "web/register.html")
@@ -45,11 +43,12 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func RegisterRequest(w http.ResponseWriter, r *http.Request){
+func RegisterRequest(w http.ResponseWriter, r *http.Request) {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		//todo log this event
+		log.Fatal(err)
 		return
 	}
 
@@ -63,7 +62,7 @@ func RegisterRequest(w http.ResponseWriter, r *http.Request){
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
-	if name == "" || email == "" || password == "" || password != r.FormValue("passwordConfirm"){  //login credentials cannot be empty
+	if name == "" || email == "" || password == "" || password != r.FormValue("passwordConfirm") { //login credentials cannot be empty
 		http.Redirect(w, r, "/", http.StatusBadRequest)
 		return
 	}
@@ -72,15 +71,16 @@ func RegisterRequest(w http.ResponseWriter, r *http.Request){
 
 	if ok {
 		session.Values["user"] = User{ID: userid, Name: name, Email: email, Authenticated: true}
-	}else{
+	} else {
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event
 		return
 	}
 
-	err = session.Save(r, w)	//save data to session
-	if err != nil{
+	err = session.Save(r, w) //save data to session
+	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
+		log.Fatal(err)
 		//todo log this event
 		return
 	}

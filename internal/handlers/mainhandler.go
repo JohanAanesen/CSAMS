@@ -8,13 +8,12 @@ import (
 	"net/http"
 )
 
-
 type Test struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-func MainHandler(w http.ResponseWriter, r *http.Request){
+func MainHandler(w http.ResponseWriter, r *http.Request) {
 
 	session, err := db.CookieStore.Get(r, "login-session")
 	if err != nil {
@@ -23,7 +22,6 @@ func MainHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	//check if user is logged in
-
 
 	if getUser(session).Authenticated == false { //redirect to /login if not logged in
 		//send user to login if no valid login cookies exist
@@ -40,12 +38,10 @@ func MainHandler(w http.ResponseWriter, r *http.Request){
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}
 
-
-
 	data := struct {
 		PageTitle string
-		Menu page.Menu
-		Courses []page.Course
+		Menu      page.Menu
+		Courses   []page.Course
 	}{
 		PageTitle: "Homepage",
 
@@ -83,7 +79,6 @@ func MainHandler(w http.ResponseWriter, r *http.Request){
 				Code: "IMT2282",
 			},
 		},
-
 	}
 
 	w.WriteHeader(http.StatusOK)

@@ -10,21 +10,21 @@ import (
 )
 
 type User struct {
-	ID 				int
-	Name 			string
-	Email      		string
-	Authenticated 	bool
+	ID            int
+	Name          string
+	Email         string
+	Authenticated bool
 }
 
-func init(){
+func init() {
 	gob.Register(User{})
 }
 
-func LoginHandler(w http.ResponseWriter, r *http.Request){
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
 		log.Fatal(err)
-		ErrorHandler(w, r, http.StatusInternalServerError)
+		ErrorHandler(w, r, http.StatusInternalServerError) //error getting session 500
 		return
 	}
 
@@ -40,7 +40,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 
 	//parse template
 	temp, err := template.ParseFiles("web/layout.html", "web/navbar.html", "web/login.html")
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -55,7 +54,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 
 }
 
-func LoginRequest(w http.ResponseWriter, r *http.Request){
+func LoginRequest(w http.ResponseWriter, r *http.Request) {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
 		log.Fatal(err)
@@ -72,8 +71,8 @@ func LoginRequest(w http.ResponseWriter, r *http.Request){
 	email := r.FormValue("email")
 	password := r.FormValue("password") //password
 
-
-	if email == "" || password == ""{  //login credentials cannot be empty
+	if email == "" || password == "" { //login credentials cannot be empty
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 
@@ -81,15 +80,15 @@ func LoginRequest(w http.ResponseWriter, r *http.Request){
 
 	if ok {
 		session.Values["user"] = User{ID: userid, Name: name, Email: email, Authenticated: true}
-	}else{
+	} else {
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event
 		log.Fatal(err)
 		return
 	}
 
-	err = session.Save(r, w)	//save data to session
-	if err != nil{
+	err = session.Save(r, w) //save data to session
+	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		//todo log this event
 		log.Fatal(err)
@@ -100,7 +99,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request){
 
 }
 
-func getUser(s *sessions.Session) User{
+func getUser(s *sessions.Session) User {
 	val := s.Values["user"]
 	var user = User{}
 	user, ok := val.(User)
@@ -109,4 +108,3 @@ func getUser(s *sessions.Session) User{
 	}
 	return user
 }
-
