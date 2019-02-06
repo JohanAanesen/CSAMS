@@ -3,16 +3,18 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql" //database driver
 	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"os"
 )
-
+//DB global DB connection variable
 var DB *sql.DB
+//CookieStore global var for session management
 var CookieStore = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 
+//InitDB initializes the database
 func InitDB(dataSourceName string) {
 	var err error
 
@@ -28,6 +30,7 @@ func InitDB(dataSourceName string) {
 
 }
 
+//UserAuth authenticates users
 func UserAuth(email string, password string) (int, string, bool) {
 
 	rows, err := DB.Query("SELECT id, name, password FROM users WHERE email = ?", email)
@@ -44,7 +47,7 @@ func UserAuth(email string, password string) (int, string, bool) {
 
 		rows.Scan(&id, &name, &hash)
 
-		if CheckPasswordHash(password, hash) {
+		if checkPasswordHash(password, hash) {
 			return id, name, true
 		}
 	}
@@ -54,8 +57,9 @@ func UserAuth(email string, password string) (int, string, bool) {
 	return 0, "", false
 }
 
+//RegisterUser registers users to database
 func RegisterUser(name string, email string, password string) (int, string, bool) {
-	pass, err := HashPassword(password)
+	pass, err := hashPassword(password)
 	if err != nil {
 		//todo log error
 		log.Fatal(err.Error())
@@ -74,12 +78,12 @@ func RegisterUser(name string, email string, password string) (int, string, bool
 	return UserAuth(email, password) //fetch userid through existing method
 }
 
-func CheckPasswordHash(password, hash string) bool {
+func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
 
-func HashPassword(password string) (string, error) {
+func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
 }
