@@ -7,14 +7,15 @@ import (
 	"net/http"
 )
 
-func ClassHandler(w http.ResponseWriter, r *http.Request){
+//ClassHandler serves class page to users
+func ClassHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check if request has an classID
-	if r.Method == http.MethodGet{
+	if r.Method == http.MethodGet {
 
 		id := r.FormValue("id")
 
-		if id == ""{
+		if id == "" {
 			//redirect to error pageinfo
 			ErrorHandler(w, r, http.StatusBadRequest)
 			return
@@ -28,7 +29,6 @@ func ClassHandler(w http.ResponseWriter, r *http.Request){
 
 	}
 
-
 	//get info from db
 
 	//parse info to html template
@@ -40,7 +40,8 @@ func ClassHandler(w http.ResponseWriter, r *http.Request){
 	temp.Execute(w, nil)
 }
 
-func ClassListHandler(w http.ResponseWriter, r *http.Request){
+//ClassListHandler serves class list page to users
+func ClassListHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check if request has an classID
 	if r.Method == http.MethodGet {

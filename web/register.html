@@ -1,11 +1,16 @@
 {{ define "content" }}
 <link href="../assets/css/form.css" rel="stylesheet">
-<form action="#" class="form-register">
+<form action="/register" method="post" class="form-register">
     <h1 class="display-4 mb-3">Sign up</h1>
 
     <div class="form-group">
+        <label for="inputName">Name</label>
+        <input type="text" name="name" id="inputName" class="form-control" placeholder="Name" required autofocus>
+    </div>
+
+    <div class="form-group">
         <label for="inputEmail">Email address</label>
-        <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+        <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required>
     </div>
 
     <div class="form-group">

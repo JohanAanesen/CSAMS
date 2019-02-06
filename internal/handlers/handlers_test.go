@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	dbcon "../../db"
+	dbcon "github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -17,8 +17,6 @@ func init() {
 		panic(err)
 	}
 }
-
-
 
 func TestLoginHandler(t *testing.T) {
 
@@ -44,7 +42,7 @@ func TestLoginHandler(t *testing.T) {
 	}
 }
 
-func TestLoggingIn(t *testing.T){
+func TestLoggingIn(t *testing.T) {
 	form := url.Values{}
 	form.Add("email", "hei@gmail.com")
 	form.Add("password", "hei")

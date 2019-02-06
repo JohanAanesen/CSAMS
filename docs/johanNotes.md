@@ -44,3 +44,10 @@ Web Toolkit
 Tuesday 5/2
 -----------
 * Link to execute go commands on scripts: https://github.com/gojp/goreportcard/blob/master/check/utils.go
+* Changed a bit on the login register things, works nicely
+
+Wednesday 6/2
+-----------
+* Started the day setting up the project on my laptop, ugh
+* Changed from local imports to package imports
+* 

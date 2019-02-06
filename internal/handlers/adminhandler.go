@@ -1,21 +1,22 @@
 package handlers
 
 import (
-	"../page"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
 	"html/template"
 	"log"
 	"net/http"
 )
 
-func AdminHandler(w http.ResponseWriter, r *http.Request){
+//AdminHandler serves admin page to admins
+func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	//check that user is logged in and is admin/teacher
 
 	//find classes admin/teacher own
 
 	data := struct {
-		PageTitle string
-		Menu page.Menu
-		Courses []page.Course
+		PageTitle   string
+		Menu        page.Menu
+		Courses     []page.Course
 		Assignments []page.Assignment
 	}{
 		PageTitle: "Homepage",
