@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+//AdminHandler serves admin page to admins
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	//check that user is logged in and is admin/teacher
 
