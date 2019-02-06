@@ -51,3 +51,4 @@ eksempler:
 * go get github.com/gorilla/sessions
 * go get -u github.com/gorilla/mux
 * go get github.com/gorilla/securecookie
+* go get golang.org/x/crypto/bcrypt

@@ -1,11 +1,12 @@
 package handlers
 
 import (
-	"../../db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"net/http"
 )
 
-func LogoutHandler(w http.ResponseWriter, r *http.Request){
+//LogoutHandler logs out logged in users
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)

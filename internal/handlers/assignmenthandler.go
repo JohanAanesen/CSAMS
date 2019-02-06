@@ -5,7 +5,8 @@ import (
 	"net/http"
 )
 
-func AssignmentHandler(w http.ResponseWriter, r *http.Request){
+//AssignmentHandler serves assignment page to users
+func AssignmentHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check if request has a id
 	if r.Method == http.MethodGet {
@@ -31,7 +32,8 @@ func AssignmentHandler(w http.ResponseWriter, r *http.Request){
 	//parse info with template
 }
 
-func AssignmentAutoHandler(w http.ResponseWriter, r *http.Request){
+//AssignmentAutoHandler serves the auto validation page to user
+func AssignmentAutoHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check if request has a id
 	if r.Method == http.MethodGet {
@@ -57,7 +59,8 @@ func AssignmentAutoHandler(w http.ResponseWriter, r *http.Request){
 	//parse info with template
 }
 
-func AssignmentPeerHandler(w http.ResponseWriter, r *http.Request){
+//AssignmentPeerHandler serves the peer review page to users
+func AssignmentPeerHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check if request has a id
 	if r.Method == http.MethodGet {
