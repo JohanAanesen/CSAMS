@@ -7,6 +7,13 @@
 -- Server-versjon: 10.1.28-MariaDB
 -- PHP Version: 7.1.10
 
+DROP SCHEMA
+
+IF EXISTS cs53;
+	CREATE SCHEMA cs53 COLLATE = utf8_general_ci;
+
+USE cs53;
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
@@ -30,7 +37,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `assignments` (
   `id` int(11) NOT NULL,
-  `classid` int(11) NOT NULL,
+  `courseid` int(11) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `due` date NOT NULL,
   `peer` tinyint(1) NOT NULL DEFAULT '0',
@@ -43,13 +50,13 @@ CREATE TABLE `assignments` (
 -- --------------------------------------------------------
 
 --
--- Tabellstruktur for tabell `class`
+-- Tabellstruktur for tabell `course`
 --
 
-CREATE TABLE `class` (
+CREATE TABLE `course` (
   `id` int(11) NOT NULL,
-  `classcode` varchar(10) COLLATE utf8_danish_ci NOT NULL,
-  `classname` varchar(64) COLLATE utf8_danish_ci NOT NULL,
+  `coursecode` varchar(10) COLLATE utf8_danish_ci NOT NULL,
+  `coursename` varchar(64) COLLATE utf8_danish_ci NOT NULL,
   `teacher` int(11) NOT NULL,
   `info` text COLLATE utf8_danish_ci,
   `link1` varchar(128) COLLATE utf8_danish_ci DEFAULT NULL,
@@ -117,12 +124,12 @@ CREATE TABLE `submissions` (
 -- --------------------------------------------------------
 
 --
--- Tabellstruktur for tabell `userclass`
+-- Tabellstruktur for tabell `usercourse`
 --
 
-CREATE TABLE `userclass` (
+CREATE TABLE `usercourse` (
   `userid` int(11) NOT NULL,
-  `classid` int(11) NOT NULL
+  `courseid` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 
 -- --------------------------------------------------------
@@ -149,12 +156,12 @@ CREATE TABLE `users` (
 --
 ALTER TABLE `assignments`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `classid` (`classid`);
+  ADD KEY `courseid` (`courseid`);
 
 --
--- Indexes for table `class`
+-- Indexes for table `course`
 --
-ALTER TABLE `class`
+ALTER TABLE `course`
   ADD PRIMARY KEY (`id`),
   ADD KEY `teacher` (`teacher`);
 
@@ -190,11 +197,11 @@ ALTER TABLE `submissions`
   ADD KEY `assignmentid` (`assignmentid`);
 
 --
--- Indexes for table `userclass`
+-- Indexes for table `usercourse`
 --
-ALTER TABLE `userclass`
+ALTER TABLE `usercourse`
   ADD KEY `userid` (`userid`),
-  ADD KEY `classid` (`classid`);
+  ADD KEY `courseid` (`courseid`);
 
 --
 -- Indexes for table `users`
@@ -215,9 +222,9 @@ ALTER TABLE `assignments`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `class`
+-- AUTO_INCREMENT for table `course`
 --
-ALTER TABLE `class`
+ALTER TABLE `course`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -240,13 +247,13 @@ ALTER TABLE `users`
 -- Begrensninger for tabell `assignments`
 --
 ALTER TABLE `assignments`
-  ADD CONSTRAINT `assignments_ibfk_1` FOREIGN KEY (`classid`) REFERENCES `class` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `assignments_ibfk_1` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Begrensninger for tabell `class`
+-- Begrensninger for tabell `course`
 --
-ALTER TABLE `class`
-  ADD CONSTRAINT `class_ibfk_1` FOREIGN KEY (`teacher`) REFERENCES `users` (`id`) ON UPDATE CASCADE;
+ALTER TABLE `course`
+  ADD CONSTRAINT `course_ibfk_1` FOREIGN KEY (`teacher`) REFERENCES `users` (`id`) ON UPDATE CASCADE;
 
 --
 -- Begrensninger for tabell `logs`
@@ -279,11 +286,11 @@ ALTER TABLE `submissions`
   ADD CONSTRAINT `submissions_ibfk_2` FOREIGN KEY (`assignmentid`) REFERENCES `assignments` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Begrensninger for tabell `userclass`
+-- Begrensninger for tabell `usercourse`
 --
-ALTER TABLE `userclass`
-  ADD CONSTRAINT `userclass_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `userclass_ibfk_2` FOREIGN KEY (`classid`) REFERENCES `class` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `usercourse`
+  ADD CONSTRAINT `usercourse_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `usercourse_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
