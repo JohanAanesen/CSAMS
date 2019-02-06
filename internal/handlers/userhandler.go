@@ -1,35 +1,119 @@
 package handlers
 
 import (
+	"fmt"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"html/template"
 	"log"
 	"net/http"
 )
 
-//UserHandler serves user page to users
+type course struct {
+	Code string
+	Name string
+	Link string
+}
+
+type userProfile struct {
+	Name           string
+	PrimaryEmail   string
+	SecondaryEmail string
+	Courses        []course
+	NoOfClasses    int
+}
+
+// UserHandler serves user page to users
 func UserHandler(w http.ResponseWriter, r *http.Request) {
 
+	// Check if user is logged in and get user information
+	ok, _, data := checkUserStatus(w, r)
+
+	// If everything went ok, execute page
+	if ok {
+		//parse information with template
+		w.WriteHeader(http.StatusOK)
+
+		temp, err := template.ParseFiles("web/user.html")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		temp.Execute(w, data)
+	}
+}
+
+// UserUpdateRequest changes the user information
+func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
+
+	// TODO BUG : the form is sending unvalidated input, this should not happen >:(
+
+	// TODO : actually change information
+	// TODO : return errors
+
+	// Get new data from the form
+	name := r.FormValue("usersName")
+	secondaryEmail := r.FormValue("secondaryEmail")
+	oldPass := r.FormValue("oldPass")
+	newPass := r.FormValue("newPass")
+	repeatPass := r.FormValue("repeatPass")
+
+	ok, hash, payload := checkUserStatus(w, r)
+
+	// Only do all this if it's a POST and it was possible to get userdata from DB
+	if r.Method == http.MethodPost && ok {
+
+		if name == "" { // Name can not be changed to blank!
+
+			ErrorHandler(w, r, http.StatusBadRequest) // TODO : Return with error
+			return
+		} else if name == payload.Name {
+			// Do nothing, name is not changed
+		} else {
+			updateUserName(name)
+		}
+
+		if secondaryEmail == "" { // If email is empty, the user doesn't want to change it
+			// Do nothing
+		} else if secondaryEmail == payload.SecondaryEmail {
+			// Do nothing, nothing is changed
+		} else {
+			updateEmailPrivate(secondaryEmail)
+		}
+
+		if oldPass == "" { // If it's empty, the user doesn't want to change it
+			// Do nothing
+		} else if !db.CheckPasswordHash(oldPass, hash) { // TODO : Return with error, not matching the old password
+			fmt.Println(oldPass)
+			fmt.Println(hash)
+			ErrorHandler(w, r, http.StatusBadRequest)
+
+		} else if newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass {
+			updatePassword(newPass)
+		}
+	}
+}
+
+// Checks if the user is logged in and gets the correct information
+func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, string, userProfile) {
+
 	//check that user is logged in
-	// code
-
-	//fetch users information from server
-
-	// TODO remove this with actual information
-	type class struct {
-		Code string
-		Name string
-		Link string
+	session, err := db.CookieStore.Get(r, "login-session")
+	if err != nil {
+		log.Fatal(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return false, "", userProfile{}
 	}
 
-	type user struct {
-		Name           string
-		PrimaryEmail   string
-		SecondaryEmail string
-		Classes        []class
-		NoOfClasses    int
+	//check if user is logged in
+	user_ := getUser(session)
+	if user_.Authenticated == false { //redirect to /login if not logged in
+		//send user to login if no valid login cookies exist
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return false, "", userProfile{}
 	}
 
-	classes := []class{
+	// TODO : replace with actual courses
+	courses := []course{
 		{"IMT1337", "Mobile Development", "#"},
 		{"IMT4200", "Application Development", "#"},
 		{"IMT8008", "Cloud Technologies", "#"},
@@ -38,72 +122,31 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// I'm a bit unsure if this is the best solution, but it works for now
 	var i = 0
-	for i = range classes {
+	for i = range courses {
 		i++
 	}
 
-	data := user{"Ola Nordmann", "olano@stud.ntnu.no", "olameister@gmail.com", classes, i}
-	// TODO : end here
+	teacher, email2, hash := db.GetUser(user_.ID)
+	fmt.Println("Hash is: " + hash)
 
-	//parse information with template
-	w.WriteHeader(http.StatusOK)
-
-	temp, err := template.ParseFiles("web/user.html")
-	if err != nil {
-		log.Fatal(err)
+	if teacher != -1 {
+		return true, hash, userProfile{user_.Name, user_.Email, email2, courses, i}
 	}
 
-	temp.Execute(w, data)
-
+	return false, "", userProfile{}
 }
 
-func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
+func updateUserName(name string) bool {
 
-	// TODO BUG : the form is sending unvalidated input, this should not happen >:(
+	return false
+}
 
-	// TODO : get user information and compare
-	// TODO : actually change information
-	// TODO : return errors
+func updateEmailPrivate(email string) bool {
 
-	// TODO : remove this
-	uName := "Ola Nordmann"
-	uSemail := "olameister@gmail.com"
-	uPass := "123abc"
+	return false
+}
 
-	name := r.FormValue("usersName")
-	secondaryEmail := r.FormValue("secondaryEmail")
-	oldPass := r.FormValue("oldPass")
-	newPass := r.FormValue("newPass")
-	repeatPass := r.FormValue("repeatPass")
+func updatePassword(password string) bool {
 
-	// Name can not be changed to blank!
-	if name == "" {
-		// TODO : Return with error
-		ErrorHandler(w, r, http.StatusBadRequest)
-		return
-	} else if name == uName {
-		// Do nothing, name is not changed
-	} else {
-		// TODO : Change name
-	}
-
-	// If email is empty, the user doesn't want to change it
-	if secondaryEmail == "" {
-		// Do nothing
-	} else if secondaryEmail == uSemail {
-		// Do nothing, nothing is changed
-	} else {
-		// TODO : Change secondary email
-	}
-
-	// If it's empty, the user doesn't want to change it
-	if oldPass == "" {
-		// Do nothing
-	} else if oldPass != uPass {
-		// TODO : Return with error, not matching the old password
-		ErrorHandler(w, r, http.StatusBadRequest)
-		return
-	} else if newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass {
-		// TODO : Change password
-	}
+	return false
 }
