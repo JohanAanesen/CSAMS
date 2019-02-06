@@ -40,6 +40,18 @@ func AdminHandler(w http.ResponseWriter, r *http.Request){
 }
 
 func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
+	// Data for displaying on screen
+	data := struct {
+		PageTitle string
+		Menu page.Menu
+		Courses page.Courses
+		Assignments []page.Assignment
+	}{
+		PageTitle: "Dashboard - Courses",
+		Menu: util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Courses: util.LoadCoursesConfig("configs/dd.json"), // dd = dummy data
+	}
+
 	w.WriteHeader(http.StatusOK)
 
 	//parse template
@@ -49,13 +61,7 @@ func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	if err = temp.ExecuteTemplate(w, "layout", struct {
-		PageTitle string
-		Menu page.Menu
-	}{
-		PageTitle: "Dashboard - Courses",
-		Menu: util.LoadMenuConfig("configs/menu/dashboard.json"),
-	}); err != nil {
+	if err = temp.ExecuteTemplate(w, "layout", data); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -79,6 +85,10 @@ func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	}); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
+	// TODO: talk to database and stuff
 }
 
 func AdminUpdateCourseHandler(w http.ResponseWriter, r *http.Request) {
