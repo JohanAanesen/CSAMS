@@ -9,8 +9,10 @@ import (
 	"log"
 	"os"
 )
+
 //DB global DB connection variable
 var DB *sql.DB
+
 //CookieStore global var for session management
 var CookieStore = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 
