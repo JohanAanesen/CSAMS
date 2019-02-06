@@ -13,6 +13,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request){
 
 	//find classes admin/teacher own
 
+	// Data for displaying on screen
 	data := struct {
 		PageTitle string
 		Menu page.Menu
@@ -21,12 +22,12 @@ func AdminHandler(w http.ResponseWriter, r *http.Request){
 	}{
 		PageTitle: "Homepage",
 		Menu: util.LoadMenuConfig("configs/menu/dashboard.json"),
-		Courses: util.LoadCoursesConfig("configs/dd.json"),
+		Courses: util.LoadCoursesConfig("configs/dd.json"), // dd = dummy data
 	}
 
 	w.WriteHeader(http.StatusOK)
 
-	//parse template
+	//parse templates
 	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/index.html")
 
 	if err != nil {

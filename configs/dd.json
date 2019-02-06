@@ -3,6 +3,9 @@
     {
       "code": "IMT1031",
       "name": "Grunnleggende programmering",
+      "description": "",
+      "year": "2019",
+      "semester": "H",
       "assignments": [
         {
           "name": "Hello World",
@@ -24,6 +27,9 @@
     {
       "code": "IMT1082",
       "name": "Objekt-orientert programmering",
+      "description": "",
+      "year": "2020",
+      "semester": "V",
       "assignments": [
         {
           "name": "Arving",
@@ -40,6 +46,9 @@
     {
       "code": "IMT2021",
       "name": "Algoritmiske metoder",
+      "description": "",
+      "year": "2020",
+      "semester": "H",
       "assignments": []
     }
   ]
