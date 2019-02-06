@@ -47,9 +47,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err = temp.ExecuteTemplate(w, "layout", struct {
-		PageTitle string
+		PageTitle   string
+		LoadFormCSS bool
 	}{
-		PageTitle: "Sign In",
+		PageTitle:   "Sign In",
+		LoadFormCSS: true,
 	}); err != nil {
 		log.Fatal(err)
 	}
@@ -92,6 +94,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = session.Save(r, w) //save session changes
+
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		//todo log this event
