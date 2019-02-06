@@ -82,6 +82,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 	userid, name, ok := db.UserAuth(email, password) //authenticate user
 
 	if ok {
+		//save user to session values
 		session.Values["user"] = User{ID: userid, Name: name, Email: email, Authenticated: true}
 	} else {
 		ErrorHandler(w, r, http.StatusUnauthorized)
@@ -90,7 +91,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = session.Save(r, w) //save data to session
+	err = session.Save(r, w) //save session changes
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		//todo log this event
@@ -98,8 +99,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusFound)
-
+	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
 }
 
 func getUser(s *sessions.Session) User {

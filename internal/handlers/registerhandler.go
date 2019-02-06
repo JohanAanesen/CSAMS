@@ -60,18 +60,20 @@ func RegisterRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	name := r.FormValue("name")
-	email := r.FormValue("email")
-	password := r.FormValue("password")
+	name := r.FormValue("name")			//get form value name
+	email := r.FormValue("email")		//get form value email
+	password := r.FormValue("password")	//get form value password
 
+	//check that nothing is empty and password match passwordConfirm
 	if name == "" || email == "" || password == "" || password != r.FormValue("passwordConfirm") { //login credentials cannot be empty
-		http.Redirect(w, r, "/", http.StatusBadRequest)
+		http.Redirect(w, r, "/", http.StatusBadRequest) //400 bad request
 		return
 	}
 
 	userid, name, ok := db.RegisterUser(name, email, password) //register user in database
 
 	if ok {
+		//save user to session values
 		session.Values["user"] = User{ID: userid, Name: name, Email: email, Authenticated: true}
 	} else {
 		ErrorHandler(w, r, http.StatusUnauthorized)
@@ -79,7 +81,7 @@ func RegisterRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = session.Save(r, w) //save data to session
+	err = session.Save(r, w) //save session changes
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Fatal(err)
@@ -87,6 +89,5 @@ func RegisterRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusFound)
-
+	http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
 }
