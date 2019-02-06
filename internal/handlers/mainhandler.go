@@ -3,17 +3,20 @@ package handlers
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
+
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
 	"html/template"
 	"log"
 	"net/http"
 )
 
+//Test struct, should be removed soon
 type Test struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
+//MainHandler serves homepage to users
 func MainHandler(w http.ResponseWriter, r *http.Request) {
 
 	session, err := db.CookieStore.Get(r, "login-session")
@@ -75,7 +78,6 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 				Code: "IMT2282",
 			},
 		},
-
 		LoadFormCSS: false,
 	}
 

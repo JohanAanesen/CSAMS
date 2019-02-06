@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/gob"
-	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"github.com/gorilla/sessions"
 	"html/template"
@@ -10,8 +9,10 @@ import (
 	"net/http"
 )
 
+//User struct to hold session data
 type User struct {
 	ID            int
+	Name          string
 	Email         string
 	Authenticated bool
 }
@@ -20,11 +21,12 @@ func init() {
 	gob.Register(User{})
 }
 
+//LoginHandler serves login page to users
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
 		log.Fatal(err)
-		ErrorHandler(w, r, http.StatusInternalServerError)
+		ErrorHandler(w, r, http.StatusInternalServerError) //error getting session 500
 		return
 	}
 
@@ -40,7 +42,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	//parse template
 	temp, err := template.ParseFiles("web/layout.html", "web/navbar.html", "web/login.html")
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -57,10 +58,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//LoginRequest validates login requests
 func LoginRequest(w http.ResponseWriter, r *http.Request) {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
-		log.Fatal(err) //todo log this event
+		log.Fatal(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -75,72 +77,32 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password") //password
 
 	if email == "" || password == "" { //login credentials cannot be empty
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 
-	userid, ok := db.UserAuth(email, password) //authenticate user
+	userid, name, ok := db.UserAuth(email, password) //authenticate user
 
 	if ok {
-		session.Values["user"] = User{ID: userid, Email: email, Authenticated: true}
+		//save user to session values
+		session.Values["user"] = User{ID: userid, Name: name, Email: email, Authenticated: true}
 	} else {
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event
-		fmt.Println(err.Error())
+		log.Fatal(err)
 		return
 	}
 
-	err = session.Save(r, w) //save data to session
+	err = session.Save(r, w) //save session changes
+
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		//todo log this event
-		fmt.Println(err.Error())
+		log.Fatal(err)
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusFound)
-
-}
-
-func RegisterRequest(w http.ResponseWriter, r *http.Request) {
-	session, err := db.CookieStore.Get(r, "login-session") //get session
-	if err != nil {
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		//todo log this event
-		return
-	}
-
-	user := getUser(session)
-	if user.Authenticated { //already logged in, no need to register
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
-	}
-
-	email := r.FormValue("email")
-	password := r.FormValue("password")
-
-	if email == "" || password == "" { //login credentials cannot be empty
-		return
-	}
-
-	userid, ok := db.RegisterUser(email, password) //register user in database
-
-	if ok {
-		session.Values["user"] = User{ID: userid, Email: email, Authenticated: true}
-	} else {
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		//todo log this event
-		return
-	}
-
-	err = session.Save(r, w) //save data to session
-	if err != nil {
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		//todo log this event
-		return
-	}
-
-	http.Redirect(w, r, "/", http.StatusFound)
-
+	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
 }
 
 func getUser(s *sessions.Session) User {

@@ -3,15 +3,20 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql" //database driver
 	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 	"os"
 )
 
+//DB global DB connection variable
 var DB *sql.DB
+
+//CookieStore global var for session management
 var CookieStore = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 
+//InitDB initializes the database
 func InitDB(dataSourceName string) {
 	var err error
 
@@ -27,45 +32,49 @@ func InitDB(dataSourceName string) {
 
 }
 
-func UserAuth(email string, password string) (int, bool) {
+//UserAuth authenticates users
+func UserAuth(email string, password string) (int, string, bool) {
+	rows, err := DB.Query("SELECT id, name, password FROM users WHERE email = ?", email)
 
-	rows, err := DB.Query("SELECT id, password FROM users WHERE email = ?", email)
 	if err != nil {
 		//todo log error
 		fmt.Println(err.Error())
-		return 0, false
+		return 0, "", false
 	}
 
 	for rows.Next() {
 		var id int
 		var hash string
+		var name string
 
-		rows.Scan(&id, &hash)
+		rows.Scan(&id, &name, &hash)
 
-		if CheckPasswordHash(password, hash) {
-			fmt.Println("all guchi")
-			return id, true
+		if checkPasswordHash(password, hash) {
+			return id, name, true
 		}
 	}
 
 	defer rows.Close()
 
-	return 0, false
+	return 0, "", false
 }
 
-func RegisterUser(email string, password string) (int, bool) {
-	pass, err := HashPassword(password)
+//RegisterUser registers users to database
+func RegisterUser(name string, email string, password string) (int, string, bool) {
+	pass, err := hashPassword(password)
+
 	if err != nil {
 		//todo log error
-		fmt.Println(err.Error())
-		return 0, false
+		log.Fatal(err.Error())
+		return 0, "", false
 	}
 
-	rows, err := DB.Query("INSERT INTO users(email, teacher, password) VALUES(?, 0, ?)", email, pass)
+	rows, err := DB.Query("INSERT INTO users(name, email, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
+
 	if err != nil {
 		//todo log error
-		fmt.Println(err.Error())
-		return 0, false
+		log.Fatal(err.Error())
+		return 0, "", false
 	}
 
 	defer rows.Close()
@@ -73,12 +82,12 @@ func RegisterUser(email string, password string) (int, bool) {
 	return UserAuth(email, password) //fetch userid through existing method
 }
 
-func CheckPasswordHash(password, hash string) bool {
+func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
 
-func HashPassword(password string) (string, error) {
+func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
 }
