@@ -64,3 +64,5 @@ can just add links there.
 * https://simplemde.com/
 * Christopher said it was 'sensible' :)
 * Kinda back on tests, working on making some now
+* Changed DB functions to handle User objects instead of 3-4 fucking variables
+* Now checks if user is a teacher before serving /admin pages
