@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
 	"html/template"
 	"log"
 	"net/http"
@@ -38,9 +40,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if err = temp.ExecuteTemplate(w, "layout", struct {
 		PageTitle   string
 		LoadFormCSS bool
+		Menu        page.Menu
 	}{
 		PageTitle:   "Sign Up",
 		LoadFormCSS: true,
+		Menu:        util.LoadMenuConfig("configs/menu/site.json"),
 	}); err != nil {
 		log.Fatal(err)
 	}

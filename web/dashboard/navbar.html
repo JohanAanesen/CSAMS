@@ -4,12 +4,11 @@
 
     <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav px-3">
+            {{ range .Navbar.Items }}
             <li class="nav-item">
-                <a href="#" class="nav-link">Link</a>
+                <a href="{{ .Href }}" class="nav-link">{{ .Name }}</a>
             </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">Link</a>
-            </li>
+            {{ end }}
         </ul>
     </div>
 </nav>

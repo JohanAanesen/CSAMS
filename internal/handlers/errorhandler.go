@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
 	"html/template"
 	"log"
 	"net/http"
@@ -22,13 +24,21 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request, status int) {
 
 		ErrorCode    int
 		ErrorMessage string
+
+		Menu page.Menu
 	}{
 		PageTitle:   "Error: " + string(status),
 		LoadFormCSS: true,
 
 		ErrorCode:    status,
 		ErrorMessage: http.StatusText(status),
+
+		Menu: util.LoadMenuConfig("configs/menu/site.json"),
 	}); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func Error404Handler(w http.ResponseWriter, r *http.Request) {
+	ErrorHandler(w, r, 404)
 }
