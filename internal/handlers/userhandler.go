@@ -2,22 +2,17 @@ package handlers
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/structs"
 	"html/template"
 	"log"
 	"net/http"
 )
 
-type course struct {
-	Code string
-	Name string
-	Link string
-}
-
 type userProfile struct {
 	Name           string
 	PrimaryEmail   string
 	SecondaryEmail string
-	Courses        []course
+	Courses        []structs.CourseDB
 	NoOfClasses    int
 }
 
@@ -112,22 +107,14 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, string, user
 		return false, "", userProfile{}
 	}
 
-	// TODO : replace with actual courses
-	courses := []course{
-		{"IMT1337", "Mobile Development", "#"},
-		{"IMT4200", "Application Development", "#"},
-		{"IMT8008", "Cloud Technologies", "#"},
-		{"IMT0880", "WWW technology", "#"},
-	}
+	_, name, emailStudent, teacher, emailPrivate, _ := db.GetUser(user.ID)
+	hash2 := db.GetHash(user.ID)
+	courses := db.GetCoursesToUser(user.ID)
 
-	// I'm a bit unsure if this is the best solution, but it works for now
-	var i = 0
+	i := 0
 	for i = range courses {
 		i++
 	}
-
-	_, name, emailStudent, teacher, emailPrivate, _ := db.GetUser(user.ID)
-	hash2 := db.GetHash(user.ID)
 
 	if teacher != -1 {
 		return true, hash2, userProfile{name, emailStudent, emailPrivate, courses, i}

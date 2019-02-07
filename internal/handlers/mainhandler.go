@@ -39,7 +39,7 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = db.DB.QueryRow("SELECT id, name FROM users where id = ?", 1).Scan(&test.ID, &test.Name)
 	if err != nil {
-		panic(err.Error()) // proper error handling instead of panic in your app
+		//panic(err.Error()) // proper error handling instead of panic in your app
 	}
 
 	data := struct {

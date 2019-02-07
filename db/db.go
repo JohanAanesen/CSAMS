@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/structs"
 	_ "github.com/go-sql-driver/mysql" //database driver
 	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
@@ -85,7 +86,7 @@ func RegisterUser(name string, email string, password string) (int, string, bool
 // GetUSer returns the email_private and teacher-id
 func GetUser(userID int) (int, string, string, int, string, string) {
 
-	rows, err := DB.Query("SELECT id, name, email_student, teacher, email_private, password FROM users WHERE id = ?", userID)
+	rows, err := DB.Query("SELECT * FROM users WHERE id = ?", userID)
 	if err != nil {
 		// TODO : log error
 		fmt.Println(err.Error())
@@ -108,6 +109,43 @@ func GetUser(userID int) (int, string, string, int, string, string) {
 	defer rows.Close()
 
 	return -1, "", "", -1, "", ""
+}
+
+// GetCourseToUser returns all the courses to the user
+func GetCoursesToUser(userID int) []structs.CourseDB {
+	courses := []structs.CourseDB{}
+
+	rows, err := DB.Query("SELECT course.* FROM course INNER JOIN usercourse ON course.id = usercourse.courseid WHERE usercourse.userid = ?", userID)
+	if err != nil {
+		fmt.Println(err.Error()) // TODO : log error
+		return courses
+	}
+
+	for rows.Next() {
+		var id int
+		var courseCode string
+		var courseName string
+		var teacher int
+		var info string
+		var link1 string
+		var link2 string
+		var link3 string
+
+		rows.Scan(&id, &courseCode, &courseName, &teacher, &info, &link1, &link2, &link3)
+
+		courses = append(courses, structs.CourseDB{
+			Id:         id,
+			CourseCode: courseCode,
+			CourseName: courseName,
+			Teacher:    teacher,
+			Info:       info,
+			Link1:      link1,
+			Link2:      link2,
+			Link3:      link3,
+		})
+	}
+
+	return courses
 }
 
 // TODO : remove this function and fix the GetUser function >:(
