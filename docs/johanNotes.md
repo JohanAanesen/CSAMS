@@ -50,4 +50,11 @@ Wednesday 6/2
 -----------
 * Started the day setting up the project on my laptop, ugh
 * Changed from local imports to package imports
-* 
+* Wrapped up the login/register functionality, works nicely afaik
+* Started on #11 Create Course
+* Svein already made most of the frontend so I dont have to, score
+
+Thursday 7/2
+-----------
+* #11 Create Course cont.
+* Added url link fields, working on DB query to 'save' the course permanently
