@@ -106,7 +106,6 @@ func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 	//check if user is already logged in
 	user := getUser(session)
 
-
 	//todo check that user is a teacher!
 
 	// TODO: talk to database and stuff
@@ -114,11 +113,11 @@ func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 		Code:        r.FormValue("code"),
 		Name:        r.FormValue("name"),
 		Description: r.FormValue("description"),
-		Link1: 	 	 r.FormValue("link1"),
+		Link1:       r.FormValue("link1"),
 		Link1Name:   r.FormValue("linkname1"),
-		Link2:		 r.FormValue("link2"),
+		Link2:       r.FormValue("link2"),
 		Link2Name:   r.FormValue("linkname2"),
-		Link3: 	 	 r.FormValue("link3"),
+		Link3:       r.FormValue("link3"),
 		Link3Name:   r.FormValue("linkname3"),
 		Year:        r.FormValue("year"),
 		Semester:    r.FormValue("semester"),
@@ -136,7 +135,6 @@ func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer rows.Close()
-
 
 	fmt.Printf("%v", course)
 }
