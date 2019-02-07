@@ -58,3 +58,9 @@ Thursday 7/2
 -----------
 * #11 Create Course cont.
 * Added url link fields, working on DB query to 'save' the course permanently
+* Implemented input fields for 3x url's, after talking with Svein we decided
+on implementing markdown for the description field, so the teacher
+can just add links there.
+* https://simplemde.com/
+* Christopher said it was 'sensible' :)
+* Kinda back on tests, working on making some now
