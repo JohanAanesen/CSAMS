@@ -19,25 +19,27 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		PageTitle   string
 		Menu        page.Menu
+		Navbar      page.Menu
 		Courses     page.Courses
 		Assignments []page.Assignment
 	}{
 		PageTitle: "Homepage",
 		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Navbar:    util.LoadMenuConfig("configs/menu/site.json"),
 		Courses:   util.LoadCoursesConfig("configs/dd.json"), // dd = dummy data
 	}
 
 	w.WriteHeader(http.StatusOK)
 
 	//parse templates
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/index.html")
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/index.html")
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	if err = temp.ExecuteTemplate(w, "layout", data); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 }
 
@@ -47,11 +49,13 @@ func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		PageTitle   string
 		Menu        page.Menu
+		Navbar      page.Menu
 		Courses     page.Courses
 		Assignments []page.Assignment
 	}{
 		PageTitle: "Dashboard - Courses",
 		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Navbar:    util.LoadMenuConfig("configs/menu/site.json"),
 		Courses:   util.LoadCoursesConfig("configs/dd.json"), // dd = dummy data
 	}
 
@@ -84,9 +88,11 @@ func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	if err = temp.ExecuteTemplate(w, "layout", struct {
 		PageTitle string
 		Menu      page.Menu
+		Navbar    page.Menu
 	}{
 		PageTitle: "Dashboard - Create course",
 		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Navbar:    util.LoadMenuConfig("configs/menu/site.json"),
 	}); err != nil {
 		log.Fatal(err)
 	}
@@ -121,9 +127,11 @@ func AdminUpdateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	if err = temp.ExecuteTemplate(w, "layout", struct {
 		PageTitle string
 		Menu      page.Menu
+		Navbar    page.Menu
 	}{
 		PageTitle: "Dashboard - Update course",
 		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Navbar:    util.LoadMenuConfig("configs/menu/site.json"),
 	}); err != nil {
 		log.Fatal(err)
 	}
@@ -148,9 +156,11 @@ func AdminAssignmentHandler(w http.ResponseWriter, r *http.Request) {
 	if err = temp.ExecuteTemplate(w, "layout", struct {
 		PageTitle string
 		Menu      page.Menu
+		Navbar    page.Menu
 	}{
 		PageTitle: "Dashboard - Assignments",
 		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Navbar:    util.LoadMenuConfig("configs/menu/site.json"),
 	}); err != nil {
 		log.Fatal(err)
 	}

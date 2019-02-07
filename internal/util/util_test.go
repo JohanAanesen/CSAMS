@@ -14,9 +14,10 @@ func TestGetPort(t *testing.T) {
 
 	penv := os.Getenv("PORT")
 
-	if port != penv {
+	if port != penv && penv != "" {
 		t.Errorf("Port returned from 'GetPort()' is not the same as environment port. Expected: %v, Got: %v", penv, port)
 	}
+
 }
 
 func TestLoadMenuConfig(t *testing.T) {
