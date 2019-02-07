@@ -1,0 +1,15 @@
+{{ define "navbar" }}
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow-sm">
+    <a href="/admin" class="navbar-brand col-sm-3 col-md-2 mr-0">Dashboard</a>
+
+    <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav px-3">
+            {{ range .Navbar.Items }}
+            <li class="nav-item">
+                <a href="{{ .Href }}" class="nav-link">{{ .Name }}</a>
+            </li>
+            {{ end }}
+        </ul>
+    </div>
+</nav>
+{{ end }}
