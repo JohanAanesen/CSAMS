@@ -39,6 +39,3 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request, status int) {
 	}
 }
 
-func Error404Handler(w http.ResponseWriter, r *http.Request) {
-	ErrorHandler(w, r, 404)
-}
