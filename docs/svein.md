@@ -1,5 +1,12 @@
 Svein's log
 ============
+## 07/02/2019
+* Added navbar to every page
+* Took use of GetPort
+* Discussed Markdown for *description* in Courses
+  * https://github.com/gomarkdown/markdown
+  * https://github.com/sparksuite/simplemde-markdown-editor
+
 ## 06/02/2019
 * Added another function for loading JSON-data from file
   * Dummy-data for reuse, displaying data on site
