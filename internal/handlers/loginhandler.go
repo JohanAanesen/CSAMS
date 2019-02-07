@@ -49,11 +49,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err = temp.ExecuteTemplate(w, "layout", struct {
-		PageTitle   string
-		Menu        page.Menu
+		PageTitle string
+		Menu      page.Menu
 	}{
-		PageTitle:   "Sign In",
-		Menu:        util.LoadMenuConfig("configs/menu/site.json"),
+		PageTitle: "Sign In",
+		Menu:      util.LoadMenuConfig("configs/menu/site.json"),
 	}); err != nil {
 		log.Fatal(err)
 	}
