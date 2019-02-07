@@ -26,13 +26,13 @@
 * Today was just bug after bug, not a fun day, I also worked an hour longer so I can leave earlier on Friday.
 
 ### Thursday - 07/02/19
-*I overslept 30min today, I was supposed to start one hour earlier, so I have to work 1h 20min longer today :/*
+*I overslept 30min today, I was supposed to start one hour earlier.*
 * The real courses show up on the profile now :D 
 * I had to make an own function for getting the password hash because of an annoying bug >:(
 * User can now change, secondary email, name and password :D
 * Only need to refactor some code, write some tests and lint and add some confirmation that the information is changed
-
-* TODO : fix error where the site changes to blank and not stay as is.
+* Fixed error where the page went blank after submitting form. It was solved by requesting the view function to start again.
+* Didn't work a full day today because not good :/
 
 ### Friday - 08/02/19
 *I'm going home today, so I'm leaving 2hours earlier*

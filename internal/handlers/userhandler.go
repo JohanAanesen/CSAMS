@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/structs"
 	"html/template"
@@ -24,12 +25,13 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// If everything went ok, execute page
 	if ok {
+		
 		//parse information with template
-		w.WriteHeader(http.StatusOK)
-
 		temp, err := template.ParseFiles("web/user.html")
 		if err != nil {
 			log.Fatal(err)
+		} else {
+			w.WriteHeader(http.StatusOK)
 		}
 
 		temp.Execute(w, data)
@@ -41,47 +43,57 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 
 	// TODO BUG : The form is sending unvalidated input, this should not happen >:(
 	// TODO BUG : Can't get hash from GetUser function so I made a GetHash
-	// TODO BUG : After sending form, it's not going back
-	// TODO : Give feedback if change is made or not
-
-	// Get new data from the form
-	name := r.FormValue("usersName")
-	secondaryEmail := r.FormValue("secondaryEmail")
-	oldPass := r.FormValue("oldPass")
-	newPass := r.FormValue("newPass")
-	repeatPass := r.FormValue("repeatPass")
 
 	ok, userID, hash, payload := checkUserStatus(w, r)
 
 	// Only do all this if it's a POST and it was possible to get userdata from DB
 	if r.Method == http.MethodPost && ok {
 
+		everythingOk := false
+		// Get new data from the form
+		name := r.FormValue("usersName")
+		secondaryEmail := r.FormValue("secondaryEmail")
+		oldPass := r.FormValue("oldPass")
+		newPass := r.FormValue("newPass")
+		repeatPass := r.FormValue("repeatPass")
+
 		// Users name
 		if name == "" {
 			ErrorHandler(w, r, http.StatusBadRequest)
+			return
 		} else if name != payload.Name && db.UpdateUserName(userID, name) {
-			w.WriteHeader(http.StatusAccepted)
+			fmt.Println("Success: Name changed from " + payload.Name + " to " + name)
+			everythingOk = true
 		}
 
 		// Users Email
-		// If secondaryemail input isn't blank and equal to primaryemail or not changed, error
-		if secondaryEmail != "" && secondaryEmail == payload.SecondaryEmail || secondaryEmail == payload.PrimaryEmail {
-			w.WriteHeader(http.StatusBadRequest)
+		// If secondaryemail input isn't blank and not changed, error
+		if secondaryEmail != "" && secondaryEmail == payload.SecondaryEmail {
+			// Do nothing
+			everythingOk = true
 		} else if secondaryEmail != "" && db.UpdateUserEmail(userID, secondaryEmail) {
-			w.WriteHeader(http.StatusAccepted)
+			fmt.Println("Success: Private email changed from " + payload.SecondaryEmail + " to " + secondaryEmail)
+			everythingOk = true
 		}
 
 		// Users password
 		if oldPass == "" { // If it's empty, the user doesn't want to change it
-			w.WriteHeader(http.StatusOK)
-
+			// Do nothing
+			everythingOk = true
 			// if the password isn't the same as before and repeat and new is equal but not equal to oldpass, change password
 		} else if newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass && db.CheckPasswordHash(oldPass, hash) {
 			if db.UpdateUserPassword(userID, newPass) {
-				w.WriteHeader(http.StatusAccepted)
+				fmt.Println("Success: Password is now changed!")
+				everythingOk = true
 			}
 		} else {
 			ErrorHandler(w, r, http.StatusBadRequest)
+			return
+		}
+
+		if everythingOk {
+			UserHandler(w, r)
+			return
 		}
 	}
 }

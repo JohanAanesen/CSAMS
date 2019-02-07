@@ -35,7 +35,7 @@
             <div class="col-sm-12">
                 <div class="col-xs-12">
 
-                    <form method="post">
+                    <form action="/user" method="post">
 
                         <!-- Name of the user-->
                         <div class="d-flex justify-content-between align-items-center border-bottom border-gray pb-2 mb-3">
@@ -119,7 +119,7 @@
 
                     <!-- Show number of classes the user is a student in -->
                     {{if .NoOfClasses}}
-                        <p id="noOfClasses"><strong>Number of classes: </strong>{{.NoOfClasses}}</p>
+                        <p id="noOfClasses"><strong>Number of classes:  </strong>{{.NoOfClasses}}</p>
                     {{else}}
                         <p id="noOfClasses"><strong>You don't have any active classes</strong></p>
                     {{end}}
