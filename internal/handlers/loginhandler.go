@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/gob"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
 	"github.com/gorilla/sessions"
@@ -11,16 +12,8 @@ import (
 	"net/http"
 )
 
-//User struct to hold session data
-type User struct {
-	ID            int
-	Name          string
-	Email         string
-	Authenticated bool
-}
-
 func init() {
-	gob.Register(User{})
+	gob.Register(model.User{})
 }
 
 //LoginHandler serves login page to users
@@ -83,11 +76,12 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userid, name, ok := db.UserAuth(email, password) //authenticate user
+	user, ok := db.UserAuth(email, password) //authenticate user
 
 	if ok {
 		//save user to session values
-		session.Values["user"] = User{ID: userid, Name: name, Email: email, Authenticated: true}
+		user.Authenticated = true
+		session.Values["user"] = user
 	} else {
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event
@@ -105,15 +99,15 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
-	MainHandler(w,r) //redirect to homepage
+	MainHandler(w, r) //redirect to homepage
 }
 
-func getUser(s *sessions.Session) User {
+func getUser(s *sessions.Session) model.User {
 	val := s.Values["user"]
-	var user = User{}
-	user, ok := val.(User)
+	var user = model.User{}
+	user, ok := val.(model.User)
 	if !ok {
-		return User{Authenticated: false}
+		return model.User{Authenticated: false}
 	}
 	return user
 }

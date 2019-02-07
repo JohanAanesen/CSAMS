@@ -74,11 +74,12 @@ func RegisterRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userid, name, ok := db.RegisterUser(name, email, password) //register user in database
+	user, ok := db.RegisterUser(name, email, password) //register user in database
 
 	if ok {
 		//save user to session values
-		session.Values["user"] = User{ID: userid, Name: name, Email: email, Authenticated: true}
+		user.Authenticated = true
+		session.Values["user"] = user
 	} else {
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event

@@ -112,8 +112,11 @@ func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 	user := getUser(session)
 
 	//todo check that user is a teacher!
+	if !user.Teacher{ //not a teacher, error 401
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
 
-	// TODO: talk to database and stuff
 	course := page.Course{
 		Code:        r.FormValue("code"),
 		Name:        r.FormValue("name"),
@@ -122,7 +125,6 @@ func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 		Semester:    r.FormValue("semester"),
 	}
 
-	//todo add year, semester and link names to the mix
 	rows, err := db.DB.Query("INSERT INTO course(coursecode, coursename, year, semester, description, teacher) VALUES(?, ?, ?, ?, ?, ?)",
 		course.Code, course.Name, course.Year, course.Semester, course.Description, user.ID)
 
