@@ -154,6 +154,7 @@ func GetCoursesToUser(userID int) []structs.CourseDB {
 }
 
 // TODO : remove this function and fix the GetUser function >:(
+// GetHash returns the users hashed password
 func GetHash(id int) string {
 	rows, err := DB.Query("SELECT password FROM users WHERE id = ?", id)
 	if err != nil {
@@ -175,6 +176,7 @@ func GetHash(id int) string {
 	return ""
 }
 
+// UpdateUserName updates the users name in the db
 func UpdateUserName(userID int, newName string) bool {
 
 	rows, err := DB.Query("UPDATE users SET name = ? WHERE id = ?", newName, userID)
@@ -188,8 +190,10 @@ func UpdateUserName(userID int, newName string) bool {
 		defer rows.Close()
 		return true
 	}
+
 }
 
+// UpdateUserEmail updates the users email in the db
 func UpdateUserEmail(userID int, email string) bool {
 	rows, err := DB.Query("UPDATE users SET email_private = ? WHERE id = ?", email, userID)
 
@@ -204,8 +208,10 @@ func UpdateUserEmail(userID int, email string) bool {
 	}
 }
 
+// UpdateUserPassword updates the users password in the db
 func UpdateUserPassword(userID int, password string) bool {
 
+	// Hash the password first
 	pass, err := hashPassword(password)
 
 	if err != nil {

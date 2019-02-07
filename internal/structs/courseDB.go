@@ -1,6 +1,6 @@
 package structs
 
-// Struct for course from the Database
+// COurseDB is a struct for course from the Database
 type CourseDB struct {
 	Id         int
 	CourseCode string

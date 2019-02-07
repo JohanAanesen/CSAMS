@@ -20,7 +20,7 @@ type userProfile struct {
 func UserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check if user is logged in and get user information
-	ok, _,  _, data := checkUserStatus(w, r)
+	ok, _, _, data := checkUserStatus(w, r)
 
 	// If everything went ok, execute page
 	if ok {
@@ -39,11 +39,10 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 // UserUpdateRequest changes the user information
 func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 
-	// TODO BUG : the form is sending unvalidated input, this should not happen >:(
-	// TODO BUG : hash is empty in this function, but not the payload even if I add the hash to the payload :/
-
-	// TODO : actually change information
-	// TODO : return errors
+	// TODO BUG : The form is sending unvalidated input, this should not happen >:(
+	// TODO BUG : Can't get hash from GetUser function so I made a GetHash
+	// TODO BUG : After sending form, it's not going back
+	// TODO : Give feedback if change is made or not
 
 	// Get new data from the form
 	name := r.FormValue("usersName")
@@ -57,31 +56,30 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 	// Only do all this if it's a POST and it was possible to get userdata from DB
 	if r.Method == http.MethodPost && ok {
 
-		if name == "" { // Name can not be changed to blank!
-
-			ErrorHandler(w, r, http.StatusBadRequest) // TODO : Return with error
-			return
-		} else if name == payload.Name {
-			// Do nothing, name is not changed
-		} else {
-			db.UpdateUserName(userID, name)
-		}
-
-		if secondaryEmail == "" { // If email is empty, the user doesn't want to change it
-			// Do nothing
-		} else if secondaryEmail == payload.SecondaryEmail {
-			// Do nothing, nothing is changed
-		} else {
-			db.UpdateUserEmail(userID, secondaryEmail)
-		}
-
-		if oldPass == "" { // If it's empty, the user doesn't want to change it
-			// Do nothing
-		} else if !db.CheckPasswordHash(oldPass, hash) { // Password is not the same as the current
+		// Users name
+		if name == "" {
 			ErrorHandler(w, r, http.StatusBadRequest)
+		} else if name != payload.Name && db.UpdateUserName(userID, name) {
+			w.WriteHeader(http.StatusAccepted)
+		}
 
-		} else if newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass {
-			db.UpdateUserPassword(userID, newPass)
+		// Users Email
+		// If secondaryemail input isn't blank and equal to primaryemail or not changed, error
+		if secondaryEmail != "" && secondaryEmail == payload.SecondaryEmail || secondaryEmail == payload.PrimaryEmail {
+			w.WriteHeader(http.StatusBadRequest)
+		} else if secondaryEmail != "" && db.UpdateUserEmail(userID, secondaryEmail) {
+			w.WriteHeader(http.StatusAccepted)
+		}
+
+		// Users password
+		if oldPass == "" { // If it's empty, the user doesn't want to change it
+			w.WriteHeader(http.StatusOK)
+
+			// if the password isn't the same as before and repeat and new is equal but not equal to oldpass, change password
+		} else if newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass && db.CheckPasswordHash(oldPass, hash) {
+			if db.UpdateUserPassword(userID, newPass) {
+				w.WriteHeader(http.StatusAccepted)
+			}
 		} else {
 			ErrorHandler(w, r, http.StatusBadRequest)
 		}
@@ -107,10 +105,16 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, int, string,
 		return false, -1, "", userProfile{}
 	}
 
+	// Get user
 	_, name, emailStudent, teacher, emailPrivate, _ := db.GetUser(user.ID)
+
+	// Get users hash
 	hash2 := db.GetHash(user.ID)
+
+	// Get users courses
 	courses := db.GetCoursesToUser(user.ID)
 
+	// Count the courses
 	i := 0
 	for i = range courses {
 		i++
@@ -121,19 +125,4 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, int, string,
 	}
 
 	return false, -1, "", userProfile{}
-}
-
-func updateUserName(name string) bool {
-
-	return false
-}
-
-func updateEmailPrivate(email string) bool {
-
-	return false
-}
-
-func updatePassword(password string) bool {
-
-	return false
 }

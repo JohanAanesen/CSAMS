@@ -161,6 +161,14 @@ func TestUserHandler(t *testing.T) {
 	}
 }
 
+func TestCheckUserStatus(t *testing.T){
+
+}
+
+func TestUserUpdateRequest(t *testing.T){
+
+}
+
 func TestAdminHandler(t *testing.T) {
 
 	req, err := http.NewRequest("GET", "/admin", nil)
