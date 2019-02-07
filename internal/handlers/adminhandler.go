@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
@@ -113,19 +112,13 @@ func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 		Code:        r.FormValue("code"),
 		Name:        r.FormValue("name"),
 		Description: r.FormValue("description"),
-		Link1:       r.FormValue("link1"),
-		Link1Name:   r.FormValue("linkname1"),
-		Link2:       r.FormValue("link2"),
-		Link2Name:   r.FormValue("linkname2"),
-		Link3:       r.FormValue("link3"),
-		Link3Name:   r.FormValue("linkname3"),
 		Year:        r.FormValue("year"),
 		Semester:    r.FormValue("semester"),
 	}
 
 	//todo add year, semester and link names to the mix
-	rows, err := db.DB.Query("INSERT INTO course(coursecode, coursename, description, teacher, year, semester, link1, link2, link3, link1name, link2name, link3name) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		course.Code, course.Name, course.Description, user.ID, course.Year, course.Semester, course.Link1, course.Link2, course.Link3, course.Link1Name, course.Link2Name, course.Link3Name)
+	rows, err := db.DB.Query("INSERT INTO course(coursecode, coursename, year, semester, description, teacher) VALUES(?, ?, ?, ?, ?, ?)",
+		course.Code, course.Name, course.Year, course.Semester, course.Description, user.ID, )
 
 	if err != nil {
 		//todo log error
@@ -136,7 +129,7 @@ func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 
 	defer rows.Close()
 
-	fmt.Printf("%v", course)
+	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
 }
 
 // AdminUpdateCourseHandler handles GET-request at /admin/course/update/{id}
