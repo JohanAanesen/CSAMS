@@ -15,7 +15,7 @@
 * information is displayed in input element for making the changes easier.
 
 ### Wednesday - 06/02/19
-*I overslept 45min today, but that's fine, I'm just working 45min longer :)*
+*I overslept 45min today, but that's fine, I'm just working 1h 45min longer :)*
 * I found a bug yesterday with adding a secondary email, that I need to fix today
 * A new bug about the form in `user.html` is sending unvalidated input to the handler. I/we choose to not fix this not, but added an TODO to fix it later :) 
 * We were a bit unsure how to update user user information. Since you can choose to only change one thing or all the information, should we request a change to the db for each change or all together every time?
@@ -26,8 +26,11 @@
 * Today was just bug after bug, not a fun day, I also worked an hour longer so I can leave earlier on Friday.
 
 ### Thursday - 07/02/19
+*I overslept 30min today, I was supposed to start one hour earlier, so I have to work 1h 20min longer today :/*
+*
 
 ### Friday - 08/02/19
+*I'm going home today, so I'm leaving 2hours earlier*
 
 ## Week Two
 ### Monday - 11/02/19

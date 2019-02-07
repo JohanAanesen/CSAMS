@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"html/template"
 	"log"
@@ -59,7 +58,6 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 	repeatPass := r.FormValue("repeatPass")
 
 	ok, hash, payload := checkUserStatus(w, r)
-	fmt.Println(payload)
 
 	// Only do all this if it's a POST and it was possible to get userdata from DB
 	if r.Method == http.MethodPost && ok {
@@ -84,11 +82,13 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 
 		if oldPass == "" { // If it's empty, the user doesn't want to change it
 			// Do nothing
-		} else if !db.CheckPasswordHash(oldPass, hash) { // TODO : Return with error, not matching the old password
+		} else if !db.CheckPasswordHash(oldPass, hash) { // Password is not the same as the current
 			ErrorHandler(w, r, http.StatusBadRequest)
 
 		} else if newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass {
 			updatePassword(newPass)
+		} else {
+			ErrorHandler(w, r, http.StatusBadRequest)
 		}
 	}
 }
@@ -126,10 +126,11 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, string, user
 		i++
 	}
 
-	_, name, emailStudent, teacher, emailPrivate, hash := db.GetUser(user.ID)
+	_, name, emailStudent, teacher, emailPrivate, _ := db.GetUser(user.ID)
+	hash2 := db.GetHash(user.ID)
 
 	if teacher != -1 {
-		return true, hash, userProfile{name, emailStudent, emailPrivate, courses, i}
+		return true, hash2, userProfile{name, emailStudent, emailPrivate, courses, i}
 	}
 
 	return false, "", userProfile{}

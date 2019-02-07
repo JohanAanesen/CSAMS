@@ -80,6 +80,7 @@ func RegisterUser(name string, email string, password string) (int, string, bool
 	return UserAuth(email, password) //fetch user-id through existing method
 }
 
+// TODO : fix this function >:(
 // GetUSer returns the email_private and teacher-id
 func GetUser(userID int) (int, string, string, int, string, string) {
 
@@ -90,25 +91,44 @@ func GetUser(userID int) (int, string, string, int, string, string) {
 		return -1, "", "", -1, "", ""
 	}
 
-	// TODO : usikker på om dette er riktig
 	for rows.Next() {
 		var id int
 		var name string
 		var emailStudent sql.NullString // Johan fixed: https://golang.org/pkg/database/sql/#NullString
 		var teacher int
 		var emailPrivate string
-		var password string
+		var password string // this is not showing
 
 		rows.Scan(&id, &name, &emailStudent, &teacher, &emailPrivate, &password)
 
-		fmt.Println("Hash in 'db.go' is: " + password)
-		fmt.Println("Name in 'db.go' is: " + name)
 		return id, name, emailStudent.String, teacher, emailPrivate, password
 	}
 
 	defer rows.Close()
 
 	return -1, "", "", -1, "", ""
+}
+
+// TODO : remove this function and fix the GetUser function >:(
+func GetHash(id int) string{
+	rows, err := DB.Query("SELECT password FROM users WHERE id = ?", id)
+	if err != nil {
+		// TODO : log error
+		fmt.Println(err.Error())
+		return ""
+	}
+
+	for rows.Next() {
+		var password string
+
+		rows.Scan(&password)
+
+		return password
+	}
+
+	defer rows.Close()
+
+	return ""
 }
 
 func CheckPasswordHash(password, hash string) bool {
