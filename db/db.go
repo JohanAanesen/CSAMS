@@ -113,11 +113,15 @@ func GetUser(userID int) (int, string, string, int, string, string) {
 
 // GetCourseToUser returns all the courses to the user
 func GetCoursesToUser(userID int) []structs.CourseDB {
-	courses := []structs.CourseDB{}
+
+	// Create an empty courses array
+	var courses []structs.CourseDB
 
 	rows, err := DB.Query("SELECT course.* FROM course INNER JOIN usercourse ON course.id = usercourse.courseid WHERE usercourse.userid = ?", userID)
 	if err != nil {
 		fmt.Println(err.Error()) // TODO : log error
+
+		// returns empty course array if it fails
 		return courses
 	}
 
@@ -133,6 +137,7 @@ func GetCoursesToUser(userID int) []structs.CourseDB {
 
 		rows.Scan(&id, &courseCode, &courseName, &teacher, &info, &link1, &link2, &link3)
 
+		// Add course to courses array
 		courses = append(courses, structs.CourseDB{
 			Id:         id,
 			CourseCode: courseCode,
@@ -168,6 +173,58 @@ func GetHash(id int) string {
 	defer rows.Close()
 
 	return ""
+}
+
+func UpdateUserName(userID int, newName string) bool {
+
+	rows, err := DB.Query("UPDATE users SET name = ? WHERE id = ?", newName, userID)
+
+	if err != nil {
+		//todo log error
+		log.Fatal(err.Error())
+		return false
+	} else {
+		// TODO : maybe add confirmation or something
+		defer rows.Close()
+		return true
+	}
+}
+
+func UpdateUserEmail(userID int, email string) bool {
+	rows, err := DB.Query("UPDATE users SET email_private = ? WHERE id = ?", email, userID)
+
+	if err != nil {
+		//todo log error
+		log.Fatal(err.Error())
+		return false
+	} else {
+		// TODO : maybe add confirmation or something
+		defer rows.Close()
+		return true
+	}
+}
+
+func UpdateUserPassword(userID int, password string) bool {
+
+	pass, err := hashPassword(password)
+
+	if err != nil {
+		//todo log error
+		log.Fatal(err.Error())
+		return false
+	}
+
+	rows, err := DB.Query("UPDATE users SET password = ? WHERE id = ?", pass, userID)
+
+	if err != nil {
+		//todo log error
+		log.Fatal(err.Error())
+		return false
+	} else {
+		// TODO : maybe add confirmation or something
+		defer rows.Close()
+		return true
+	}
 }
 
 func CheckPasswordHash(password, hash string) bool {

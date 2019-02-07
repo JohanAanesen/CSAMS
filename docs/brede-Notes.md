@@ -27,9 +27,11 @@
 
 ### Thursday - 07/02/19
 *I overslept 30min today, I was supposed to start one hour earlier, so I have to work 1h 20min longer today :/*
+* The real courses show up on the profile now :D 
+* I had to make an own function for getting the password hash because of an annoying bug >:(
+* User can now change, secondary email, name and password :D
+* Only need to refactor some code, write some tests and lint and add some confirmation that the information is changed
 
-* TODO : update user-information in DB
-* TODO : get courses
 * TODO : fix error where the site changes to blank and not stay as is.
 
 ### Friday - 08/02/19

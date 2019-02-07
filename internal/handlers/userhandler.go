@@ -20,7 +20,7 @@ type userProfile struct {
 func UserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check if user is logged in and get user information
-	ok, _, data := checkUserStatus(w, r)
+	ok, _,  _, data := checkUserStatus(w, r)
 
 	// If everything went ok, execute page
 	if ok {
@@ -52,7 +52,7 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 	newPass := r.FormValue("newPass")
 	repeatPass := r.FormValue("repeatPass")
 
-	ok, hash, payload := checkUserStatus(w, r)
+	ok, userID, hash, payload := checkUserStatus(w, r)
 
 	// Only do all this if it's a POST and it was possible to get userdata from DB
 	if r.Method == http.MethodPost && ok {
@@ -64,7 +64,7 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 		} else if name == payload.Name {
 			// Do nothing, name is not changed
 		} else {
-			updateUserName(name)
+			db.UpdateUserName(userID, name)
 		}
 
 		if secondaryEmail == "" { // If email is empty, the user doesn't want to change it
@@ -72,7 +72,7 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 		} else if secondaryEmail == payload.SecondaryEmail {
 			// Do nothing, nothing is changed
 		} else {
-			updateEmailPrivate(secondaryEmail)
+			db.UpdateUserEmail(userID, secondaryEmail)
 		}
 
 		if oldPass == "" { // If it's empty, the user doesn't want to change it
@@ -81,7 +81,7 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 			ErrorHandler(w, r, http.StatusBadRequest)
 
 		} else if newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass {
-			updatePassword(newPass)
+			db.UpdateUserPassword(userID, newPass)
 		} else {
 			ErrorHandler(w, r, http.StatusBadRequest)
 		}
@@ -89,14 +89,14 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 // Checks if the user is logged in and gets the correct information
-func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, string, userProfile) {
+func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, int, string, userProfile) {
 
 	//check that user is logged in
 	session, err := db.CookieStore.Get(r, "login-session")
 	if err != nil {
 		log.Fatal(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
-		return false, "", userProfile{}
+		return false, -1, "", userProfile{}
 	}
 
 	//check if user is logged in
@@ -104,7 +104,7 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, string, user
 	if user.Authenticated == false { //redirect to /login if not logged in
 		//send user to login if no valid login cookies exist
 		http.Redirect(w, r, "/login", http.StatusFound)
-		return false, "", userProfile{}
+		return false, -1, "", userProfile{}
 	}
 
 	_, name, emailStudent, teacher, emailPrivate, _ := db.GetUser(user.ID)
@@ -117,10 +117,10 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, string, user
 	}
 
 	if teacher != -1 {
-		return true, hash2, userProfile{name, emailStudent, emailPrivate, courses, i}
+		return true, user.ID, hash2, userProfile{name, emailStudent, emailPrivate, courses, i}
 	}
 
-	return false, "", userProfile{}
+	return false, -1, "", userProfile{}
 }
 
 func updateUserName(name string) bool {
