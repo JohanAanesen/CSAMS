@@ -125,8 +125,8 @@ func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//todo add year, semester and link names to the mix
-	rows, err := db.DB.Query("INSERT INTO course(coursecode, coursename, description, teacher, link1, link2, link3) VALUES(?, ?, ?, ?, ?, ?, ?)",
-		course.Code, course.Name, course.Description, user.ID, course.Link1, course.Link2, course.Link3)
+	rows, err := db.DB.Query("INSERT INTO course(coursecode, coursename, description, teacher, year, semester, link1, link2, link3, link1name, link2name, link3name) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		course.Code, course.Name, course.Description, user.ID, course.Year, course.Semester, course.Link1, course.Link2, course.Link3, course.Link1Name, course.Link2Name, course.Link3Name)
 
 	if err != nil {
 		//todo log error
