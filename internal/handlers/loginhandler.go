@@ -50,11 +50,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err = temp.ExecuteTemplate(w, "layout", struct {
 		PageTitle   string
-		LoadFormCSS bool
 		Menu        page.Menu
 	}{
 		PageTitle:   "Sign In",
-		LoadFormCSS: true,
 		Menu:        util.LoadMenuConfig("configs/menu/site.json"),
 	}); err != nil {
 		log.Fatal(err)
