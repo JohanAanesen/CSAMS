@@ -55,8 +55,8 @@ func TestLoggingIn(t *testing.T) {
 
 	status := resp.Code
 
-	if status != http.StatusFound { //todo update code, although it works, not definitive test
-		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusFound, status)
+	if status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
 	}
 
 	body := resp.Body
@@ -78,8 +78,8 @@ func TestMainHandler(t *testing.T) {
 
 	status := resp.Code
 
-	if status != http.StatusFound { //todo update this somehow, site isn't available for unauthorized users
-		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusFound, status)
+	if status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
 	}
 
 	body := resp.Body

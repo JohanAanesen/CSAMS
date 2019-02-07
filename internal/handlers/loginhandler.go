@@ -104,7 +104,8 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
+	//http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
+	MainHandler(w,r) //redirect to homepage
 }
 
 func getUser(s *sessions.Session) User {
