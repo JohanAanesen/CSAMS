@@ -5,12 +5,12 @@
             <form action="/admin/course/create" method="post">
                 <div class="form-group">
                     <label for="code">Course code</label>
-                    <input type="text" id="code" name="code" class="form-control">
+                    <input type="text" id="code" name="code" class="form-control" required>
                 </div>
 
                 <div class="form-group">
                     <label for="name">Name</label>
-                    <input type="text" id="name" name="name" class="form-control">
+                    <input type="text" id="name" name="name" class="form-control" required>
                 </div>
 
                 <div class="form-group">
@@ -53,7 +53,7 @@
 
                 <div class="form-group">
                     <label for="year">Year</label>
-                    <select name="year" id="year" class="form-control">
+                    <select name="year" id="year" class="form-control" required>
                         option
                         <script>
                             let y = (new Date()).getFullYear();
@@ -67,7 +67,7 @@
 
                 <div class="form-group">
                     <label for="semester">Semester</label>
-                    <select name="semester" id="semester" class="form-control">
+                    <select name="semester" id="semester" class="form-control" required>
                         <option value="spring">Spring</option>
                         <option value="fall">Fall</option>
                     </select>

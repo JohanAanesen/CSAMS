@@ -91,14 +91,14 @@ func TestMainHandler(t *testing.T) {
 
 func TestClassHandler(t *testing.T) {
 
-	req, err := http.NewRequest("GET", "/class?id=asdfcvgbhnjk", nil)
+	req, err := http.NewRequest("GET", "/course?id=asdfcvgbhnjk", nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(ClassHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(CourseHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -115,14 +115,14 @@ func TestClassHandler(t *testing.T) {
 
 func TestClassListHandler(t *testing.T) {
 
-	req, err := http.NewRequest("GET", "/class/list?id=adsikjuh", nil)
+	req, err := http.NewRequest("GET", "/course/list?id=adsikjuh", nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(ClassListHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(CourseListHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 

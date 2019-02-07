@@ -34,7 +34,7 @@ func InitDB(dataSourceName string) {
 
 //UserAuth authenticates users
 func UserAuth(email string, password string) (int, string, bool) {
-	rows, err := DB.Query("SELECT id, name, password FROM users WHERE email = ?", email)
+	rows, err := DB.Query("SELECT id, name, password FROM users WHERE email_student = ?", email)
 
 	if err != nil {
 		//todo log error
@@ -69,7 +69,7 @@ func RegisterUser(name string, email string, password string) (int, string, bool
 		return 0, "", false
 	}
 
-	rows, err := DB.Query("INSERT INTO users(name, email, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
+	rows, err := DB.Query("INSERT INTO users(name, email_student, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
 
 	if err != nil {
 		//todo log error

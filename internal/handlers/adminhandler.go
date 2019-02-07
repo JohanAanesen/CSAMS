@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
 	"html/template"
@@ -95,14 +96,39 @@ func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 // AdminCreateCourseRequest handles POST-request at /admin/course/create
 // Inserts a new course to the database
 func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
+	session, err := db.CookieStore.Get(r, "login-session") //get session
+	if err != nil {
+		log.Fatal(err)
+		ErrorHandler(w, r, http.StatusInternalServerError) //error getting session 500
+		return
+	}
+
+	//check if user is already logged in
+	user := getUser(session)
+	if user.Authenticated { //already logged in, redirect to homepage
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+
+	//todo check that user is a teacher!
+
 	// TODO: talk to database and stuff
 	course := page.Course{
 		Code:        r.FormValue("code"),
 		Name:        r.FormValue("name"),
 		Description: r.FormValue("description"),
+		Link1: 	 	 r.FormValue("link1"),
+		Link1Name:   r.FormValue("linkname1"),
+		Link2:		 r.FormValue("link2"),
+		Link2Name:   r.FormValue("linkname2"),
+		Link3: 	 	 r.FormValue("link3"),
+		Link3Name:   r.FormValue("linkname3"),
 		Year:        r.FormValue("year"),
 		Semester:    r.FormValue("semester"),
 	}
+
+	db.DB.Query()
+
 
 	fmt.Printf("%v", course)
 }
