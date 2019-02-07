@@ -105,10 +105,7 @@ func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 
 	//check if user is already logged in
 	user := getUser(session)
-	if user.Authenticated { //already logged in, redirect to homepage
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
-	}
+
 
 	//todo check that user is a teacher!
 
@@ -127,7 +124,18 @@ func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 		Semester:    r.FormValue("semester"),
 	}
 
-	db.DB.Query()
+	//todo add year, semester and link names to the mix
+	rows, err := db.DB.Query("INSERT INTO course(coursecode, coursename, description, teacher, link1, link2, link3) VALUES(?, ?, ?, ?, ?, ?, ?)",
+		course.Code, course.Name, course.Description, user.ID, course.Link1, course.Link2, course.Link3)
+
+	if err != nil {
+		//todo log error
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	defer rows.Close()
 
 
 	fmt.Printf("%v", course)
