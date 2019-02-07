@@ -1,56 +1,157 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
 	"html/template"
 	"log"
 	"net/http"
 )
 
-//AdminHandler serves admin page to admins
+// AdminHandler handles GET-request at /admin
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	//check that user is logged in and is admin/teacher
 
 	//find classes admin/teacher own
 
+	// Data for displaying on screen
 	data := struct {
 		PageTitle   string
 		Menu        page.Menu
-		Courses     []page.Course
+		Courses     page.Courses
 		Assignments []page.Assignment
 	}{
 		PageTitle: "Homepage",
-
-		Menu: page.Menu{
-			Items: []page.MenuItem{
-				{Name: "Courses", Href: "/"},
-				{Name: "Profile", Href: "/user"},
-				{Name: "Admin Dashboard", Href: "/admin"},
-			},
-		},
-
-		Courses: []page.Course{
-			{
-				Name: "IMT1001",
-				Assignments: []page.Assignment{
-					{Name: "Task 1", Description: "Code a \"Hello World program in Go\"", Deadline: "06/02/2019"},
-					{Name: "Task 2", Description: "Code a Fibonacci-sequence both in a loop and a recursive functions", Deadline: "12/02/2019"},
-					{Name: "Task 3", Description: "Make a Facebook-clone in Go", Deadline: "16/05/2019"},
-				},
-			},
-		},
+		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Courses:   util.LoadCoursesConfig("configs/dd.json"), // dd = dummy data
 	}
 
 	w.WriteHeader(http.StatusOK)
 
-	//parse template
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/home.html")
+	//parse templates
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/index.html")
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	if err = temp.ExecuteTemplate(w, "layout", data); err != nil {
+		log.Fatal(err)
+	}
+}
+
+// AdminCourseHandler handles GET-request at /admin/course
+func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
+	// Data for displaying on screen
+	data := struct {
+		PageTitle   string
+		Menu        page.Menu
+		Courses     page.Courses
+		Assignments []page.Assignment
+	}{
+		PageTitle: "Dashboard - Courses",
+		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Courses:   util.LoadCoursesConfig("configs/dd.json"), // dd = dummy data
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+	//parse template
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/course/index.html")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = temp.ExecuteTemplate(w, "layout", data); err != nil {
+		log.Fatal(err)
+	}
+}
+
+// AdminCreateCourseHandler handles GET-request at /admin/course/create
+func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+
+	//parse template
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/course/create.html")
+
+	if err != nil {
+		ErrorHandler(w, r, 404)
+		log.Fatal(err)
+	}
+
+	if err = temp.ExecuteTemplate(w, "layout", struct {
+		PageTitle string
+		Menu      page.Menu
+	}{
+		PageTitle: "Dashboard - Create course",
+		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
+	}); err != nil {
+		log.Fatal(err)
+	}
+}
+
+// AdminCreateCourseRequest handles POST-request at /admin/course/create
+// Inserts a new course to the database
+func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
+	// TODO: talk to database and stuff
+	course := page.Course{
+		Code:        r.FormValue("code"),
+		Name:        r.FormValue("name"),
+		Description: r.FormValue("description"),
+		Year:        r.FormValue("year"),
+		Semester:    r.FormValue("semester"),
+	}
+
+	fmt.Printf("%v", course)
+}
+
+// AdminUpdateCourseHandler handles GET-request at /admin/course/update/{id}
+func AdminUpdateCourseHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+
+	//parse template
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/course/update.html")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = temp.ExecuteTemplate(w, "layout", struct {
+		PageTitle string
+		Menu      page.Menu
+	}{
+		PageTitle: "Dashboard - Update course",
+		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
+	}); err != nil {
+		log.Fatal(err)
+	}
+}
+
+// AdminUpdateCourseRequest handles POST-request at /admin/course/update/{id}
+func AdminUpdateCourseRequest(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// AdminAssignmentHandler handles GET-request at /admin/assignment
+func AdminAssignmentHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+
+	//parse template
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/assignment/index.html")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = temp.ExecuteTemplate(w, "layout", struct {
+		PageTitle string
+		Menu      page.Menu
+	}{
+		PageTitle: "Dashboard - Assignments",
+		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
+	}); err != nil {
 		log.Fatal(err)
 	}
 }

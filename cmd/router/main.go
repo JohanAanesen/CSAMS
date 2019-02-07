@@ -28,7 +28,14 @@ func main() {
 	router.HandleFunc("/assignment/peer", handlers.AssignmentPeerHandler).Methods("GET")
 	router.HandleFunc("/assignment/auto", handlers.AssignmentAutoHandler).Methods("GET")
 
-	//serve /assets as a static, always available folder
+	router.HandleFunc("/admin", handlers.AdminHandler).Methods("GET")
+	router.HandleFunc("/admin/course", handlers.AdminCourseHandler).Methods("GET")
+	router.HandleFunc("/admin/course/create", handlers.AdminCreateCourseHandler).Methods("GET")
+	router.HandleFunc("/admin/course/create", handlers.AdminCreateCourseRequest).Methods("POST")
+	router.HandleFunc("/admin/course/update/{id}", handlers.AdminUpdateCourseHandler).Methods("GET")
+	router.HandleFunc("/admin/course/update/{id}", handlers.AdminUpdateCourseRequest).Methods("POST")
+	router.HandleFunc("/admin/assignment", handlers.AdminAssignmentHandler).Methods("GET")
+
 	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 
 	port := os.Getenv("PORT")

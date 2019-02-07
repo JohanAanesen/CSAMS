@@ -1,0 +1,55 @@
+{
+  "courses": [
+    {
+      "code": "IMT1031",
+      "name": "Grunnleggende programmering",
+      "description": "",
+      "year": "2019",
+      "semester": "H",
+      "assignments": [
+        {
+          "name": "Hello World",
+          "description": "Skriv ett enkelt program som printer ut Hello World",
+          "deadline": "01/09/2019"
+        },
+        {
+          "name": "Fibonacci",
+          "description": "Skriv funksjoner som skriver ut 100 første nummerene i Fibonacci-sekvensen, både rekursivt og med loop.",
+          "deadline": "01/20/2019"
+        },
+        {
+          "name": "OL på Lillehammer",
+          "description": "Lag system som skal brukes på Lillerhammer, under OL i 2068",
+          "deadline": "24/12/2019"
+        }
+      ]
+    },
+    {
+      "code": "IMT1082",
+      "name": "Objekt-orientert programmering",
+      "description": "",
+      "year": "2020",
+      "semester": "V",
+      "assignments": [
+        {
+          "name": "Arving",
+          "description": "Lag en klasse gutt, som arver fra mamma og pappa, og er søsken med søstra, og eieren til bikkja, og alle skal kunne bjeffe, men kun far skal kunne melkes.",
+          "deadline": "01/04/2020"
+        },
+        {
+          "name": "OOP-OL på Lillehammer",
+          "description": "Gjør oppgaven fra forrige semester, men objekt-orientert",
+          "deadline": "17/05/2020"
+        }
+      ]
+    },
+    {
+      "code": "IMT2021",
+      "name": "Algoritmiske metoder",
+      "description": "",
+      "year": "2020",
+      "semester": "H",
+      "assignments": []
+    }
+  ]
+}

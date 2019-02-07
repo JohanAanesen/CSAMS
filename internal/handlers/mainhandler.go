@@ -3,6 +3,8 @@ package handlers
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
+
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
 	"html/template"
 	"log"
 	"net/http"
@@ -42,19 +44,14 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
-		PageTitle string
-		Menu      page.Menu
-		Courses   []page.Course
+		PageTitle   string
+		Menu        page.Menu
+		Courses     []page.Course
+		LoadFormCSS bool
 	}{
 		PageTitle: "Homepage",
 
-		Menu: page.Menu{
-			Items: []page.MenuItem{
-				{Name: "Courses", Href: "/"},
-				{Name: "Profile", Href: "/user"},
-				{Name: "Admin Dashboard", Href: "/admin"},
-			},
-		},
+		Menu: util.LoadMenuConfig("configs/menu/site.json"),
 
 		Courses: []page.Course{
 			{
@@ -82,11 +79,12 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 				Code: "IMT2282",
 			},
 		},
+		LoadFormCSS: false,
 	}
 
 	w.WriteHeader(http.StatusOK)
 
-	temp, err := template.ParseFiles("web/layout.html", "web/navbar.html", "web/home.html")
+	temp, err := template.ParseFiles("web/layout.html", "web/navbar.html", "web/index.html")
 
 	if err != nil {
 		log.Fatal(err)

@@ -4,15 +4,11 @@
         <div class="col-md-2 d-none d-md-block bg-light sidebar">
             <div class="sidebar-sticky">
                 <ul class="nav flex-column">
+                    {{ range .Menu.Items }}
                     <li class="nav-item">
-                        <a href="#" class="nav-link active">Dashboard</a>
+                        <a href="{{ .Href }}" class="nav-link">{{ .Name }}</a>
                     </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">Courses</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">Assignments</a>
-                    </li>
+                    {{ end }}
                 </ul>
             </div>
         </div>

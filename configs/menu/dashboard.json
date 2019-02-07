@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "name": "Dashboard",
+      "href": "/admin"
+    },
+    {
+      "name": "Courses",
+      "href": "/admin/course"
+    },
+    {
+      "name": "Assignments",
+      "href": "/admin/assignment"
+    },
+    {
+      "name": "Settings",
+      "href": "/admin/settings"
+    }
+  ]
+}

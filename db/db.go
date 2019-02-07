@@ -34,8 +34,8 @@ func InitDB(dataSourceName string) {
 
 //UserAuth authenticates users
 func UserAuth(email string, password string) (int, string, bool) {
-
 	rows, err := DB.Query("SELECT id, name, password FROM users WHERE email_student = ?", email)
+
 	if err != nil {
 		//todo log error
 		fmt.Println(err.Error())
@@ -62,13 +62,14 @@ func UserAuth(email string, password string) (int, string, bool) {
 //RegisterUser registers users to database
 func RegisterUser(name string, email string, password string) (int, string, bool) {
 	pass, err := hashPassword(password)
+
 	if err != nil {
 		//todo log error
 		log.Fatal(err.Error())
 		return 0, "", false
 	}
-
 	rows, err := DB.Query("INSERT INTO users(name, email_student, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
+
 	if err != nil {
 		//todo log error
 		log.Fatal(err.Error())
@@ -110,7 +111,7 @@ func GetUser(userID int) (int, string, string, int, string, string) {
 }
 
 // TODO : remove this function and fix the GetUser function >:(
-func GetHash(id int) string{
+func GetHash(id int) string {
 	rows, err := DB.Query("SELECT password FROM users WHERE id = ?", id)
 	if err != nil {
 		// TODO : log error
