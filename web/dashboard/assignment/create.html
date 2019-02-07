@@ -1,3 +1,217 @@
 {{ define "content" }}
-    <h2 class="display-4 mb-3">Assignments <a href="#" class="btn btn-success btn-sm px-3">New</a></h2>
+    <h2 class="display-4 mb-3">Create assignment</h2>
+    <hr>
+    <div class="row">
+        <div class="col-3">
+            <p class="lead">Add field to assignment</p>
+            <hr>
+            <button class="btn btn-light btn-block border" id="btn_textfield">Textfield</button>
+            <button class="btn btn-light btn-block border" id="btn_textarea">Textarea</button>
+            <button class="btn btn-light btn-block border" id="btn_checkbox">Checkbox</button>
+            <button class="btn btn-light btn-block border" id="btn_radio">Radio</button>
+        </div>
+
+        <div class="col-9" id="custom_form"></div>
+    </div>
+    <script>
+        let custom_form = document.getElementById('custom_form');
+        let form = [];
+        let priorities = [];
+
+        let types = ['textfield', 'textarea', 'checkbox', 'radio'];
+
+        types.forEach(type => {
+            document.getElementById('btn_' + type).addEventListener('click', e => {
+                e.preventDefault();
+                createField(type);
+            });
+        });
+
+        function createField(type) {
+            let card = document.createElement('div');
+            card.classList.add('card', 'mb-3');
+
+            card.appendChild(createCardHeader());
+            card.appendChild(createCardBody());
+            card.appendChild(createCardFooter(type));
+
+            form.push(card);
+
+            displayForm();
+        }
+
+        function displayForm() {
+            custom_form.innerHTML = '';
+
+            for (let i = 0; i < form.length; i++) {
+                custom_form.appendChild(form[i]);
+            }
+        }
+
+        function createCardHeader() {
+            let cardHeader = document.createElement('div');
+            cardHeader.classList.add('card-header');
+
+            let row = document.createElement('div');
+            row.classList.add('row');
+
+            let col_10 = document.createElement('div');
+            col_10.classList.add('col-10');
+
+            let question = document.createElement('input');
+            question.setAttribute('type', 'text');
+            question.classList.add('form-control');
+            question.setAttribute('placeholder', 'Question');
+
+            col_10.appendChild(question);
+
+            let col_2 = document.createElement('div');
+            col_2.classList.add('col-2');
+
+            let select = document.createElement('select');
+            select.classList.add('form-control');
+
+            priorities.push(select); // Add select to an array so we can reset them
+
+            // Loop through all priority-fields
+            priorities.forEach(e => {
+                // Check if elements is a instance of HTMLElement
+                if (e instanceof HTMLElement) {
+                    // Clear inner HTML of select
+                    e.innerHTML = '';
+
+                    let prior = document.createElement('option');
+                    prior.setAttribute('selected', '');
+                    prior.innerText = 'Priority';
+
+                    e.appendChild(prior);
+
+                    for (let i = 1; i <= form.length + 1; i++) {
+                        let option = document.createElement('option');
+                        option.innerText = i.toString();
+
+                        e.appendChild(option);
+                    }
+                }
+            });
+
+            col_2.appendChild(select);
+
+            row.appendChild(col_10);
+            row.appendChild(col_2);
+
+            cardHeader.appendChild(row);
+
+            return cardHeader;
+        }
+
+        function createCardBody() {
+            let cardBody = document.createElement('div');
+            cardBody.classList.add('card-body');
+
+            let textarea = document.createElement('textarea');
+            textarea.classList.add('form-control');
+            textarea.setAttribute('placeholder', 'Description');
+
+            cardBody.appendChild(textarea);
+
+            return cardBody;
+        }
+
+        function createCardFooter(type) {
+            switch (type) {
+                case 'textfield':
+                    return getTextfield();
+                case 'textarea':
+                    return getTextarea();
+                case 'checkbox':
+                    return getCheckbox();
+                case 'radio':
+                    return getRadio();
+            }
+        }
+
+        function getTextfield() {
+            let cardFooter = document.createElement('div');
+            cardFooter.classList.add('card-footer');
+
+            let input = document.createElement('input');
+            input.setAttribute('type', 'text');
+            input.classList.add('form-control');
+            input.setAttribute('placeholder', 'Short Answer');
+            input.setAttribute('disabled', '');
+
+            cardFooter.appendChild(input);
+
+            return cardFooter;
+        }
+
+        function getTextarea() {
+            let cardFooter = document.createElement('div');
+            cardFooter.classList.add('card-footer');
+
+            let textarea = document.createElement('textarea');
+            textarea.classList.add('form-control');
+            textarea.setAttribute('placeholder', 'Long Answer');
+            textarea.setAttribute('disabled', '');
+
+            cardFooter.appendChild(textarea);
+
+            return cardFooter;
+        }
+
+        function getCheckbox() {
+            let cardFooter = document.createElement('div');
+            cardFooter.classList.add('card-footer');
+
+            let formCheck = document.createElement('div');
+            formCheck.classList.add('form-check');
+
+            let input = document.createElement('input');
+            input.setAttribute('type', 'checkbox');
+            input.setAttribute('disabled', '');
+            input.classList.add('form-check-input');
+
+            let label = document.createElement('label');
+            label.classList.add('form-check-label');
+            label.innerText = "True / False";
+
+            formCheck.appendChild(input);
+            formCheck.appendChild(label);
+
+            cardFooter.appendChild(formCheck);
+
+            return cardFooter;
+        }
+
+        function getRadio() {
+            let cardFooter = document.createElement('div');
+            cardFooter.classList.add('card-footer');
+
+            for (let i = 1; i <= 5; i++) {
+                let formCheck = document.createElement('div');
+                formCheck.classList.add('form-check', 'form-check-inline');
+
+                let input = document.createElement('input');
+                input.setAttribute('type', 'radio');
+                input.setAttribute('disabled', '');
+                input.classList.add('form-check-input');
+
+                if (i === 3) {
+                    input.setAttribute('checked', '');
+                }
+
+                let label = document.createElement('label');
+                label.classList.add('form-check-label');
+                label.innerText = i.toString();
+
+                formCheck.appendChild(input);
+                formCheck.appendChild(label);
+
+                cardFooter.appendChild(formCheck);
+            }
+
+            return cardFooter;
+        }
+    </script>
 {{ end }}

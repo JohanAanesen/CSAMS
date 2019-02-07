@@ -62,7 +62,7 @@ func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	//parse template
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/course/index.html")
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/course/index.html")
 
 	if err != nil {
 		log.Fatal(err)
@@ -78,7 +78,7 @@ func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	//parse template
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/course/create.html")
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/course/create.html")
 
 	if err != nil {
 		ErrorHandler(w, r, 404)
@@ -118,7 +118,7 @@ func AdminUpdateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	//parse template
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/course/update.html")
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/course/update.html")
 
 	if err != nil {
 		log.Fatal(err)
@@ -147,7 +147,7 @@ func AdminAssignmentHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	//parse template
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/assignment/index.html")
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/assignment/index.html")
 
 	if err != nil {
 		log.Fatal(err)
@@ -159,6 +159,30 @@ func AdminAssignmentHandler(w http.ResponseWriter, r *http.Request) {
 		Navbar    page.Menu
 	}{
 		PageTitle: "Dashboard - Assignments",
+		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Navbar:    util.LoadMenuConfig("configs/menu/site.json"),
+	}); err != nil {
+		log.Fatal(err)
+	}
+}
+
+// AdminAssignmentHandler handles GET-request at /admin/assignment/create
+func AdminCreateAssignmentHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+
+	//parse template
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/assignment/create.html")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = temp.ExecuteTemplate(w, "layout", struct {
+		PageTitle string
+		Menu      page.Menu
+		Navbar    page.Menu
+	}{
+		PageTitle: "Dashboard - Create Assignments",
 		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
 		Navbar:    util.LoadMenuConfig("configs/menu/site.json"),
 	}); err != nil {
