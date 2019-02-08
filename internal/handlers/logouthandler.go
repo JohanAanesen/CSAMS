@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
 	"net/http"
 )
 
@@ -20,7 +21,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session.Values["user"] = User{}
+	session.Values["user"] = model.User{}
 	session.Options.MaxAge = -1 //expire cookie
 
 	err = session.Save(r, w)
