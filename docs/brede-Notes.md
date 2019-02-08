@@ -38,7 +38,8 @@
 *I'm going home today to celebrate my birthday, so I'm leaving 2hours earlier*
 * Fixed the hash bug, Johan saw that i 'fixed' it on the wrong variable so now the hash appeared too!
 * Fixed the input validation bug, I had to switch from `onclick` to `onsubmit` that started the javascript script in the button-save. 
-* 
+* Merged with master and got some problems, but Johan helped me fix it.
+* Almost done with #8 now, only need some refactoring and I have to fix one test.
 
 ## Week Two
 ### Monday - 11/02/19
