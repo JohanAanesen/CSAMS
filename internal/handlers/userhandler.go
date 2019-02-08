@@ -41,8 +41,6 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 // UserUpdateRequest changes the user information
 func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 
-	// TODO BUG : The form is sending unvalidated input, this should not happen >:(
-
 	ok, userID, hash, payload := checkUserStatus(w, r)
 
 	// Only do all this if it's a POST and it was possible to get userdata from DB
@@ -118,8 +116,6 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, int, string,
 
 	// Get user
 	_, name, emailStudent, teacher, emailPrivate, hash := db.GetUser(user.ID)
-
-	fmt.Println(hash)
 
 	// Get users courses
 	courses := db.GetCoursesToUser(user.ID)

@@ -111,15 +111,15 @@
                                 </div>
                             </div>
 
-                            <!-- TODO : check if new information is valid and give feedback either way-->
-                            <button type="submit" class="btn btn-success" onclick="saveNewInfo()">Save</button>
+                            <!-- Fixed input validation bug by replacing 'onCLick' with 'onsubmit' :D -->
+                            <button type="submit" class="btn btn-success" onsubmit="saveNewInfo()">Save</button>
                         </div>
                     </form>
 
 
                     <!-- Show number of classes the user is a student in -->
                     {{if .NoOfClasses}}
-                        <p id="noOfClasses"><strong>Number of classes:  </strong>{{.NoOfClasses}}</p>
+                        <p id="noOfClasses"><strong>Number of classes: </strong>{{.NoOfClasses}}</p>
                     {{else}}
                         <p id="noOfClasses"><strong>You don't have any active classes</strong></p>
                     {{end}}
