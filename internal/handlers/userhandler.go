@@ -20,7 +20,7 @@ type payload struct {
 func UserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check if user is logged in and get user information
-	ok, _, _, data := checkUserStatus(w, r)
+	ok, _, data := checkUserStatus(w, r)
 	fmt.Println(data)
 
 	// If everything went ok, execute page
@@ -41,10 +41,13 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 // UserUpdateRequest changes the user information
 func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 
-	ok, userID, hash, payload := checkUserStatus(w, r)
+	ok, userID, payload := checkUserStatus(w, r)
 
 	// Only do all this if it's a POST and it was possible to get userdata from DB
 	if r.Method == http.MethodPost && ok {
+
+		// Get hashed password
+		hash := db.GetHash(userID)
 
 		everythingOk := false
 		// Get new data from the form
@@ -64,7 +67,7 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Users Email
-		// If secondaryemail input isn't blank and not changed, error
+		// If secondary-email input isn't blank and not changed, error
 		if secondaryEmail != "" && secondaryEmail == payload.User.EmailPrivate {
 			// Do nothing
 			everythingOk = true
@@ -96,7 +99,7 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 // Checks if the user is logged in and gets the correct information
-func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, int, string, payload) {
+func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, int, payload) {
 
 	var data = payload{}
 	//check that user is logged in
@@ -104,7 +107,7 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, int, string,
 	if err != nil {
 		log.Fatal(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
-		return false, -1, "", data
+		return false, -1, data
 	}
 
 	//check if user is logged in
@@ -112,23 +115,18 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, int, string,
 	if user.Authenticated == false { //redirect to /login if not logged in
 		//send user to login if no valid login cookies exist
 		http.Redirect(w, r, "/login", http.StatusFound)
-		return false, -1, "", data
+		return false, -1, data
 	}
-
-	fmt.Println(user.ID)
 
 	// Get user
 	user2 := db.GetUser(user.ID)
 
-	// Get hash
-	hash := "password"
-	//_, name, emailStudent, teacher, emailPrivate, hash := db.GetUser(user.ID)
-
 	// Get users courses
-	var courses []structs.CourseDB
-	courses = db.GetCoursesToUser(user.ID)
+	courses := db.GetCoursesToUser(user.ID)
 
+	// Put data in struct
 	data = payload{User: user2, Courses: courses, NoOfClasses: len(courses)}
 
-	return true, user.ID, hash, data
+	// Return data
+	return true, user.ID, data
 }

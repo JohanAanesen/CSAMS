@@ -88,36 +88,6 @@ func RegisterUser(name string, email string, password string) (model.User, bool)
 	return UserAuth(email, password) //fetch user-id through existing method
 }
 
-// GetUSer returns the email_private and teacher-id
-/*
-func GetUser(userID int) (int, string, string, int, string, string) {
-
-	rows, err := DB.Query("SELECT * FROM users WHERE id = ?", userID)
-	if err != nil {
-		// TODO : log error
-		fmt.Println(err.Error())
-		return -1, "", "", -1, "", ""
-	}
-
-	for rows.Next() {
-		var id int
-		var name string
-		var emailStudent string
-		var teacher int
-		var emailPrivate sql.NullString // Johan fixed: https://golang.org/pkg/database/sql/#NullString
-		var password string
-
-		rows.Scan(&id, &name, &emailStudent, &teacher, &emailPrivate, &password)
-
-		return id, name, emailStudent, teacher, emailPrivate.String, password
-	}
-
-	defer rows.Close()
-
-	return -1, "", "", -1, "", ""
-}
-*/
-
 // GetCourseToUser returns all the courses to the user
 func GetCoursesToUser(userID int) []structs.CourseDB {
 
@@ -250,6 +220,28 @@ func GetUser(userID int) (model.User) {
 	defer rows.Close()
 
 	return model.User{Authenticated: false}
+}
+
+// GetHash returns the users hashed password
+func GetHash(id int) string {
+	rows, err := DB.Query("SELECT password FROM users WHERE id = ?", id)
+	if err != nil {
+		// TODO : log error
+		fmt.Println(err.Error())
+		return ""
+	}
+
+	for rows.Next() {
+		var password string
+
+		rows.Scan(&password)
+
+		return password
+	}
+
+	defer rows.Close()
+
+	return ""
 }
 
 func CheckPasswordHash(password, hash string) bool {
