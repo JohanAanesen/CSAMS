@@ -70,7 +70,7 @@ func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//parse template
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/course/index.html")
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/course/index.html")
 
 	if err != nil {
 		log.Fatal(err)
@@ -90,7 +90,7 @@ func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//parse template
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/course/create.html")
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/course/create.html")
 
 	if err != nil {
 		ErrorHandler(w, r, 404)
@@ -162,7 +162,7 @@ func AdminUpdateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	//parse template
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/course/update.html")
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/course/update.html")
 
 	if err != nil {
 		log.Fatal(err)

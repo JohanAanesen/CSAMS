@@ -163,7 +163,6 @@ func TestUserHandler(t *testing.T) {
 }
 
 func TestAdminHandler(t *testing.T) {
-
 	req, err := http.NewRequest("GET", "/admin", nil)
 	if err != nil {
 		t.Fatal(err.Error())
@@ -186,6 +185,117 @@ func TestAdminHandler(t *testing.T) {
 	}
 
 	http.HandlerFunc(AdminHandler).ServeHTTP(resp, req)
+
+	status := resp.Code
+
+	if status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
+}
+
+func TestAdminCourseHandler(t *testing.T) {
+	req, err := http.NewRequest("GET", "/course", nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	resp := httptest.NewRecorder()
+
+	//get a session
+	session, err := db.CookieStore.Get(req, "login-session")
+	//user object we want to fill with variables needed
+	var user model.User
+	user.Authenticated = true
+	user.Teacher = true
+	//save user to session values
+	session.Values["user"] = user
+	//save session changes
+	err = session.Save(req, resp)
+	if err != nil { //check error
+		t.Error(err.Error())
+	}
+
+	http.HandlerFunc(AdminCourseHandler).ServeHTTP(resp, req)
+
+	status := resp.Code
+
+	if status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
+}
+
+func TestAdminCreateCourseHandler(t *testing.T) {
+	req, err := http.NewRequest("GET", "/admin/course/create", nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	resp := httptest.NewRecorder()
+
+	//get a session
+	session, err := db.CookieStore.Get(req, "login-session")
+	//user object we want to fill with variables needed
+	var user model.User
+	user.Authenticated = true
+	user.Teacher = true
+	//save user to session values
+	session.Values["user"] = user
+	//save session changes
+	err = session.Save(req, resp)
+	if err != nil { //check error
+		t.Error(err.Error())
+	}
+
+	http.HandlerFunc(AdminCreateCourseHandler).ServeHTTP(resp, req)
+
+	status := resp.Code
+
+	if status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
+}
+
+func TestAdminUpdateCourseHandler(t *testing.T) {
+	req, err := http.NewRequest("GET", "/admin/course/update", nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	resp := httptest.NewRecorder()
+
+	//get a session
+	session, err := db.CookieStore.Get(req, "login-session")
+	//user object we want to fill with variables needed
+	var user model.User
+	user.Authenticated = true
+	user.Teacher = true
+	//save user to session values
+	session.Values["user"] = user
+	//save session changes
+	err = session.Save(req, resp)
+	if err != nil { //check error
+		t.Error(err.Error())
+	}
+
+	http.HandlerFunc(AdminUpdateCourseHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
