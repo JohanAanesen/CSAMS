@@ -137,6 +137,7 @@ func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 		Semester:    r.FormValue("semester"),
 	}
 
+	//insert into database
 	rows, err := db.DB.Query("INSERT INTO course(coursecode, coursename, year, semester, description, teacher) VALUES(?, ?, ?, ?, ?, ?)",
 		course.Code, course.Name, course.Year, course.Semester, course.Description, user.ID)
 
@@ -149,7 +150,7 @@ func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 
 	defer rows.Close()
 
-	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
+	MainHandler(w,r) //success redirect to homepage
 }
 
 // AdminUpdateCourseHandler handles GET-request at /admin/course/update/{id}
