@@ -35,7 +35,10 @@
 * Didn't work a full day today because not good :/
 
 ### Friday - 08/02/19
-*I'm going home today, so I'm leaving 2hours earlier*
+*I'm going home today to celebrate my birthday, so I'm leaving 2hours earlier*
+* Fixed the hash bug, Johan saw that i 'fixed' it on the wrong variable so now the hash appeared too!
+* Fixed the input validation bug, I had to switch from `onclick` to `onsubmit` that started the javascript script in the button-save. 
+* 
 
 ## Week Two
 ### Monday - 11/02/19

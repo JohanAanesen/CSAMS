@@ -112,6 +112,7 @@
                             </div>
 
                             <!-- Fixed input validation bug by replacing 'onCLick' with 'onsubmit' :D -->
+                            <!-- Link to salvation: https://stackoverflow.com/a/16019813/8883030 -->
                             <button type="submit" class="btn btn-success" onsubmit="saveNewInfo()">Save</button>
                         </div>
                     </form>
@@ -121,6 +122,7 @@
                     {{if .NoOfClasses}}
                         <p id="noOfClasses"><strong>Number of classes: </strong>{{.NoOfClasses}}</p>
                     {{else}}
+                        <!-- Else, show error message -->
                         <p id="noOfClasses"><strong>You don't have any active classes</strong></p>
                     {{end}}
 
