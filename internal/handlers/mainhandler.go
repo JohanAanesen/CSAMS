@@ -33,51 +33,15 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/////////////////test///////////////////
-
-	var test Test
-
-	err = db.DB.QueryRow("SELECT id, name FROM users where id = ?", 1).Scan(&test.ID, &test.Name)
-	if err != nil {
-		//panic(err.Error()) // proper error handling instead of panic in your app
-	}
-
 	data := struct {
 		PageTitle   string
 		Menu        page.Menu
-		Courses     []page.Course
+		Courses     page.Courses
 		LoadFormCSS bool
 	}{
-		PageTitle: "Homepage",
-
-		Menu: util.LoadMenuConfig("configs/menu/site.json"),
-
-		Courses: []page.Course{
-			{
-				Name: "Grunnleggende programmering",
-				Code: "IMT1031",
-			},
-			{
-				Name: "Objekt-orienbtert programmering",
-				Code: "IMT1082",
-			},
-			{
-				Name: "Algoritmiske metoder",
-				Code: "IMT2021",
-			},
-			{
-				Name: "Datamodellering og databasesystemer",
-				Code: "IMT2571",
-			},
-			{
-				Name: "Vitenskalig programmering",
-				Code: "IMT3881",
-			},
-			{
-				Name: "Operativsystemer",
-				Code: "IMT2282",
-			},
-		},
+		PageTitle:   "Homepage",
+		Menu:        util.LoadMenuConfig("configs/menu/site.json"),
+		Courses:     util.LoadCoursesConfig("configs/dd.json"),
 		LoadFormCSS: false,
 	}
 

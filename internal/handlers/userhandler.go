@@ -25,7 +25,7 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// If everything went ok, execute page
 	if ok {
-		
+
 		//parse information with template
 		temp, err := template.ParseFiles("web/user.html")
 		if err != nil {
@@ -42,7 +42,6 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 
 	// TODO BUG : The form is sending unvalidated input, this should not happen >:(
-	// TODO BUG : Can't get hash from GetUser function so I made a GetHash
 
 	ok, userID, hash, payload := checkUserStatus(w, r)
 
@@ -118,10 +117,9 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, int, string,
 	}
 
 	// Get user
-	_, name, emailStudent, teacher, emailPrivate, _ := db.GetUser(user.ID)
+	_, name, emailStudent, teacher, emailPrivate, hash := db.GetUser(user.ID)
 
-	// Get users hash
-	hash2 := db.GetHash(user.ID)
+	fmt.Println(hash)
 
 	// Get users courses
 	courses := db.GetCoursesToUser(user.ID)
@@ -133,7 +131,7 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, int, string,
 	}
 
 	if teacher != -1 {
-		return true, user.ID, hash2, userProfile{name, emailStudent, emailPrivate, courses, i}
+		return true, user.ID, hash, userProfile{name, emailStudent, emailPrivate, courses, i}
 	}
 
 	return false, -1, "", userProfile{}

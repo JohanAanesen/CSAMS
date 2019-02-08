@@ -4,6 +4,7 @@ Svein's log
 * Added another function for loading JSON-data from file
   * Dummy-data for reuse, displaying data on site
 * Created form for creating new courses
+* Created am flexible error handler
 
 ## 05/02/2019
  * Made some simple data-structures for page-data, and made a more agile template for the page-title, menu and content.

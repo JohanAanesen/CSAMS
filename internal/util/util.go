@@ -7,9 +7,7 @@ import (
 	"os"
 )
 
-// GetPort checks if there is a PORT set as a environment variable.
-// If no environment variable is set, the port is set to "8080"
-// Returns the port with a prefix (colon)
+// GetPort gets environment PORT or sets it to 8080
 func GetPort() string {
 	port := os.Getenv("PORT")
 

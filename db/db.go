@@ -82,7 +82,6 @@ func RegisterUser(name string, email string, password string) (int, string, bool
 	return UserAuth(email, password) //fetch user-id through existing method
 }
 
-// TODO : fix this function >:(
 // GetUSer returns the email_private and teacher-id
 func GetUser(userID int) (int, string, string, int, string, string) {
 
@@ -96,14 +95,14 @@ func GetUser(userID int) (int, string, string, int, string, string) {
 	for rows.Next() {
 		var id int
 		var name string
-		var emailStudent sql.NullString // Johan fixed: https://golang.org/pkg/database/sql/#NullString
+		var emailStudent string
 		var teacher int
-		var emailPrivate string
-		var password string // this is not showing
+		var emailPrivate sql.NullString // Johan fixed: https://golang.org/pkg/database/sql/#NullString
+		var password string
 
 		rows.Scan(&id, &name, &emailStudent, &teacher, &emailPrivate, &password)
 
-		return id, name, emailStudent.String, teacher, emailPrivate, password
+		return id, name, emailStudent, teacher, emailPrivate.String, password
 	}
 
 	defer rows.Close()
@@ -151,29 +150,6 @@ func GetCoursesToUser(userID int) []structs.CourseDB {
 	}
 
 	return courses
-}
-
-// TODO : remove this function and fix the GetUser function >:(
-// GetHash returns the users hashed password
-func GetHash(id int) string {
-	rows, err := DB.Query("SELECT password FROM users WHERE id = ?", id)
-	if err != nil {
-		// TODO : log error
-		fmt.Println(err.Error())
-		return ""
-	}
-
-	for rows.Next() {
-		var password string
-
-		rows.Scan(&password)
-
-		return password
-	}
-
-	defer rows.Close()
-
-	return ""
 }
 
 // UpdateUserName updates the users name in the db
