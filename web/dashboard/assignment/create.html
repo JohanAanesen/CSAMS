@@ -16,15 +16,7 @@
         <div class="col-9" id="custom_form"></div>
     </div>
     <script>
-        let data = [
-            {
-                'id': '',
-                'type': 'textfield',
-                'question': '',
-                'description': '',
-            }
-        ];
-
+        let data = [];
 
         let custom_form = document.getElementById('custom_form');
         let form = [];
@@ -35,7 +27,6 @@
         types.forEach(type => {
             document.getElementById('btn_' + type).addEventListener('click', e => {
                 e.preventDefault();
-
                 createField(type);
             });
         });
@@ -65,6 +56,19 @@
             for (let i = 0; i < form.length; i++) {
                 data[i].question = document.getElementById(`question_${i}`).value;
                 data[i].description = document.getElementById(`description_${i}`).value;
+                data[i].priority = document.getElementById(`priority_${i}`).value;
+            }
+        }
+
+        function updatePriority() {
+            for (let i = 0; i < form.length; i++) {
+                let val = document.getElementById(`priority_${i}`).value;
+                if (val !== 'Priority') {
+                    data[i].priority = val;
+                    data[val].priority = i.toString();
+                    form.swap(i, val);
+                    displayForm();
+                }
             }
         }
 
@@ -105,6 +109,7 @@
             let select = document.createElement('select');
             select.classList.add('form-control');
             select.id = `priority_${form.length}`;
+            select.setAttribute('onchange', 'updatePriority()');
 
             priorities.push(select); // Add select to an array so we can reset them
 
@@ -121,7 +126,7 @@
 
                     e.appendChild(prior);
 
-                    for (let i = 1; i <= form.length + 1; i++) {
+                    for (let i = 0; i <= form.length; i++) {
                         let option = document.createElement('option');
                         option.innerText = i.toString();
 
