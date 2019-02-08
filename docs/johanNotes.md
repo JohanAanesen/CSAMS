@@ -50,4 +50,24 @@ Wednesday 6/2
 -----------
 * Started the day setting up the project on my laptop, ugh
 * Changed from local imports to package imports
+* Wrapped up the login/register functionality, works nicely afaik
+* Started on #11 Create Course
+* Svein already made most of the frontend so I dont have to, score
+
+Thursday 7/2
+-----------
+* 11 Create Course cont.
+* Added url link fields, working on DB query to 'save' the course permanently
+* Implemented input fields for 3x url's, after talking with Svein we decided
+on implementing markdown for the description field, so the teacher
+can just add links there.
+* https://simplemde.com/
+* Christopher said it was 'sensible' :)
+* Kinda back on tests, working on making some now
+* Changed DB functions to handle User objects instead of 3-4 fucking variables
+* Now checks if user is a teacher before serving /admin pages
+
+Friday 8/2
+-----------
+* 11 Create Course cont/testing
 * 

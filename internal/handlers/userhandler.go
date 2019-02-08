@@ -3,18 +3,17 @@ package handlers
 import (
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/structs"
 	"html/template"
 	"log"
 	"net/http"
 )
 
-type userProfile struct {
-	Name           string
-	PrimaryEmail   string
-	SecondaryEmail string
-	Courses        []structs.CourseDB
-	NoOfClasses    int
+type payload struct {
+	User        model.User
+	Courses     []structs.CourseDB
+	NoOfClasses int
 }
 
 // UserHandler serves user page to users
@@ -22,6 +21,7 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check if user is logged in and get user information
 	ok, _, _, data := checkUserStatus(w, r)
+	fmt.Println(data)
 
 	// If everything went ok, execute page
 	if ok {
@@ -58,18 +58,18 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 		if name == "" {
 			ErrorHandler(w, r, http.StatusBadRequest)
 			return
-		} else if name != payload.Name && db.UpdateUserName(userID, name) {
-			fmt.Println("Success: Name changed from " + payload.Name + " to " + name)
+		} else if name != payload.User.Name && db.UpdateUserName(userID, name) {
+			fmt.Println("Success: Name changed from " + payload.User.Name + " to " + name)
 			everythingOk = true
 		}
 
 		// Users Email
 		// If secondaryemail input isn't blank and not changed, error
-		if secondaryEmail != "" && secondaryEmail == payload.SecondaryEmail {
+		if secondaryEmail != "" && secondaryEmail == payload.User.EmailPrivate {
 			// Do nothing
 			everythingOk = true
 		} else if secondaryEmail != "" && db.UpdateUserEmail(userID, secondaryEmail) {
-			fmt.Println("Success: Private email changed from " + payload.SecondaryEmail + " to " + secondaryEmail)
+			fmt.Println("Success: Private email changed from " + payload.User.EmailPrivate + " to " + secondaryEmail)
 			everythingOk = true
 		}
 
@@ -96,14 +96,15 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 // Checks if the user is logged in and gets the correct information
-func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, int, string, userProfile) {
+func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, int, string, payload) {
 
+	var data = payload{}
 	//check that user is logged in
 	session, err := db.CookieStore.Get(r, "login-session")
 	if err != nil {
 		log.Fatal(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
-		return false, -1, "", userProfile{}
+		return false, -1, "", data
 	}
 
 	//check if user is logged in
@@ -111,24 +112,23 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, int, string,
 	if user.Authenticated == false { //redirect to /login if not logged in
 		//send user to login if no valid login cookies exist
 		http.Redirect(w, r, "/login", http.StatusFound)
-		return false, -1, "", userProfile{}
+		return false, -1, "", data
 	}
+
+	fmt.Println(user.ID)
 
 	// Get user
-	_, name, emailStudent, teacher, emailPrivate, hash := db.GetUser(user.ID)
+	user2 := db.GetUser(user.ID)
+
+	// Get hash
+	hash := "password"
+	//_, name, emailStudent, teacher, emailPrivate, hash := db.GetUser(user.ID)
 
 	// Get users courses
-	courses := db.GetCoursesToUser(user.ID)
+	var courses []structs.CourseDB
+	courses = db.GetCoursesToUser(user.ID)
 
-	// Count the courses
-	i := 0
-	for i = range courses {
-		i++
-	}
+	data = payload{User: user2, Courses: courses, NoOfClasses: len(courses)}
 
-	if teacher != -1 {
-		return true, user.ID, hash, userProfile{name, emailStudent, emailPrivate, courses, i}
-	}
-
-	return false, -1, "", userProfile{}
+	return true, user.ID, hash, data
 }

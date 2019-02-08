@@ -21,7 +21,7 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 
 	session, err := db.CookieStore.Get(r, "login-session")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -29,7 +29,8 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 
 	if getUser(session).Authenticated == false { //redirect to /login if not logged in
 		//send user to login if no valid login cookies exist
-		http.Redirect(w, r, "/login", http.StatusFound)
+		//http.Redirect(w, r, "/login", http.StatusFound)
+		LoginHandler(w, r)
 		return
 	}
 
@@ -50,10 +51,10 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 	temp, err := template.ParseFiles("web/layout.html", "web/navbar.html", "web/index.html")
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	if err = temp.ExecuteTemplate(w, "layout", data); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 }

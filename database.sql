@@ -57,14 +57,13 @@ CREATE TABLE `assignments`
 
 CREATE TABLE `course`
 (
-  `id`         int(11)                            NOT NULL,
-  `coursecode` varchar(10) COLLATE utf8_danish_ci NOT NULL,
-  `coursename` varchar(64) COLLATE utf8_danish_ci NOT NULL,
-  `teacher`    int(11)                            NOT NULL,
-  `info`       text COLLATE utf8_danish_ci,
-  `link1`      varchar(128) COLLATE utf8_danish_ci DEFAULT NULL,
-  `link2`      varchar(128) COLLATE utf8_danish_ci DEFAULT NULL,
-  `link3`      varchar(128) COLLATE utf8_danish_ci DEFAULT NULL
+  `id`          int(11)                                        NOT NULL,
+  `coursecode`  varchar(10) COLLATE utf8_danish_ci             NOT NULL,
+  `coursename`  varchar(64) COLLATE utf8_danish_ci             NOT NULL,
+  `teacher`     int(11)                                        NOT NULL,
+  `description` text COLLATE utf8_danish_ci,
+  `year`        int(11) COLLATE utf8_danish_ci                 NOT NULL,
+  `semester`    ENUM ('fall', 'spring') COLLATE utf8_danish_ci NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_danish_ci;
@@ -176,22 +175,25 @@ CREATE TABLE `users`
 
 
 -- Insert Test info --
-INSERT INTO `users` (`id`, `name`, `email_student`, `teacher`, `email_private`, `password`) VALUES
-(1, 'Test User', 'hei@gmail.com', 0, NULL, '$2a$14$MZj24p41j2NNGn6JDsQi0OsDb56.0LcfrIdgjE6WmZzp58O6V/VhK'),
-(2, 'Frode Haug', 'frodehg@teach.ntnu.no', 1, NULL, '$2a$14$vH/ibjwwXqBmGgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
-(3, 'Ola Nordmann', 'olanor@stud.ntnu.no', 0, 'swag-meister69@ggmail.com', '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
-(4, 'Johan Klausen', 'johkl@stu.ntnu.no', 0, NULL, '$2a$14$MZj24p41j2NNGn6JDsQi0OsDb56.0LcfrIdgjE6WmZzp58O6V/VhK');
+INSERT INTO `users` (`id`, `name`, `email_student`, `teacher`, `email_private`, `password`)
+VALUES (1, 'Test User', 'hei@gmail.com', 1, NULL, '$2a$14$MZj24p41j2NNGn6JDsQi0OsDb56.0LcfrIdgjE6WmZzp58O6V/VhK'),
+       (2, 'Frode Haug', 'frodehg@teach.ntnu.no', 1, NULL,
+        '$2a$14$vH/ibjwwXqBmGgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
+       (3, 'Ola Nordmann', 'olanor@stud.ntnu.no', 0, 'swag-meister69@ggmail.com',
+        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
+       (4, 'Johan Klausen', 'johkl@stu.ntnu.no', 0, NULL,
+        '$2a$14$MZj24p41j2NNGn6JDsQi0OsDb56.0LcfrIdgjE6WmZzp58O6V/VhK');
 
 
-INSERT INTO `course` (`id`, `coursecode`, `coursename`, `teacher`, `info`, `link1`, `link2`, `link3`) VALUES
-(1, 'IMT1031', 'Grunnleggende Programmering', 2, 'Write hello, world in C++', 'www.google.com', 'www.youtube.com', 'www.facebook.com'),
-(2, 'IMT1082', 'Objekt-orientert programmering', 2, 'Write Wazz up world in Python', 'www.google.com', 'www.youtube.com', 'www.facebook.com'),
-(3, 'IMT2021', 'Algoritmiske metoder', 2, 'Write an AI in C#', 'www.google.com', 'www.youtube.com', 'www.facebook.com');
+INSERT INTO `course` (`id`, `coursecode`, `coursename`, `teacher`, `year`, `semester`, `description`)
+VALUES (1, 'IMT1031', 'Grunnleggende Programmering', 2, 2019, 'fall', 'Write hello, world in C++'),
+       (2, 'IMT1082', 'Objekt-orientert programmering', 2, 2019, 'fall', 'Write Wazz up world in Python'),
+       (3, 'IMT2021', 'Algoritmiske metoder', 2, 2019, 'spring', 'Write an AI in C#');
 
-INSERT INTO `usercourse` (`userid`, `courseid`) VALUES
-(3, 1),
-(3, 2),
-(4, 3);
+INSERT INTO `usercourse` (`userid`, `courseid`)
+VALUES (3, 1),
+       (3, 2),
+       (4, 3);
 
 -- end --
 
@@ -340,5 +342,4 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION = @OLD_COLLATION_CONNECTION */;
-
 

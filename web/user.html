@@ -41,7 +41,7 @@
                         <div class="d-flex justify-content-between align-items-center border-bottom border-gray pb-2 mb-3">
                             <input id="name" name="usersName" type="text" readonly
                                    class="form-control-plaintext form-control-lg col-sm-6" placeholder="Name" required
-                                   value={{.Name}}>
+                                   value={{.User.Name}}>
                             <button type="button" class="btn btn-primary" id="btn-edit" onclick="btnEdit()">Edit Profile
                             </button>
                         </div>
@@ -51,11 +51,11 @@
                             <label for="primaryEmail" class="col-sm-2 col-form-label"><strong>School
                                     Email: </strong></label>
                             <div class="col-sm-6">
-                                {{if .PrimaryEmail}}
+                                {{if .User.EmailStudent}}
                                     <input type="email" readonly class="form-control-plaintext" name="primaryEmail"
                                            id="email_student"
                                            placeholder="School Email" required
-                                           value={{.PrimaryEmail}}>
+                                           value={{.User.EmailStudent}}>
                                 {{else}}
                                     <input type="email" readonly class="form-control-plaintext" name="primaryEmail"
                                            id="email_student"
@@ -70,11 +70,11 @@
                             <label for="secondaryEmail" class="col-sm-2 col-form-label"><strong>Secondary
                                     Email: </strong></label>
                             <div class="col-sm-6">
-                                {{if .SecondaryEmail}}
+                                {{if .User.EmailPrivate}}
                                     <input type="email" readonly class="form-control-plaintext" name="secondaryEmail"
                                            id="email_private"
                                            placeholder="Secondary Email"
-                                           value={{.SecondaryEmail}}>
+                                           value={{.User.EmailPrivate}}>
                                 {{else}}
                                     <input type="email" readonly class="form-control-plaintext" name="secondaryEmail"
                                            id="email_private"

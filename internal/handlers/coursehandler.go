@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-//ClassHandler serves class page to users
-func ClassHandler(w http.ResponseWriter, r *http.Request) {
+//CourseHandler serves class page to users
+func CourseHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check if request has an classID
 	if r.Method == http.MethodGet {
@@ -40,8 +40,8 @@ func ClassHandler(w http.ResponseWriter, r *http.Request) {
 	temp.Execute(w, nil)
 }
 
-//ClassListHandler serves class list page to users
-func ClassListHandler(w http.ResponseWriter, r *http.Request) {
+//CourseListHandler serves class list page to users
+func CourseListHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check if request has an classID
 	if r.Method == http.MethodGet {
