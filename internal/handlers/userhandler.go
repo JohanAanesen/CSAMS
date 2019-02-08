@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/structs"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
 	"html/template"
 	"log"
 	"net/http"
@@ -12,7 +13,7 @@ import (
 
 type payload struct {
 	User        model.User
-	Courses     []structs.CourseDB
+	Courses     page.Courses
 	NoOfClasses int
 }
 
@@ -23,18 +24,40 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 	ok, _, _, data := checkUserStatus(w, r)
 	fmt.Println(data)
 
-	// If everything went ok, execute page
-	if ok {
+	if !ok{
+		ErrorHandler(w,r, http.StatusBadRequest)
+		return
+	}
 
-		//parse information with template
-		temp, err := template.ParseFiles("web/user.html")
-		if err != nil {
-			log.Fatal(err)
-		} else {
-			w.WriteHeader(http.StatusOK)
-		}
 
-		temp.Execute(w, data)
+	// Data for displaying on screen
+	data2 := struct {
+		User 		model.User
+		PageTitle   string
+		Menu        page.Menu
+		Navbar      page.Menu
+		Courses     page.Courses
+		NoOfClasses int
+	}{
+		User: data.User,
+		PageTitle: "User page",
+		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Navbar:    util.LoadMenuConfig("configs/menu/site.json"),
+		Courses:   data.Courses, // dd = dummy data
+		NoOfClasses: data.NoOfClasses,
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+	//parse templates
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/user.html")
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	if err = temp.ExecuteTemplate(w, "layout", data2); err != nil {
+		log.Println(err)
 	}
 }
 
@@ -125,10 +148,10 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, int, string,
 	//_, name, emailStudent, teacher, emailPrivate, hash := db.GetUser(user.ID)
 
 	// Get users courses
-	var courses []structs.CourseDB
+	var courses page.Courses
 	courses = db.GetCoursesToUser(user.ID)
 
-	data = payload{User: user2, Courses: courses, NoOfClasses: len(courses)}
+	data = payload{User: user2, Courses: courses, NoOfClasses: len(courses.Items)}
 
 	return true, user.ID, hash, data
 }

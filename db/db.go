@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/structs"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
 	_ "github.com/go-sql-driver/mysql" //database driver
 	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
@@ -119,10 +119,10 @@ func GetUser(userID int) (int, string, string, int, string, string) {
 */
 
 // GetCourseToUser returns all the courses to the user
-func GetCoursesToUser(userID int) []structs.CourseDB {
+func GetCoursesToUser(userID int) page.Courses {
 
 	// Create an empty courses array
-	var courses []structs.CourseDB
+	var courses page.Courses
 
 	rows, err := DB.Query("SELECT course.* FROM course INNER JOIN usercourse ON course.id = usercourse.courseid WHERE usercourse.userid = ?", userID)
 	if err != nil {
@@ -138,16 +138,16 @@ func GetCoursesToUser(userID int) []structs.CourseDB {
 		var courseName string
 		var teacher int
 		var description string
-		var year int
+		var year string
 		var semester string
 
 		rows.Scan(&id, &courseCode, &courseName, &teacher, &description, &year, &semester)
 
 		// Add course to courses array
-		courses = append(courses, structs.CourseDB{
+		courses.Items = append(courses.Items, page.Course{
 			Id:          id,
-			CourseCode:  courseCode,
-			CourseName:  courseName,
+			Code:  courseCode,
+			Name:  courseName,
 			Teacher:     teacher,
 			Description: description,
 			Year:        year,
