@@ -1,7 +1,8 @@
 package handlers
 
 import (
-	dbcon "github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -11,7 +12,7 @@ import (
 )
 
 func init() {
-	dbcon.InitDB(os.Getenv("SQLDB"))
+	db.InitDB(os.Getenv("SQLDB"))
 
 	if err := os.Chdir("../../"); err != nil { //go out of /handlers folder
 		panic(err)
@@ -89,7 +90,7 @@ func TestMainHandler(t *testing.T) {
 	}
 }
 
-func TestClassHandler(t *testing.T) {
+func TestCourseHandler(t *testing.T) {
 
 	req, err := http.NewRequest("GET", "/course?id=asdfcvgbhnjk", nil)
 	if err != nil {
@@ -113,7 +114,7 @@ func TestClassHandler(t *testing.T) {
 	}
 }
 
-func TestClassListHandler(t *testing.T) {
+func TestCourseListHandler(t *testing.T) {
 
 	req, err := http.NewRequest("GET", "/course/list?id=adsikjuh", nil)
 	if err != nil {
@@ -169,6 +170,20 @@ func TestAdminHandler(t *testing.T) {
 	}
 
 	resp := httptest.NewRecorder()
+
+	//get a session
+	session, err := db.CookieStore.Get(req, "login-session")
+	//user object we want to fill with variables needed
+	var user model.User
+	user.Authenticated = true
+	user.Teacher = true
+	//save user to session values
+	session.Values["user"] = user
+	//save session changes
+	err = session.Save(req, resp)
+	if err != nil { //check error
+		t.Error(err.Error())
+	}
 
 	http.HandlerFunc(AdminHandler).ServeHTTP(resp, req)
 
@@ -258,7 +273,7 @@ func TestAssignmentPeerHandler(t *testing.T) {
 }
 
 func TestErrorHandler(t *testing.T) {
-	req, err := http.NewRequest("GET", "/class", nil) //class with no id should give 403
+	req, err := http.NewRequest("GET", "/course", nil) //class with no id should give 403
 	if err != nil {
 		t.Fatal(err.Error())
 	}
