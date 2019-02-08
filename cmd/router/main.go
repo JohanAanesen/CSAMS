@@ -35,6 +35,7 @@ func main() {
 	router.HandleFunc("/admin/course/update/{id}", handlers.AdminUpdateCourseRequest).Methods("POST")
 	router.HandleFunc("/admin/assignment", handlers.AdminAssignmentHandler).Methods("GET")
 	router.HandleFunc("/admin/assignment/create", handlers.AdminCreateAssignmentHandler).Methods("GET")
+	router.HandleFunc("/admin/assignment/create", handlers.AdminCreateAssignmentRequest).Methods("POST")
 
 	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 

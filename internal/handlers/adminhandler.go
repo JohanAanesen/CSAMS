@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
@@ -191,5 +192,19 @@ func AdminCreateAssignmentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func AdminCreateAssignmentRequest(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var foo []struct{
+		Type string `json:"type"`
+		Question string `json:"question"`
+		Description string `json:"description"`
+		Priority string `json:"priority"`
+	}
 
+	err := decoder.Decode(&foo)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	fmt.Printf("%v", foo)
 }

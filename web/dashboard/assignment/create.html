@@ -13,12 +13,12 @@
             <button class="btn btn-success btn-block" id="save">Save</button>
         </div>
 
-        <div class="col-9" id="custom_form"></div>
+        <div class="col-9" id="output"></div>
     </div>
     <script>
         let data = [];
 
-        let custom_form = document.getElementById('custom_form');
+        let output = document.getElementById('output');
         let form = [];
         let priorities = [];
 
@@ -31,6 +31,20 @@
             });
         });
 
+        document.getElementById('save').addEventListener('click', e => {
+            fetch('/admin/assignment/create', {
+                method: 'post',
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8'
+                },
+                body: JSON.stringify(data),
+            }).then(e => {
+                console.log(JSON.stringify(data));
+            }).catch(err => {
+                console.error('Request failed', err)
+            });
+        });
+
         function createField(type) {
             let card = document.createElement('div');
             card.classList.add('card', 'mb-3');
@@ -39,7 +53,7 @@
                 'type': type,
                 'question': '',
                 'description': '',
-                'priority': form.length + 1,
+                'priority': form.length.toString(),
             };
 
             card.appendChild(createCardHeader());
@@ -49,7 +63,6 @@
             form.push(card);
 
             displayForm();
-            addEventListeners();
         }
 
         function updateData() {
@@ -60,27 +73,11 @@
             }
         }
 
-        function updatePriority() {
-            for (let i = 0; i < form.length; i++) {
-                let val = document.getElementById(`priority_${i}`).value;
-                if (val !== 'Priority') {
-                    data[i].priority = val;
-                    data[val].priority = i.toString();
-                    form.swap(i, val);
-                    displayForm();
-                }
-            }
-        }
-
-        function addEventListeners() {
-
-        }
-
         function displayForm() {
-            custom_form.innerHTML = '';
+            output.innerHTML = '';
 
             for (let i = 0; i < form.length; i++) {
-                custom_form.appendChild(form[i]);
+                output.appendChild(form[i]);
             }
         }
 
@@ -94,48 +91,12 @@
             let col_10 = document.createElement('div');
             col_10.classList.add('col-10');
 
-            let question = document.createElement('input');
-            question.setAttribute('type', 'text');
-            question.classList.add('form-control');
-            question.setAttribute('placeholder', 'Question');
-            question.id = `question_${form.length}`;
-            question.setAttribute('onChange', 'updateData()');
-
-            col_10.appendChild(question);
+            col_10.appendChild(createQuestionField());
 
             let col_2 = document.createElement('div');
             col_2.classList.add('col-2');
 
-            let select = document.createElement('select');
-            select.classList.add('form-control');
-            select.id = `priority_${form.length}`;
-            select.setAttribute('onchange', 'updatePriority()');
-
-            priorities.push(select); // Add select to an array so we can reset them
-
-            // Loop through all priority-fields
-            priorities.forEach(e => {
-                // Check if elements is a instance of HTMLElement
-                if (e instanceof HTMLElement) {
-                    // Clear inner HTML of select
-                    e.innerHTML = '';
-
-                    let prior = document.createElement('option');
-                    prior.setAttribute('selected', '');
-                    prior.innerText = 'Priority';
-
-                    e.appendChild(prior);
-
-                    for (let i = 0; i <= form.length; i++) {
-                        let option = document.createElement('option');
-                        option.innerText = i.toString();
-
-                        e.appendChild(option);
-                    }
-                }
-            });
-
-            col_2.appendChild(select);
+            col_2.appendChild(createPrioritySelect());
 
             row.appendChild(col_10);
             row.appendChild(col_2);
@@ -143,6 +104,28 @@
             cardHeader.appendChild(row);
 
             return cardHeader;
+        }
+
+        function createQuestionField() {
+            let question = document.createElement('input');
+            question.setAttribute('type', 'text');
+            question.classList.add('form-control');
+            question.setAttribute('placeholder', 'Question');
+            question.id = `question_${form.length}`;
+            question.setAttribute('onChange', 'updateData()');
+
+            return question;
+        }
+
+        function createPrioritySelect() {
+            let prior = document.createElement('input');
+            prior.setAttribute('type', 'text');
+            prior.setAttribute('placeholder', 'Priority');
+            prior.classList.add('form-control');
+            prior.id = `priority_${form.length}`;
+            prior.setAttribute('onchange', 'updateData()');
+
+            return prior;
         }
 
         function createCardBody() {
