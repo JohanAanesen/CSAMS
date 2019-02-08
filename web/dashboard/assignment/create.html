@@ -9,11 +9,23 @@
             <button class="btn btn-light btn-block border" id="btn_textarea">Textarea</button>
             <button class="btn btn-light btn-block border" id="btn_checkbox">Checkbox</button>
             <button class="btn btn-light btn-block border" id="btn_radio">Radio</button>
+            <hr>
+            <button class="btn btn-success btn-block" id="save">Save</button>
         </div>
 
         <div class="col-9" id="custom_form"></div>
     </div>
     <script>
+        let data = [
+            {
+                'id': '',
+                'type': 'textfield',
+                'question': '',
+                'description': '',
+            }
+        ];
+
+
         let custom_form = document.getElementById('custom_form');
         let form = [];
         let priorities = [];
@@ -23,6 +35,7 @@
         types.forEach(type => {
             document.getElementById('btn_' + type).addEventListener('click', e => {
                 e.preventDefault();
+
                 createField(type);
             });
         });
@@ -31,6 +44,13 @@
             let card = document.createElement('div');
             card.classList.add('card', 'mb-3');
 
+            data[form.length] = {
+                'type': type,
+                'question': '',
+                'description': '',
+                'priority': form.length + 1,
+            };
+
             card.appendChild(createCardHeader());
             card.appendChild(createCardBody());
             card.appendChild(createCardFooter(type));
@@ -38,6 +58,18 @@
             form.push(card);
 
             displayForm();
+            addEventListeners();
+        }
+
+        function updateData() {
+            for (let i = 0; i < form.length; i++) {
+                data[i].question = document.getElementById(`question_${i}`).value;
+                data[i].description = document.getElementById(`description_${i}`).value;
+            }
+        }
+
+        function addEventListeners() {
+
         }
 
         function displayForm() {
@@ -62,6 +94,8 @@
             question.setAttribute('type', 'text');
             question.classList.add('form-control');
             question.setAttribute('placeholder', 'Question');
+            question.id = `question_${form.length}`;
+            question.setAttribute('onChange', 'updateData()');
 
             col_10.appendChild(question);
 
@@ -70,6 +104,7 @@
 
             let select = document.createElement('select');
             select.classList.add('form-control');
+            select.id = `priority_${form.length}`;
 
             priorities.push(select); // Add select to an array so we can reset them
 
@@ -112,6 +147,8 @@
             let textarea = document.createElement('textarea');
             textarea.classList.add('form-control');
             textarea.setAttribute('placeholder', 'Description');
+            textarea.id = `description_${form.length}`;
+            textarea.setAttribute('onChange', 'updateData()');
 
             cardBody.appendChild(textarea);
 
@@ -213,5 +250,11 @@
 
             return cardFooter;
         }
+
+        Array.prototype.swap = function(a, b) {
+            let temp = this[a];
+            this[a] = this[b];
+            this[b] = temp;
+        };
     </script>
 {{ end }}
