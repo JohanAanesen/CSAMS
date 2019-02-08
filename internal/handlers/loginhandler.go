@@ -57,14 +57,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 func LoginRequest(w http.ResponseWriter, r *http.Request) {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	user := getUser(session)
 	if user.Authenticated { //already logged in, redirect to home page
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/", http.StatusFound) //todo redirect without 302
 		return
 	}
 
@@ -72,7 +72,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password") //password
 
 	if email == "" || password == "" { //login credentials cannot be empty
-		http.Redirect(w, r, "/login", http.StatusFound)
+		LoginHandler(w,r)
 		return
 	}
 
@@ -83,18 +83,16 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 		user.Authenticated = true
 		session.Values["user"] = user
 	} else {
+		//redirect to errorhandler
 		ErrorHandler(w, r, http.StatusUnauthorized)
-		//todo log this event
-		log.Fatal(err)
 		return
 	}
 
 	err = session.Save(r, w) //save session changes
 
 	if err != nil {
+		log.Println(err.Error())//todo log this event
 		ErrorHandler(w, r, http.StatusInternalServerError)
-		//todo log this event
-		log.Fatal(err)
 		return
 	}
 
