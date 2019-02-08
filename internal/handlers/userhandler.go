@@ -4,15 +4,24 @@ import (
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/structs"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
 	"html/template"
 	"log"
 	"net/http"
 )
 
 type payload struct {
+	User    model.User
+	Courses page.Courses
+}
+
+type pageData = struct {
 	User        model.User
-	Courses     []structs.CourseDB
+	PageTitle   string
+	Menu        page.Menu
+	Navbar      page.Menu
+	Courses     page.Courses
 	NoOfClasses int
 }
 
@@ -20,21 +29,34 @@ type payload struct {
 func UserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check if user is logged in and get user information
-	ok, _, data := checkUserStatus(w, r)
-	fmt.Println(data)
+	ok, _, payload := checkUserStatus(w, r)
 
-	// If everything went ok, execute page
-	if ok {
+	if !ok {
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
 
-		//parse information with template
-		temp, err := template.ParseFiles("web/user.html")
-		if err != nil {
-			log.Fatal(err)
-		} else {
-			w.WriteHeader(http.StatusOK)
-		}
+	// Data for displaying in view
+	data := pageData{
+		User:        payload.User,
+		PageTitle:   payload.User.Name,
+		Menu:        util.LoadMenuConfig("configs/menu/dashboard.json"),
+		Navbar:      util.LoadMenuConfig("configs/menu/site.json"),
+		Courses:     payload.Courses,
+		NoOfClasses: len(payload.Courses.Items),
+	}
 
-		temp.Execute(w, data)
+	w.WriteHeader(http.StatusOK)
+
+	//parse templates
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/user.html")
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	if err = temp.ExecuteTemplate(w, "layout", data); err != nil {
+		log.Println(err)
 	}
 }
 
@@ -43,8 +65,8 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 
 	ok, userID, payload := checkUserStatus(w, r)
 
-	// Only do all this if it's a POST and it was possible to get userdata from DB
-	if r.Method == http.MethodPost && ok {
+	// Only do all this if it was possible to get userdata from DB
+	if ok {
 
 		// Get hashed password
 		hash := db.GetHash(userID)
@@ -74,6 +96,8 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 		} else if secondaryEmail != "" && db.UpdateUserEmail(userID, secondaryEmail) {
 			fmt.Println("Success: Private email changed from " + payload.User.EmailPrivate + " to " + secondaryEmail)
 			everythingOk = true
+		} else {
+			ErrorHandler(w, r, http.StatusBadRequest)
 		}
 
 		// Users password
@@ -124,8 +148,7 @@ func checkUserStatus(w http.ResponseWriter, r *http.Request) (bool, int, payload
 	// Get users courses
 	courses := db.GetCoursesToUser(user.ID)
 
-	// Put data in struct
-	data = payload{User: user2, Courses: courses, NoOfClasses: len(courses)}
+	data = payload{User: user2, Courses: courses}
 
 	// Return data
 	return true, user.ID, data

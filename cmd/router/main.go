@@ -24,7 +24,7 @@ func main() {
 	router.HandleFunc("/course", handlers.CourseHandler).Methods("GET")
 	router.HandleFunc("/course/list", handlers.CourseListHandler).Methods("GET")
 	router.HandleFunc("/user", handlers.UserHandler).Methods("GET")
-	router.HandleFunc("/user", handlers.UserUpdateRequest).Methods("POST")
+	router.HandleFunc("/user/update", handlers.UserUpdateRequest).Methods("POST")
 	router.HandleFunc("/admin", handlers.AdminHandler).Methods("GET")
 
 	router.HandleFunc("/assignment", handlers.AssignmentHandler).Methods("GET")

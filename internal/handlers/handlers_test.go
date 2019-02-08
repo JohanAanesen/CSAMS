@@ -5,7 +5,9 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -42,7 +44,6 @@ func TestLoginHandler(t *testing.T) {
 }
 
 func TestLoggingIn(t *testing.T) {
-	/*
 	form := url.Values{}
 	form.Add("email", "hei@gmail.com")
 	form.Add("password", "hei")
@@ -64,7 +65,6 @@ func TestLoggingIn(t *testing.T) {
 	if body.Len() <= 0 {
 		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
 	}
-	*/
 }
 
 func TestMainHandler(t *testing.T) {
@@ -141,13 +141,27 @@ func TestCourseListHandler(t *testing.T) {
 func TestUserHandler(t *testing.T) {
 
 	// TODO : fix this
-	/*
+
 	req, err := http.NewRequest("GET", "/user", nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	resp := httptest.NewRecorder()
+
+	//get a session
+	session, err := db.CookieStore.Get(req, "login-session")
+	//user object we want to fill with variables needed
+	var user model.User
+	user.Authenticated = true
+	user.Teacher = false
+	//save user to session values
+	session.Values["user"] = user
+	//save session changes
+	err = session.Save(req, resp)
+	if err != nil { //check error
+		t.Error(err.Error())
+	}
 
 	http.HandlerFunc(UserHandler).ServeHTTP(resp, req)
 
@@ -162,7 +176,6 @@ func TestUserHandler(t *testing.T) {
 	if body.Len() <= 0 {
 		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
 	}
-	*/
 }
 
 // First test that the user gets redirected to /login if he's not logged in
@@ -191,27 +204,31 @@ func TestCheckUserStatusNotLoggedIn(t *testing.T) {
 }
 
 func TestCheckUserStatusLoggedIn(t *testing.T) {
-	// TODO : Fix code
-}
-
-func TestUserUpdateRequest(t *testing.T) {
-	// TODO : Fix code
-
-	/*
-	// Change name and email
-	form := url.Values{}
-	form.Add("name", "Name N. Nameson")
-	form.Add("secondaryEmail", "myNew@emailIsCool.com")
-	req := httptest.NewRequest("POST", "/user", strings.NewReader(form.Encode()))
-	req.Form = form
+	req, err := http.NewRequest("GET", "/user", nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(UserUpdateRequest).ServeHTTP(resp, req)
+	//get a session
+	session, err := db.CookieStore.Get(req, "login-session")
+	//user object we want to fill with variables needed
+	var user model.User
+	user.Authenticated = true
+	user.Teacher = false
+	//save user to session values
+	session.Values["user"] = user
+	//save session changes
+	err = session.Save(req, resp)
+	if err != nil { //check error
+		t.Error(err.Error())
+	}
+
+	http.HandlerFunc(UserHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
-	// Status should be 200/OK if it went by okey
 	if status != http.StatusOK {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
 	}
@@ -221,6 +238,51 @@ func TestUserUpdateRequest(t *testing.T) {
 	if body.Len() <= 0 {
 		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
 	}
+}
+
+func TestUserUpdateRequest(t *testing.T) {
+	// TODO : Fix code
+	/*
+		// Change name and email
+		form := url.Values{}
+		form.Add("usersName", "Name N. Nameson")
+		//form.Add("secondaryEmail", "myNew@emailIsCool.com")
+		req := httptest.NewRequest("POST", "/user/update", strings.NewReader(form.Encode()))
+		req.Form = form
+
+		resp := httptest.NewRecorder()
+
+		//get a session
+		session, err := db.CookieStore.Get(req, "login-session")
+		//user object we want to fill with variables needed
+		var user model.User
+		user.ID = 1
+		user.Name = "Test User"
+		user.EmailStudent = "hei@gmail.com"
+		user.Authenticated = true
+		user.Teacher = true
+		//save user to session values
+		session.Values["user"] = user
+		//save session changes
+		err = session.Save(req, resp)
+		if err != nil { //check error
+			t.Error(err.Error())
+		}
+
+		http.HandlerFunc(UserUpdateRequest).ServeHTTP(resp, req)
+
+		status := resp.Code
+
+		// Status should be 200/OK if it went by okey
+		if status != http.StatusOK {
+			t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+		}
+
+		body := resp.Body
+
+		if body.Len() <= 0 {
+			t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+		}
 	*/
 }
 
