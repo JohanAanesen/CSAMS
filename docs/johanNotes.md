@@ -70,4 +70,7 @@ can just add links there.
 Friday 8/2
 -----------
 * 11 Create Course cont/testing
-* 
+* Finished up 11, found out that the tests that needed some kind of session could be hacked because
+i have the cookiestore/sessionstore stuff available in the test suite, sweet
+* Helped Brede with some bugs on his 8-userpage branch
+* didn't have too much time to work this day :(
