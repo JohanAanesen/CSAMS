@@ -51,3 +51,4 @@ func LoadCoursesConfig(file string) page.Courses {
 
 	return course
 }
+
