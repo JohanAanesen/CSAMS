@@ -16,14 +16,14 @@ func UpdateUserName(userID int, newName string) bool {
 		//todo log error
 		log.Fatal(err.Error())
 		return false
-	} else {
-		// TODO : maybe add confirmation or something
-		defer rows.Close()
-		return true
 	}
+
+	defer rows.Close()
+
+	return true
 }
 
-// UpdateUserEmail updates the users email in the db
+//UpdateUserEmail updates the users email in the db
 func UpdateUserEmail(userID int, email string) bool {
 	rows, err := DB.Query("UPDATE users SET email_private = ? WHERE id = ?", email, userID)
 
@@ -31,14 +31,14 @@ func UpdateUserEmail(userID int, email string) bool {
 		//todo log error
 		log.Fatal(err.Error())
 		return false
-	} else {
-		// TODO : maybe add confirmation or something
-		defer rows.Close()
-		return true
 	}
+
+	defer rows.Close()
+
+	return true
 }
 
-// UpdateUserPassword updates the users password in the db
+//UpdateUserPassword updates the users password in the db
 func UpdateUserPassword(userID int, password string) bool {
 
 	// Hash the password first
@@ -56,13 +56,14 @@ func UpdateUserPassword(userID int, password string) bool {
 		//todo log error
 		log.Fatal(err.Error())
 		return false
-	} else {
-		// TODO : maybe add confirmation or something
-		defer rows.Close()
-		return true
 	}
+
+	defer rows.Close()
+
+	return true
 }
 
+//GetUser retrieves an user from DB through userID
 func GetUser(userID int) model.User {
 	rows, err := DB.Query("SELECT id, name, email_student, email_private, teacher FROM users WHERE id = ?", userID)
 	if err != nil {

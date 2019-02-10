@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+//IsTeacher returns if user is a teacher or not
 func IsTeacher(r *http.Request) bool {
 	//check if user is already logged in
 	user := GetUserFromSession(r)
@@ -19,6 +20,7 @@ func IsTeacher(r *http.Request) bool {
 	return IsLoggedIn(r)
 }
 
+//IsLoggedIn returns if user is authenticated or not
 func IsLoggedIn(r *http.Request) bool {
 	//get user from session
 	user := GetUserFromSession(r)
@@ -31,6 +33,7 @@ func IsLoggedIn(r *http.Request) bool {
 	return true
 }
 
+//GetUserFromSession returns user object stored in session
 func GetUserFromSession(r *http.Request) model.User {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
@@ -47,6 +50,7 @@ func GetUserFromSession(r *http.Request) model.User {
 	return user
 }
 
+//SaveUserToSession saves user object to sessionstore
 func SaveUserToSession(user model.User, w http.ResponseWriter, r *http.Request) bool {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
