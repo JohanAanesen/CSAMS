@@ -1,11 +1,16 @@
 Svein's log
 ============
+## 08/02/2019
+* Programmed with Javascript for making a dynamic form for assignments/peer-review.
+  * Meet some challenges about prioritizing the fields 
+
 ## 07/02/2019
 * Added navbar to every page
 * Took use of GetPort
 * Discussed Markdown for *description* in Courses
   * https://github.com/gomarkdown/markdown
   * https://github.com/sparksuite/simplemde-markdown-editor
+* Started on the dynamic form for assignments/peer-review
 
 ## 06/02/2019
 * Added another function for loading JSON-data from file
