@@ -21,17 +21,16 @@ func main() {
 	router.HandleFunc("/register", handlers.RegisterHandler).Methods("GET")
 	router.HandleFunc("/register", handlers.RegisterRequest).Methods("POST")
 	router.HandleFunc("/logout", handlers.LogoutHandler).Methods("GET")
+
 	router.HandleFunc("/course", handlers.CourseHandler).Methods("GET")
 	router.HandleFunc("/course/list", handlers.CourseListHandler).Methods("GET")
-	router.HandleFunc("/user", handlers.UserHandler).Methods("GET")
-	router.HandleFunc("/user/update", handlers.UserUpdateRequest).Methods("POST")
-	router.HandleFunc("/admin", handlers.AdminHandler).Methods("GET")
 
 	router.HandleFunc("/assignment", handlers.AssignmentHandler).Methods("GET")
 	router.HandleFunc("/assignment/peer", handlers.AssignmentPeerHandler).Methods("GET")
 	router.HandleFunc("/assignment/auto", handlers.AssignmentAutoHandler).Methods("GET")
 
 	router.HandleFunc("/user", handlers.UserHandler).Methods("GET")
+	router.HandleFunc("/user/update", handlers.UserUpdateRequest).Methods("POST")
 
 	router.HandleFunc("/admin", handlers.AdminHandler).Methods("GET")
 	router.HandleFunc("/admin/course", handlers.AdminCourseHandler).Methods("GET")

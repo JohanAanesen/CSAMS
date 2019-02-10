@@ -12,7 +12,7 @@ import (
 // AdminHandler handles GET-request at /admin
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
-	if !isTeacher(r){ //not a teacher, error 401
+	if !util.IsTeacher(r) { //not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
@@ -50,7 +50,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 // AdminCourseHandler handles GET-request at /admin/course
 func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
-	if !isTeacher(r){ //not a teacher, error 401
+	if !util.IsTeacher(r) { //not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
@@ -84,7 +84,7 @@ func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
 // AdminCreateCourseHandler handles GET-request at /admin/course/create
 func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
-	if !isTeacher(r){ //not a teacher, error 401
+	if !util.IsTeacher(r) { //not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
@@ -114,20 +114,13 @@ func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 // Inserts a new course to the database
 func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
-	if !isTeacher(r){ //not a teacher, error 401
+	if !util.IsTeacher(r) { //not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
 
-	session, err := db.CookieStore.Get(r, "login-session") //get session
-	if err != nil {
-		log.Println(err)
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
-
 	//check if user is already logged in
-	user := getUser(session)
+	user := util.GetUserFromSession(r)
 
 	course := page.Course{
 		Code:        r.FormValue("code"),
@@ -150,13 +143,13 @@ func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 
 	defer rows.Close()
 
-	MainHandler(w,r) //success redirect to homepage
+	MainHandler(w, r) //success redirect to homepage
 }
 
 // AdminUpdateCourseHandler handles GET-request at /admin/course/update/{id}
 func AdminUpdateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
-	if !isTeacher(r){ //not a teacher, error 401
+	if !util.IsTeacher(r) { //not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
@@ -185,7 +178,7 @@ func AdminUpdateCourseHandler(w http.ResponseWriter, r *http.Request) {
 // AdminUpdateCourseRequest handles POST-request at /admin/course/update/{id}
 func AdminUpdateCourseRequest(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
-	if !isTeacher(r){ //not a teacher, error 401
+	if !util.IsTeacher(r) { //not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
@@ -194,14 +187,14 @@ func AdminUpdateCourseRequest(w http.ResponseWriter, r *http.Request) {
 // AdminAssignmentHandler handles GET-request at /admin/assignment
 func AdminAssignmentHandler(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
-	if !isTeacher(r){ //not a teacher, error 401
+	if !util.IsTeacher(r) { //not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
 
 	//parse template
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/assignment/index.html")
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/assignment/index.html")
 
 	if err != nil {
 		log.Fatal(err)
@@ -218,22 +211,4 @@ func AdminAssignmentHandler(w http.ResponseWriter, r *http.Request) {
 	}); err != nil {
 		log.Fatal(err)
 	}
-}
-
-func isTeacher(r *http.Request)bool{
-	session, err := db.CookieStore.Get(r, "login-session") //get session
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-
-	//check if user is already logged in
-	user := getUser(session)
-
-	//check that user is a teacher
-	if !user.Teacher{ //not a teacher, error 401
-		return false
-	}
-
-	return true
 }

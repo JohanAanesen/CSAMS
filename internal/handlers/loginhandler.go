@@ -6,7 +6,6 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
-	"github.com/gorilla/sessions"
 	"html/template"
 	"log"
 	"net/http"
@@ -18,15 +17,8 @@ func init() {
 
 //LoginHandler serves login page to users
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	session, err := db.CookieStore.Get(r, "login-session") //get session
-	if err != nil {
-		log.Fatal(err)
-		ErrorHandler(w, r, http.StatusInternalServerError) //error getting session 500
-		return
-	}
-
 	//check if user is already logged in
-	user := getUser(session)
+	user := util.GetUserFromSession(r)
 	if user.Authenticated { //already logged in, redirect to homepage
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
@@ -55,14 +47,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 //LoginRequest validates login requests
 func LoginRequest(w http.ResponseWriter, r *http.Request) {
-	session, err := db.CookieStore.Get(r, "login-session") //get session
-	if err != nil {
-		log.Fatal(err)
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
 
-	user := getUser(session)
+	user := util.GetUserFromSession(r)
 	if user.Authenticated { //already logged in, redirect to home page
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
@@ -81,33 +67,14 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		//save user to session values
 		user.Authenticated = true
-		session.Values["user"] = user
+		util.SaveUserToSession(user, w, r)
 	} else {
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event
-		log.Fatal(err)
-		return
-	}
-
-	err = session.Save(r, w) //save session changes
-
-	if err != nil {
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		//todo log this event
-		log.Fatal(err)
+		log.Fatal()
 		return
 	}
 
 	//http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
 	MainHandler(w, r) //redirect to homepage
-}
-
-func getUser(s *sessions.Session) model.User {
-	val := s.Values["user"]
-	var user = model.User{}
-	user, ok := val.(model.User)
-	if !ok {
-		return model.User{Authenticated: false}
-	}
-	return user
 }
