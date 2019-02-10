@@ -194,7 +194,7 @@ func AdminAssignmentHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	//parse template
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/sidebar.html", "web/dashboard/assignment/index.html")
+	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/assignment/index.html")
 
 	if err != nil {
 		log.Fatal(err)
