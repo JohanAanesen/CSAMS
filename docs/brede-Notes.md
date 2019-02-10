@@ -41,6 +41,37 @@
 * Merged with master and got some problems, but Johan helped me fix it.
 * Almost done with #8 now, only need some refactoring and I have to fix one test.
 
+### Sunday - 10/02/19
+*I'm 5h too short for this week, so I have to work some today too*
+* Started up with setting up the environment on my laptop since I'm home and not in Gjøvik.
+* I'm going to fix one test today and Johan is refactoring the code, so after that, I can make a pull request.
+* 
+
+### Report for Week One
+```
+* Hva du har gjort/jobbet på
+* Hvilke design/arkitekturmessige avgjørelser du gjorde på hvilke ting, 
+tenk over hvorfor siden ser ut som den gjør, 
+og tilgjengeligheten av funksjonaliteten vi har laget hittil
+* Hva gikk bra
+* Hva gikk dårlig
+```
+#### What I Have Done
+In the first week I have worked on only one story/card, [#8 - User Page](https://trello.com/c/FZk85I6L). I had to learn about Bootstrap and in general 
+web development before I could start properly. [#8 - User Page](https://trello.com/c/FZk85I6L) was about making the user profile. It had to
+Show the users information as his name, student email, private email and his courses. I also had to implement a way for the user
+to change information as his name, private email and password, but it also had to look nice (see Bootstrap). As most stories/cards 
+I had to make tests for some functions also.
+
+#### Design/Architecture Decisions
+I got my inspiration from [this page](https://getbootstrap.com/docs/4.2/examples/offcanvas/#) and i Liked it because it had a 
+"clean" look and the card design feels very modern. The page consists of two cards, one for the user information and one for the courses
+the user is assigned to. This was to separate the user with the courses and it just overall looked better this way than
+having all the information in one card. It also made it easier for when the user needs to edit something.
+
+#### What Went Good
+#### What Went Bad
+
 ## Week Two
 ### Monday - 11/02/19
 
