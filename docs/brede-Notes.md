@@ -48,14 +48,6 @@
 * 
 
 ### Report for Week One
-```
-* Hva du har gjort/jobbet på
-* Hvilke design/arkitekturmessige avgjørelser du gjorde på hvilke ting, 
-tenk over hvorfor siden ser ut som den gjør, 
-og tilgjengeligheten av funksjonaliteten vi har laget hittil
-* Hva gikk bra
-* Hva gikk dårlig
-```
 #### What I Have Done
 In the first week I have worked on only one story/card, [#8 - User Page](https://trello.com/c/FZk85I6L). I had to learn about Bootstrap and in general 
 web development before I could start properly. [#8 - User Page](https://trello.com/c/FZk85I6L) was about making the user profile. It had to
@@ -67,10 +59,22 @@ I had to make tests for some functions also.
 I got my inspiration from [this page](https://getbootstrap.com/docs/4.2/examples/offcanvas/#) and i Liked it because it had a 
 "clean" look and the card design feels very modern. The page consists of two cards, one for the user information and one for the courses
 the user is assigned to. This was to separate the user with the courses and it just overall looked better this way than
-having all the information in one card. It also made it easier for when the user needs to edit something.
+having all the information in one card. It's also easier for when the user needs to edit something to have all the editable 
+information in one card. Most user information (everything except `NoOfCourses`) is displayed in an input field so it's easier
+to change information. When teh user presses the edit button, the input fields is made editable by javascript. I also liked this design 
+better so the information displayed does not change that much when the edit button is pressed.
 
 #### What Went Good
+* The user profile page ended up looking better than expected.
+* I learned more about bootstrap and web development.
+* I got to work with front-end, back-end and the database. In other words, I understand more of the 
+projects design and are more prepared for the next card now. 
+
 #### What Went Bad
+* Loooots of bugs that ended up taking more time than it should. 
+* I was also new to bootstrap and web development in general.
+* I wrote messy code and didn't see it before Johan refactored it. 
+* I overslept two times and stopped earlier three times, so I had to work on a sunday.
 
 ## Week Two
 ### Monday - 11/02/19
