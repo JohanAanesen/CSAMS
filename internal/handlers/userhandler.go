@@ -26,7 +26,7 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 	user := util.GetUserFromSession(r)
 
 	if !util.IsLoggedIn(r) {
-		ErrorHandler(w, r, http.StatusBadRequest)
+		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
 
@@ -99,8 +99,13 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// if the password isn't the same as before and repeat and new is equal but not equal to oldpass, change password
-	if oldPass != "" && newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass && db.CheckPasswordHash(oldPass, hash) {
+	// No password input fields can be empty,
+	// the new password has to be equal to repeat password field,
+	// and the new password can't be the same as the old password
+	passwordIsOkay := oldPass != "" && newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass
+
+	// If there's no problem with passwords and teh password is changed
+	if passwordIsOkay && db.CheckPasswordHash(oldPass, hash) {
 		if db.UpdateUserPassword(user.ID, newPass) {
 			fmt.Println("Success: Password is now changed!")
 		} else {

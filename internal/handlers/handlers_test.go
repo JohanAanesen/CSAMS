@@ -192,8 +192,8 @@ func TestCheckUserStatusNotLoggedIn(t *testing.T) {
 
 	status := resp.Code
 
-	if status != http.StatusFound {
-		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusFound, status)
+	if status != http.StatusUnauthorized {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusUnauthorized, status)
 	}
 
 	body := resp.Body
@@ -242,48 +242,49 @@ func TestCheckUserStatusLoggedIn(t *testing.T) {
 
 func TestUserUpdateRequest(t *testing.T) {
 	// TODO : Fix code
-	/*
-		// Change name and email
-		form := url.Values{}
-		form.Add("usersName", "Name N. Nameson")
-		//form.Add("secondaryEmail", "myNew@emailIsCool.com")
-		req := httptest.NewRequest("POST", "/user/update", strings.NewReader(form.Encode()))
-		req.Form = form
+	// Change name and email
+	form := url.Values{}
+	form.Add("usersName", "Ken Thompson") // One of the Golang creators
+	form.Add("secondaryEmail", "mannen@harmannenfalt.no")
+	req := httptest.NewRequest("POST", "/user/update", strings.NewReader(form.Encode()))
+	req.Form = form
 
-		resp := httptest.NewRecorder()
+	resp := httptest.NewRecorder()
 
-		//get a session
-		session, err := db.CookieStore.Get(req, "login-session")
-		//user object we want to fill with variables needed
-		var user model.User
-		user.ID = 1
-		user.Name = "Test User"
-		user.EmailStudent = "hei@gmail.com"
-		user.Authenticated = true
-		user.Teacher = true
-		//save user to session values
-		session.Values["user"] = user
-		//save session changes
-		err = session.Save(req, resp)
-		if err != nil { //check error
-			t.Error(err.Error())
-		}
+	//get a session
+	session, err := db.CookieStore.Get(req, "login-session")
 
-		http.HandlerFunc(UserUpdateRequest).ServeHTTP(resp, req)
+	//user object we want to fill with variables needed
+	user := model.User{
+		ID:            1,
+		Name:          "Test User",
+		EmailStudent:  "hei@gmail.com",
+		EmailPrivate:  "test@yahoo.com",
+		Authenticated: true,
+		Teacher:       true,
+	}
+	//save user to session values
+	session.Values["user"] = user
+	//save session changes
+	err = session.Save(req, resp)
+	if err != nil { //check error
+		t.Error(err.Error())
+	}
 
-		status := resp.Code
+	http.HandlerFunc(UserUpdateRequest).ServeHTTP(resp, req)
 
-		// Status should be 200/OK if it went by okey
-		if status != http.StatusOK {
-			t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
-		}
+	status := resp.Code
 
-		body := resp.Body
+	// Status should be 200/OK if it went by okey
+	if status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	}
 
-		if body.Len() <= 0 {
-			t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
-		}
-	*/
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
 }
 
 func TestAdminHandler(t *testing.T) {
