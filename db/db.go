@@ -28,4 +28,3 @@ func InitDB(dataSourceName string) {
 	}
 
 }
-

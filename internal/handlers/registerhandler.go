@@ -12,7 +12,7 @@ import (
 //RegisterHandler serves register page to users
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
-	if util.IsLoggedIn(r){
+	if util.IsLoggedIn(r) {
 		MainHandler(w, r)
 		return
 	}
@@ -40,7 +40,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 //RegisterRequest validates register requests from users
 func RegisterRequest(w http.ResponseWriter, r *http.Request) {
-
 
 	user := util.GetUserFromSession(r)
 

@@ -23,7 +23,6 @@ type pageData = struct {
 // UserHandler serves user page to users
 func UserHandler(w http.ResponseWriter, r *http.Request) {
 
-
 	user := util.GetUserFromSession(r)
 
 	if !util.IsLoggedIn(r) {
@@ -60,7 +59,7 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 
 	user := util.GetUserFromSession(r)
 
-	if !util.IsLoggedIn(r){
+	if !util.IsLoggedIn(r) {
 		//not logged in
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
@@ -91,7 +90,7 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 	// Users Email
 	// If secondary-email input isn't blank it has changed
 	if secondaryEmail != "" && secondaryEmail != user.EmailPrivate {
-		if db.UpdateUserEmail(user.ID, secondaryEmail){
+		if db.UpdateUserEmail(user.ID, secondaryEmail) {
 			fmt.Println("Success: Private email changed from " + user.EmailPrivate + " to " + secondaryEmail)
 
 			//update session
@@ -104,7 +103,7 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 	if oldPass != "" && newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass && db.CheckPasswordHash(oldPass, hash) {
 		if db.UpdateUserPassword(user.ID, newPass) {
 			fmt.Println("Success: Password is now changed!")
-		}else {
+		} else {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}

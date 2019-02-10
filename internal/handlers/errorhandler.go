@@ -38,4 +38,3 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request, status int) {
 		log.Fatal(err)
 	}
 }
-

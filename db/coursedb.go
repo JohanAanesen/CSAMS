@@ -33,8 +33,8 @@ func GetCoursesToUser(userID int) page.Courses {
 		// Add course to courses array
 		courses.Items = append(courses.Items, page.Course{
 			Id:          id,
-			Code:  courseCode,
-			Name:  courseName,
+			Code:        courseCode,
+			Name:        courseName,
 			Teacher:     teacher,
 			Description: description,
 			Year:        year,

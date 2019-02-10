@@ -63,7 +63,7 @@ func UpdateUserPassword(userID int, password string) bool {
 	}
 }
 
-func GetUser(userID int) (model.User) {
+func GetUser(userID int) model.User {
 	rows, err := DB.Query("SELECT id, name, email_student, email_private, teacher FROM users WHERE id = ?", userID)
 	if err != nil {
 		//todo log error

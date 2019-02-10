@@ -12,7 +12,7 @@ func TestGetPort(t *testing.T) {
 		t.Errorf("No port return from 'GetPort()', excpected something, got nothing.")
 	}
 
-	penv := ":"+os.Getenv("PORT")
+	penv := ":" + os.Getenv("PORT")
 
 	if port != penv && penv != "" {
 		t.Errorf("Port returned from 'GetPort()' is not the same as environment port. Expected: %v, Got: %v", penv, port)

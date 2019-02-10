@@ -12,7 +12,7 @@ type Course struct {
 	Name        string       `json:"name"`
 	Description string       `json:"description"`
 	Teacher     int          `json:"teacher"`
-	Year        string          `json:"year"`
+	Year        string       `json:"year"`
 	Semester    string       `json:"semester"`
 	Assignments []Assignment `json:"assignments"`
 }
