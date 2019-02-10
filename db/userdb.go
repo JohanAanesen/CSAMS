@@ -73,7 +73,6 @@ func GetUser(userID int) model.User {
 	}
 
 	for rows.Next() {
-		var user model.User
 		var id int
 		var name string
 		var emailStudent string
@@ -87,13 +86,14 @@ func GetUser(userID int) model.User {
 			return model.User{Authenticated: false}
 		}
 
-		user.ID = userID
-		user.Name = name
-		user.EmailStudent = emailStudent
-		user.EmailPrivate = emailPrivate.String
-		user.Teacher = teacher
-
-		return user
+		// Return the user in a User struct from model folder
+		return model.User{
+			ID:           userID,
+			Name:         name,
+			EmailStudent: emailStudent,
+			EmailPrivate: emailPrivate.String,
+			Teacher:      teacher,
+		}
 	}
 
 	defer rows.Close()

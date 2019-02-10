@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
@@ -80,7 +79,7 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	} else if name != user.Name && db.UpdateUserName(user.ID, name) {
-		fmt.Println("Success: Name changed from " + user.Name + " to " + name)
+		log.Println("Success: Name changed from " + user.Name + " to " + name)
 
 		//update session
 		user.Name = name
@@ -91,7 +90,7 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 	// If secondary-email input isn't blank it has changed
 	if secondaryEmail != "" && secondaryEmail != user.EmailPrivate {
 		if db.UpdateUserEmail(user.ID, secondaryEmail) {
-			fmt.Println("Success: Private email changed from " + user.EmailPrivate + " to " + secondaryEmail)
+			log.Println("Success: Private email changed from " + user.EmailPrivate + " to " + secondaryEmail)
 
 			//update session
 			user.EmailPrivate = secondaryEmail
@@ -107,7 +106,7 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 	// If there's no problem with passwords and teh password is changed
 	if passwordIsOkay && db.CheckPasswordHash(oldPass, hash) {
 		if db.UpdateUserPassword(user.ID, newPass) {
-			fmt.Println("Success: Password is now changed!")
+			log.Println("Success: Password is now changed!")
 		} else {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
