@@ -1,4 +1,4 @@
-package handlers
+package controller
 
 import (
 	"encoding/gob"
@@ -13,11 +13,12 @@ import (
 )
 
 func init() {
+	//todo maybe move this?
 	gob.Register(model.User{})
 }
 
-//LoginHandler serves login page to users
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
+//LoginGET serves login page to users
+func LoginGET(w http.ResponseWriter, r *http.Request) {
 	//check if user is already logged in
 	user := session.GetUserFromSession(r)
 	if user.Authenticated { //already logged in, redirect to homepage
@@ -46,8 +47,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-//LoginRequest validates login requests
-func LoginRequest(w http.ResponseWriter, r *http.Request) {
+//LoginPOST validates login requests
+func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 	user := session.GetUserFromSession(r)
 	if user.Authenticated { //already logged in, redirect to home page
@@ -59,7 +60,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password") //password
 
 	if email == "" || password == "" { //login credentials cannot be empty
-		LoginHandler(w, r)
+		LoginGET(w, r)
 		return
 	}
 
@@ -77,6 +78,6 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
-	MainHandler(w, r) //redirect to homepage
+	//http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage //todo change redirection
+	IndexGET(w, r) //redirect to homepage
 }

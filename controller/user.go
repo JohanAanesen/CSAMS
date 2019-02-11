@@ -1,4 +1,4 @@
-package handlers
+package controller
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
@@ -20,8 +20,8 @@ type pageData = struct {
 	NoOfClasses int
 }
 
-// UserHandler serves user page to users
-func UserHandler(w http.ResponseWriter, r *http.Request) {
+// UserGET serves user page to users
+func UserGET(w http.ResponseWriter, r *http.Request) {
 
 	user := session.GetUserFromSession(r)
 
@@ -54,8 +54,8 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// UserUpdateRequest changes the user information
-func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
+// UserUpdatePOST changes the user information
+func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 
 	user := session.GetUserFromSession(r)
 
@@ -125,3 +125,4 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 
 	UserHandler(w, r)
 }
+

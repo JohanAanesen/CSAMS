@@ -1,4 +1,4 @@
-package handlers
+package controller
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
@@ -10,11 +10,11 @@ import (
 	"net/http"
 )
 
-//RegisterHandler serves register page to users
-func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+//RegisterGET serves register page to users
+func RegisterGET(w http.ResponseWriter, r *http.Request) {
 
 	if session.IsLoggedIn(r) {
-		MainHandler(w, r)
+		IndexGET(w, r)
 		return
 	}
 
@@ -39,8 +39,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//RegisterRequest validates register requests from users
-func RegisterRequest(w http.ResponseWriter, r *http.Request) {
+//RegisterPOST validates register requests from users
+func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 
 	user := session.GetUserFromSession(r)
 

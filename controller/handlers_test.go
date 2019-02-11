@@ -1,4 +1,4 @@
-package handlers
+package controller
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
