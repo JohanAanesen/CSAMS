@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/kongebra/awesomeProject/shared/view"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
 	"net/http"
 )
 
