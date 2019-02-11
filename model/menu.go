@@ -1,4 +1,4 @@
-package page
+package model
 
 // Menu holds the data for all menu items
 type Menu struct {

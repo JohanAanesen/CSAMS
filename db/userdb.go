@@ -3,7 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"log"
 )
 

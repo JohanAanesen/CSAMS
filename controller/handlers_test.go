@@ -1,8 +1,9 @@
-package controller
+package controller_test
 
 import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/controller"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -28,7 +29,7 @@ func TestLoginHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(LoginHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.LoginGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -52,7 +53,7 @@ func TestLoggingIn(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(LoginRequest).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.LoginPOST).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -75,7 +76,7 @@ func TestMainHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(MainHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.IndexGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -99,7 +100,7 @@ func TestCourseHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(CourseHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.CourseGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -123,7 +124,7 @@ func TestCourseListHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(CourseListHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.CourseListGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -163,7 +164,7 @@ func TestUserHandler(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	http.HandlerFunc(UserHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.UserGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -188,7 +189,7 @@ func TestCheckUserStatusNotLoggedIn(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(UserHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.UserGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -225,7 +226,7 @@ func TestCheckUserStatusLoggedIn(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	http.HandlerFunc(UserHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.UserGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -271,7 +272,7 @@ func TestUserUpdateRequest(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	http.HandlerFunc(UserUpdateRequest).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.UserUpdatePOST).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -309,7 +310,7 @@ func TestAdminHandler(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	http.HandlerFunc(AdminHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.AdminGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -346,7 +347,7 @@ func TestAdminCourseHandler(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	http.HandlerFunc(AdminCourseHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.AdminCourseGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -383,7 +384,7 @@ func TestAdminCreateCourseHandler(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	http.HandlerFunc(AdminCreateCourseHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.AdminCreateCourseGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -420,7 +421,7 @@ func TestAdminUpdateCourseHandler(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	http.HandlerFunc(AdminUpdateCourseHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.AdminUpdateCourseGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -444,7 +445,7 @@ func TestAssignmentHandlerHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(AssignmentHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.AssignmentGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -468,7 +469,7 @@ func TestAssignmentAutoHandlerHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(AssignmentAutoHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.AssignmentAutoGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -492,7 +493,7 @@ func TestAssignmentPeerHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(AssignmentPeerHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.AssignmentPeerGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -515,7 +516,7 @@ func TestErrorHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(AssignmentPeerHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.AssignmentPeerGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -539,7 +540,7 @@ func TestLogoutHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(LogoutHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.LogoutGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 

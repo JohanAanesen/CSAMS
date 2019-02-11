@@ -2,7 +2,7 @@ package session
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"log"
 	"net/http"
 )

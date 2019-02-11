@@ -1,4 +1,4 @@
-package page
+package model
 
 // Assignment hold the data for a single assignment
 type Assignment struct {

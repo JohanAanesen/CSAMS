@@ -1,4 +1,4 @@
-package page
+package model
 
 // Courses hold the data for a slice of Course-struct
 type Courses struct {
