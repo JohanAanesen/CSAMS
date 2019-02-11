@@ -2,7 +2,7 @@ package session_test
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/handlers"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/controller"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"net/http"
@@ -45,7 +45,7 @@ func TestGetUserFromSession(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	http.HandlerFunc(handlers.MainHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.IndexGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -103,7 +103,7 @@ func TestIsLoggedIn(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	http.HandlerFunc(handlers.MainHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.IndexGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -155,7 +155,7 @@ func TestIsTeacher(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	http.HandlerFunc(handlers.MainHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.IndexGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -196,7 +196,7 @@ func TestSaveUserToSession(t *testing.T) {
 		EmailStudent:  email,
 	}
 
-	http.HandlerFunc(handlers.MainHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.IndexGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 

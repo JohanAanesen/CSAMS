@@ -11,7 +11,7 @@ type Session struct{
 	Values map[string]interface{}
 }
 
-func Instance(r *http.Request) *Session{
+func Instance(r *http.Request) *Session{ //todo this?
 	return &Session{}
 }
 

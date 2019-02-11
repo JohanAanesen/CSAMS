@@ -15,7 +15,7 @@ import (
 func init() {
 	db.InitDB(os.Getenv("SQLDB"))
 
-	if err := os.Chdir("../../"); err != nil { //go out of /handlers folder
+	if err := os.Chdir("../"); err != nil { //go out of /handlers folder
 		panic(err)
 	}
 }

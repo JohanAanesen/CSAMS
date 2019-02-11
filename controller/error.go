@@ -12,7 +12,7 @@ import (
 func ErrorHandler(w http.ResponseWriter, r *http.Request, status int) {
 	w.WriteHeader(status)
 
-	temp, err := template.ParseFiles("web/layout.html", "web/navbar.html", "web/error.html")
+	temp, err := template.ParseFiles("template/layout.html", "template/navbar.html", "template/error.html")
 
 	if err != nil {
 		log.Fatal(err)
