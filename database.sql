@@ -76,8 +76,9 @@ CREATE TABLE `course`
 
 CREATE TABLE `logs`
 (
-  `userid` int(11)                             NOT NULL,
-  `log`    varchar(256) COLLATE utf8_danish_ci NOT NULL
+  `userid`    int(11)                             NOT NULL,
+  `timestamp` bigint                              NOT NULL,
+  `log`       varchar(256) COLLATE utf8_danish_ci NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_danish_ci;
