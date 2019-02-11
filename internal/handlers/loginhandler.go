@@ -50,7 +50,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 
 	user := util.GetUserFromSession(r)
 	if user.Authenticated { //already logged in, redirect to home page
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/", http.StatusFound) //todo redirect without 302
 		return
 	}
 
@@ -58,7 +58,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password") //password
 
 	if email == "" || password == "" { //login credentials cannot be empty
-		http.Redirect(w, r, "/login", http.StatusFound)
+		LoginHandler(w, r)
 		return
 	}
 
@@ -69,9 +69,10 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 		user.Authenticated = true
 		util.SaveUserToSession(user, w, r)
 	} else {
+		//redirect to errorhandler
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event
-		log.Fatal()
+		log.Println()
 		return
 	}
 

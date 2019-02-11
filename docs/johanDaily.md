@@ -70,4 +70,14 @@ can just add links there.
 Friday 8/2
 -----------
 * 11 Create Course cont/testing
-* 
+* Finished up 11, found out that the tests that needed some kind of session could be hacked because
+i have the cookiestore/sessionstore stuff available in the test suite, sweet
+* Helped Brede with some bugs on his 8-userpage branch
+* didn't have too much time to work this day :(
+
+Sunday 10/2
+-----------
+* Refactored 8
+* Made more session function and moved them into the util package
+* Moved DB functions out of db.go and into feks. coursedb.go and userdb.go
+* Had to rewrite a lot of UserHandler code because it was messy and unreadable/unefficient
