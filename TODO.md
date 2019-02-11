@@ -5,4 +5,4 @@
 - [ ] /cmd/router/main.go -> main.go
 - [ ] Routes in main.go -> /route/route.go@routes()
 - [ ] /db -> /shared/database (or /shared/db, your choice)
-- [ ] /internal/util/session.go -> /shared/session/session.go
+- [x] /internal/util/session.go -> /shared/session/session.go

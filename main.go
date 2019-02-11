@@ -20,23 +20,23 @@ func main() {
 	server.Run(route.LoadHTTP(), route.LoadHTTPS(), cfg.Server)
 
 	/*
-	// Instantiate logger
-	logger := log.New(os.Stdout, "main: ", log.LstdFlags | log.Lshortfile)
+		// Instantiate logger
+		logger := log.New(os.Stdout, "main: ", log.LstdFlags | log.Lshortfile)
 
-	// Instantiate database
-	db := database.New("")
+		// Instantiate database
+		db := database.New("")
 
-	// Instantiate config
-	cfg := config.New()
+		// Instantiate config
+		cfg := config.New()
 
-	// Instantiate router
-	router := mux.NewRouter().StrictSlash(true)
+		// Instantiate router
+		router := mux.NewRouter().StrictSlash(true)
 
-	// Setup routes
-	route.Setup(router, logger, db)
+		// Setup routes
+		route.Setup(router, logger, db)
 
-	// Instantiate server
-	srv := server.New(router, util.GetPort())
+		// Instantiate server
+		srv := server.New(router, util.GetPort())
 	*/
 
 }
