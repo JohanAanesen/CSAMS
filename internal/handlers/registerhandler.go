@@ -12,18 +12,8 @@ import (
 //RegisterHandler serves register page to users
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
-	//check if user is logged in
-	session, err := db.CookieStore.Get(r, "login-session") //get session
-	if err != nil {
-		log.Fatal(err)
-		ErrorHandler(w, r, http.StatusInternalServerError) //error getting session 500
-		return
-	}
-
-	//check if user is already logged in
-	user := getUser(session)
-	if user.Authenticated { //already logged in, redirect to homepage
-		http.Redirect(w, r, "/", http.StatusFound)
+	if util.IsLoggedIn(r) {
+		MainHandler(w, r)
 		return
 	}
 
@@ -50,16 +40,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 //RegisterRequest validates register requests from users
 func RegisterRequest(w http.ResponseWriter, r *http.Request) {
-	session, err := db.CookieStore.Get(r, "login-session") //get session
-	if err != nil {
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		//todo log this event
-		log.Fatal(err)
-		return
-	}
 
-	user := getUser(session)
-	if user.Authenticated { //already logged in, no need to register
+	user := util.GetUserFromSession(r)
+
+	if util.IsLoggedIn(r) { //already logged in, no need to register
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
@@ -79,17 +63,9 @@ func RegisterRequest(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		//save user to session values
 		user.Authenticated = true
-		session.Values["user"] = user
+		util.SaveUserToSession(user, w, r)
 	} else {
 		ErrorHandler(w, r, http.StatusUnauthorized)
-		//todo log this event
-		return
-	}
-
-	err = session.Save(r, w) //save session changes
-	if err != nil {
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		log.Fatal(err)
 		//todo log this event
 		return
 	}

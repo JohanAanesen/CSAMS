@@ -140,6 +140,47 @@ func TestCourseListHandler(t *testing.T) {
 
 func TestUserHandler(t *testing.T) {
 
+	// TODO : fix this
+
+	req, err := http.NewRequest("GET", "/user", nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	resp := httptest.NewRecorder()
+
+	//get a session
+	session, err := db.CookieStore.Get(req, "login-session")
+	//user object we want to fill with variables needed
+	var user model.User
+	user.Authenticated = true
+	user.Teacher = false
+	//save user to session values
+	session.Values["user"] = user
+	//save session changes
+	err = session.Save(req, resp)
+	if err != nil { //check error
+		t.Error(err.Error())
+	}
+
+	http.HandlerFunc(UserHandler).ServeHTTP(resp, req)
+
+	status := resp.Code
+
+	if status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
+}
+
+// First test that the user gets redirected to /login if he's not logged in
+func TestCheckUserStatusNotLoggedIn(t *testing.T) {
+
 	req, err := http.NewRequest("GET", "/user", nil)
 	if err != nil {
 		t.Fatal(err.Error())
@@ -151,6 +192,90 @@ func TestUserHandler(t *testing.T) {
 
 	status := resp.Code
 
+	if status != http.StatusUnauthorized {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusUnauthorized, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
+}
+
+func TestCheckUserStatusLoggedIn(t *testing.T) {
+	req, err := http.NewRequest("GET", "/user", nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	resp := httptest.NewRecorder()
+
+	//get a session
+	session, err := db.CookieStore.Get(req, "login-session")
+	//user object we want to fill with variables needed
+	var user model.User
+	user.Authenticated = true
+	user.Teacher = false
+	//save user to session values
+	session.Values["user"] = user
+	//save session changes
+	err = session.Save(req, resp)
+	if err != nil { //check error
+		t.Error(err.Error())
+	}
+
+	http.HandlerFunc(UserHandler).ServeHTTP(resp, req)
+
+	status := resp.Code
+
+	if status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
+}
+
+func TestUserUpdateRequest(t *testing.T) {
+	// TODO : Fix code
+	// Change name and email
+	form := url.Values{}
+	form.Add("usersName", "Ken Thompson") // One of the Golang creators
+	form.Add("secondaryEmail", "mannen@harmannenfalt.no")
+	req := httptest.NewRequest("POST", "/user/update", strings.NewReader(form.Encode()))
+	req.Form = form
+
+	resp := httptest.NewRecorder()
+
+	//get a session
+	session, err := db.CookieStore.Get(req, "login-session")
+
+	//user object we want to fill with variables needed
+	user := model.User{
+		ID:            1,
+		Name:          "Test User",
+		EmailStudent:  "hei@gmail.com",
+		EmailPrivate:  "test@yahoo.com",
+		Authenticated: true,
+		Teacher:       true,
+	}
+	//save user to session values
+	session.Values["user"] = user
+	//save session changes
+	err = session.Save(req, resp)
+	if err != nil { //check error
+		t.Error(err.Error())
+	}
+
+	http.HandlerFunc(UserUpdateRequest).ServeHTTP(resp, req)
+
+	status := resp.Code
+
+	// Status should be 200/OK if it went by okey
 	if status != http.StatusOK {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
 	}
