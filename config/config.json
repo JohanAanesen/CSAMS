@@ -1,0 +1,44 @@
+{
+  "database": {
+    "hostname": "localhost",
+    "port": 3306,
+    "username": "root",
+    "password": "",
+    "database": "test"
+  },
+  "server": {
+    "hostname": "",
+    "useHTTP": true,
+    "useHTTPS": false,
+    "HTTPPort": 8088,
+    "HTTPSPort": 4430,
+    "certFile": "",
+    "keyFile": ""
+  },
+  "email": {
+    "hostname": "",
+    "port": 25,
+    "username": "",
+    "password": "",
+    "from": ""
+  },
+  "session": {
+    "name": "",
+    "secretKey": "",
+    "options": {}
+  },
+  "view": {
+    "baseURI": "/",
+    "extension": "tmpl",
+    "folder": "template",
+    "name": "blank",
+    "caching": true
+  },
+  "template": {
+    "root": "base",
+    "children": [
+      "partial/navbar",
+      "partial/footer"
+    ]
+  }
+}

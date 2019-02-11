@@ -9,6 +9,7 @@ import (
 	"os"
 )
 
+/*
 func main() {
 	dbcon.InitDB(os.Getenv("SQLDB")) //env var SQLDB username:password@tcp(127.0.0.1:3306)/dbname 127.0.0.1 if run locally like xampp
 
@@ -40,7 +41,8 @@ func main() {
 	router.HandleFunc("/admin/course/update/{id}", handlers.AdminUpdateCourseRequest).Methods("POST")
 	router.HandleFunc("/admin/assignment", handlers.AdminAssignmentHandler).Methods("GET")
 
-	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
 	http.ListenAndServe(util.GetPort(), router)
 }
+*/
