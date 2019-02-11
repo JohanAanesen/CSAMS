@@ -1,10 +1,10 @@
-package util_test
+package session_test
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/handlers"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -28,7 +28,7 @@ func TestGetUserFromSession(t *testing.T) {
 	resp := httptest.NewRecorder()
 
 	//get a session
-	session, err := db.CookieStore.Get(req, "login-session")
+	sess, err := db.CookieStore.Get(req, "login-session")
 	//user object we want to fill with variables needed
 	var user = model.User{
 		Authenticated: true,
@@ -38,9 +38,9 @@ func TestGetUserFromSession(t *testing.T) {
 	}
 
 	//save user to session values
-	session.Values["user"] = user
+	sess.Values["user"] = user
 	//save session changes
-	err = session.Save(req, resp)
+	err = sess.Save(req, resp)
 	if err != nil { //check error
 		t.Error(err.Error())
 	}
@@ -59,7 +59,7 @@ func TestGetUserFromSession(t *testing.T) {
 		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
 	}
 
-	user2 := util.GetUserFromSession(req)
+	user2 := session.GetUserFromSession(req)
 
 	if user2.ID != id {
 		t.Errorf("Returned wrong user information from session, expected %v, got %v", id, user2.ID)
@@ -86,7 +86,7 @@ func TestIsLoggedIn(t *testing.T) {
 	resp := httptest.NewRecorder()
 
 	//get a session
-	session, err := db.CookieStore.Get(req, "login-session")
+	sess, err := db.CookieStore.Get(req, "login-session")
 	//user object we want to fill with variables needed
 	var user = model.User{
 		Authenticated: true,
@@ -96,9 +96,9 @@ func TestIsLoggedIn(t *testing.T) {
 	}
 
 	//save user to session values
-	session.Values["user"] = user
+	sess.Values["user"] = user
 	//save session changes
-	err = session.Save(req, resp)
+	err = sess.Save(req, resp)
 	if err != nil { //check error
 		t.Error(err.Error())
 	}
@@ -117,7 +117,7 @@ func TestIsLoggedIn(t *testing.T) {
 		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
 	}
 
-	loggedIn := util.IsLoggedIn(req)
+	loggedIn := session.IsLoggedIn(req)
 
 	if !loggedIn {
 		t.Errorf("Not logged in expected true, got false")
@@ -137,7 +137,7 @@ func TestIsTeacher(t *testing.T) {
 	resp := httptest.NewRecorder()
 
 	//get a session
-	session, err := db.CookieStore.Get(req, "login-session")
+	sess, err := db.CookieStore.Get(req, "login-session")
 	//user object we want to fill with variables needed
 	var user = model.User{
 		Authenticated: true,
@@ -148,9 +148,9 @@ func TestIsTeacher(t *testing.T) {
 	}
 
 	//save user to session values
-	session.Values["user"] = user
+	sess.Values["user"] = user
 	//save session changes
-	err = session.Save(req, resp)
+	err = sess.Save(req, resp)
 	if err != nil { //check error
 		t.Error(err.Error())
 	}
@@ -169,7 +169,7 @@ func TestIsTeacher(t *testing.T) {
 		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
 	}
 
-	isTeacher := util.IsTeacher(req)
+	isTeacher := session.IsTeacher(req)
 
 	if !isTeacher {
 		t.Errorf("Not logged in expected true, got false")
@@ -210,9 +210,9 @@ func TestSaveUserToSession(t *testing.T) {
 		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
 	}
 
-	util.SaveUserToSession(user, resp, req)
+	session.SaveUserToSession(user, resp, req)
 
-	user2 := util.GetUserFromSession(req)
+	user2 := session.GetUserFromSession(req)
 
 	if user2.ID != id {
 		t.Errorf("Returned wrong user information from session, expected %v, got %v", id, user2.ID)

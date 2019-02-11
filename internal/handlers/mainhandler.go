@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
 	"html/template"
@@ -19,7 +20,7 @@ type Test struct {
 func MainHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check if user is logged in
-	if util.GetUserFromSession(r).Authenticated == false { //redirect to /login if not logged in
+	if session.GetUserFromSession(r).Authenticated == false { //redirect to /login if not logged in
 		//send user to login if no valid login cookies exist
 		//http.Redirect(w, r, "/login", http.StatusFound)
 		LoginHandler(w, r)

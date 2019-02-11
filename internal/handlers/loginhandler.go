@@ -6,6 +6,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"html/template"
 	"log"
 	"net/http"
@@ -18,7 +19,7 @@ func init() {
 //LoginHandler serves login page to users
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	//check if user is already logged in
-	user := util.GetUserFromSession(r)
+	user := session.GetUserFromSession(r)
 	if user.Authenticated { //already logged in, redirect to homepage
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
@@ -48,7 +49,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 //LoginRequest validates login requests
 func LoginRequest(w http.ResponseWriter, r *http.Request) {
 
-	user := util.GetUserFromSession(r)
+	user := session.GetUserFromSession(r)
 	if user.Authenticated { //already logged in, redirect to home page
 		http.Redirect(w, r, "/", http.StatusFound) //todo redirect without 302
 		return
@@ -67,7 +68,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		//save user to session values
 		user.Authenticated = true
-		util.SaveUserToSession(user, w, r)
+		session.SaveUserToSession(user, w, r)
 	} else {
 		//redirect to errorhandler
 		ErrorHandler(w, r, http.StatusUnauthorized)

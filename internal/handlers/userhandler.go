@@ -5,6 +5,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"html/template"
 	"log"
 	"net/http"
@@ -22,9 +23,9 @@ type pageData = struct {
 // UserHandler serves user page to users
 func UserHandler(w http.ResponseWriter, r *http.Request) {
 
-	user := util.GetUserFromSession(r)
+	user := session.GetUserFromSession(r)
 
-	if !util.IsLoggedIn(r) {
+	if !session.IsLoggedIn(r) {
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
@@ -56,9 +57,9 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 // UserUpdateRequest changes the user information
 func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 
-	user := util.GetUserFromSession(r)
+	user := session.GetUserFromSession(r)
 
-	if !util.IsLoggedIn(r) {
+	if !session.IsLoggedIn(r) {
 		//not logged in
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
@@ -83,7 +84,7 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 
 		//update session
 		user.Name = name
-		util.SaveUserToSession(user, w, r)
+		session.SaveUserToSession(user, w, r)
 
 		// Log name change in the database
 		db.LogToDB(user.ID, db.ChangeName)
@@ -97,7 +98,7 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 
 			//update session
 			user.EmailPrivate = secondaryEmail
-			util.SaveUserToSession(user, w, r)
+			session.SaveUserToSession(user, w, r)
 
 			// Log email change in the database
 			db.LogToDB(user.ID, db.ChangeName)

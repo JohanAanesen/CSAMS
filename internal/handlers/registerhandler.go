@@ -4,6 +4,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"html/template"
 	"log"
 	"net/http"
@@ -12,7 +13,7 @@ import (
 //RegisterHandler serves register page to users
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
-	if util.IsLoggedIn(r) {
+	if session.IsLoggedIn(r) {
 		MainHandler(w, r)
 		return
 	}
@@ -41,9 +42,9 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 //RegisterRequest validates register requests from users
 func RegisterRequest(w http.ResponseWriter, r *http.Request) {
 
-	user := util.GetUserFromSession(r)
+	user := session.GetUserFromSession(r)
 
-	if util.IsLoggedIn(r) { //already logged in, no need to register
+	if session.IsLoggedIn(r) { //already logged in, no need to register
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
@@ -63,7 +64,7 @@ func RegisterRequest(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		//save user to session values
 		user.Authenticated = true
-		util.SaveUserToSession(user, w, r)
+		session.SaveUserToSession(user, w, r)
 	} else {
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event
