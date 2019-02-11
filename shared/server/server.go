@@ -19,6 +19,7 @@ type Server struct {
 	KeyFile   string `json:"keyFile"`
 }
 
+//Run todo
 func Run(httpHandler, httpsHandler http.Handler, srv *Server) {
 	if srv.UseHTTP && srv.UseHTTPS {
 		go func() {

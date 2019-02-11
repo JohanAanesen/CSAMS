@@ -8,6 +8,7 @@ import (
 	"sync"
 )
 
+//View todo
 type View struct {
 	BaseURI   string   `json:"baseURI"`
 	Extension string   `json:"extension"`
@@ -19,11 +20,13 @@ type View struct {
 	request   *http.Request
 }
 
+//Template todo
 type Template struct {
 	Root     string   `json:"root"`
 	Children []string `json:"children"`
 }
 
+//Flash todo
 type Flash struct {
 	Message string
 	Class   string
@@ -39,6 +42,7 @@ var (
 	mutex              sync.RWMutex
 )
 
+//LoadPlugins todo
 func LoadPlugins(funcMaps ...template.FuncMap) {
 	funcMap := make(template.FuncMap)
 
@@ -55,19 +59,23 @@ func LoadPlugins(funcMaps ...template.FuncMap) {
 	mutexPlugins.Unlock()
 }
 
+//Configure todo
 func Configure(v *View) {
 	cfgView = v
 }
 
+//ReadConfig todo
 func ReadConfig() *View {
 	return cfgView
 }
 
+//LoadTemplate todo
 func LoadTemplate(root string, children []string) {
 	rootTemplate = root
 	childTemplates = children
 }
 
+//New todo
 func New(r *http.Request) *View {
 	v := &View{}
 	v.Vars = make(map[string]interface{})

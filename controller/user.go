@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/util"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/util"
 	"html/template"
 	"log"
 	"net/http"
@@ -86,7 +86,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		session.SaveUserToSession(user, w, r)
 
 		// Log name change in the database
-		db.LogToDB(user.ID, db.ChangeName)
+		//db.LogToDB(user.ID, db.ChangeName) //todo
 	}
 
 	// Users Email
@@ -100,7 +100,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 			session.SaveUserToSession(user, w, r)
 
 			// Log email change in the database
-			db.LogToDB(user.ID, db.ChangeName)
+			//db.LogToDB(user.ID, db.ChangeName)//todo
 		}
 	}
 
@@ -124,4 +124,3 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 
 	UserGET(w, r)
 }
-

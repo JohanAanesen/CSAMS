@@ -69,6 +69,5 @@ func routes() *mux.Router {
 	// Error Handlers
 	//router.Handle("/error", controller.ErrorGET).Methods("GET") //todo this?
 
-
 	return router
 }

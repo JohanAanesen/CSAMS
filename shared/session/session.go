@@ -1,17 +1,19 @@
 package session
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"log"
 	"net/http"
 )
 
-type Session struct{
+//Session todo
+type Session struct {
 	Values map[string]interface{}
 }
 
-func Instance(r *http.Request) *Session{ //todo this?
+//Instance todo
+func Instance(r *http.Request) *Session { //todo this?
 	return &Session{}
 }
 
