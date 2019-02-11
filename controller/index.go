@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
@@ -32,8 +32,8 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := struct {
 		PageTitle   string
-		Menu        page.Menu
-		Courses     page.Courses
+		Menu        model.Menu
+		Courses     model.Courses
 		LoadFormCSS bool
 	}{
 		PageTitle:   "Homepage",

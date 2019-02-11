@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/util"
 	"html/template"
 	"log"
@@ -25,7 +25,7 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request, status int) {
 		ErrorCode    int
 		ErrorMessage string
 
-		Menu page.Menu
+		Menu model.Menu
 	}{
 		PageTitle:   "Error: " + string(status),
 		LoadFormCSS: true,

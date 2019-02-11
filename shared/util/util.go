@@ -2,7 +2,7 @@ package util
 
 import (
 	"encoding/json"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"log"
 	"os"
 )
@@ -19,14 +19,14 @@ func GetPort() string {
 }
 
 // LoadMenuConfig loads a JSON-file from disk, and decodes it to a Menu-struct
-func LoadMenuConfig(file string) page.Menu {
-	var menu page.Menu
+func LoadMenuConfig(file string) model.Menu {
+	var menu model.Menu
 	configFile, err := os.Open(file)
 	defer configFile.Close()
 
 	if err != nil {
 		log.Fatal(err)
-		return page.Menu{}
+		return model.Menu{}
 	}
 
 	jsonParser := json.NewDecoder(configFile)
@@ -36,14 +36,14 @@ func LoadMenuConfig(file string) page.Menu {
 }
 
 // LoadCoursesConfig loads a JSON-file from disk, and decodes it to a Courses-struct
-func LoadCoursesConfig(file string) page.Courses {
-	var course page.Courses
+func LoadCoursesConfig(file string) model.Courses {
+	var course model.Courses
 	configFile, err := os.Open(file)
 	defer configFile.Close()
 
 	if err != nil {
 		log.Fatal(err)
-		return page.Courses{}
+		return model.Courses{}
 	}
 
 	jsonParser := json.NewDecoder(configFile)

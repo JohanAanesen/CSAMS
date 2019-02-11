@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"html/template"
@@ -23,10 +23,10 @@ func AdminGET(w http.ResponseWriter, r *http.Request) {
 	// Data for displaying on screen
 	data := struct {
 		PageTitle   string
-		Menu        page.Menu
-		Navbar      page.Menu
-		Courses     page.Courses
-		Assignments []page.Assignment
+		Menu        model.Menu
+		Navbar      model.Menu
+		Courses     model.Courses
+		Assignments []model.Assignment
 	}{
 		PageTitle: "Homepage",
 		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
@@ -59,10 +59,10 @@ func AdminCourseGET(w http.ResponseWriter, r *http.Request) {
 	// Data for displaying on screen
 	data := struct {
 		PageTitle   string
-		Menu        page.Menu
-		Navbar      page.Menu
-		Courses     page.Courses
-		Assignments []page.Assignment
+		Menu        model.Menu
+		Navbar      model.Menu
+		Courses     model.Courses
+		Assignments []model.Assignment
 	}{
 		PageTitle: "Dashboard - Courses",
 		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
@@ -100,8 +100,8 @@ func AdminCreateCourseGET(w http.ResponseWriter, r *http.Request) {
 
 	if err = temp.ExecuteTemplate(w, "layout", struct {
 		PageTitle string
-		Menu      page.Menu
-		Navbar    page.Menu
+		Menu      model.Menu
+		Navbar    model.Menu
 	}{
 		PageTitle: "Dashboard - Create course",
 		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
@@ -123,7 +123,7 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	//check if user is already logged in
 	user := session.GetUserFromSession(r)
 
-	course := page.Course{
+	course := model.Course{
 		Code:        r.FormValue("code"),
 		Name:        r.FormValue("name"),
 		Description: r.FormValue("description"),
@@ -165,8 +165,8 @@ func AdminUpdateCourseGET(w http.ResponseWriter, r *http.Request) {
 
 	if err = temp.ExecuteTemplate(w, "layout", struct {
 		PageTitle string
-		Menu      page.Menu
-		Navbar    page.Menu
+		Menu      model.Menu
+		Navbar    model.Menu
 	}{
 		PageTitle: "Dashboard - Update course",
 		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
@@ -203,8 +203,8 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 	if err = temp.ExecuteTemplate(w, "layout", struct {
 		PageTitle string
-		Menu      page.Menu
-		Navbar    page.Menu
+		Menu      model.Menu
+		Navbar    model.Menu
 	}{
 		PageTitle: "Dashboard - Assignments",
 		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),

@@ -7,6 +7,14 @@ import (
 	"net/http"
 )
 
+type Session struct{
+	Values map[string]interface{}
+}
+
+func Instance(r *http.Request) *Session{
+	return &Session{}
+}
+
 //IsTeacher returns if user is a teacher or not
 func IsTeacher(r *http.Request) bool {
 	//check if user is already logged in

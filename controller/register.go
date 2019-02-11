@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"html/template"
@@ -30,7 +30,7 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 
 	if err = temp.ExecuteTemplate(w, "layout", struct {
 		PageTitle string
-		Menu      page.Menu
+		Menu      model.Menu
 	}{
 		PageTitle: "Sign Up",
 		Menu:      util.LoadMenuConfig("configs/menu/site.json"),
