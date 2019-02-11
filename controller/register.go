@@ -22,7 +22,7 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 	//if there is, add the user logging in to the class and redirect
 
 	//parse template
-	temp, err := template.ParseFiles("web/layout.html", "web/navbar.html", "web/register.html")
+	temp, err := template.ParseFiles("template/layout.html", "template/navbar.html", "template/register.html")
 
 	if err != nil {
 		log.Fatal(err)

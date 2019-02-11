@@ -44,7 +44,7 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 
-	temp, err := template.ParseFiles("web/layout.html", "web/navbar.html", "web/index.html")
+	temp, err := template.ParseFiles("template/layout.html", "template/navbar.html", "template/index.html")
 
 	if err != nil {
 		log.Println(err)

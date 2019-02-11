@@ -42,7 +42,7 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//parse templates
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/user.html")
+	temp, err := template.ParseFiles("template/dashboard/layout.html", "template/dashboard/navbar.html", "template/dashboard/sidebar.html", "template/user.html")
 
 	if err != nil {
 		log.Println(err)

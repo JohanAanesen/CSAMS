@@ -35,7 +35,7 @@ func routes() *mux.Router {
 	router.Use(logrequest.Handler)
 
 	// Index-page Handlers
-	router.HandleFunc("/", controller.IndexGET).Methods("GET")
+	router.HandleFunc("/", controller.MainHandler).Methods("GET")
 
 	// Course-page Handlers
 	router.HandleFunc("/course", controller.CourseGET).Methods("GET")

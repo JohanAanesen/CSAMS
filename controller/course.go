@@ -32,7 +32,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	//get info from db
 
 	//parse info to html template
-	temp, err := template.ParseFiles("web/test.html")
+	temp, err := template.ParseFiles("template/test.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -61,7 +61,7 @@ func CourseListGET(w http.ResponseWriter, r *http.Request) {
 	//get classlist from db
 
 	//parse info to html template
-	temp, err := template.ParseFiles("web/test.html")
+	temp, err := template.ParseFiles("template/test.html")
 	if err != nil {
 		log.Fatal(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)

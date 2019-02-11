@@ -37,7 +37,7 @@ func AdminGET(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	//parse templates
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/index.html")
+	temp, err := template.ParseFiles("template/dashboard/layout.html", "template/dashboard/navbar.html", "template/dashboard/sidebar.html", "template/dashboard/index.html")
 
 	if err != nil {
 		log.Println(err)
@@ -71,7 +71,7 @@ func AdminCourseGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//parse template
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/course/index.html")
+	temp, err := template.ParseFiles("template/dashboard/layout.html", "template/dashboard/navbar.html", "template/dashboard/sidebar.html", "template/dashboard/course/index.html")
 
 	if err != nil {
 		log.Fatal(err)
@@ -91,7 +91,7 @@ func AdminCreateCourseGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//parse template
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/course/create.html")
+	temp, err := template.ParseFiles("template/dashboard/layout.html", "template/dashboard/navbar.html", "template/dashboard/sidebar.html", "template/dashboard/course/create.html")
 
 	if err != nil {
 		ErrorHandler(w, r, 404)
@@ -157,7 +157,7 @@ func AdminUpdateCourseGET(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	//parse template
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/course/update.html")
+	temp, err := template.ParseFiles("template/dashboard/layout.html", "template/dashboard/navbar.html", "template/dashboard/sidebar.html", "template/dashboard/course/update.html")
 
 	if err != nil {
 		log.Fatal(err)
@@ -195,7 +195,7 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	//parse template
-	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/assignment/index.html")
+	temp, err := template.ParseFiles("template/dashboard/layout.html", "template/dashboard/navbar.html", "template/dashboard/sidebar.html", "template/dashboard/assignment/index.html")
 
 	if err != nil {
 		log.Fatal(err)
