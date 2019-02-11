@@ -40,7 +40,7 @@ func UserAuth(email string, password string) (model.User, bool) {
 	if err != nil {
 		//todo log error
 		fmt.Println(err.Error())
-		return model.User{Authenticated:false}, false
+		return model.User{Authenticated: false}, false
 	}
 
 	for rows.Next() {
@@ -51,9 +51,8 @@ func UserAuth(email string, password string) (model.User, bool) {
 		if err != nil {
 			//todo log error
 			fmt.Println(err.Error())
-			return model.User{Authenticated:false}, false
+			return model.User{Authenticated: false}, false
 		}
-
 
 		if checkPasswordHash(password, hash) {
 			return GetUser(id), true
@@ -62,7 +61,7 @@ func UserAuth(email string, password string) (model.User, bool) {
 
 	defer rows.Close()
 
-	return model.User{Authenticated:false}, false
+	return model.User{Authenticated: false}, false
 }
 
 //RegisterUser registers users to database
@@ -72,7 +71,7 @@ func RegisterUser(name string, email string, password string) (model.User, bool)
 	if err != nil {
 		//todo log error
 		log.Fatal(err.Error())
-		return model.User{Authenticated:false}, false
+		return model.User{Authenticated: false}, false
 	}
 
 	rows, err := DB.Query("INSERT INTO users(name, email_student, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
@@ -80,7 +79,7 @@ func RegisterUser(name string, email string, password string) (model.User, bool)
 	if err != nil {
 		//todo log error
 		log.Fatal(err.Error())
-		return model.User{Authenticated:false}, false
+		return model.User{Authenticated: false}, false
 	}
 
 	defer rows.Close()
@@ -88,12 +87,12 @@ func RegisterUser(name string, email string, password string) (model.User, bool)
 	return UserAuth(email, password) //fetch userid through existing method
 }
 
-func GetUser(userID int)model.User{
+func GetUser(userID int) model.User {
 	rows, err := DB.Query("SELECT id, name, email_student, email_private, teacher FROM users WHERE id = ?", userID)
 	if err != nil {
 		//todo log error
 		fmt.Println(err.Error())
-		return model.User{Authenticated:false}
+		return model.User{Authenticated: false}
 	}
 
 	for rows.Next() {
@@ -108,9 +107,8 @@ func GetUser(userID int)model.User{
 		if err != nil {
 			//todo log error
 			fmt.Println(err.Error())
-			return model.User{Authenticated:false}
+			return model.User{Authenticated: false}
 		}
-
 
 		user.ID = userID
 		user.Name = name
@@ -123,7 +121,7 @@ func GetUser(userID int)model.User{
 
 	defer rows.Close()
 
-	return model.User{Authenticated:false}
+	return model.User{Authenticated: false}
 }
 
 func checkPasswordHash(password, hash string) bool {

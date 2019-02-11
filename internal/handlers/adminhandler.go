@@ -14,7 +14,7 @@ import (
 // AdminHandler handles GET-request at /admin
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
-	if !isTeacher(r){ //not a teacher, error 401
+	if !isTeacher(r) { //not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
@@ -52,7 +52,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 // AdminCourseHandler handles GET-request at /admin/course
 func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
-	if !isTeacher(r){ //not a teacher, error 401
+	if !isTeacher(r) { //not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
@@ -86,7 +86,7 @@ func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
 // AdminCreateCourseHandler handles GET-request at /admin/course/create
 func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
-	if !isTeacher(r){ //not a teacher, error 401
+	if !isTeacher(r) { //not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
@@ -116,7 +116,7 @@ func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 // Inserts a new course to the database
 func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
-	if !isTeacher(r){ //not a teacher, error 401
+	if !isTeacher(r) { //not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
@@ -152,13 +152,13 @@ func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 
 	defer rows.Close()
 
-	MainHandler(w,r) //success redirect to homepage
+	MainHandler(w, r) //success redirect to homepage
 }
 
 // AdminUpdateCourseHandler handles GET-request at /admin/course/update/{id}
 func AdminUpdateCourseHandler(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
-	if !isTeacher(r){ //not a teacher, error 401
+	if !isTeacher(r) { //not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
@@ -187,7 +187,7 @@ func AdminUpdateCourseHandler(w http.ResponseWriter, r *http.Request) {
 // AdminUpdateCourseRequest handles POST-request at /admin/course/update/{id}
 func AdminUpdateCourseRequest(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
-	if !isTeacher(r){ //not a teacher, error 401
+	if !isTeacher(r) { //not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
@@ -196,7 +196,7 @@ func AdminUpdateCourseRequest(w http.ResponseWriter, r *http.Request) {
 // AdminAssignmentHandler handles GET-request at /admin/assignment
 func AdminAssignmentHandler(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
-	if !isTeacher(r){ //not a teacher, error 401
+	if !isTeacher(r) { //not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
@@ -264,7 +264,7 @@ func AdminCreateAssignmentRequest(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("%v", foo)
 }
 
-func isTeacher(r *http.Request)bool{
+func isTeacher(r *http.Request) bool {
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
 		log.Println(err)
@@ -275,7 +275,7 @@ func isTeacher(r *http.Request)bool{
 	user := getUser(session)
 
 	//check that user is a teacher
-	if !user.Teacher{ //not a teacher, error 401
+	if !user.Teacher { //not a teacher, error 401
 		return false
 	}
 
