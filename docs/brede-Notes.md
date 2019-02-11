@@ -45,7 +45,7 @@
 *I'm 5h too short for this week, so I have to work some today too*
 * Started up with setting up the environment on my laptop since I'm home and not in Gjøvik.
 * I'm going to fix one test today and Johan is refactoring the code, so after that, I can make a pull request.
-* 
+* Merged my branch to master
 
 ### Report for Week One
 #### What I Have Done
@@ -78,6 +78,9 @@ projects design and are more prepared for the next card now.
 
 ## Week Two
 ### Monday - 11/02/19
+* Started on [#16 - Logging to database](https://trello.com/c/CwIxfhpk) - Log stuff that the user and/or admin does
+* Everything went fine for now at least, that's nice 😍
+* Had two meetings and plan to discuss new project structure
 
 ### Tuesday - 12/02/19
 

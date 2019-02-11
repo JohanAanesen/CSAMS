@@ -84,6 +84,9 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 		//update session
 		user.Name = name
 		util.SaveUserToSession(user, w, r)
+
+		// Log name change in the database
+		db.LogToDB(user.ID, db.ChangeName)
 	}
 
 	// Users Email
@@ -95,6 +98,9 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 			//update session
 			user.EmailPrivate = secondaryEmail
 			util.SaveUserToSession(user, w, r)
+
+			// Log email change in the database
+			db.LogToDB(user.ID, db.ChangeName)
 		}
 	}
 
@@ -107,6 +113,9 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 	if passwordIsOkay && db.CheckPasswordHash(oldPass, hash) {
 		if db.UpdateUserPassword(user.ID, newPass) {
 			log.Println("Success: Password is now changed!")
+
+			// Log password change in the database
+			db.LogToDB(user.ID, db.ChangePassword)
 		} else {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
