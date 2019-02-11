@@ -8,9 +8,14 @@ I have also worked part with the dynamic form to be used for peer review. Since 
 
 The group had a discussion on the database structure and form structure of the application, and found that we could reduce the number of fields in the database, using Markdown as word processing, which means that user has great freedom in relation to text and content that can added to the subject page.
 
+## 08/02/2019
+* Worked more on the assignments-form
+* Had some problems with prioritizion on the form, but found a easy solution
+
 ## 07/02/2019
 * Added navbar to every pag
-* 
+* Worked on the assignments-form, for peer-reviews
+* Refactored some of the previous code, cause of navbar on every page
 
 ## 06/02/2019
 * Added another function for loading JSON-data from file
