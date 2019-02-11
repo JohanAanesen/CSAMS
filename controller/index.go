@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func IndexGET(w http.ResponseWriter, r *http.Request) {
+func IndexNobodyLikesYou(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
@@ -19,8 +19,8 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 }
 
-//MainHandler serves homepage to users
-func MainHandler(w http.ResponseWriter, r *http.Request) {
+//IndexGET serves homepage to users
+func IndexGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
