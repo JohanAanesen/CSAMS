@@ -73,7 +73,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		//redirect to errorhandler
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event
-		log.Println()
+		log.Println("LoginPOST error")
 		return
 	}
 

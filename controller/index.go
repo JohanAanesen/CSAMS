@@ -21,6 +21,9 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 
 //MainHandler serves homepage to users
 func MainHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
 
 	//check if user is logged in
 	if session.GetUserFromSession(r).Authenticated == false { //redirect to /login if not logged in
