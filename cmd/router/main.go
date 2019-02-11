@@ -30,6 +30,7 @@ func main() {
 	router.HandleFunc("/assignment/auto", handlers.AssignmentAutoHandler).Methods("GET")
 
 	router.HandleFunc("/user", handlers.UserHandler).Methods("GET")
+	router.HandleFunc("/user/update", handlers.UserUpdateRequest).Methods("POST")
 
 	router.HandleFunc("/admin", handlers.AdminHandler).Methods("GET")
 	router.HandleFunc("/admin/course", handlers.AdminCourseHandler).Methods("GET")
