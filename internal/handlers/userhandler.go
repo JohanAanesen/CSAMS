@@ -1,6 +1,9 @@
 package handlers
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 //UserHandler serves user page to users
 func UserHandler(w http.ResponseWriter, r *http.Request) {
@@ -10,5 +13,5 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 	//fetch users information from server
 
 	//parse information with template
-
+	fmt.Fprintf(w, "this makes the test go through")
 }

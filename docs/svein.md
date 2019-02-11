@@ -1,16 +1,16 @@
 Svein's log
 ============
-## 08/02/2019
-* Programmed with Javascript for making a dynamic form for assignments/peer-review.
-  * Meet some challenges about prioritizing the fields 
+
+# Week 6 Report
+I have worked mainly with Bootstrap to get a concise design on every page of the application. Templating has also taken up quite a bit of time, as I did not have much knowledge of this before, and had to read about this, and talk to the other team members about this issue. It was resolved in a straightforward way, but afterwards I see that it could have been solved even better, with the creation of features to simply enter simple parameters to be able to change the whole page, as well as help reuse code.
+
+I have also worked part with the dynamic form to be used for peer review. Since I have a good deal of knowledge from before with dynamic front-end programming, this task went pretty smoothly. Met some challenges with the prioritization of fields, but found a solution in the end that makes it easy for both me and the person who will set up the form. Will look later on this, but it works pretty well as it does now. Only thing missing is adding a button to remove items from the form.
+
+The group had a discussion on the database structure and form structure of the application, and found that we could reduce the number of fields in the database, using Markdown as word processing, which means that user has great freedom in relation to text and content that can added to the subject page.
 
 ## 07/02/2019
-* Added navbar to every page
-* Took use of GetPort
-* Discussed Markdown for *description* in Courses
-  * https://github.com/gomarkdown/markdown
-  * https://github.com/sparksuite/simplemde-markdown-editor
-* Started on the dynamic form for assignments/peer-review
+* Added navbar to every pag
+* 
 
 ## 06/02/2019
 * Added another function for loading JSON-data from file

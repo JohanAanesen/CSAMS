@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/page"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/util"
 	"html/template"
@@ -12,7 +13,11 @@ import (
 
 // AdminHandler handles GET-request at /admin
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
-	//check that user is logged in and is admin/teacher
+	//check that user is a teacher
+	if !isTeacher(r){ //not a teacher, error 401
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
 
 	//find classes admin/teacher own
 
@@ -46,6 +51,12 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 
 // AdminCourseHandler handles GET-request at /admin/course
 func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
+	//check that user is a teacher
+	if !isTeacher(r){ //not a teacher, error 401
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
+
 	// Data for displaying on screen
 	data := struct {
 		PageTitle   string
@@ -59,8 +70,6 @@ func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
 		Navbar:    util.LoadMenuConfig("configs/menu/site.json"),
 		Courses:   util.LoadCoursesConfig("configs/dd.json"), // dd = dummy data
 	}
-
-	w.WriteHeader(http.StatusOK)
 
 	//parse template
 	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/course/index.html")
@@ -76,7 +85,11 @@ func AdminCourseHandler(w http.ResponseWriter, r *http.Request) {
 
 // AdminCreateCourseHandler handles GET-request at /admin/course/create
 func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+	//check that user is a teacher
+	if !isTeacher(r){ //not a teacher, error 401
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
 
 	//parse template
 	temp, err := template.ParseFiles("web/dashboard/layout.html", "web/dashboard/navbar.html", "web/dashboard/sidebar.html", "web/dashboard/course/create.html")
@@ -102,7 +115,22 @@ func AdminCreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 // AdminCreateCourseRequest handles POST-request at /admin/course/create
 // Inserts a new course to the database
 func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
-	// TODO: talk to database and stuff
+	//check that user is a teacher
+	if !isTeacher(r){ //not a teacher, error 401
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
+
+	session, err := db.CookieStore.Get(r, "login-session") //get session
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	//check if user is already logged in
+	user := getUser(session)
+
 	course := page.Course{
 		Code:        r.FormValue("code"),
 		Name:        r.FormValue("name"),
@@ -111,11 +139,29 @@ func AdminCreateCourseRequest(w http.ResponseWriter, r *http.Request) {
 		Semester:    r.FormValue("semester"),
 	}
 
-	fmt.Printf("%v", course)
+	//insert into database
+	rows, err := db.DB.Query("INSERT INTO course(coursecode, coursename, year, semester, description, teacher) VALUES(?, ?, ?, ?, ?, ?)",
+		course.Code, course.Name, course.Year, course.Semester, course.Description, user.ID)
+
+	if err != nil {
+		//todo log error
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	defer rows.Close()
+
+	MainHandler(w,r) //success redirect to homepage
 }
 
 // AdminUpdateCourseHandler handles GET-request at /admin/course/update/{id}
 func AdminUpdateCourseHandler(w http.ResponseWriter, r *http.Request) {
+	//check that user is a teacher
+	if !isTeacher(r){ //not a teacher, error 401
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 
 	//parse template
@@ -140,11 +186,20 @@ func AdminUpdateCourseHandler(w http.ResponseWriter, r *http.Request) {
 
 // AdminUpdateCourseRequest handles POST-request at /admin/course/update/{id}
 func AdminUpdateCourseRequest(w http.ResponseWriter, r *http.Request) {
-
+	//check that user is a teacher
+	if !isTeacher(r){ //not a teacher, error 401
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
 }
 
 // AdminAssignmentHandler handles GET-request at /admin/assignment
 func AdminAssignmentHandler(w http.ResponseWriter, r *http.Request) {
+	//check that user is a teacher
+	if !isTeacher(r){ //not a teacher, error 401
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 
 	//parse template
@@ -193,11 +248,11 @@ func AdminCreateAssignmentHandler(w http.ResponseWriter, r *http.Request) {
 
 func AdminCreateAssignmentRequest(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	var foo []struct{
-		Type string `json:"type"`
-		Question string `json:"question"`
+	var foo []struct {
+		Type        string `json:"type"`
+		Question    string `json:"question"`
 		Description string `json:"description"`
-		Priority string `json:"priority"`
+		Priority    string `json:"priority"`
 	}
 
 	err := decoder.Decode(&foo)
@@ -207,4 +262,23 @@ func AdminCreateAssignmentRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("%v", foo)
+}
+
+func isTeacher(r *http.Request)bool{
+	session, err := db.CookieStore.Get(r, "login-session") //get session
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	//check if user is already logged in
+	user := getUser(session)
+
+	//check that user is a teacher
+	if !user.Teacher{ //not a teacher, error 401
+		return false
+	}
+
+	return true
+
 }

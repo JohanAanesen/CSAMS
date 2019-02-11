@@ -1,7 +1,8 @@
 package handlers
 
 import (
-	dbcon "github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -11,7 +12,7 @@ import (
 )
 
 func init() {
-	dbcon.InitDB(os.Getenv("SQLDB"))
+	db.InitDB(os.Getenv("SQLDB"))
 
 	if err := os.Chdir("../../"); err != nil { //go out of /handlers folder
 		panic(err)
@@ -55,8 +56,8 @@ func TestLoggingIn(t *testing.T) {
 
 	status := resp.Code
 
-	if status != http.StatusFound { //todo update code, although it works, not definitive test
-		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusFound, status)
+	if status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
 	}
 
 	body := resp.Body
@@ -78,8 +79,8 @@ func TestMainHandler(t *testing.T) {
 
 	status := resp.Code
 
-	if status != http.StatusFound { //todo update this somehow, site isn't available for unauthorized users
-		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusFound, status)
+	if status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
 	}
 
 	body := resp.Body
@@ -89,16 +90,16 @@ func TestMainHandler(t *testing.T) {
 	}
 }
 
-func TestClassHandler(t *testing.T) {
+func TestCourseHandler(t *testing.T) {
 
-	req, err := http.NewRequest("GET", "/class?id=asdfcvgbhnjk", nil)
+	req, err := http.NewRequest("GET", "/course?id=asdfcvgbhnjk", nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(ClassHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(CourseHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -113,16 +114,16 @@ func TestClassHandler(t *testing.T) {
 	}
 }
 
-func TestClassListHandler(t *testing.T) {
+func TestCourseListHandler(t *testing.T) {
 
-	req, err := http.NewRequest("GET", "/class/list?id=adsikjuh", nil)
+	req, err := http.NewRequest("GET", "/course/list?id=adsikjuh", nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(ClassListHandler).ServeHTTP(resp, req)
+	http.HandlerFunc(CourseListHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -162,7 +163,6 @@ func TestUserHandler(t *testing.T) {
 }
 
 func TestAdminHandler(t *testing.T) {
-
 	req, err := http.NewRequest("GET", "/admin", nil)
 	if err != nil {
 		t.Fatal(err.Error())
@@ -170,7 +170,132 @@ func TestAdminHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
+	//get a session
+	session, err := db.CookieStore.Get(req, "login-session")
+	//user object we want to fill with variables needed
+	var user model.User
+	user.Authenticated = true
+	user.Teacher = true
+	//save user to session values
+	session.Values["user"] = user
+	//save session changes
+	err = session.Save(req, resp)
+	if err != nil { //check error
+		t.Error(err.Error())
+	}
+
 	http.HandlerFunc(AdminHandler).ServeHTTP(resp, req)
+
+	status := resp.Code
+
+	if status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
+}
+
+func TestAdminCourseHandler(t *testing.T) {
+	req, err := http.NewRequest("GET", "/course", nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	resp := httptest.NewRecorder()
+
+	//get a session
+	session, err := db.CookieStore.Get(req, "login-session")
+	//user object we want to fill with variables needed
+	var user model.User
+	user.Authenticated = true
+	user.Teacher = true
+	//save user to session values
+	session.Values["user"] = user
+	//save session changes
+	err = session.Save(req, resp)
+	if err != nil { //check error
+		t.Error(err.Error())
+	}
+
+	http.HandlerFunc(AdminCourseHandler).ServeHTTP(resp, req)
+
+	status := resp.Code
+
+	if status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
+}
+
+func TestAdminCreateCourseHandler(t *testing.T) {
+	req, err := http.NewRequest("GET", "/admin/course/create", nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	resp := httptest.NewRecorder()
+
+	//get a session
+	session, err := db.CookieStore.Get(req, "login-session")
+	//user object we want to fill with variables needed
+	var user model.User
+	user.Authenticated = true
+	user.Teacher = true
+	//save user to session values
+	session.Values["user"] = user
+	//save session changes
+	err = session.Save(req, resp)
+	if err != nil { //check error
+		t.Error(err.Error())
+	}
+
+	http.HandlerFunc(AdminCreateCourseHandler).ServeHTTP(resp, req)
+
+	status := resp.Code
+
+	if status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
+}
+
+func TestAdminUpdateCourseHandler(t *testing.T) {
+	req, err := http.NewRequest("GET", "/admin/course/update", nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	resp := httptest.NewRecorder()
+
+	//get a session
+	session, err := db.CookieStore.Get(req, "login-session")
+	//user object we want to fill with variables needed
+	var user model.User
+	user.Authenticated = true
+	user.Teacher = true
+	//save user to session values
+	session.Values["user"] = user
+	//save session changes
+	err = session.Save(req, resp)
+	if err != nil { //check error
+		t.Error(err.Error())
+	}
+
+	http.HandlerFunc(AdminUpdateCourseHandler).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -258,7 +383,7 @@ func TestAssignmentPeerHandler(t *testing.T) {
 }
 
 func TestErrorHandler(t *testing.T) {
-	req, err := http.NewRequest("GET", "/class", nil) //class with no id should give 403
+	req, err := http.NewRequest("GET", "/course", nil) //class with no id should give 403
 	if err != nil {
 		t.Fatal(err.Error())
 	}
