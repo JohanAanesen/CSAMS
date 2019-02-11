@@ -58,7 +58,7 @@ func LoginRequest(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password") //password
 
 	if email == "" || password == "" { //login credentials cannot be empty
-		LoginHandler(w,r)
+		LoginHandler(w, r)
 		return
 	}
 

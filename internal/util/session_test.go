@@ -31,10 +31,10 @@ func TestGetUserFromSession(t *testing.T) {
 	session, err := db.CookieStore.Get(req, "login-session")
 	//user object we want to fill with variables needed
 	var user = model.User{
-		Authenticated:true,
-		ID:id,
-		Name:name,
-		EmailStudent:email,
+		Authenticated: true,
+		ID:            id,
+		Name:          name,
+		EmailStudent:  email,
 	}
 
 	//save user to session values
@@ -61,13 +61,13 @@ func TestGetUserFromSession(t *testing.T) {
 
 	user2 := util.GetUserFromSession(req)
 
-	if user2.ID != id{
+	if user2.ID != id {
 		t.Errorf("Returned wrong user information from session, expected %v, got %v", id, user2.ID)
 	}
-	if user2.Name != name{
+	if user2.Name != name {
 		t.Errorf("Returned wrong user information from session, expected %v, got %v", name, user2.Name)
 	}
-	if user2.EmailStudent != email{
+	if user2.EmailStudent != email {
 		t.Errorf("Returned wrong user information from session, expected %v, got %v", email, user2.EmailStudent)
 	}
 }
@@ -89,10 +89,10 @@ func TestIsLoggedIn(t *testing.T) {
 	session, err := db.CookieStore.Get(req, "login-session")
 	//user object we want to fill with variables needed
 	var user = model.User{
-		Authenticated:true,
-		ID:id,
-		Name:name,
-		EmailStudent:email,
+		Authenticated: true,
+		ID:            id,
+		Name:          name,
+		EmailStudent:  email,
 	}
 
 	//save user to session values
@@ -119,7 +119,7 @@ func TestIsLoggedIn(t *testing.T) {
 
 	loggedIn := util.IsLoggedIn(req)
 
-	if !loggedIn{
+	if !loggedIn {
 		t.Errorf("Not logged in expected true, got false")
 	}
 }
@@ -140,11 +140,11 @@ func TestIsTeacher(t *testing.T) {
 	session, err := db.CookieStore.Get(req, "login-session")
 	//user object we want to fill with variables needed
 	var user = model.User{
-		Authenticated:true,
-		Teacher:true,
-		ID:id,
-		Name:name,
-		EmailStudent:email,
+		Authenticated: true,
+		Teacher:       true,
+		ID:            id,
+		Name:          name,
+		EmailStudent:  email,
 	}
 
 	//save user to session values
@@ -171,7 +171,7 @@ func TestIsTeacher(t *testing.T) {
 
 	isTeacher := util.IsTeacher(req)
 
-	if !isTeacher{
+	if !isTeacher {
 		t.Errorf("Not logged in expected true, got false")
 	}
 }
@@ -190,10 +190,10 @@ func TestSaveUserToSession(t *testing.T) {
 
 	//user object we want to fill with variables needed
 	var user = model.User{
-		Authenticated:true,
-		ID:id,
-		Name:name,
-		EmailStudent:email,
+		Authenticated: true,
+		ID:            id,
+		Name:          name,
+		EmailStudent:  email,
 	}
 
 	http.HandlerFunc(handlers.MainHandler).ServeHTTP(resp, req)
@@ -214,14 +214,13 @@ func TestSaveUserToSession(t *testing.T) {
 
 	user2 := util.GetUserFromSession(req)
 
-	if user2.ID != id{
+	if user2.ID != id {
 		t.Errorf("Returned wrong user information from session, expected %v, got %v", id, user2.ID)
 	}
-	if user2.Name != name{
+	if user2.Name != name {
 		t.Errorf("Returned wrong user information from session, expected %v, got %v", name, user2.Name)
 	}
-	if user2.EmailStudent != email{
+	if user2.EmailStudent != email {
 		t.Errorf("Returned wrong user information from session, expected %v, got %v", email, user2.EmailStudent)
 	}
 }
-
