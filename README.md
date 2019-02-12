@@ -46,6 +46,9 @@ eksempler:
 - [ ] Is there something that could be done better? propose update
 - [ ] Leave feedback as comment on the pull request :)
 
+## Go Module
+* See [quick start](https://github.com/golang/go/wiki/Modules#quick-start) for Modules
+
 ## Go Get's
 * go get -u github.com/go-sql-driver/mysql
 * go get github.com/gorilla/sessions
