@@ -20,6 +20,20 @@ func init() {
 	}
 }
 
+func TestHandlers(t *testing.T) {
+	tests := []struct{
+		url string
+		method string
+		expectedCode int
+	}{
+		{
+			url: "/",
+			method: "GET",
+			expectedCode: 200,
+		},
+	}
+}
+
 func TestLoginHandler(t *testing.T) {
 
 	req, err := http.NewRequest("GET", "/login", nil)

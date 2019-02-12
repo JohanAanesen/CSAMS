@@ -33,16 +33,11 @@ func TestDatabase(t *testing.T) {
 		ParseTime: true,
 	})
 
-	conn, err := database.Open()
-	if err != nil {
-		t.Logf("could not open connection to database")
-		t.Fail()
-	}
-
-	defer conn.Close()
+	database.Open()
+	defer database.Close()
 
 	for _, query := range tests.queries {
-		_, err = conn.Exec(query)
+		_, err := database.Get().Exec(query)
 		if err != nil {
 			t.Logf("error: %v\nquery: %s\n", err, query)
 			t.Fail()

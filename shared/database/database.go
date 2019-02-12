@@ -13,6 +13,8 @@ var (
 	db *sql.DB
 )
 
+
+
 // MySQLInfo struct
 type MySQLInfo struct {
 	Hostname string `json:"hostname"`
@@ -38,4 +40,8 @@ func Get() *sql.DB {
 
 func Close() {
 	db.Close()
+}
+
+func Query(query string, args ...interface{}) (*sql.Rows, error) {
+	return db.Query(query, args)
 }

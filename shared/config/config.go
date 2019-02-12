@@ -53,3 +53,24 @@ func Load(configFile string) (*Configuration, error) {
 
 	return &cfg, nil
 }
+
+func Initialize() *Configuration {
+	var cfg = &Configuration{}
+	cfg, err := Load("config/config.json")
+	if err != nil {
+		panic(err)
+	}
+
+	// Configure Session
+	session.Configure(cfg.Session)
+
+	// Configure Database
+	database.Configure(cfg.Database)
+
+	// Configure View
+	view.Configure(cfg.View)
+	view.LoadTemplate(cfg.Template.Root, cfg.Template.Children)
+	view.LoadAdminTemplate(cfg.TemplateAdmin.Root, cfg.TemplateAdmin.Children)
+
+	return cfg
+}
