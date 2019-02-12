@@ -4,7 +4,8 @@
     "port": 3306,
     "username": "root",
     "password": "",
-    "database": "cs53"
+    "database": "cs53",
+    "parseTime": true
   },
 
   "server": {

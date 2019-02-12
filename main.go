@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/route"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/config"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/database"
@@ -20,6 +22,9 @@ func main() {
 
 	// Configure Database
 	database.Configure(cfg.Database)
+
+	post := model.GetPosts()
+	fmt.Printf("%v\n", post)
 
 	db.InitDB(os.Getenv("SQLDB"))
 
