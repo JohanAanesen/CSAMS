@@ -2,7 +2,6 @@ package session
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/gorilla/sessions"
 	"log"
 	"net/http"
@@ -69,9 +68,9 @@ func IsLoggedIn(r *http.Request) bool {
 //GetUserFromSession returns user object stored in session
 func GetUserFromSession(r *http.Request) model.User {
 	// TODO (Svein): Refactor this
-	//session, err := Instance(r) //get session
+	session, err := Instance(r) //get session
 	//session, err := session.Instance(r) //get session outside session.go
-	session, err := db.CookieStore.Get(r, "login-session") //get session
+	//session, err := store.Get(r, "login-session") //get session
 	if err != nil {
 		log.Println(err)
 		return model.User{Authenticated: false}
@@ -88,7 +87,7 @@ func GetUserFromSession(r *http.Request) model.User {
 
 //SaveUserToSession saves user object to sessionstore
 func SaveUserToSession(user model.User, w http.ResponseWriter, r *http.Request) bool {
-	session, err := db.CookieStore.Get(r, "login-session") //get session
+	session, err := Instance(r) //get session
 	if err != nil {
 		log.Println(err)
 		return false

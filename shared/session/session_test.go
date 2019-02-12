@@ -4,14 +4,20 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/controller"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/config"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"github.com/gorilla/sessions"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 )
+
+func init(){
+	var cfg = &config.Configuration{}
+	cfg, _ = config.Load("../../config/config.json")
+
+	// Configure Session
+	session.Configure(cfg.Session)
+}
 
 func TestSveinNewSession(t *testing.T) {
 	test := struct {
@@ -70,9 +76,7 @@ func TestSveinNewSession(t *testing.T) {
 }
 
 func TestGetUserFromSession(t *testing.T) {
-	if err := os.Chdir("../../"); err != nil { //go out of /handlers folder
-		panic(err)
-	}
+
 
 	id := 1
 	name := "test"
@@ -85,8 +89,6 @@ func TestGetUserFromSession(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	//get a session
-	sess, err := db.CookieStore.Get(req, "login-session")
 	//user object we want to fill with variables needed
 	var user = model.User{
 		Authenticated: true,
@@ -95,12 +97,9 @@ func TestGetUserFromSession(t *testing.T) {
 		EmailStudent:  email,
 	}
 
-	//save user to session values
-	sess.Values["user"] = user
-	//save session changes
-	err = sess.Save(req, resp)
-	if err != nil { //check error
-		t.Error(err.Error())
+	//save user to session
+	if !session.SaveUserToSession(user, resp, req) {
+		t.Error("failed to save user to session")
 	}
 
 	http.HandlerFunc(controller.IndexGET).ServeHTTP(resp, req)
@@ -143,8 +142,6 @@ func TestIsLoggedIn(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	//get a session
-	sess, err := db.CookieStore.Get(req, "login-session")
 	//user object we want to fill with variables needed
 	var user = model.User{
 		Authenticated: true,
@@ -153,12 +150,9 @@ func TestIsLoggedIn(t *testing.T) {
 		EmailStudent:  email,
 	}
 
-	//save user to session values
-	sess.Values["user"] = user
-	//save session changes
-	err = sess.Save(req, resp)
-	if err != nil { //check error
-		t.Error(err.Error())
+	//save user to session
+	if !session.SaveUserToSession(user, resp, req) {
+		t.Error("failed to save user to session")
 	}
 
 	http.HandlerFunc(controller.IndexGET).ServeHTTP(resp, req)
@@ -194,8 +188,6 @@ func TestIsTeacher(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	//get a session
-	sess, err := db.CookieStore.Get(req, "login-session")
 	//user object we want to fill with variables needed
 	var user = model.User{
 		Authenticated: true,
@@ -205,12 +197,9 @@ func TestIsTeacher(t *testing.T) {
 		EmailStudent:  email,
 	}
 
-	//save user to session values
-	sess.Values["user"] = user
-	//save session changes
-	err = sess.Save(req, resp)
-	if err != nil { //check error
-		t.Error(err.Error())
+	//save user to session
+	if !session.SaveUserToSession(user, resp, req) {
+		t.Error("failed to save user to session")
 	}
 
 	http.HandlerFunc(controller.IndexGET).ServeHTTP(resp, req)

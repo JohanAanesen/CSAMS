@@ -11,7 +11,7 @@ func GetCoursesToUser(userID int) model.Courses {
 	//Create an empty courses array
 	var courses model.Courses
 
-	rows, err := DB.Query("SELECT course.* FROM course INNER JOIN usercourse ON course.id = usercourse.courseid WHERE usercourse.userid = ?", userID)
+	rows, err := GetDB().Query("SELECT course.* FROM course INNER JOIN usercourse ON course.id = usercourse.courseid WHERE usercourse.userid = ?", userID)
 	if err != nil {
 		fmt.Println(err.Error()) // TODO : log error
 

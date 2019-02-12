@@ -2,29 +2,52 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql" //database driver
-	"github.com/gorilla/sessions"
-	"os"
 )
 
-//DB global DB connection variable
-var DB *sql.DB
+const driverName = "mysql"
 
-//CookieStore global var for session management
-var CookieStore = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+var (
+	dataSourceName string
+	db             *sql.DB
+)
 
-//InitDB initializes the database
-func InitDB(dataSourceName string) {
+// MySQLInfo struct
+type MySQLInfo struct {
+	Hostname  string `json:"hostname"`
+	Port      int    `json:"port"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	Database  string `json:"database"`
+	ParseTime bool   `json:"parseTime"`
+}
+
+//ConfigureDB loads database connection string
+func ConfigureDB(info *MySQLInfo) {
+	// root:@tcp(127.0.0.1:3306)/cs53
+	dataSourceName = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=%t", info.Username, info.Password, info.Hostname, info.Port, info.Database, info.ParseTime)
+}
+
+//OpenDB creates connection with database
+func OpenDB() {
 	var err error
-
-	DB, err = sql.Open("mysql", dataSourceName)
-	// if there is an error opening the connection, handle it
+	db, err = sql.Open(driverName, dataSourceName)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	if err = DB.Ping(); err != nil {
+	if err = db.Ping(); err != nil {
 		panic(err.Error())
 	}
+}
 
+//GetDB returns db object
+func GetDB() *sql.DB {
+	return db
+}
+
+//CloseDB closes db
+func CloseDB() {
+	db.Close()
 }

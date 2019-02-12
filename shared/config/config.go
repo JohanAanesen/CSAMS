@@ -2,7 +2,7 @@ package config
 
 import (
 	"encoding/json"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/database"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/email"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/server"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
@@ -13,8 +13,8 @@ import (
 )
 
 type Configuration struct {
-	Database *database.MySQLInfo `json:"database"`
-	Server   *server.Server      `json:"server"`
+	Database *db.MySQLInfo  `json:"database"`
+	Server   *server.Server `json:"server"`
 
 	View *view.View `json:"view"`
 

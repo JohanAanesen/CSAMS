@@ -1,13 +1,12 @@
-package database_test
+package db_test
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/database"
 	_ "github.com/go-sql-driver/mysql" //database driver
-	"testing"
 )
 
+/* todo remove this or add tables to database.sql
 func TestDatabase(t *testing.T) {
-	var tests = struct{
+	var tests = struct {
 		queries []string
 	}{
 		queries: []string{
@@ -24,28 +23,20 @@ func TestDatabase(t *testing.T) {
 		},
 	}
 
-	database.Configure(&database.MySQLInfo{
-		Hostname: "localhost",
-		Port: 3306,
-		Username: "root",
-		Password: "",
-		Database: "",
+	db.ConfigureDB(&db.MySQLInfo{
+		Hostname:  "localhost",
+		Port:      3306,
+		Username:  "root",
+		Password:  "",
+		Database:  "",
 		ParseTime: true,
 	})
 
-	conn, err := database.Open()
-	if err != nil {
-		t.Logf("could not open connection to database")
-		t.Fail()
-	}
-
-	defer conn.Close()
-
 	for _, query := range tests.queries {
-		_, err = conn.Exec(query)
+		_, err := db.GetDB().Exec(query)
 		if err != nil {
 			t.Logf("error: %v\nquery: %s\n", err, query)
 			t.Fail()
 		}
 	}
-}
+}*/

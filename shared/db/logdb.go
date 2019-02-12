@@ -22,7 +22,7 @@ func LogToDB(userID int, category category) bool {
 	// tm := time.Unix(0, timeStamp)
 
 	// Add values in sql query
-	rows, err := DB.Query("INSERT INTO logs(userid, timestamp, log) VALUES (?, ?, ?)", userID, timeStamp, category)
+	rows, err := GetDB().Query("INSERT INTO logs(userid, timestamp, log) VALUES (?, ?, ?)", userID, timeStamp, category)
 
 	// Handle possible error
 	if err != nil {
