@@ -12,14 +12,14 @@
                         <li class="nav-item">
                             <a href="/" class="nav-link">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a href="/user" class="nav-link">Profile</a>
-                        </li>
-                        <!-- TODO: Check if user is admin -->
-                        <li class="nav-item">
-                            <a href="/admin" class="nav-link">Dashboard</a>
-                        </li>
                         {{if .Auth}}
+                            <li class="nav-item">
+                                <a href="/user" class="nav-link">Profile</a>
+                            </li>
+                            <!-- TODO: Check if user is admin -->
+                            <li class="nav-item">
+                                <a href="/admin" class="nav-link">Dashboard</a>
+                            </li>
                         <li class="nav-item">
                             <a href="/logout" class="nav-link">Sign out</a>
                         </li>

@@ -1,6 +1,6 @@
 {{define "title"}}Error {{.ErrorCode}}{{end}}
 {{define "head"}}{{end}}
-{{ define "content" }}
+{{define "content"}}
     <main>
         <div class="container pt-5 text-center">
             <h1 class="display-1">Error {{ .ErrorCode }}</h1>
@@ -8,4 +8,5 @@
             <a href="/"><p class="lead">Go back to the front page</p></a>
         </div>
     </main>
-{{ end }}
+{{end}}
+{{define "foot"}}{{end}}

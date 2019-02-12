@@ -4,11 +4,11 @@
     "port": 3306,
     "username": "root",
     "password": "",
-    "database": "test"
+    "database": "cs53"
   },
 
   "server": {
-    "hostname": "",
+    "hostname": "localhost",
     "useHTTP": true,
     "useHTTPS": false,
     "HTTPPort": 8088,
@@ -38,7 +38,6 @@
   },
 
   "view": {
-    "baseURI": "/",
     "extension": "tmpl",
     "folder": "template",
     "name": "blank",
@@ -48,8 +47,15 @@
   "template": {
     "root": "base",
     "children": [
-      "partial/navbar",
-      "partial/footer"
+      "partial/navbar"
+    ]
+  },
+
+  "template_admin": {
+    "root": "admin/base",
+    "children": [
+      "admin/partial/navbar",
+      "admin/partial/sidebar"
     ]
   }
 }

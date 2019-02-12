@@ -1,27 +1,15 @@
 package controller
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/util"
-	"html/template"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
 	"log"
 	"net/http"
 )
 
-type pageData = struct {
-	User        model.User
-	PageTitle   string
-	Menu        model.Menu
-	Navbar      model.Menu
-	Courses     model.Courses
-	NoOfClasses int
-}
-
 // UserGET serves user page to users
 func UserGET(w http.ResponseWriter, r *http.Request) {
-
 	user := session.GetUserFromSession(r)
 
 	if !session.IsLoggedIn(r) {
@@ -31,31 +19,21 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
 
 	courses := db.GetCoursesToUser(user.ID)
 
-	// Data for displaying in view
-	data := pageData{
-		User:        user,
-		PageTitle:   user.Name,
-		Menu:        util.LoadMenuConfig("configs/menu/dashboard.json"),
-		Navbar:      util.LoadMenuConfig("configs/menu/site.json"),
-		Courses:     courses,
-		NoOfClasses: len(courses.Items),
-	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
 
-	//parse templates
-	temp, err := template.ParseFiles("template/dashboard/layout.html", "template/dashboard/navbar.html", "template/dashboard/sidebar.html", "template/user.html")
+	v := view.New(r)
+	v.Name = "user/profile"
 
-	if err != nil {
-		log.Println(err)
-	}
+	v.Vars["Auth"] = user.Authenticated
+	v.Vars["User"] = user
+	v.Vars["Courses"] = courses // TODO (Svein): Take a look in user/profile.tmpl how this is used, and why noOfClasses is gone (Hint: {{len .Courses.Items}})
 
-	if err = temp.ExecuteTemplate(w, "layout", data); err != nil {
-		log.Println(err)
-	}
+	v.Render(w)
 }
 
 // UserUpdatePOST changes the user information
 func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
-
 	user := session.GetUserFromSession(r)
 
 	if !session.IsLoggedIn(r) {

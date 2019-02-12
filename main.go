@@ -26,6 +26,7 @@ func main() {
 	// Configure View
 	view.Configure(cfg.View)
 	view.LoadTemplate(cfg.Template.Root, cfg.Template.Children)
+	view.LoadAdminTemplate(cfg.TemplateAdmin.Root, cfg.TemplateAdmin.Children)
 
 	// Run Server
 	server.Run(route.LoadHTTP(), route.LoadHTTPS(), cfg.Server)

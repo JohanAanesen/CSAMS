@@ -1,21 +1,12 @@
-{{ define "content" }}
-{{ template "navbar" . }}
-<style>
-    .beGone {
-        display: none;
-    }
-</style>
-<nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
-    <a class="navbar-brand mr-auto mr-lg-0" href="/">Cloud Technologies</a>
-    <button class="navbar-toggler p-0 border-0" type="button" data-toggle="offcanvas">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-
-    <a class="nav-link p-8" href="/user">{{.User.Name}}</a>
-
-</nav>
-
+{{define "title"}}Profile{{end}}
+{{define "head"}}
+    <style>
+        .beGone {
+            display: none;
+        }
+    </style>
+{{end}}
+{{define "content"}}
 <!-- Inspired by: https://getbootstrap.com/docs/4.2/examples/offcanvas/# -->
 <div class="container" style="margin-top: 80px">
 
@@ -108,8 +99,9 @@
 
 
                     <!-- Show number of classes the user is a student in -->
-                    {{if .NoOfClasses}}
-                        <p id="noOfClasses"><strong>Number of classes: </strong>{{.NoOfClasses}}</p>
+                    {{if .Courses.Items}}
+                        <!-- TODO (Svein): Look how you can use len() from Go like this -->
+                        <p id="noOfClasses"><strong>Number of classes: </strong>{{len .Courses.Items}}</p>
                     {{else}}
                         <!-- Else, show error message -->
                         <p id="noOfClasses"><strong>You don't have any active classes</strong></p>
@@ -144,48 +136,48 @@
         </div>
     </div>
 </div>
+{{end}}
+{{define "foot"}}
+    <script>
+        let userName = document.getElementById("name");
+        let sEmail = document.getElementById("email_private");
+        let passwords = document.getElementById("passwords");
+        let noOfClasses = document.getElementById("noOfClasses");
+        let noSecondary = document.getElementById("noSecondaryEmail");
 
-<script>
+        /**
+         * btnEdit()
+         *
+         * Changes the design from information to be viewed to a form to a form to change/add information.
+         *
+         * */
+        function btnEdit() {
 
-    let userName = document.getElementById("name");
-    let sEmail = document.getElementById("email_private");
-    let passwords = document.getElementById("passwords");
-    let noOfClasses = document.getElementById("noOfClasses");
-    let noSecondary = document.getElementById("noSecondaryEmail");
+            userName.readOnly = false;
+            sEmail.readOnly = false;
 
-    /**
-     * btnEdit()
-     *
-     * Changes the design from information to be viewed to a form to a form to change/add information.
-     *
-     * */
-    function btnEdit() {
+            userName.className = "form-control form-control-lg col-sm-6";
+            sEmail.className = "form-control";
+            passwords.className = "";
+            noOfClasses.className = "beGone";
+            noSecondary.className = "beGone";
+        }
 
-        userName.readOnly = false;
-        sEmail.readOnly = false;
+        /**
+         * saveNewInfo()
+         *
+         * Changes the design from a form to fill in to information to be only viewed.
+         *
+         */
+        function saveNewInfo() {
+            // Success: save shit and revert
+            userName.readOnly = true;
+            sEmail.readOnly = true;
 
-        userName.className = "form-control form-control-lg col-sm-6";
-        sEmail.className = "form-control";
-        passwords.className = "";
-        noOfClasses.className = "beGone";
-        noSecondary.className = "beGone";
-    }
-
-    /**
-     * saveNewInfo()
-     *
-     * Changes the design from a form to fill in to information to be only viewed.
-     *
-     */
-    function saveNewInfo() {
-        // Success: save shit and revert
-        userName.readOnly = true;
-        sEmail.readOnly = true;
-
-        userName.className = "form-control-plaintext form-control-lg col-sm-6";
-        sEmail.className = "form-control-plaintext";
-        noOfClasses.className = "";
-        passwords.className = "beGone";
-    }
-</script>
-{{ end }}
+            userName.className = "form-control-plaintext form-control-lg col-sm-6";
+            sEmail.className = "form-control-plaintext";
+            noOfClasses.className = "";
+            passwords.className = "beGone";
+        }
+    </script>
+{{end}}

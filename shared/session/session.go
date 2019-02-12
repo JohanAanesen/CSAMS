@@ -15,9 +15,9 @@ var (
 
 // Session struct
 type Session struct {
-	Options   sessions.Options      `json:"options"`
-	Name      string                `json:"name"`
-	SecretKey string                `json:"secretKey"`
+	Options   sessions.Options `json:"options"`
+	Name      string           `json:"name"`
+	SecretKey string           `json:"secretKey"`
 }
 
 // Configure Session

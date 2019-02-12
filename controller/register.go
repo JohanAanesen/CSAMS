@@ -1,42 +1,25 @@
 package controller
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/util"
-	"html/template"
-	"log"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
 	"net/http"
 )
 
 //RegisterGET serves register page to users
 func RegisterGET(w http.ResponseWriter, r *http.Request) {
-
 	if session.IsLoggedIn(r) {
 		IndexGET(w, r)
 		return
 	}
 
+	v := view.New(r)
+	v.Name = "register"
+	v.Render(w)
+
 	//todo check if there is a class id in request
 	//if there is, add the user logging in to the class and redirect
-
-	//parse template
-	temp, err := template.ParseFiles("template/layout.html", "template/navbar.html", "template/register.html")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err = temp.ExecuteTemplate(w, "layout", struct {
-		PageTitle string
-		Menu      model.Menu
-	}{
-		PageTitle: "Sign Up",
-		Menu:      util.LoadMenuConfig("configs/menu/site.json"),
-	}); err != nil {
-		log.Fatal(err)
-	}
 }
 
 //RegisterPOST validates register requests from users

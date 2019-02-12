@@ -5,8 +5,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/util"
-	"html/template"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
 	"log"
 	"net/http"
 )
@@ -25,25 +24,16 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "login"
+
+	v.Render(w)
+
 	//todo check if there is a class id in request
 	//if there is, add the user logging in to the class and redirect
-
-	//parse template
-	temp, err := template.ParseFiles("template/layout.html", "template/navbar.html", "template/login.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err = temp.ExecuteTemplate(w, "layout", struct {
-		PageTitle string
-		Menu      model.Menu
-	}{
-		PageTitle: "Sign In",
-		Menu:      util.LoadMenuConfig("configs/menu/site.json"),
-	}); err != nil {
-		log.Fatal(err)
-	}
-
 }
 
 //LoginPOST validates login requests

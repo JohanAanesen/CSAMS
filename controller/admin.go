@@ -4,8 +4,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/util"
-	"html/template"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
 	"log"
 	"net/http"
 )
@@ -18,34 +17,15 @@ func AdminGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//find classes admin/teacher own
-
-	// Data for displaying on screen
-	data := struct {
-		PageTitle   string
-		Menu        model.Menu
-		Navbar      model.Menu
-		Courses     model.Courses
-		Assignments []model.Assignment
-	}{
-		PageTitle: "Homepage",
-		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
-		Navbar:    util.LoadMenuConfig("configs/menu/site.json"),
-		Courses:   util.LoadCoursesConfig("configs/dd.json"), // dd = dummy data
-	}
-
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
-	//parse templates
-	temp, err := template.ParseFiles("template/dashboard/layout.html", "template/dashboard/navbar.html", "template/dashboard/sidebar.html", "template/dashboard/index.html")
+	v := view.New(r)
+	v.Name = "admin/index"
 
-	if err != nil {
-		log.Println(err)
-	}
+	// TODO (Svein): Add data to the page (courses, assignments, etc)
 
-	if err = temp.ExecuteTemplate(w, "layout", data); err != nil {
-		log.Println(err)
-	}
+	v.Render(w)
 }
 
 // AdminCourseGET handles GET-request at /admin/course
@@ -56,30 +36,15 @@ func AdminCourseGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Data for displaying on screen
-	data := struct {
-		PageTitle   string
-		Menu        model.Menu
-		Navbar      model.Menu
-		Courses     model.Courses
-		Assignments []model.Assignment
-	}{
-		PageTitle: "Dashboard - Courses",
-		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
-		Navbar:    util.LoadMenuConfig("configs/menu/site.json"),
-		Courses:   util.LoadCoursesConfig("configs/dd.json"), // dd = dummy data
-	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
 
-	//parse template
-	temp, err := template.ParseFiles("template/dashboard/layout.html", "template/dashboard/navbar.html", "template/dashboard/sidebar.html", "template/dashboard/course/index.html")
+	v := view.New(r)
+	v.Name = "admin/course/index"
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	// TODO (Svein): Add data to the page
 
-	if err = temp.ExecuteTemplate(w, "layout", data); err != nil {
-		log.Fatal(err)
-	}
+	v.Render(w)
 }
 
 // AdminCreateCourseGET handles GET-request at /admin/course/create
@@ -90,25 +55,15 @@ func AdminCreateCourseGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//parse template
-	temp, err := template.ParseFiles("template/dashboard/layout.html", "template/dashboard/navbar.html", "template/dashboard/sidebar.html", "template/dashboard/course/create.html")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
 
-	if err != nil {
-		ErrorHandler(w, r, 404)
-		log.Fatal(err)
-	}
+	v := view.New(r)
+	v.Name = "admin/course/create"
 
-	if err = temp.ExecuteTemplate(w, "layout", struct {
-		PageTitle string
-		Menu      model.Menu
-		Navbar    model.Menu
-	}{
-		PageTitle: "Dashboard - Create course",
-		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
-		Navbar:    util.LoadMenuConfig("configs/menu/site.json"),
-	}); err != nil {
-		log.Fatal(err)
-	}
+	// TODO (Svein): Add data to the page (courses, assignments, etc)
+
+	v.Render(w)
 }
 
 // AdminCreateCoursePOST handles POST-request at /admin/course/create
@@ -154,26 +109,16 @@ func AdminUpdateCourseGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
-	//parse template
-	temp, err := template.ParseFiles("template/dashboard/layout.html", "template/dashboard/navbar.html", "template/dashboard/sidebar.html", "template/dashboard/course/update.html")
+	v := view.New(r)
+	v.Name = "admin/course/update"
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	// TODO (Svein): Add data to the page (courses, assignments, etc)
 
-	if err = temp.ExecuteTemplate(w, "layout", struct {
-		PageTitle string
-		Menu      model.Menu
-		Navbar    model.Menu
-	}{
-		PageTitle: "Dashboard - Update course",
-		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
-		Navbar:    util.LoadMenuConfig("configs/menu/site.json"),
-	}); err != nil {
-		log.Fatal(err)
-	}
+	v.Render(w)
 }
 
 // AdminUpdateCoursePOST handles POST-request at /admin/course/update/{id}
@@ -192,24 +137,14 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
-	//parse template
-	temp, err := template.ParseFiles("template/dashboard/layout.html", "template/dashboard/navbar.html", "template/dashboard/sidebar.html", "template/dashboard/assignment/index.html")
+	v := view.New(r)
+	v.Name = "admin/assignment/index"
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	// TODO (Svein): Add data to the page (courses, assignments, etc)
 
-	if err = temp.ExecuteTemplate(w, "layout", struct {
-		PageTitle string
-		Menu      model.Menu
-		Navbar    model.Menu
-	}{
-		PageTitle: "Dashboard - Assignments",
-		Menu:      util.LoadMenuConfig("configs/menu/dashboard.json"),
-		Navbar:    util.LoadMenuConfig("configs/menu/site.json"),
-	}); err != nil {
-		log.Fatal(err)
-	}
+	v.Render(w)
 }

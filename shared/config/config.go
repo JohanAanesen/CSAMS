@@ -15,10 +15,14 @@ import (
 type Configuration struct {
 	Database *database.MySQLInfo `json:"database"`
 	Server   *server.Server      `json:"server"`
-	View     *view.View          `json:"view"`
-	Session  *session.Session    `json:"session"`
-	Email    *email.SMTPInfo     `json:"email"`
-	Template *view.Template      `json:"template"`
+
+	View *view.View `json:"view"`
+
+	Session *session.Session `json:"session"`
+	Email   *email.SMTPInfo  `json:"email"`
+
+	Template      *view.Template `json:"template"`
+	TemplateAdmin *view.Template `json:"template_admin"`
 }
 
 func Load(configFile string) (*Configuration, error) {
