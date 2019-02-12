@@ -6,6 +6,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/config"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -33,16 +34,45 @@ func init() {
 }
 
 func TestHandlers(t *testing.T) {
-	tests := []struct{
-		url string
-		method string
+	config.Initialize()
+
+	tests := []struct {
+		name    string
+		method  string
+		url     string
+		body    io.Reader
+		handler func(w http.ResponseWriter, r *http.Request)
+
 		expectedCode int
 	}{
 		{
-			url: "/",
-			method: "GET",
-			expectedCode: 200,
+			name:    "index",
+			method:  "GET",
+			url:     "/",
+			body:    nil,
+			handler: controller.IndexGET,
+			expectedCode: http.StatusOK,
 		},
+	}
+
+	for _, test := range tests {
+		r, _ := http.NewRequest(test.method, test.url, test.body)
+		w := httptest.NewRecorder()
+
+		test.handler(w, r)
+
+		t.Run(test.name, func(t *testing.T) {
+			if w.Body.String() == "" {
+				t.Logf("error, response body was empty")
+				t.Fail()
+			}
+
+			// Check status code
+			if w.Code != test.expectedCode {
+				t.Logf("expected: %v, got: %v\n", http.StatusOK, w.Code)
+				t.Fail()
+			}
+		})
 	}
 }
 
@@ -55,7 +85,7 @@ func TestLoginHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
- 	http.HandlerFunc(controller.LoginGET).ServeHTTP(resp, req)
+	http.HandlerFunc(controller.LoginGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -177,9 +207,9 @@ func TestUserHandler(t *testing.T) {
 	resp := httptest.NewRecorder()
 
 	//user object we want to fill with variables needed
-	var user  = model.User{
-		Authenticated:true,
-		Teacher:false,
+	var user = model.User{
+		Authenticated: true,
+		Teacher:       false,
 	}
 
 	//save user to session
@@ -236,9 +266,9 @@ func TestCheckUserStatusLoggedIn(t *testing.T) {
 	resp := httptest.NewRecorder()
 
 	//user object we want to fill with variables needed
-	var user  = model.User{
-		Authenticated:true,
-		Teacher:false,
+	var user = model.User{
+		Authenticated: true,
+		Teacher:       false,
 	}
 
 	//save user to session
@@ -312,9 +342,9 @@ func TestAdminHandler(t *testing.T) {
 	resp := httptest.NewRecorder()
 
 	//user object we want to fill with variables needed
-	var user  = model.User{
-		Authenticated:true,
-		Teacher:true,
+	var user = model.User{
+		Authenticated: true,
+		Teacher:       true,
 	}
 
 	//save user to session
@@ -346,9 +376,9 @@ func TestAdminCourseHandler(t *testing.T) {
 	resp := httptest.NewRecorder()
 
 	//user object we want to fill with variables needed
-	var user  = model.User{
-		Authenticated:true,
-		Teacher:true,
+	var user = model.User{
+		Authenticated: true,
+		Teacher:       true,
 	}
 
 	//save user to session
@@ -380,9 +410,9 @@ func TestAdminCreateCourseHandler(t *testing.T) {
 	resp := httptest.NewRecorder()
 
 	//user object we want to fill with variables needed
-	var user  = model.User{
-		Authenticated:true,
-		Teacher:true,
+	var user = model.User{
+		Authenticated: true,
+		Teacher:       true,
 	}
 
 	//save user to session
@@ -414,9 +444,9 @@ func TestAdminUpdateCourseHandler(t *testing.T) {
 	resp := httptest.NewRecorder()
 
 	//user object we want to fill with variables needed
-	var user  = model.User{
-		Authenticated:true,
-		Teacher:true,
+	var user = model.User{
+		Authenticated: true,
+		Teacher:       true,
 	}
 
 	//save user to session
