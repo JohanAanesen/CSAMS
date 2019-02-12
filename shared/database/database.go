@@ -28,11 +28,14 @@ func Configure(info *MySQLInfo) {
 	dataSourceName = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=%t", info.Username, info.Password, info.Hostname, info.Port, info.Database, info.ParseTime)
 }
 
-func Open() (*sql.DB, error) {
-	return sql.Open(driverName, dataSourceName)
+func Open() {
+	db, _ = sql.Open(driverName, dataSourceName)
 }
 
 func Get() *sql.DB {
 	return db
 }
 
+func Close() {
+	db.Close()
+}

@@ -16,6 +16,8 @@ type Post struct {
 
 // GetPosts shows how the database can be used without any global variables
 func GetPosts() Post {
+	database.Open()
+	defer database.Close()
 	// Database query
 	rows, err := database.Get().Query("SELECT id, title, content, created FROM post")
 	if err != nil {
