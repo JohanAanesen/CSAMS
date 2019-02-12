@@ -61,8 +61,6 @@ func TestGetUserFromSession(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	//get a session
-	sess, err := session.Instance(req)
 	//user object we want to fill with variables needed
 	var user = model.User{
 		Authenticated: true,
@@ -71,12 +69,9 @@ func TestGetUserFromSession(t *testing.T) {
 		EmailStudent:  email,
 	}
 
-	//save user to session values
-	sess.Values["user"] = user
-	//save session changes
-	err = sess.Save(req, resp)
-	if err != nil { //check error
-		t.Error(err.Error())
+	//save user to session
+	if !session.SaveUserToSession(user, resp, req) {
+		t.Error("failed to save user to session")
 	}
 
 	http.HandlerFunc(controller.IndexGET).ServeHTTP(resp, req)
@@ -118,8 +113,6 @@ func TestIsLoggedIn(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	//get a session
-	sess, err := session.Instance(req)
 	//user object we want to fill with variables needed
 	var user = model.User{
 		Authenticated: true,
@@ -128,12 +121,9 @@ func TestIsLoggedIn(t *testing.T) {
 		EmailStudent:  email,
 	}
 
-	//save user to session values
-	sess.Values["user"] = user
-	//save session changes
-	err = sess.Save(req, resp)
-	if err != nil { //check error
-		t.Error(err.Error())
+	//save user to session
+	if !session.SaveUserToSession(user, resp, req) {
+		t.Error("failed to save user to session")
 	}
 
 	http.HandlerFunc(controller.IndexGET).ServeHTTP(resp, req)
@@ -169,8 +159,6 @@ func TestIsTeacher(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	//get a session
-	sess, err := session.Instance(req)
 	//user object we want to fill with variables needed
 	var user = model.User{
 		Authenticated: true,
@@ -180,12 +168,9 @@ func TestIsTeacher(t *testing.T) {
 		EmailStudent:  email,
 	}
 
-	//save user to session values
-	sess.Values["user"] = user
-	//save session changes
-	err = sess.Save(req, resp)
-	if err != nil { //check error
-		t.Error(err.Error())
+	//save user to session
+	if !session.SaveUserToSession(user, resp, req) {
+		t.Error("failed to save user to session")
 	}
 
 	http.HandlerFunc(controller.IndexGET).ServeHTTP(resp, req)

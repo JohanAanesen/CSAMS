@@ -87,7 +87,7 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//insert into database
-	rows, err := db.DB.Query("INSERT INTO course(coursecode, coursename, year, semester, description, teacher) VALUES(?, ?, ?, ?, ?, ?)",
+	rows, err := db.GetDB().Query("INSERT INTO course(coursecode, coursename, year, semester, description, teacher) VALUES(?, ?, ?, ?, ?, ?)",
 		course.Code, course.Name, course.Year, course.Semester, course.Description, user.ID)
 
 	if err != nil {

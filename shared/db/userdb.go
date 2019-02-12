@@ -12,7 +12,7 @@ import (
 // UpdateUserName updates the users name in the db
 func UpdateUserName(userID int, newName string) bool {
 
-	rows, err := DB.Query("UPDATE users SET name = ? WHERE id = ?", newName, userID)
+	rows, err := GetDB().Query("UPDATE users SET name = ? WHERE id = ?", newName, userID)
 
 	if err != nil {
 		//todo log error
@@ -27,7 +27,7 @@ func UpdateUserName(userID int, newName string) bool {
 
 //UpdateUserEmail updates the users email in the db
 func UpdateUserEmail(userID int, email string) bool {
-	rows, err := DB.Query("UPDATE users SET email_private = ? WHERE id = ?", email, userID)
+	rows, err := GetDB().Query("UPDATE users SET email_private = ? WHERE id = ?", email, userID)
 
 	if err != nil {
 		//todo log error
@@ -52,7 +52,7 @@ func UpdateUserPassword(userID int, password string) bool {
 		return false
 	}
 
-	rows, err := DB.Query("UPDATE users SET password = ? WHERE id = ?", pass, userID)
+	rows, err := GetDB().Query("UPDATE users SET password = ? WHERE id = ?", pass, userID)
 
 	if err != nil {
 		//todo log error
@@ -67,7 +67,7 @@ func UpdateUserPassword(userID int, password string) bool {
 
 //GetUser retrieves an user from DB through userID
 func GetUser(userID int) model.User {
-	rows, err := DB.Query("SELECT id, name, email_student, email_private, teacher FROM users WHERE id = ?", userID)
+	rows, err := GetDB().Query("SELECT id, name, email_student, email_private, teacher FROM users WHERE id = ?", userID)
 	if err != nil {
 		//todo log error
 		fmt.Println(err.Error())
@@ -105,7 +105,7 @@ func GetUser(userID int) model.User {
 
 // GetHash returns the users hashed password
 func GetHash(id int) string {
-	rows, err := DB.Query("SELECT password FROM users WHERE id = ?", id)
+	rows, err := GetDB().Query("SELECT password FROM users WHERE id = ?", id)
 	if err != nil {
 		// TODO : log error
 		fmt.Println(err.Error())

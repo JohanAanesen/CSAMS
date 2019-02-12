@@ -9,7 +9,7 @@ import (
 
 //UserAuth authenticates users
 func UserAuth(email string, password string) (model.User, bool) {
-	rows, err := DB.Query("SELECT id, password FROM users WHERE email_student = ?", email)
+	rows, err := GetDB().Query("SELECT id, password FROM users WHERE email_student = ?", email)
 
 	if err != nil {
 		//todo log error
@@ -48,7 +48,7 @@ func RegisterUser(name string, email string, password string) (model.User, bool)
 		return model.User{Authenticated: false}, false
 	}
 
-	rows, err := DB.Query("INSERT INTO users(name, email_student, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
+	rows, err := GetDB().Query("INSERT INTO users(name, email_student, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
 
 	if err != nil {
 		//todo log error

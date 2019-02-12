@@ -3,7 +3,9 @@ package controller_test
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/controller"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/config"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -13,11 +15,21 @@ import (
 )
 
 func init() {
-	db.InitDB(os.Getenv("SQLDB"))
-
 	if err := os.Chdir("../"); err != nil { //go out of /handlers folder
 		panic(err)
 	}
+
+	var cfg = &config.Configuration{}
+	cfg, _ = config.Load("config/config.json")
+
+	// Configure Session
+	session.Configure(cfg.Session)
+
+	// Configure Database
+	db.ConfigureDB(cfg.Database)
+
+	db.OpenDB()
+	defer db.CloseDB()
 }
 
 func TestHandlers(t *testing.T) {
@@ -43,7 +55,7 @@ func TestLoginHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	http.HandlerFunc(controller.LoginGET).ServeHTTP(resp, req)
+ 	http.HandlerFunc(controller.LoginGET).ServeHTTP(resp, req)
 
 	status := resp.Code
 
@@ -164,18 +176,15 @@ func TestUserHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	//get a session
-	session, err := db.CookieStore.Get(req, "login-session")
 	//user object we want to fill with variables needed
-	var user model.User
-	user.Authenticated = true
-	user.Teacher = false
-	//save user to session values
-	session.Values["user"] = user
-	//save session changes
-	err = session.Save(req, resp)
-	if err != nil { //check error
-		t.Error(err.Error())
+	var user  = model.User{
+		Authenticated:true,
+		Teacher:false,
+	}
+
+	//save user to session
+	if !session.SaveUserToSession(user, resp, req) {
+		t.Error("failed to save user to session")
 	}
 
 	http.HandlerFunc(controller.UserGET).ServeHTTP(resp, req)
@@ -226,18 +235,15 @@ func TestCheckUserStatusLoggedIn(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	//get a session
-	session, err := db.CookieStore.Get(req, "login-session")
 	//user object we want to fill with variables needed
-	var user model.User
-	user.Authenticated = true
-	user.Teacher = false
-	//save user to session values
-	session.Values["user"] = user
-	//save session changes
-	err = session.Save(req, resp)
-	if err != nil { //check error
-		t.Error(err.Error())
+	var user  = model.User{
+		Authenticated:true,
+		Teacher:false,
+	}
+
+	//save user to session
+	if !session.SaveUserToSession(user, resp, req) {
+		t.Error("failed to save user to session")
 	}
 
 	http.HandlerFunc(controller.UserGET).ServeHTTP(resp, req)
@@ -266,9 +272,6 @@ func TestUserUpdateRequest(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	//get a session
-	session, err := db.CookieStore.Get(req, "login-session")
-
 	//user object we want to fill with variables needed
 	user := model.User{
 		ID:            1,
@@ -278,12 +281,10 @@ func TestUserUpdateRequest(t *testing.T) {
 		Authenticated: true,
 		Teacher:       true,
 	}
-	//save user to session values
-	session.Values["user"] = user
-	//save session changes
-	err = session.Save(req, resp)
-	if err != nil { //check error
-		t.Error(err.Error())
+
+	//save user to session
+	if !session.SaveUserToSession(user, resp, req) {
+		t.Error("failed to save user to session")
 	}
 
 	http.HandlerFunc(controller.UserUpdatePOST).ServeHTTP(resp, req)
@@ -310,18 +311,15 @@ func TestAdminHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	//get a session
-	session, err := db.CookieStore.Get(req, "login-session")
 	//user object we want to fill with variables needed
-	var user model.User
-	user.Authenticated = true
-	user.Teacher = true
-	//save user to session values
-	session.Values["user"] = user
-	//save session changes
-	err = session.Save(req, resp)
-	if err != nil { //check error
-		t.Error(err.Error())
+	var user  = model.User{
+		Authenticated:true,
+		Teacher:true,
+	}
+
+	//save user to session
+	if !session.SaveUserToSession(user, resp, req) {
+		t.Error("failed to save user to session")
 	}
 
 	http.HandlerFunc(controller.AdminGET).ServeHTTP(resp, req)
@@ -347,18 +345,15 @@ func TestAdminCourseHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	//get a session
-	session, err := db.CookieStore.Get(req, "login-session")
 	//user object we want to fill with variables needed
-	var user model.User
-	user.Authenticated = true
-	user.Teacher = true
-	//save user to session values
-	session.Values["user"] = user
-	//save session changes
-	err = session.Save(req, resp)
-	if err != nil { //check error
-		t.Error(err.Error())
+	var user  = model.User{
+		Authenticated:true,
+		Teacher:true,
+	}
+
+	//save user to session
+	if !session.SaveUserToSession(user, resp, req) {
+		t.Error("failed to save user to session")
 	}
 
 	http.HandlerFunc(controller.AdminCourseGET).ServeHTTP(resp, req)
@@ -384,18 +379,15 @@ func TestAdminCreateCourseHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	//get a session
-	session, err := db.CookieStore.Get(req, "login-session")
 	//user object we want to fill with variables needed
-	var user model.User
-	user.Authenticated = true
-	user.Teacher = true
-	//save user to session values
-	session.Values["user"] = user
-	//save session changes
-	err = session.Save(req, resp)
-	if err != nil { //check error
-		t.Error(err.Error())
+	var user  = model.User{
+		Authenticated:true,
+		Teacher:true,
+	}
+
+	//save user to session
+	if !session.SaveUserToSession(user, resp, req) {
+		t.Error("failed to save user to session")
 	}
 
 	http.HandlerFunc(controller.AdminCreateCourseGET).ServeHTTP(resp, req)
@@ -421,18 +413,15 @@ func TestAdminUpdateCourseHandler(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 
-	//get a session
-	session, err := db.CookieStore.Get(req, "login-session")
 	//user object we want to fill with variables needed
-	var user model.User
-	user.Authenticated = true
-	user.Teacher = true
-	//save user to session values
-	session.Values["user"] = user
-	//save session changes
-	err = session.Save(req, resp)
-	if err != nil { //check error
-		t.Error(err.Error())
+	var user  = model.User{
+		Authenticated:true,
+		Teacher:true,
+	}
+
+	//save user to session
+	if !session.SaveUserToSession(user, resp, req) {
+		t.Error("failed to save user to session")
 	}
 
 	http.HandlerFunc(controller.AdminUpdateCourseGET).ServeHTTP(resp, req)

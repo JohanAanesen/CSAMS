@@ -1,25 +1,22 @@
 package model
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/database"
-	"log"
 	"time"
 )
 
 // Post struct is onyl for showcase
 type Post struct {
-	Id      int `json:"id"`
-	Title   string `json:"title"`
-	Content string `json:"content"`
-	Created  time.Time `json:"created"`
+	Id      int       `json:"id"`
+	Title   string    `json:"title"`
+	Content string    `json:"content"`
+	Created time.Time `json:"created"`
 }
 
+/* todo remove this, creates import cycle
 // GetPosts shows how the database can be used without any global variables
 func GetPosts() Post {
-	database.Open()
-	defer database.Close()
 	// Database query
-	rows, err := database.Get().Query("SELECT id, title, content, created FROM post")
+	rows, err := db.Get().Query("SELECT id, title, content, created FROM post")
 	if err != nil {
 		log.Println(err)
 		return Post{}
@@ -41,4 +38,4 @@ func GetPosts() Post {
 	}
 
 	return Post{}
-}
+}*/

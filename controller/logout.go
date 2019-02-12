@@ -2,14 +2,13 @@ package controller
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"net/http"
 )
 
 //LogoutGET logs out logged in users
 func LogoutGET(w http.ResponseWriter, r *http.Request) {
-	sess, err := db.CookieStore.Get(r, "login-session") //get session
+	sess, err := session.Instance(r) //get session
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		//todo log this event
