@@ -1,28 +1,16 @@
 package db
 
 import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/internal/model"
 	"log"
-	"time"
-)
-
-type category string
-
-const (
-	ChangeName     category = "CHANGE-NAME"
-	ChangeEmail    category = "CHANGE-EMAIL"
-	ChangePassword category = "CHANGE-PASSWORD"
 )
 
 // LogToDB adds logs to the database when an user/admin does something noteworthy
-func LogToDB(userID int, category category) bool {
-
-	timeStamp := time.Now().UnixNano()
-
-	// Convert back to date
-	// tm := time.Unix(0, timeStamp)
+func LogToDB(payload model.Log) bool {
 
 	// Add values in sql query
-	rows, err := DB.Query("INSERT INTO logs(userid, timestamp, log) VALUES (?, ?, ?)", userID, timeStamp, category)
+	rows, err := DB.Query("INSERT INTO `logs` (`userid`, `activity`, `assignmentID`, `courseID`, `userAssignmentID`, `oldvalue`, `newValue`) " +
+		"VALUES (?, ?, ?, ?, ?, ?, ?)", payload.UserID, payload.Activity, payload.AssignmentID, payload.CourseID, payload.UserAssignmentID, payload.OldValue, payload.NewValue)
 
 	// Handle possible error
 	if err != nil {

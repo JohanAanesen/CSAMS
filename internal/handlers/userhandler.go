@@ -81,12 +81,15 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 	} else if name != user.Name && db.UpdateUserName(user.ID, name) {
 		log.Println("Success: Name changed from " + user.Name + " to " + name)
 
+		// Save information to log struct
+		logData := model.Log{UserID: user.ID, Activity: model.ChangeName, OldValue: user.Name, NewValue: name}
+
 		//update session
 		user.Name = name
 		util.SaveUserToSession(user, w, r)
 
 		// Log name change in the database
-		db.LogToDB(user.ID, db.ChangeName)
+		db.LogToDB(logData)
 	}
 
 	// Users Email
@@ -95,12 +98,15 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 		if db.UpdateUserEmail(user.ID, secondaryEmail) {
 			log.Println("Success: Private email changed from " + user.EmailPrivate + " to " + secondaryEmail)
 
+			// Save information to log struct
+			logData := model.Log{UserID: user.ID, Activity: model.ChangeEmail, OldValue: user.EmailPrivate, NewValue: secondaryEmail}
+
 			//update session
 			user.EmailPrivate = secondaryEmail
 			util.SaveUserToSession(user, w, r)
 
 			// Log email change in the database
-			db.LogToDB(user.ID, db.ChangeName)
+			db.LogToDB(logData)
 		}
 	}
 
@@ -114,8 +120,11 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 		if db.UpdateUserPassword(user.ID, newPass) {
 			log.Println("Success: Password is now changed!")
 
+			// Save information to log struct
+			logData := model.Log{UserID: user.ID, Activity: model.ChangePassword}
+
 			// Log password change in the database
-			db.LogToDB(user.ID, db.ChangePassword)
+			db.LogToDB(logData)
 		} else {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
