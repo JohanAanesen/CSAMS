@@ -3,10 +3,13 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"log"
+	_ "github.com/go-sql-driver/mysql" //database driver
 )
 
+const driverName = "mysql"
+
 var (
+	dataSourceName string
 	db *sql.DB
 )
 
@@ -22,17 +25,11 @@ type MySQLInfo struct {
 
 func Configure(info *MySQLInfo) {
 	// root:@tcp(127.0.0.1:3306)/cs53
-	database, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=%t", info.Username, info.Password, info.Hostname, info.Port, info.Database, info.ParseTime))
-	if err != nil {
-		panic(err.Error())
-	}
+	dataSourceName = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=%t", info.Username, info.Password, info.Hostname, info.Port, info.Database, info.ParseTime)
+}
 
-	if err = database.Ping(); err != nil {
-		panic(err.Error())
-	}
-
-	db = database
-	log.Print("database connected\n")
+func Open() (*sql.DB, error) {
+	return sql.Open(driverName, dataSourceName)
 }
 
 func Get() *sql.DB {

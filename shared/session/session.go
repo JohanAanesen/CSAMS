@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+// Private variables for this package
 var (
 	store *sessions.CookieStore
 	name  string
@@ -28,7 +29,7 @@ func Configure(s *Session) {
 }
 
 // Instance returns an instance of the Session
-func Instance(r *http.Request) (*sessions.Session, error) { //todo this?
+func Instance(r *http.Request) (*sessions.Session, error) {
 	return store.Get(r, name)
 }
 
@@ -67,7 +68,7 @@ func IsLoggedIn(r *http.Request) bool {
 
 //GetUserFromSession returns user object stored in session
 func GetUserFromSession(r *http.Request) model.User {
-	// TODO: Refactor this
+	// TODO (Svein): Refactor this
 	//session, err := Instance(r) //get session
 	//session, err := session.Instance(r) //get session outside session.go
 	session, err := db.CookieStore.Get(r, "login-session") //get session
