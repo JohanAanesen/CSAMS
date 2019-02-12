@@ -84,7 +84,13 @@ projects design and are more prepared for the next card now.
 * I made a powershell script that runs go fmt,vet,lint,cyclo and test. I did it to make the linting/testing go faster and more "clean"
 
 ### Tuesday - 12/02/19
-* I started on looking how the logs table will be
+* I started on looking how the logs table will be.
+* I created an struct for keeping the log data for easier use and fewer parameters.
+* Logs when the user change name/email/password now.
+* bug: Added foreign keys to logs, if course,submission or assignment id is blank, it doesnt work.
+So I have to figure out how to send nil instead of anumber to the db.
+* I know one way to fix the bug, but it's to much and messy code :/ (hella many if-else), and that would be to awful.
+* This day went more to thinking about how to solve something than actually do it
 
 ### Wednesday - *Birthday edition* 13/02/19
 

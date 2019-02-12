@@ -88,8 +88,10 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 		user.Name = name
 		util.SaveUserToSession(user, w, r)
 
-		// Log name change in the database
-		db.LogToDB(logData)
+		// Log name change in the database and give error if something went wrong
+		if !db.LogToDB(logData) {
+			log.Fatal("Could not save name log to database! (userhandler.go)")
+		}
 	}
 
 	// Users Email
@@ -105,8 +107,10 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 			user.EmailPrivate = secondaryEmail
 			util.SaveUserToSession(user, w, r)
 
-			// Log email change in the database
-			db.LogToDB(logData)
+			// Log email change in the database and give error if something went wrong
+			if !db.LogToDB(logData) {
+				log.Fatal("Could not save email log to database! (userhandler.go)")
+			}
 		}
 	}
 
@@ -123,8 +127,10 @@ func UserUpdateRequest(w http.ResponseWriter, r *http.Request) {
 			// Save information to log struct
 			logData := model.Log{UserID: user.ID, Activity: model.ChangePassword}
 
-			// Log password change in the database
-			db.LogToDB(logData)
+			// Log password change in the database and give error if something went wrong
+			if !db.LogToDB(logData) {
+				log.Fatal("Could not save password log to database! (userhandler.go)")
+			}
 		} else {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return

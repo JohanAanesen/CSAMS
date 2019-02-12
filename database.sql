@@ -76,14 +76,14 @@ CREATE TABLE `course`
 
 CREATE TABLE `logs`
 (
-  `userid`           int(11)                            NOT NULL,
-  `timestamp`        datetime                           NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `activity`         varchar(32) COLLATE utf8_danish_ci NOT NULL,
-  `assignmentID`     int(11)                                     DEFAULT NULL,
-  `courseID`         int(11)                                     DEFAULT NULL,
-  `userAssignmentID` int(11)                                     DEFAULT NULL,
-  `oldvalue`         varchar(64) COLLATE utf8_danish_ci          DEFAULT NULL,
-  `newValue`         varchar(64) COLLATE utf8_danish_ci          DEFAULT NULL
+  `userid`       int(11)                            NOT NULL,
+  `timestamp`    datetime                           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `activity`     varchar(32) COLLATE utf8_danish_ci NOT NULL,
+  `assignmentid` int(11)                                     DEFAULT NULL,
+  `courseid`     int(11)                                     DEFAULT NULL,
+  `submissionid` int(11)                                     DEFAULT NULL,
+  `oldvalue`     varchar(64) COLLATE utf8_danish_ci          DEFAULT NULL,
+  `newValue`     varchar(64) COLLATE utf8_danish_ci          DEFAULT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_danish_ci;
@@ -221,7 +221,11 @@ ALTER TABLE `course`
 -- Indexes for table `logs`
 --
 ALTER TABLE `logs`
-  ADD KEY `userid` (`userid`);
+  ADD KEY `userid` (`userid`),
+  ADD KEY `courseid` (`courseid`),
+  ADD KEY `assignmentid` (`assignmentid`),
+  ADD KEY `submissionid` (`submissionid`);
+
 
 --
 -- Indexes for table `peerreviews`
@@ -311,7 +315,10 @@ ALTER TABLE `course`
 -- Begrensninger for tabell `logs`
 --
 ALTER TABLE `logs`
-  ADD CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `logs_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `logs_ibfk_3` FOREIGN KEY (`assignmentid`) REFERENCES `assignments` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `logs_ibfk_4` FOREIGN KEY (`submissionid`) REFERENCES `submissions` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Begrensninger for tabell `peerreviews`
