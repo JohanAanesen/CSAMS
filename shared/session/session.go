@@ -3,18 +3,40 @@ package session
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
+	"github.com/gorilla/sessions"
 	"log"
 	"net/http"
 )
 
-//Session todo
+var (
+	store *sessions.CookieStore
+	name  string
+)
+
+// Session struct
 type Session struct {
-	Values map[string]interface{}
+	Options   sessions.Options      `json:"options"`
+	Name      string                `json:"name"`
+	SecretKey string                `json:"secretKey"`
 }
 
-//Instance todo
-func Instance(r *http.Request) *Session { //todo this?
-	return &Session{}
+// Configure Session
+func Configure(s *Session) {
+	store = sessions.NewCookieStore([]byte(s.SecretKey))
+	store.Options = &s.Options
+	name = s.Name
+}
+
+// Instance returns an instance of the Session
+func Instance(r *http.Request) (*sessions.Session, error) { //todo this?
+	return store.Get(r, name)
+}
+
+// Empty
+func Empty(sess *sessions.Session) {
+	for k := range sess.Values {
+		delete(sess.Values, k)
+	}
 }
 
 //IsTeacher returns if user is a teacher or not
@@ -45,6 +67,9 @@ func IsLoggedIn(r *http.Request) bool {
 
 //GetUserFromSession returns user object stored in session
 func GetUserFromSession(r *http.Request) model.User {
+	// TODO: Refactor this
+	//session, err := Instance(r) //get session
+	//session, err := session.Instance(r) //get session outside session.go
 	session, err := db.CookieStore.Get(r, "login-session") //get session
 	if err != nil {
 		log.Println(err)

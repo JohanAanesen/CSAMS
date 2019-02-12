@@ -79,7 +79,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	} else if name != user.Name && db.UpdateUserName(user.ID, name) {
-		log.Println("Success: Name changed from " + user.Name + " to " + name)
+		log.Println("Success: name changed from " + user.Name + " to " + name)
 
 		//update session
 		user.Name = name

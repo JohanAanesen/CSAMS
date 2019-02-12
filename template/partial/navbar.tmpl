@@ -1,0 +1,33 @@
+{{define "navbar"}}
+    <header>
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <div class="container">
+                <a href="/" class="navbar-brand">Johsvebred</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbar">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="/" class="nav-link">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/user" class="nav-link">Profile</a>
+                        </li>
+                        <!-- TODO: Check if user is admin -->
+                        <li class="nav-item">
+                            <a href="/admin" class="nav-link">Dashboard</a>
+                        </li>
+                        {{if .Auth}}
+                        <li class="nav-item">
+                            <a href="/logout" class="nav-link">Sign out</a>
+                        </li>
+                        {{end}}
+                        <!-- TODO (Svein): Use auth for display different menu? -->
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+{{end}}
