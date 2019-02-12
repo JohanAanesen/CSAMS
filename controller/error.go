@@ -18,3 +18,28 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request, status int) {
 
 	v.Render(w)
 }
+
+func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusNotFound)
+
+	v := view.New(r)
+	v.Name = "error"
+
+	v.Vars["ErrorCode"] = http.StatusNotFound
+	v.Vars["ErrorMessage"] = http.StatusText(http.StatusNotFound)
+
+	v.Render(w)
+}
+func MethodNotAllowedHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusMethodNotAllowed)
+
+	v := view.New(r)
+	v.Name = "error"
+
+	v.Vars["ErrorCode"] = http.StatusMethodNotAllowed
+	v.Vars["ErrorMessage"] = http.StatusText(http.StatusMethodNotAllowed)
+
+	v.Render(w)
+}

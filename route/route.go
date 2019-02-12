@@ -3,7 +3,7 @@ package route
 import (
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/controller"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/route/middleware/logrequest"
+	"github.com/go-chi/chi/middleware"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -28,11 +28,8 @@ func routes() *mux.Router {
 	// Instantiate mux-router
 	router := mux.NewRouter().StrictSlash(true)
 
-	// Set path prefix for the static-folder
-	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
-
-	// Middleware for logging Requests
-	router.Use(logrequest.Handler)
+	// go-chi/chi/middleware/logger.go
+	router.Use(middleware.Logger)
 
 	// Index-page Handlers
 	router.HandleFunc("/", controller.IndexGET).Methods("GET")
@@ -66,8 +63,13 @@ func routes() *mux.Router {
 	router.HandleFunc("/register", controller.RegisterPOST).Methods("POST")
 	router.HandleFunc("/logout", controller.LogoutGET).Methods("GET")
 
-	// Error Handlers
-	//router.Handle("/error", controller.ErrorGET).Methods("GET") //todo this?
+	// Set path prefix for the static-folder
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
+
+	// 404 Error Handler
+	router.NotFoundHandler = http.HandlerFunc(controller.NotFoundHandler)
+	// 405 Error Handler
+	router.MethodNotAllowedHandler = http.HandlerFunc(controller.MethodNotAllowedHandler)
 
 	return router
 }
