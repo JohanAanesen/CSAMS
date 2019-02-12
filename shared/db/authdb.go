@@ -17,11 +17,14 @@ func UserAuth(email string, password string) (model.User, bool) {
 		return model.User{Authenticated: false}, false
 	}
 
+	defer rows.Close()
+
 	for rows.Next() {
 		var id int
 		var hash string
 
 		rows.Scan(&id, &hash)
+
 		if err != nil {
 			//todo log error
 			fmt.Println(err.Error())
@@ -32,8 +35,6 @@ func UserAuth(email string, password string) (model.User, bool) {
 			return GetUser(id), true
 		}
 	}
-
-	defer rows.Close()
 
 	return model.User{Authenticated: false}, false
 }

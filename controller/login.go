@@ -38,8 +38,8 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 
 //LoginPOST validates login requests
 func LoginPOST(w http.ResponseWriter, r *http.Request) {
-
 	user := session.GetUserFromSession(r)
+
 	if user.Authenticated { //already logged in, redirect to home page
 		http.Redirect(w, r, "/", http.StatusFound) //todo redirect without 302
 		return
@@ -47,6 +47,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 	email := r.FormValue("email")
 	password := r.FormValue("password") //password
+
 
 	if email == "" || password == "" { //login credentials cannot be empty
 		LoginGET(w, r)

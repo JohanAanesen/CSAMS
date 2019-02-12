@@ -77,6 +77,7 @@ func TestHandlers(t *testing.T) {
 }
 
 func TestLoginHandler(t *testing.T) {
+	config.Initialize()
 
 	req, err := http.NewRequest("GET", "/login", nil)
 	if err != nil {
@@ -101,6 +102,8 @@ func TestLoginHandler(t *testing.T) {
 }
 
 func TestLoggingIn(t *testing.T) {
+	config.Initialize()
+
 	form := url.Values{}
 	form.Add("email", "hei@gmail.com")
 	form.Add("password", "hei")

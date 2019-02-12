@@ -66,6 +66,7 @@ func Initialize() *Configuration {
 
 	// Configure Database
 	db.ConfigureDB(cfg.Database)
+	db.OpenDB()
 
 	// Configure View
 	view.Configure(cfg.View)
