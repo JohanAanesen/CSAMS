@@ -81,8 +81,10 @@ projects design and are more prepared for the next card now.
 * Started on [#16 - Logging to database](https://trello.com/c/CwIxfhpk) - Log stuff that the user and/or admin does
 * Everything went fine for now at least, that's nice 😍
 * Had two meetings and plan to discuss new project structure
+* I made a powershell script that runs go fmt,vet,lint,cyclo and test. I did it to make the linting/testing go faster and more "clean"
 
 ### Tuesday - 12/02/19
+* I started on looking how the logs table will be
 
 ### Wednesday - *Birthday edition* 13/02/19
 
