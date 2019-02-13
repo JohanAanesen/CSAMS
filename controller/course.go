@@ -32,7 +32,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	courseID, err := strconv.Atoi(id)
-	if err != nil{
+	if err != nil {
 		//redirect to error pageinfo
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusBadRequest)
@@ -44,7 +44,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 
 	//check if user is an participant of said class or a teacher
 	participant := db.IsParticipant(user.ID, courseID)
-	if !participant{
+	if !participant {
 		log.Println("user not participant of class")
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
@@ -55,14 +55,11 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(course) //todo(johan) remove this
 
-
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
-
 	md := []byte(course.Description)
 	output := markdown.ToHTML(md, nil, nil)
-
 
 	v := view.New(r)
 	v.Name = "course"

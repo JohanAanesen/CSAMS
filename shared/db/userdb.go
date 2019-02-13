@@ -125,7 +125,7 @@ func GetHash(id int) string {
 	return ""
 }
 
-func IsParticipant(userID int, courseID int) bool{
+func IsParticipant(userID int, courseID int) bool {
 	particpant := false
 
 	rows, err := GetDB().Query("SELECT userid, courseid FROM usercourse WHERE userid = ? AND courseid = ?", userID, courseID)
@@ -140,7 +140,7 @@ func IsParticipant(userID int, courseID int) bool{
 		var course int
 		rows.Scan(&user, &course)
 
-		if user == userID && course == courseID{
+		if user == userID && course == courseID {
 			particpant = true
 		}
 	}
