@@ -201,11 +201,19 @@ VALUES (3, 1),
        (3, 2),
        (4, 3);
 
+INSERT INTO `assignments` (`id`, `courseid`, `created`, `due`, `peer`, `auto`, `language`, `tasktext`, `payload`)
+VALUES ('1', '2', CURRENT_TIMESTAMP, '2019-02-14', '1', '0', 'English',
+        '# Assignment 1\r\n* Doctors and nurses\r\n<!-- Hello -->', '13');
+
+INSERT INTO `submissions` (`id`, `userid`, `assignmentid`, `repo`, `deploy`, `comment`, `grade`, `test`, `vet`, `cycle`)
+VALUES ('1', '3', '1', 'www.github.com/user3/submission1', 'Hello', 'I am grate progrman', '6', NULL, NULL, NULL);
+
+/*
 INSERT INTO `logs` (`userid`, `activity`, `assignmentID`, `courseID`, `submissionid`, `oldvalue`,
                     `newValue`)
 VALUES ('1', 'changedName', NULL, NULL, NULL, 'Ola Nordmann', 'Ola Svenskemann'),
        ('1', 'changedEmail', NULL, NULL, NULL, 'ola-meiseter@gmail.com', 'ola-meister@yahoo.com');
-
+*/
 -- end --
 
 --
