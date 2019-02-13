@@ -76,18 +76,17 @@ CREATE TABLE `course`
 
 CREATE TABLE `logs`
 (
-  `userid`           int(11)                            NOT NULL,
-  `timestamp`        datetime                           NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `activity`         varchar(32) COLLATE utf8_danish_ci NOT NULL,
-  `assignmentID`     int(11)                                     DEFAULT NULL,
-  `courseID`         int(11)                                     DEFAULT NULL,
-  `userAssignmentID` int(11)                                     DEFAULT NULL,
-  `oldvalue`         varchar(64) COLLATE utf8_danish_ci          DEFAULT NULL,
-  `newValue`         varchar(64) COLLATE utf8_danish_ci          DEFAULT NULL
+  `userid`       int(11)                            NOT NULL,
+  `timestamp`    datetime                           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `activity`     varchar(32) COLLATE utf8_danish_ci NOT NULL,
+  `assignmentid` int(11)                                     DEFAULT NULL,
+  `courseid`     int(11)                                     DEFAULT NULL,
+  `submissionid` int(11)                                     DEFAULT NULL,
+  `oldvalue`     varchar(64) COLLATE utf8_danish_ci          DEFAULT NULL,
+  `newValue`     varchar(64) COLLATE utf8_danish_ci          DEFAULT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_danish_ci;
-
 -- --------------------------------------------------------
 
 --
@@ -202,11 +201,19 @@ VALUES (3, 1),
        (3, 2),
        (4, 3);
 
-INSERT INTO `logs` (`userid`, `activity`, `assignmentID`, `courseID`, `userAssignmentID`, `oldvalue`,
+INSERT INTO `assignments` (`id`, `courseid`, `created`, `due`, `peer`, `auto`, `language`, `tasktext`, `payload`)
+VALUES ('1', '2', CURRENT_TIMESTAMP, '2019-02-14', '1', '0', 'English',
+        '# Assignment 1\r\n* Doctors and nurses\r\n<!-- Hello -->', '13');
+
+INSERT INTO `submissions` (`id`, `userid`, `assignmentid`, `repo`, `deploy`, `comment`, `grade`, `test`, `vet`, `cycle`)
+VALUES ('1', '3', '1', 'www.github.com/user3/submission1', 'Hello', 'I am grate progrman', '6', NULL, NULL, NULL);
+
+/*
+INSERT INTO `logs` (`userid`, `activity`, `assignmentID`, `courseID`, `submissionid`, `oldvalue`,
                     `newValue`)
 VALUES ('1', 'changedName', NULL, NULL, NULL, 'Ola Nordmann', 'Ola Svenskemann'),
-       ('1', 'changedName', NULL, NULL, NULL, 'Ola Nordmann', 'Ola Svenskemann');
-
+       ('1', 'changedEmail', NULL, NULL, NULL, 'ola-meiseter@gmail.com', 'ola-meister@yahoo.com');
+*/
 -- end --
 
 --
@@ -227,7 +234,11 @@ ALTER TABLE `course`
 -- Indexes for table `logs`
 --
 ALTER TABLE `logs`
-  ADD KEY `userid` (`userid`);
+  ADD KEY `userid` (`userid`),
+  ADD KEY `courseid` (`courseid`),
+  ADD KEY `assignmentid` (`assignmentid`),
+  ADD KEY `submissionid` (`submissionid`);
+
 
 --
 -- Indexes for table `peerreviews`
@@ -317,7 +328,10 @@ ALTER TABLE `course`
 -- Begrensninger for tabell `logs`
 --
 ALTER TABLE `logs`
-  ADD CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `logs_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `logs_ibfk_3` FOREIGN KEY (`assignmentid`) REFERENCES `assignments` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `logs_ibfk_4` FOREIGN KEY (`submissionid`) REFERENCES `submissions` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Begrensninger for tabell `peerreviews`
