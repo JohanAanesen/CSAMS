@@ -29,9 +29,6 @@ func routes() http.Handler {
 	// Instantiate mux-router
 	router := mux.NewRouter().StrictSlash(true)
 
-	// go-chi/chi/middleware/logger.go
-	//router.Use(middleware.Logger)
-
 	// Index-page Handlers
 	router.HandleFunc("/", controller.IndexGET).Methods("GET")
 

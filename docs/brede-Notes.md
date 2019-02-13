@@ -81,10 +81,23 @@ projects design and are more prepared for the next card now.
 * Started on [#16 - Logging to database](https://trello.com/c/CwIxfhpk) - Log stuff that the user and/or admin does
 * Everything went fine for now at least, that's nice 😍
 * Had two meetings and plan to discuss new project structure
+* I made a powershell script that runs go fmt,vet,lint,cyclo and test. I did it to make the linting/testing go faster and more "clean"
 
 ### Tuesday - 12/02/19
+* I started on looking how the logs table will be.
+* I created an struct for keeping the log data for easier use and fewer parameters.
+* Logs when the user change name/email/password now.
+* bug: Added foreign keys to logs, if course,submission or assignment id is blank, it doesnt work.
+So I have to figure out how to send nil instead of a number to the db.
+* I know one way to fix the bug, but it's to much and messy code :/ (hella many if-else), and that would be to awful.
+* This day went more to thinking about how to solve something than actually do it
 
 ### Wednesday - *Birthday edition* 13/02/19
+*Woooo birthday boi, halfway to 44*
+* I still had a bug with adding nil instead of int to the db with #16. I solved it with creating nasty
+if-else statements, I hope to refactor it later.
+* I also commented a lot for the function so it's more clear how to use it :D
+* Also merged with master today, that was fun 
 
 ### Thursday - 14/02/19
 
