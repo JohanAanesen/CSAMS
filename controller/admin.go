@@ -167,3 +167,14 @@ func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
 
 	v.Render(w)
 }
+
+// AdminAssignmentCreatePOST handles POST-request from /admin/assigment/create
+func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
+	//check that user is a teacher
+	if !session.IsTeacher(r) { //not a teacher, error 401
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
+
+
+}
