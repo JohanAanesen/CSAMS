@@ -28,16 +28,21 @@ func LogToDB(payload model.Log) bool {
 		rows, err = GetDB().Query("INSERT INTO `logs` (`userid`, `activity`) "+
 			"VALUES (?, ?)", payload.UserID, payload.Activity)
 
-	} else if payload.Activity == model.DeliveredAssignment || payload.Activity == model.FinishedPeerReview || payload.Activity == model.PeerReviewDone || payload.Activity == model.CreatAssignment {
+	} else if payload.Activity == model.DeliveredAssignment || payload.Activity == model.FinishedPeerReview || payload.Activity == model.PeerReviewDone {
 		// Add values in sql query
 		rows, err = GetDB().Query("INSERT INTO `logs` (`userid`, `activity`, `assignmentid`,  `submissionid`) "+
 			"VALUES (?, ?, ?, ?)", payload.UserID, payload.Activity, payload.AssignmentID, payload.SubmissionID)
 
-	} else if payload.Activity == model.JoinedCousrse || payload.Activity == model.CreatedCourse {
+	} else if payload.Activity == model.CreatAssignment {
+		// Add values in sql query
+		rows, err = GetDB().Query("INSERT INTO `logs` (`userid`, `activity`, `assignmentid`) "+
+			"VALUES (?, ?, ?)", payload.UserID, payload.Activity, payload.AssignmentID)
+
+	} else if payload.Activity == model.JoinedCourse || payload.Activity == model.CreatedCourse {
 		// Add values in sql query
 		rows, err = GetDB().Query("INSERT INTO `logs` (`userid`, `activity`, `courseid`) "+
 			"VALUES (?, ?, ?)", payload.UserID, payload.Activity, payload.CourseID)
-		
+
 	} else {
 		return false
 	}
@@ -54,8 +59,4 @@ func LogToDB(payload model.Log) bool {
 
 	// Nothing went wrong -> return true
 	return true
-}
-
-func ReadAllLogs() {
-	// TODO : add code for getting all logs in nice format here
 }
