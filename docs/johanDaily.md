@@ -81,3 +81,24 @@ Sunday 10/2
 * Made more session function and moved them into the util package
 * Moved DB functions out of db.go and into feks. coursedb.go and userdb.go
 * Had to rewrite a lot of UserHandler code because it was messy and unreadable/unefficient
+
+Monday 11/2
+-----------
+* Meeting day
+* Found out it was time to do a major restructure of the code
+* Restructure took the whole day :(
+
+Tuesdag 12/2
+-----------
+* Restructure cont.
+* Svein knew what was supposed to be done with the restructure, I had to find out by trying
+* This took longer than it should have, next time we should have a better plan for what goes where and how it should work
+* BEFORE starting the restructuring.. ffs
+* Lots of time went into getting the god damn tests to work again
+
+Wednesday 13/2
+-----------
+* Cont. on #7
+* Got the md -> html functionality working :)
+* This gonna look nice
+* Also some more db schtuf
