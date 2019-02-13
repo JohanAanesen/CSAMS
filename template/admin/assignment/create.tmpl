@@ -1,6 +1,22 @@
 {{define "title"}}Create Assignment{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
+    <h2 class="display-4 mb-3">Create assignment</h2>
+    <hr>
+    <div class="row">
+        <div class="col-3">
+            <p class="lead">Add field to assignment</p>
+            <hr>
+            <button class="btn btn-light btn-block border" id="btn_textfield">Textfield</button>
+            <button class="btn btn-light btn-block border" id="btn_textarea">Textarea</button>
+            <button class="btn btn-light btn-block border" id="btn_checkbox">Checkbox</button>
+            <button class="btn btn-light btn-block border" id="btn_radio">Radio</button>
+            <hr>
+            <button class="btn btn-success btn-block" id="save">Save</button>
+        </div>
 
+        <div class="col-9" id="output"></div>
+    </div>
 {{end}}
-{{define "foot"}}{{end}}
+{{define "foot"}}
+{{end}}

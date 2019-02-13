@@ -144,6 +144,7 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/assignment/index"
 
+
 	// TODO (Svein): Add data to the page (courses, assignments, etc)
 
 	v.Render(w)
