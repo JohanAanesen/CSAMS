@@ -3,9 +3,10 @@ package route
 import (
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/controller"
-	"github.com/go-chi/chi/middleware"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"net/http"
+	"os"
 )
 
 func Load() http.Handler {
@@ -24,12 +25,12 @@ func redirectToHTTPS(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("https://%s", r.Host), http.StatusMovedPermanently)
 }
 
-func routes() *mux.Router {
+func routes() http.Handler {
 	// Instantiate mux-router
 	router := mux.NewRouter().StrictSlash(true)
 
 	// go-chi/chi/middleware/logger.go
-	router.Use(middleware.Logger)
+	//router.Use(middleware.Logger)
 
 	// Index-page Handlers
 	router.HandleFunc("/", controller.IndexGET).Methods("GET")
@@ -71,5 +72,5 @@ func routes() *mux.Router {
 	// 405 Error Handler
 	router.MethodNotAllowedHandler = http.HandlerFunc(controller.MethodNotAllowedHandler)
 
-	return router
+	return handlers.CombinedLoggingHandler(os.Stdout, router)
 }
