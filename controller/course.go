@@ -2,42 +2,73 @@ package controller
 
 import (
 	"fmt"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
+	"github.com/gomarkdown/markdown"
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 //CourseGET serves class page to users
 func CourseGET(w http.ResponseWriter, r *http.Request) {
 
+	var course model.Course
+
+	if !session.GetUserFromSession(r).Authenticated {
+		LoginGET(w, r)
+		return
+	}
+
 	//check if request has an classID
-	if r.Method == http.MethodGet {
+	id := r.FormValue("id")
+	if id == "" {
+		//redirect to error pageinfo
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
 
-		id := r.FormValue("id")
+	courseID, err := strconv.Atoi(id)
+	if err != nil{
+		//redirect to error pageinfo
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
 
-		if id == "" {
-			//redirect to error pageinfo
-			ErrorHandler(w, r, http.StatusBadRequest)
-			return
-		}
+	//get user
+	user := session.GetUserFromSession(r)
 
-		fmt.Fprintf(w, "Id is %s\n", id)
-
-		//check if id is valid through database
-
-		//check if user is an participant of said class or a teacher
-
+	//check if user is an participant of said class or a teacher
+	participant := db.IsParticipant(user.ID, courseID)
+	if !participant{
+		log.Println("user not participant of class")
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
 	}
 
 	//get info from db
+	course = db.GetCourse(courseID)
 
-	//parse info to html template
-	temp, err := template.ParseFiles("template/test.html")
-	if err != nil {
-		log.Fatal(err)
-	}
+	fmt.Println(course) //todo(johan) remove this
 
-	temp.Execute(w, nil)
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+
+	md := []byte(course.Description)
+	output := markdown.ToHTML(md, nil, nil)
+
+
+	v := view.New(r)
+	v.Name = "course"
+	v.Vars["Course"] = course
+	v.Vars["Output"] = template.HTML(output)
+	v.Render(w)
 }
 
 //CourseListGET serves class list page to users
