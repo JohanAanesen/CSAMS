@@ -98,6 +98,8 @@ So I have to figure out how to send nil instead of a number to the db.
 if-else statements, I hope to refactor it later.
 * I also commented a lot for the function so it's more clear how to use it :D
 * Pushed #16 to master and started on #23. Need to fix homepage first tho :/
+* I'm unsure of how to go further as the home page seem to just be empty on purpose and other stuff.
+* I think I can finish tomorrow tho <3
 * Nothing much happened today :/
 
 ### Thursday - 14/02/19
