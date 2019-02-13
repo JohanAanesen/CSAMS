@@ -1,0 +1,26 @@
+{{define "sidebar"}}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <!-- TODO (Svein): Fix this -->
+                        <li class="nav-item">
+                            <a href="/admin/course" class="nav-link">Courses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/assignment" class="nav-link">Assignments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/settings" class="nav-link">Settings</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                {{template "content" .}}
+            </main>
+        </div>
+    </div>
+{{end}}
