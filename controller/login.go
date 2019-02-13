@@ -48,7 +48,6 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	password := r.FormValue("password") //password
 
-
 	if email == "" || password == "" { //login credentials cannot be empty
 		LoginGET(w, r)
 		return

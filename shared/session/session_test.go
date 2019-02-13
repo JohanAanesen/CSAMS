@@ -18,29 +18,29 @@ func TestSession(t *testing.T) {
 
 	config.Initialize()
 
-	tests := []struct{
+	tests := []struct {
 		name string
-		f func(t *testing.T)
+		f    func(t *testing.T)
 	}{
 		{
 			name: "TestGetUserFromSession",
-			f: TestGetUserFromSession,
+			f:    TestGetUserFromSession,
 		},
 		{
 			name: "TestGetUserFromSession",
-			f: TestGetUserFromSession,
+			f:    TestGetUserFromSession,
 		},
 		{
 			name: "TestIsLoggedIn",
-			f: TestIsLoggedIn,
+			f:    TestIsLoggedIn,
 		},
 		{
 			name: "TestIsTeacher",
-			f: TestIsTeacher,
+			f:    TestIsTeacher,
 		},
 		{
 			name: "TestSaveUserToSession",
-			f: TestSaveUserToSession,
+			f:    TestSaveUserToSession,
 		},
 	}
 

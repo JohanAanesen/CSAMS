@@ -7,13 +7,13 @@ import (
 
 func Init() *server.Server {
 	return &server.Server{
-		Hostname: "localhost",
-		UseHTTP: true,
-		UseHTTPS: false,
-		HTTPPort: 8089,
+		Hostname:  "localhost",
+		UseHTTP:   true,
+		UseHTTPS:  false,
+		HTTPPort:  8089,
 		HTTPSPort: 4433,
-		CertFile: "",
-		KeyFile: "",
+		CertFile:  "",
+		KeyFile:   "",
 	}
 }
 

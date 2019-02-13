@@ -46,11 +46,11 @@ func TestHandlers(t *testing.T) {
 		expectedCode int
 	}{
 		{
-			name:    "index",
-			method:  "GET",
-			url:     "/",
-			body:    nil,
-			handler: controller.IndexGET,
+			name:         "index",
+			method:       "GET",
+			url:          "/",
+			body:         nil,
+			handler:      controller.IndexGET,
 			expectedCode: http.StatusOK,
 		},
 	}
