@@ -175,6 +175,4 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
-
-
 }
