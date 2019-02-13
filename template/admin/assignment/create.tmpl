@@ -1,22 +1,120 @@
 {{define "title"}}Create Assignment{{end}}
-{{define "head"}}{{end}}
+{{define "head"}}
+    <link rel="stylesheet" href="/static/css/simplemde.min.css">
+{{end}}
 {{define "content"}}
-    <h2 class="display-4 mb-3">Create assignment</h2>
-    <hr>
-    <div class="row">
-        <div class="col-3">
-            <p class="lead">Add field to assignment</p>
-            <hr>
-            <button class="btn btn-light btn-block border" id="btn_textfield">Textfield</button>
-            <button class="btn btn-light btn-block border" id="btn_textarea">Textarea</button>
-            <button class="btn btn-light btn-block border" id="btn_checkbox">Checkbox</button>
-            <button class="btn btn-light btn-block border" id="btn_radio">Radio</button>
-            <hr>
-            <button class="btn btn-success btn-block" id="save">Save</button>
+    <form action="/admin/assignment/create" method="POST">
+        <div class="row">
+            <div class="col">
+                <h1 class="display-4">Create assignment <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#templatesModal">Templates</button></h1>
+            </div>
         </div>
 
-        <div class="col-9" id="output"></div>
-    </div>
+        <hr>
+
+        <div class="row">
+            <div class="col-12 col-lg">
+                <div class="form-group">
+                    <label for="assignment_name">Name</label>
+                    <input type="text" id="assignment_name" name="assignment_name" class="form-control" placeholder="Assignment Name">
+                </div>
+
+                <div class="form-group">
+                    <label for="assignment_course_id">Course</label>
+                    <select name="assignment_course_id" id="assignment_course_id" class="form-control">
+                        <option value="1">IMT1025</option>
+                        <option value="2">IMT2037</option>
+                        <option value="3">IMT2181</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="assignment_due_date">Due Date</label>
+                    <input type="datetime-local" name="assignment_due_date" id="assignment_due_date" class="form-control">
+                </div>
+
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" name="assignment_enable_review" id="assignment_enable_review">
+                    <label class="custom-control-label" for="assignment_enable_review">Enable Review</label>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg">
+                <div class="form-group">
+                    <label for="simplemde">Description</label>
+                    <textarea name="assignment_description" id="simplemde" placeholder="Description (Hint: Markdown)"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div id="review_container">
+            <hr>
+
+            <div class="row">
+                <div class="col">
+                    <h2 class="display-4">Review Form</h2>
+                    <hr>
+                </div>
+            </div>
+
+            <div class="row pb-5">
+                <div class="col-md-3">
+                    <p class="lead">Add field to form</p>
+                    <hr>
+                    <button type="button" class="btn btn-light btn-block border" id="btn_textfield">Textfield</button>
+                    <button type="button" class="btn btn-light btn-block border" id="btn_textarea">Textarea</button>
+                    <button type="button" class="btn btn-light btn-block border" id="btn_checkbox">Checkbox</button>
+                    <button type="button" class="btn btn-light btn-block border" id="btn_radio">Radio</button>
+                    <hr>
+                </div>
+
+                <div class="col-md-9" id="output"></div>
+            </div>
+        </div>
+
+    </form>
 {{end}}
 {{define "foot"}}
+    <div class="modal fade" id="templatesModal" tabindex="-1" role="dialog" aria-labelledby="templatesModel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header bg-info text-light py-2">
+                    <h5 class="modal-title">Select template</h5>
+                    <button class="close text-light" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body py-2">
+
+                </div>
+
+                <div class="modal-footer bg-light py-2">
+                    <button class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                    <button class="btn btn-success btn-sm">Load template</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/simplemde.min.js"></script>
+    <script>
+        (function() {
+            let simplemde = new SimpleMDE({
+                element: document.getElementById('simplemde'),
+                hideIcons: ["side-by-side", "fullscreen"],
+            });
+
+            let enableReviewCheckbox = document.getElementById('assignment_enable_review');
+            let reviewContainer = document.getElementById('review_container');
+
+            reviewContainer.hidden = !enableReviewCheckbox.checked;
+
+            enableReviewCheckbox.addEventListener('click', () => {
+                reviewContainer.hidden = !enableReviewCheckbox.checked;
+            });
+        })();
+    </script>
 {{end}}

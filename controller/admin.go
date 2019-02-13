@@ -144,6 +144,24 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/assignment/index"
 
+	// TODO (Svein): Add data to the page (courses, assignments, etc)
+
+	v.Render(w)
+}
+
+// AdminAssignmentCreateGET handles GET-request from /admin/assigment/create
+func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
+	//check that user is a teacher
+	if !session.IsTeacher(r) { //not a teacher, error 401
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/assignment/create"
 
 	// TODO (Svein): Add data to the page (courses, assignments, etc)
 
