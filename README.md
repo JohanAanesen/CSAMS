@@ -55,3 +55,5 @@ eksempler:
 * go get -u github.com/gorilla/mux
 * go get github.com/gorilla/securecookie
 * go get golang.org/x/crypto/bcrypt
+* go get -u github.com/go-chi/chi
+* go get -u github.com/gomarkdown/markdown
