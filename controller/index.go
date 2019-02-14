@@ -1,12 +1,14 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
 	"net/http"
 )
+
+// TODO : maybe remove/refactor global variable later :/
+var joinedCourse = ""
 
 // IndexGET serves homepage to authenticated users, send anonymous to login
 func IndexGET(w http.ResponseWriter, r *http.Request) {
@@ -20,15 +22,18 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
+	// Set values
 	v := view.New(r)
 	v.Name = "index"
 	v.Vars["Auth"] = user.Authenticated
 	v.Vars["Courses"] = db.GetCoursesToUser(user.ID)
+	v.Vars["Message"] = joinedCourse
 	v.Render(w)
 }
 
 // JoinCoursePOST adds user to course
 func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
+	joinedCourse = ""
 
 	// Check if course exists
 	course := db.CourseExists(r.FormValue("courseID"))
@@ -54,8 +59,8 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO : Give feedback to user
-	fmt.Println("Added to: " + course.Code + " - " + course.Name)
+	// Give feedback to user
+	joinedCourse = course.Code + " - " + course.Name
 
 	IndexGET(w, r)
 }

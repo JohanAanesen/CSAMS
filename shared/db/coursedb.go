@@ -46,6 +46,7 @@ func GetCoursesToUser(userID int) model.Courses {
 	return courses
 }
 
+// CourseExists checks if the course exists in the database
 func CourseExists(uniqueID string) model.Course {
 	rows, err := GetDB().Query("SELECT course.* FROM course WHERE id = ?", uniqueID)
 	if err != nil {

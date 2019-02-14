@@ -3,7 +3,6 @@
 {{ define "content" }}
     <main>
         <div class="container pt-3">
-
             <div class="row">
                 <div class="col">
                     <form action="/" method="post">
@@ -11,7 +10,7 @@
                             <input type="text" class="form-control form-control-sm border-secondary" name="courseID"
                                    id="course-id" placeholder="Course id" required>
                             <div class="input-group-append">
-                                <button type="submit" class="btn btn-outline-secondary btn-sm" onclick="feedBack()">Join
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">Join
                                     course
                                 </button>
                             </div>
@@ -39,8 +38,8 @@
 {{ end }}
 {{define "foot"}}
     <script>
-        function feedBack() {
-            confirm({{ .}});
-        }
+        {{ if .Message }}
+        confirm("You have successfully joined the course: " + {{ .Message}});
+        {{ end }}
     </script>
 {{end}}
