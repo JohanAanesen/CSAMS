@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
+	"log"
 	"net/http"
 )
 
@@ -38,8 +40,8 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	// Check if course exists
 	course := db.CourseExists(r.FormValue("courseID"))
 
-	// If course ID == -1, it doesn't exist
-	if course.ID == -1 {
+	// If course ID == "", it doesn't exist
+	if course.ID == "" {
 		ErrorHandler(w, r, http.StatusNotFound)
 		return
 	}
@@ -57,6 +59,12 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	if !db.AddUserToCourse(user.ID, course.ID) {
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
+	}
+
+	// Log joinedCourse in the database and give error if something went wrong
+	lodData := model.Log{UserID: user.ID, Activity: model.JoinedCourse, CourseID: course.ID}
+	if !db.LogToDB(lodData) {
+		log.Fatal("Could not save JoinCourse log to database! (index.go)")
 	}
 
 	// Give feedback to user

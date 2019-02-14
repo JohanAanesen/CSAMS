@@ -21,7 +21,7 @@ func GetCoursesToUser(userID int) model.Courses {
 	}
 
 	for rows.Next() {
-		var id int
+		var id string
 		var courseCode string
 		var courseName string
 		var teacher int
@@ -53,11 +53,11 @@ func CourseExists(uniqueID string) model.Course {
 		fmt.Println(err.Error()) // TODO : log error
 
 		// returns empty course if it fails
-		return model.Course{ID: -1}
+		return model.Course{ID: ""}
 	}
 
 	for rows.Next() {
-		var id int
+		var id string
 		var courseCode string
 		var courseName string
 		var teacher int
@@ -79,11 +79,11 @@ func CourseExists(uniqueID string) model.Course {
 		}
 	}
 
-	return model.Course{ID: -1}
+	return model.Course{ID: ""}
 }
 
 // UserExistsInCourse checks if user exists in course
-func UserExistsInCourse(userID int, courseID int) bool {
+func UserExistsInCourse(userID int, courseID string) bool {
 
 	// Checks if user exists in course
 	rows, err := GetDB().Query("SELECT * FROM usercourse WHERE userid = ? AND courseid = ?", userID, courseID)
@@ -97,7 +97,7 @@ func UserExistsInCourse(userID int, courseID int) bool {
 
 	for rows.Next() {
 		var userid int
-		var courseid int
+		var courseid string
 
 		rows.Scan(&userid, &courseid)
 
@@ -110,7 +110,7 @@ func UserExistsInCourse(userID int, courseID int) bool {
 }
 
 // AddUserToCourse adds the user to a course
-func AddUserToCourse(userID int, courseID int) bool {
+func AddUserToCourse(userID int, courseID string) bool {
 
 	// Sql query
 	rows, err := GetDB().Query("INSERT INTO `usercourse` (`userid`, `courseid`) VALUES (?, ?)", userID, courseID)

@@ -102,6 +102,12 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 	defer rows.Close()
 
+	// Log createCourse in the database and give error if something went wrong
+	lodData := model.Log{UserID: user.ID, Activity: model.CreatedCourse, CourseID: uniqueId.String()}
+	if !db.LogToDB(lodData) {
+		log.Fatal("Could not save createCourse log to database! (admin.go)")
+	}
+
 	IndexGET(w, r) //success redirect to homepage
 }
 

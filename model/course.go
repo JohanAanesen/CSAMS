@@ -7,7 +7,7 @@ type Courses struct {
 
 // Course holds the data for courses
 type Course struct {
-	ID          int          `json:"id"`
+	ID          string          `json:"id"`
 	Code        string       `json:"code"`
 	Name        string       `json:"name"`
 	Description string       `json:"description"`

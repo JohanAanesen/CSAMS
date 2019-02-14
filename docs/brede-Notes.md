@@ -107,8 +107,11 @@ if-else statements, I hope to refactor it later.
 * Started on restoring home page, currently stuck in a bug where the post function in index.go won't start.
 * I can now check if with a given course id, if it exists.
 * I need to figure out how to confirm that the user joined a class. I want to start an js script from go :/
-    * Solution: ?
+    * Solution: Global variable and send to template
 * Can now add user to course through home page :D
+* Course have an unique ID now, got inspiration form [here](https://blog.kowalczyk.info/article/JyRZ/generating-good-unique-ids-in-go.html), 
+I chose `github.com/rs/xid` because it was the length i wanted and quick and easy to use.
+* Added logging for create/join course
 
 ### Friday - 15/02/19
 
