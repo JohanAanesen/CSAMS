@@ -87,11 +87,11 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		Year:        r.FormValue("year"),
 		Semester:    r.FormValue("semester"),
 	}
-	uniqueId := xid.NewWithTime(time.Now())
+	uniqueID := xid.NewWithTime(time.Now())
 
 	//insert into database
 	rows, err := db.GetDB().Query("INSERT INTO course(id, coursecode, coursename, year, semester, description, teacher) VALUES(?, ?, ?, ?, ?, ?, ?)",
-		uniqueId, course.Code, course.Name, course.Year, course.Semester, course.Description, user.ID)
+		uniqueID, course.Code, course.Name, course.Year, course.Semester, course.Description, user.ID)
 
 	if err != nil {
 		//todo log error
@@ -103,7 +103,7 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	// Log createCourse in the database and give error if something went wrong
-	lodData := model.Log{UserID: user.ID, Activity: model.CreatedCourse, CourseID: uniqueId.String()}
+	lodData := model.Log{UserID: user.ID, Activity: model.CreatedCourse, CourseID: uniqueID.String()}
 	if !db.LogToDB(lodData) {
 		log.Fatal("Could not save createCourse log to database! (admin.go)")
 	}
