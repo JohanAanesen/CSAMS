@@ -3,8 +3,33 @@
 {{define "content"}}
 <main>
     <div class="container pt-3">
-        {{.Test}}
-    </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control form-control-sm border-secondary" placeholder="Course code">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary btn-sm" type="button">Add course</button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.row -->
+
+        <div class="row">
+
+            {{ range .Courses }}
+                <div class="col-12 col-md-6 col-xl mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="card-title">{{ .Name }}</h2>
+                            <a href="#" class="btn btn-dark">See assignments</a>
+                        </div>
+                    </div>
+                </div>
+            {{ end }}
+
+        </div><!-- /.row -->
+    </div><!-- /.container -->
 </main>
 {{end}}
 {{define "foot"}}{{end}}

@@ -1,0 +1,133 @@
+{
+  "users": [
+    {
+      "ID": 1,
+      "user_login": "kongebra",
+      "user_password": "password",
+      "user_email": "sveiad@stud.ntnu.no",
+      "user_registered": "2019-02-13 13:33:37"
+    }
+  ],
+  "usermeta": [
+    {
+      "meta_id": 1,
+      "user_ID": 1,
+      "meta_key": "user_email_secondary",
+      "meta_value": "sveindani@gmail.com"
+    },
+    {
+      "meta_id": 1,
+      "user_ID": 1,
+      "meta_key": "user_role",
+      "meta_value": "student"
+    }
+  ],
+
+  "courses": [
+    {
+      "ID": 1,
+      "course_code": "IMT2034",
+      "course_name": "Course Name",
+      "course_description": "lorem ipsum"
+    }
+  ],
+  "coursemeta": [
+    {
+      "meta_id": 1,
+      "course_ID": 1,
+      "meta_key": "course_year",
+      "meta_value": "2019"
+    },
+    {
+      "meta_id": 2,
+      "course_ID": 1,
+      "meta_key": "course_semester",
+      "meta_value": "fall"
+    }
+  ],
+
+  "assignments": [
+    {
+      "ID": 1,
+      "assignment_course_ID": 1,
+      "assignment_name": "REST API",
+      "assignment_description": "Some markdown text",
+      "assignment_created": "2019-02-01 23:59:59"
+    }
+  ],
+  "assignmentmeta": [
+    {
+      "meta_id": 1,
+      "assignment_ID": 1,
+      "meta_key": "assignment_deadline",
+      "meta_value": "2019-03-01 23:59:59"
+    },
+    {
+      "meta_id": 2,
+      "assignment_ID": 1,
+      "meta_key": "assignment_opening",
+      "meta_value": "2019-02-01 12:00:00"
+    },
+    {
+      "meta_id": 3,
+      "assignment_ID": 1,
+      "meta_key": "assignment_enable_review",
+      "meta_value": "true"
+    }
+  ],
+
+  "reviews": [
+    {
+      "ID": 1,
+      "review_assignment_ID": 1
+    }
+  ],
+  "reviewmeta": [
+    {
+      "meta_id": 1,
+      "review_ID": 1,
+      "meta_key": "field",
+      "meta_value": "{'type':'checkbox','name':'go build','description':'Did project build?',order:'1',weight:'10'}"
+    },
+    {
+      "meta_id": 2,
+      "review_ID": 1,
+      "meta_key": "field",
+      "meta_value": "{'type':'checkbox','name':'golint','description':'Foo bar baz',order:'2',weight:'10'}"
+    },
+
+    {
+      "type": "radio",
+      "name": "Task 1: Did you load the heightmap successfully?",
+      "description": "If you selected \"Partially\", please clarify in the Comments field. Mark only one oval.",
+      "weight": 1,
+      "order": 2,
+      "choices": ["Yes","Partially","No"],
+      "weights": [100, 50, 0]
+    }
+  ],
+  "foo": [
+    {
+      "type": "textfield",
+      "name": " Enter your student identifier",
+      "description": "This is the one you use to log onto FEIDE. Ensure to get that right, so we can match your response with your exam.",
+      "weight": 1,
+      "order": 1
+    },
+    {
+      "type": "radio",
+      "name": "Task 1: Did you load the heightmap successfully?",
+      "description": "If you selected \"Partially\", please clarify in the Comments field. Mark only one oval.",
+      "weight": 1,
+      "order": 2,
+      "choices": ["Yes","Partially","No"],
+      "weights": [100, 50, 0]
+    },
+    {
+      "type": "textarea",
+      "name": "Task 1: Comments (Heightmap)",
+      "weight": 1,
+      "order": 3
+    }
+  ]
+}

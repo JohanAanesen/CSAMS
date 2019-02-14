@@ -22,15 +22,25 @@
                 <div class="form-group">
                     <label for="assignment_course_id">Course</label>
                     <select name="assignment_course_id" id="assignment_course_id" class="form-control">
-                        <option value="1">IMT1025</option>
-                        <option value="2">IMT2037</option>
-                        <option value="3">IMT2181</option>
+                        {{range .Courses}}
+                            <option value="{{.ID}}">{{.CourseCode}} {{.Name}}</option>
+                        {{end}}
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="assignment_due_date">Due Date</label>
-                    <input type="datetime-local" name="assignment_due_date" id="assignment_due_date" class="form-control">
+                    <label for="assignment_publish">Publish</label>
+                    <div class="input-group">
+                        <input type="datetime-local" name="assignment_publish" id="assignment_publish" class="form-control">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="assignment_publish_now">Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="assignment_deadline">Deadline</label>
+                    <input type="datetime-local" name="assignment_deadline" id="assignment_deadline" class="form-control">
                 </div>
 
                 <div class="custom-control custom-checkbox">
@@ -44,6 +54,10 @@
                     <label for="simplemde">Description</label>
                     <textarea name="assignment_description" id="simplemde" placeholder="Description (Hint: Markdown)"></textarea>
                 </div>
+            </div>
+
+            <div class="col-12">
+                <input type="submit" class="btn btn-success">
             </div>
         </div>
 
@@ -68,7 +82,9 @@
                     <hr>
                 </div>
 
-                <div class="col-md-9" id="output"></div>
+                <div class="col-md-9" id="output">
+
+                </div>
             </div>
         </div>
 
@@ -102,19 +118,29 @@
     <script src="/static/js/simplemde.min.js"></script>
     <script>
         (function() {
+            // Enable the SmpleMDE
             let simplemde = new SimpleMDE({
                 element: document.getElementById('simplemde'),
                 hideIcons: ["side-by-side", "fullscreen"],
             });
 
+            // Get the checkbox for enabling review
             let enableReviewCheckbox = document.getElementById('assignment_enable_review');
+            // Get the review-container
             let reviewContainer = document.getElementById('review_container');
-
+            // Hide/display the review-container
             reviewContainer.hidden = !enableReviewCheckbox.checked;
-
+            // Hide/display the review-container based on the checkbox
             enableReviewCheckbox.addEventListener('click', () => {
                 reviewContainer.hidden = !enableReviewCheckbox.checked;
             });
+
+            let publishNowButton = document.getElementById('assignment_publish_now');
+            let publishField = document.getElementById('assignment_publish');
+            publishNowButton.addEventListener('click', () => {
+                publishField.value = new Date().toISOString().substring(0, 16);
+            });
+
         })();
     </script>
 {{end}}
