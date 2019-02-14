@@ -53,5 +53,7 @@ eksempler:
 * go get -u github.com/go-sql-driver/mysql
 * go get github.com/gorilla/sessions
 * go get -u github.com/gorilla/mux
+* go get github.com/gorilla/handlers
 * go get github.com/gorilla/securecookie
+* go get github.com/rs/xid
 * go get golang.org/x/crypto/bcrypt

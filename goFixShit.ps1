@@ -23,8 +23,8 @@ if(!(Test-Path -Path "$env:GOPATH\src\github.com\gorilla\securecookie")){
     go get github.com/gorilla/securecookie
 }
 
-if(!(Test-Path -Path "$env:GOPATH\src\github.com\satori\go.uuid")){
-    go get github.com/satori/go.uuid
+if(!(Test-Path -Path "$env:GOPATH\src\github.com\rs\xid")){
+    go get github.com/rs/xid
 }
 
 if(!(Test-Path -Path "$env:GOPATH\src\golang.org\x\crypto\bcrypt")){

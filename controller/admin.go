@@ -5,8 +5,10 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
+	"github.com/rs/xid"
 	"log"
 	"net/http"
+	"time"
 )
 
 // AdminGET handles GET-request at /admin
@@ -85,10 +87,11 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		Year:        r.FormValue("year"),
 		Semester:    r.FormValue("semester"),
 	}
+	uniqueId := xid.NewWithTime(time.Now())
 
 	//insert into database
-	rows, err := db.GetDB().Query("INSERT INTO course(coursecode, coursename, year, semester, description, teacher) VALUES(?, ?, ?, ?, ?, ?)",
-		course.Code, course.Name, course.Year, course.Semester, course.Description, user.ID)
+	rows, err := db.GetDB().Query("INSERT INTO course(id, coursecode, coursename, year, semester, description, teacher) VALUES(?, ?, ?, ?, ?, ?, ?)",
+		uniqueId, course.Code, course.Name, course.Year, course.Semester, course.Description, user.ID)
 
 	if err != nil {
 		//todo log error

@@ -36,12 +36,12 @@ SET time_zone = "+01:00";
 
 CREATE TABLE `assignments`
 (
-  `id`       int(11)    NOT NULL,
-  `courseid` int(11)    NOT NULL,
-  `created`  timestamp  NOT NULL                DEFAULT CURRENT_TIMESTAMP,
-  `due`      date       NOT NULL,
-  `peer`     tinyint(1) NOT NULL                DEFAULT '0',
-  `auto`     tinyint(1) NOT NULL                DEFAULT '0',
+  `id`       int(11)     NOT NULL,
+  `courseid` varchar(64) NOT NULL,
+  `created`  timestamp   NOT NULL               DEFAULT CURRENT_TIMESTAMP,
+  `due`      date        NOT NULL,
+  `peer`     tinyint(1)  NOT NULL               DEFAULT '0',
+  `auto`     tinyint(1)  NOT NULL               DEFAULT '0',
   `language` varchar(20) COLLATE utf8_danish_ci DEFAULT NULL,
   `tasktext` text COLLATE utf8_danish_ci,
   `payload`  int(11)                            DEFAULT NULL
@@ -57,7 +57,7 @@ CREATE TABLE `assignments`
 
 CREATE TABLE `course`
 (
-  `id`          int(11)                                        NOT NULL,
+  `id`          varchar(64)                                    NOT NULL,
   `coursecode`  varchar(10) COLLATE utf8_danish_ci             NOT NULL,
   `coursename`  varchar(64) COLLATE utf8_danish_ci             NOT NULL,
   `teacher`     int(11)                                        NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE `logs`
   `timestamp`    datetime                           NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `activity`     varchar(32) COLLATE utf8_danish_ci NOT NULL,
   `assignmentid` int(11)                                     DEFAULT NULL,
-  `courseid`     int(11)                                     DEFAULT NULL,
+  `courseid`     varchar(64)                                     DEFAULT NULL,
   `submissionid` int(11)                                     DEFAULT NULL,
   `oldvalue`     varchar(64) COLLATE utf8_danish_ci          DEFAULT NULL,
   `newValue`     varchar(64) COLLATE utf8_danish_ci          DEFAULT NULL
@@ -150,8 +150,8 @@ CREATE TABLE `submissions`
 
 CREATE TABLE `usercourse`
 (
-  `userid`   int(11) NOT NULL,
-  `courseid` int(11) NOT NULL
+  `userid`   int(11)     NOT NULL,
+  `courseid` varchar(64) NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_danish_ci;
@@ -192,17 +192,18 @@ VALUES (1, 'Test User', 'hei@gmail.com', 1, 'test@yahoo.com',
 
 
 INSERT INTO `course` (`id`, `coursecode`, `coursename`, `teacher`, `year`, `semester`, `description`)
-VALUES (1, 'IMT1031', 'Grunnleggende Programmering', 2, 2019, 'fall', 'Write hello, world in C++'),
-       (2, 'IMT1082', 'Objekt-orientert programmering', 2, 2019, 'fall', 'Write Wazz up world in Python'),
-       (3, 'IMT2021', 'Algoritmiske metoder', 2, 2019, 'spring', 'Write an AI in C#');
+VALUES ('3876438629b786', 'IMT1031', 'Grunnleggende Programmering', 2, 2019, 'fall', 'Write hello, world in C++'),
+       ('12387teg817eg18', 'IMT1082', 'Objekt-orientert programmering', 2, 2019, 'fall',
+        'Write Wazz up world in Python'),
+       ('12e612eg1e17ge1', 'IMT2021', 'Algoritmiske metoder', 2, 2019, 'spring', 'Write an AI in C#');
 
 INSERT INTO `usercourse` (`userid`, `courseid`)
-VALUES (3, 1),
-       (3, 2),
-       (4, 3);
+VALUES (3, '3876438629b786'),
+       (3, '12387teg817eg18'),
+       (4, '12e612eg1e17ge1');
 
 INSERT INTO `assignments` (`id`, `courseid`, `created`, `due`, `peer`, `auto`, `language`, `tasktext`, `payload`)
-VALUES ('1', '2', CURRENT_TIMESTAMP, '2019-02-14', '1', '0', 'English',
+VALUES ('1', '3876438629b786', CURRENT_TIMESTAMP, '2019-02-14', '1', '0', 'English',
         '# Assignment 1\r\n* Doctors and nurses\r\n<!-- Hello -->', '13');
 
 INSERT INTO `submissions` (`id`, `userid`, `assignmentid`, `repo`, `deploy`, `comment`, `grade`, `test`, `vet`, `cycle`)
@@ -294,7 +295,7 @@ ALTER TABLE `assignments`
 -- AUTO_INCREMENT for table `course`
 --
 ALTER TABLE `course`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` varchar(64) NOT NULL;
 
 --
 -- AUTO_INCREMENT for table `submissions`
