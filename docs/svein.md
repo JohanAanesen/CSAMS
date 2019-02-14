@@ -1,5 +1,22 @@
 Svein's log
 ============
+## Week 7 Report
+
+
+## 15/02/2019
+
+
+## 14/02/2019
+* Worked on the design of assignments with the peer reviews, thinking about the data-structure, and how to store it, and where it should be written/read.
+
+## 13/02/2019
+* Worked on the assignments page for admins, looking at data-structure, and an easy approach for designing the form.
+
+## 12/02/2019
+* Worked on restructuring the folder-/file-structure for the project. Making it a MVC-structure.
+
+## 11/02/2019
+* Started the planning for the project restructure, for a more efficient development later on in the project.
 
 # Week 6 Report
 I have worked mainly with Bootstrap to get a concise design on every page of the application. Templating has also taken up quite a bit of time, as I did not have much knowledge of this before, and had to read about this, and talk to the other team members about this issue. It was resolved in a straightforward way, but afterwards I see that it could have been solved even better, with the creation of features to simply enter simple parameters to be able to change the whole page, as well as help reuse code.
