@@ -103,6 +103,12 @@ if-else statements, I hope to refactor it later.
 * Nothing much happened today :/
 
 ### Thursday - 14/02/19
+*I am 22 now, also the power went out home, so I went to the School of NTNU*
+* Started on restoring home page, currently stuck in a bug where the post function in index.go won't start.
+* I can now check if with a given course id, if it exists.
+* I need to figure out how to confirm that the user joined a class. I want to start an js script from go :/
+    * Solution: ?
+* Can now add user to course through home page :D
 
 ### Friday - 15/02/19
 
