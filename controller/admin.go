@@ -8,6 +8,8 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
 	"log"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 // AdminGET handles GET-request at /admin
@@ -23,6 +25,11 @@ func AdminGET(w http.ResponseWriter, r *http.Request) {
 
 	v := view.New(r)
 	v.Name = "admin/index"
+
+	assignmentRepo := model.AssignmentTable{}
+	assignments := assignmentRepo.GetAll()
+
+	v.Vars["Assignments"] = assignments
 
 	// TODO (Svein): Add data to the page (courses, assignments, etc)
 
@@ -164,14 +171,14 @@ func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/assignment/create"
 
-	v.Vars["Courses"] = []struct{
-		ID int
+	v.Vars["Courses"] = []struct {
+		ID         int
 		CourseCode string
-		Name string
+		Name       string
 	}{
-		{ID: 1,	CourseCode: "IMT1031", Name: "Grunnleggende Programmering"},
-		{ID: 2,	CourseCode: "IMT1082", Name: "Objekt-Orientert Programmering"},
-		{ID: 3,	CourseCode: "IMT2021", Name: "Algoritmiske Metoder"},
+		{ID: 1, CourseCode: "IMT1031", Name: "Grunnleggende Programmering"},
+		{ID: 2, CourseCode: "IMT1082", Name: "Objekt-Orientert Programmering"},
+		{ID: 3, CourseCode: "IMT2021", Name: "Algoritmiske Metoder"},
 	}
 
 	// TODO (Svein): Add data to the page (courses, assignments, etc)
@@ -187,21 +194,42 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var assignment = struct{
-		Name string
-		Description string
-		CourseID string
-		Publish string
-		Deadline string
-		EnableReview string
-	}{
-		Name: r.FormValue("assignment_name"),
-		Description: r.FormValue("assignment_description"),
-		CourseID: r.FormValue("assignment_course_id"),
-		Publish: r.FormValue("assignment_publish"),
-		Deadline: r.FormValue("assignment_deadline"),
-		EnableReview: r.FormValue("assignment_enable_review"),
+	courseID,err := strconv.Atoi(r.FormValue("assignment_course_id"))
+	if err != nil {
+		log.Println(err)
+		return
 	}
 
-	fmt.Printf("\n%v\n\n", assignment)
+	publish, err := StrToTime(r.FormValue("assignment_publish"))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	deadline, err := StrToTime(r.FormValue("assignment_deadline"))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	_ = model.Assignment{
+		Title:       r.FormValue("assignment_title"),
+		Description: r.FormValue("assignment_description"),
+		CourseID:    courseID,
+		Publish:     publish,
+		Deadline:    deadline,
+	}
+
+
+}
+
+func StrToTime(str string) (time.Time, error) {
+	year := str[0:4]
+	month := str[5:7]
+	day := str[8:10]
+	hour := str[11:13]
+	min := str[14:16]
+
+	value := fmt.Sprintf("%s-%s-%sT%s:%s:00Z", year, month, day, hour, min)
+	return time.Parse(time.RFC3339, value)
 }
