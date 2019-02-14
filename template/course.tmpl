@@ -2,7 +2,85 @@
 {{define "head"}}{{end}}
 {{define "content"}}
 <main role="main" class="container">
-    {{.Output}}
+
+    <style>
+        a{
+            color: white;
+        }
+        a:hover{
+            color: white;
+        }
+    </style>
+
+    <div class="col my-3">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-header">
+                <h4>{{.Course.Code}} | {{.Course.Name}}</h4>
+                <ul class="nav nav-tabs card-header-tabs pull-right"  id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="assignment-tab" data-toggle="tab" href="#assignments" role="tab" aria-controls="assignments" aria-selected="false">Assignments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="participant-tab" data-toggle="tab" href="#participants" role="tab" aria-controls="participants" aria-selected="false">Participants</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="question-tab" data-toggle="tab" href="#questions" role="tab" aria-controls="questions" aria-selected="false">Questions</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                        {{.Output}}
+                    </div>
+                    <div class="tab-pane fade" id="assignments" role="tabpanel" aria-labelledby="assignment-tab">
+                        <div class="row">
+                            <div class="card border-dark my-3 mx-2 text-dark bg-light" style="max-width: 48%;">
+                                <div class="card-header">Assignment 1</div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Light card title</h5>
+                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                    <a href="#" class="btn btn-outline-dark">Go somewhere</a>
+                                </div>
+                            </div>
+                            <div class="card border-dark my-3 mx-2 text-dark bg-light" style="max-width: 48%;">
+                                <div class="card-header">Assignment 2</div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Light card title</h5>
+                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                    <a href="#" class="btn btn-outline-dark">Go somewhere</a>
+                                </div>
+                            </div>
+                            <div class="card border-dark my-3 mx-2 text-dark bg-light" style="max-width: 48%;">
+                                <div class="card-header">Assignment 3</div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Light card title</h5>
+                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                    <a href="#" class="btn btn-outline-dark">Go somewhere</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="participants" role="tabpanel" aria-labelledby="participant-tab">
+                        <h1>I LØV U!!!!</h1>
+                    </div>
+                    <div class="tab-pane fade" id="questions" role="tabpanel" aria-labelledby="question-tab">
+                        <h1>I LØV U!!!!</h1>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
 </main>
 {{end}}
 {{define "foot"}}{{end}}

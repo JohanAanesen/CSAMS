@@ -6,7 +6,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
-	"github.com/gomarkdown/markdown"
+	"github.com/shurcooL/github_flavored_markdown"
 	"html/template"
 	"log"
 	"net/http"
@@ -59,7 +59,10 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	md := []byte(course.Description)
-	output := markdown.ToHTML(md, nil, nil)
+	//output := markdown.ToHTML(md, nil, nil)
+	// output := blackfriday.Run(md)
+	output := github_flavored_markdown.Markdown(md)
+
 
 	v := view.New(r)
 	v.Name = "course"
