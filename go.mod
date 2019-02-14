@@ -5,6 +5,7 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gorilla/mux v1.7.0
 	github.com/gorilla/sessions v1.1.3
+	github.com/satori/go.uuid v1.2.0 // indirect
 	golang.org/x/crypto v0.0.0-20190211182817-74369b46fc67
 	golang.org/x/net v0.0.0-20190206173232-65e2d4e15006 // indirect
 	google.golang.org/appengine v1.4.0 // indirect
