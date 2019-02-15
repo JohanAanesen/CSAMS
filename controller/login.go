@@ -18,16 +18,10 @@ func init() {
 //LoginGET serves login page to users
 func LoginGET(w http.ResponseWriter, r *http.Request) {
 
-	// Check if request has an courseID and it's not empty
-	id := r.FormValue("courseid")
-	if id != "" {
-
-		// Check if the id is a valid id
-		if course := db.CourseExists(id); course.ID == "" {
-			id = ""
-			ErrorHandler(w, r, http.StatusBadRequest)
-			return
-		}
+	// CHeck if there is an courseID in link
+	id := getLinkCourseID(w, r)
+	if id == "400" {
+		return
 	}
 
 	// Check if user is already logged in
@@ -50,11 +44,25 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "login"
 
+	// Send the correct link to template
+	if id == "" {
+		v.Vars["Action"] = "/login"
+	} else {
+		v.Vars["Action"] = "/login?courseid=" + id
+	}
+
 	v.Render(w)
 }
 
 //LoginPOST validates login requests
 func LoginPOST(w http.ResponseWriter, r *http.Request) {
+
+	// Check if there is an courseID in link
+	id := getLinkCourseID(w, r)
+	if id == "400" {
+		return
+	}
+
 	user := session.GetUserFromSession(r)
 
 	if user.Authenticated { //already logged in, redirect to home page
@@ -76,6 +84,13 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		//save user to session values
 		user.Authenticated = true
 		session.SaveUserToSession(user, w, r)
+
+		// Add new user to course
+		if id != "" && !db.UserExistsInCourse(user.ID, id) {
+			db.AddUserToCourse(user.ID, id)
+			// TODO : maybe redirect to course page ?
+		}
+
 	} else {
 		//redirect to errorhandler
 		ErrorHandler(w, r, http.StatusUnauthorized)
@@ -86,4 +101,21 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 	//http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage //todo change redirection
 	IndexGET(w, r) //redirect to homepage
+}
+
+// getLinkCourseID checks for the courseID in the link and if it's valid
+func getLinkCourseID(w http.ResponseWriter, r *http.Request) string {
+
+	// Check if request has an courseID and it's not empty
+	id := r.FormValue("courseid")
+	if id != "" {
+
+		// Check if the id is a valid id
+		if course := db.CourseExists(id); course.ID == "" {
+			ErrorHandler(w, r, http.StatusBadRequest)
+			return "400"
+		}
+	}
+
+	return id
 }
