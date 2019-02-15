@@ -2,7 +2,6 @@ package controller
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
 	"log"
@@ -18,7 +17,7 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	courses := db.GetCoursesToUser(user.ID)
+	courses := model.GetCoursesToUser(user.ID)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -44,7 +43,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get hashed password
-	hash := db.GetHash(user.ID)
+	hash := model.GetHash(user.ID)
 
 	// Get new data from the form
 	name := r.FormValue("usersName")
@@ -57,7 +56,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	if name == "" {
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
-	} else if name != user.Name && db.UpdateUserName(user.ID, name) {
+	} else if name != user.Name && model.UpdateUserName(user.ID, name) {
 		log.Println("Success: name changed from " + user.Name + " to " + name)
 
 		// Save information to log struct
@@ -68,7 +67,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		session.SaveUserToSession(user, w, r)
 
 		// Log name change in the database and give error if something went wrong
-		if !db.LogToDB(logData) {
+		if !model.LogToDB(logData) {
 			log.Fatal("Could not save name log to database! (userhandler.go)")
 		}
 	}
@@ -76,7 +75,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// Users Email
 	// If secondary-email input isn't blank it has changed
 	if secondaryEmail != "" && secondaryEmail != user.EmailPrivate {
-		if db.UpdateUserEmail(user.ID, secondaryEmail) {
+		if model.UpdateUserEmail(user.ID, secondaryEmail) {
 			log.Println("Success: Private email changed from " + user.EmailPrivate + " to " + secondaryEmail)
 
 			// Save information to log struct
@@ -87,7 +86,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 			session.SaveUserToSession(user, w, r)
 
 			// Log email change in the database and give error if something went wrong
-			if !db.LogToDB(logData) {
+			if !model.LogToDB(logData) {
 				log.Fatal("Could not save email log to database! (userhandler.go)")
 			}
 		}
@@ -99,15 +98,15 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	passwordIsOkay := oldPass != "" && newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass
 
 	// If there's no problem with passwords and teh password is changed
-	if passwordIsOkay && db.CheckPasswordHash(oldPass, hash) {
-		if db.UpdateUserPassword(user.ID, newPass) {
+	if passwordIsOkay && model.CheckPasswordHash(oldPass, hash) {
+		if model.UpdateUserPassword(user.ID, newPass) {
 			log.Println("Success: Password is now changed!")
 
 			// Save information to log struct
 			logData := model.Log{UserID: user.ID, Activity: model.ChangePassword}
 
 			// Log password change in the database and give error if something went wrong
-			if !db.LogToDB(logData) {
+			if !model.LogToDB(logData) {
 				log.Fatal("Could not save password log to database! (userhandler.go)")
 			}
 		} else {

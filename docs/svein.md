@@ -27,7 +27,7 @@ The group had a discussion on the database structure and form structure of the a
 
 ## 08/02/2019
 * Worked more on the assignments-form
-* Had some problems with prioritizion on the form, but found a easy solution
+* Had some problems with ordering on the form, but found an easier solution that works perfectly fine
 
 ## 07/02/2019
 * Added navbar to every pag

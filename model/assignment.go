@@ -7,27 +7,32 @@ import (
 
 // Assignment hold the data for a single assignment
 type Assignment struct {
-	ID          int       `json:"id" db:"ID"`
-	CourseID    int       `json:"course_id" db:"assignment_course_ID"`
-	Title       string    `json:"title" db:"assignment_title"`
-	Description string    `json:"description" db:"assignment_description"`
-	Publish     time.Time `json:"publish" db:"assignment_publish"`
-	Deadline    time.Time `json:"deadline" db:"assignment_deadline"`
+	ID           int       `json:"id" db:"ID"`
+	CourseID     int       `json:"course_id" db:"assignment_course_ID"`
+	Title        string    `json:"title" db:"assignment_title"`
+	Description  string    `json:"description" db:"assignment_description"`
+	Publish      time.Time `json:"publish" db:"assignment_publish"`
+	Deadline     time.Time `json:"deadline" db:"assignment_deadline"`
+	EnableReview bool
 }
 
-// AssignmentTable holds all assignments, and DB-functions
-type AssignmentTable struct {}
+// AssignmentDatabase holds all assignments, and DB-functions
+type AssignmentDatabase struct {}
 
-func (table *AssignmentTable) GetAll() []Assignment {
+func (adb *AssignmentDatabase) GetAll() []Assignment {
 	return nil
 }
 
-func (table AssignmentTable) Insert(a Assignment) (bool, error) {
-	rows, err := db.GetDB().Query("INSERT INTO assignments (assignment_course_id, assignment_title, assignment_description, assignment_publish, assignment_deadline)" +
-		"VALUES (?, ?, ?, ?, ?)")
+func (adb *AssignmentDatabase) Insert(a Assignment) (bool, error) {
+	rows, err := db.GetDB().Query("INSERT INTO assignments (assignment_course_id, assignment_title, assignment_description, assignment_publish, assignment_deadline)"+
+		"VALUES (?, ?, ?, ?, ?)", a.CourseID, a.Title, a.Description, a.Publish, a.Deadline)
 	defer rows.Close()
 	if err != nil {
 		return false, err
+	}
+
+	if a.EnableReview {
+
 	}
 
 	return true, nil

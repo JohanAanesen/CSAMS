@@ -3,7 +3,6 @@ package controller
 import (
 	"encoding/gob"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
 	"log"
@@ -53,7 +52,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := db.UserAuth(email, password) //authenticate user
+	user, ok := model.UserAuth(email, password) //authenticate user
 
 	if ok {
 		//save user to session values

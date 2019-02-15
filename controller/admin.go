@@ -26,7 +26,7 @@ func AdminGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/index"
 
-	assignmentRepo := model.AssignmentTable{}
+	assignmentRepo := model.AssignmentDatabase{}
 	assignments := assignmentRepo.GetAll()
 
 	v.Vars["Assignments"] = assignments
@@ -194,36 +194,53 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	courseID,err := strconv.Atoi(r.FormValue("assignment_course_id"))
+	//adb := model.AssignmentDatabase{}
+
+	courseID, err := strconv.Atoi(r.FormValue("assignment_course_id"))
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	publish, err := StrToTime(r.FormValue("assignment_publish"))
+	publish, err := DatetimeLocalToRFC3339(r.FormValue("assignment_publish"))
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	deadline, err := StrToTime(r.FormValue("assignment_deadline"))
+	deadline, err := DatetimeLocalToRFC3339(r.FormValue("assignment_deadline"))
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	_ = model.Assignment{
-		Title:       r.FormValue("assignment_title"),
-		Description: r.FormValue("assignment_description"),
-		CourseID:    courseID,
-		Publish:     publish,
-		Deadline:    deadline,
+	enableReview := r.FormValue("assignment_enable_review") == "on"
+
+	assignment := model.Assignment{
+		Title:        r.FormValue("assignment_title"),
+		Description:  r.FormValue("assignment_description"),
+		CourseID:     courseID,
+		Publish:      publish,
+		Deadline:     deadline,
+		EnableReview: enableReview,
 	}
 
+	fmt.Printf("\n%v\n\n", assignment)
 
+	/*
+	success, err := adb.Insert(assignment)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	if success {
+		// TODO (Svein): Celebrate
+	}
+	*/
 }
 
-func StrToTime(str string) (time.Time, error) {
+func DatetimeLocalToRFC3339(str string) (time.Time, error) {
 	year := str[0:4]
 	month := str[5:7]
 	day := str[8:10]
