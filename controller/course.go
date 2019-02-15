@@ -53,21 +53,20 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	//get info from db
 	course = db.GetCourse(courseID)
 
-	fmt.Println(course) //todo(johan) remove this
+	//fmt.Println(course) //todo(johan) remove this
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
 	md := []byte(course.Description)
-	//output := markdown.ToHTML(md, nil, nil)
-	// output := blackfriday.Run(md)
-	output := github_flavored_markdown.Markdown(md)
+	description := github_flavored_markdown.Markdown(md) //todo sanitize markdown
 
 
 	v := view.New(r)
 	v.Name = "course"
 	v.Vars["Course"] = course
-	v.Vars["Output"] = template.HTML(output)
+	v.Vars["User"] = user
+	v.Vars["Description"] = template.HTML(description)
 	v.Render(w)
 }
 
