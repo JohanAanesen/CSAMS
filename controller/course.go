@@ -61,7 +61,6 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	md := []byte(course.Description)
 	description := github_flavored_markdown.Markdown(md) //todo sanitize markdown
 
-
 	v := view.New(r)
 	v.Name = "course"
 	v.Vars["Course"] = course
