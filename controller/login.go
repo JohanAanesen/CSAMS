@@ -63,14 +63,6 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 //LoginPOST validates login requests
 func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
-	/*
-		// Check if there is an courseID in link
-		id := getLinkCourseID(w, r)
-		if id == "400" {
-			return
-		}
-	*/
-
 	user := session.GetUserFromSession(r)
 
 	if user.Authenticated { //already logged in, redirect to home page
@@ -78,9 +70,9 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	email := r.FormValue("email")
-	password := r.FormValue("password") //password
-	id := r.FormValue("courseid")
+	email := r.FormValue("email")       // email
+	password := r.FormValue("password") // password
+	id := r.FormValue("courseid")       // courseID from link
 
 	if email == "" || password == "" { //login credentials cannot be empty
 		LoginGET(w, r)
@@ -94,7 +86,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		user.Authenticated = true
 		session.SaveUserToSession(user, w, r)
 
-		// Add new user to course
+		// Add new user to course, if he's not in the course
 		if id != "" && !db.UserExistsInCourse(user.ID, id) {
 			db.AddUserToCourse(user.ID, id)
 			// TODO : maybe redirect to course page ?

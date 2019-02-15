@@ -127,6 +127,63 @@ func TestLoggingIn(t *testing.T) {
 	}
 }
 
+func TestRegisterGET(t *testing.T) {
+	config.Initialize()
+
+	req, err := http.NewRequest("GET", "/register", nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	resp := httptest.NewRecorder()
+
+	http.HandlerFunc(controller.RegisterGET).ServeHTTP(resp, req)
+
+	status := resp.Code
+
+	if status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	}
+
+	body := resp.Body
+
+	if body.Len() <= 0 {
+		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	}
+
+}
+
+func TestRegisterPOST(t *testing.T) {
+	/*
+		config.Initialize()
+
+		form := url.Values{}
+		form.Add("name", "Swag Meister")
+		form.Add("email", "New@guy.com")
+		form.Add("password", "hei")
+		form.Add("passwordConfirm", "hei")
+		req := httptest.NewRequest("POST", "/register", nil)
+		req.Form = form
+
+		resp := httptest.NewRecorder()
+
+		http.HandlerFunc(controller.RegisterPOST).ServeHTTP(resp, req)
+
+		status := resp.Code
+
+		if status != http.StatusFound {
+			t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusFound, status)
+		}
+
+		body := resp.Body
+
+		if body.Len() <= 0 {
+			t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+		}
+	*/
+
+}
+
 func TestMainHandler(t *testing.T) {
 	req, err := http.NewRequest("GET", "/", nil)
 	if err != nil {
