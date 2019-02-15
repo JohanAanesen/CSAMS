@@ -9,6 +9,19 @@ import (
 
 //RegisterGET serves register page to users
 func RegisterGET(w http.ResponseWriter, r *http.Request) {
+
+	// Check if request has an courseID and it's not empty
+	id := r.FormValue("courseid")
+	if id != "" {
+
+		// Check if the id is a valid id
+		if course := db.CourseExists(id); course.ID == "" {
+			ErrorHandler(w, r, http.StatusBadRequest)
+			id = ""
+			return
+		}
+	}
+
 	if session.IsLoggedIn(r) {
 		IndexGET(w, r)
 		return
@@ -16,6 +29,12 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 
 	v := view.New(r)
 	v.Name = "register"
+	// Send the correct link to template
+	if id == "" {
+		v.Vars["Action"] = "/register"
+	} else {
+		v.Vars["Action"] = "/register?courseid=" + id
+	}
 	v.Render(w)
 
 	//todo check if there is a class id in request
@@ -35,6 +54,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")         //get form value name
 	email := r.FormValue("email")       //get form value email
 	password := r.FormValue("password") //get form value password
+	id := r.FormValue("courseid")
 
 	//check that nothing is empty and password match passwordConfirm
 	if name == "" || email == "" || password == "" || password != r.FormValue("passwordConfirm") { //login credentials cannot be empty
@@ -48,6 +68,11 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		//save user to session values
 		user.Authenticated = true
 		session.SaveUserToSession(user, w, r)
+		// Add new user to course
+		if id != "" {
+			db.AddUserToCourse(user.ID, id)
+			// TODO : maybe redirect to course page ?
+		}
 	} else {
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event

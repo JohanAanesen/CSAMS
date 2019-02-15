@@ -114,4 +114,6 @@ I chose `github.com/rs/xid` because it was the length i wanted and quick and eas
 * Added logging for create/join course
 
 ### Friday - 15/02/19
+* Added functionality for adding user to course through link when the user is logged in and when the user logs in.
+* 
 

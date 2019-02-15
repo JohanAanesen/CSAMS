@@ -18,10 +18,16 @@ func init() {
 //LoginGET serves login page to users
 func LoginGET(w http.ResponseWriter, r *http.Request) {
 
-	// CHeck if there is an courseID in link
-	id := getLinkCourseID(w, r)
-	if id == "400" {
-		return
+	// Check if request has an courseID and it's not empty
+	id := r.FormValue("courseid")
+	if id != "" {
+
+		// Check if the id is a valid id
+		if course := db.CourseExists(id); course.ID == "" {
+			ErrorHandler(w, r, http.StatusBadRequest)
+			id = ""
+			return
+		}
 	}
 
 	// Check if user is already logged in
@@ -57,11 +63,13 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 //LoginPOST validates login requests
 func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
-	// Check if there is an courseID in link
-	id := getLinkCourseID(w, r)
-	if id == "400" {
-		return
-	}
+	/*
+		// Check if there is an courseID in link
+		id := getLinkCourseID(w, r)
+		if id == "400" {
+			return
+		}
+	*/
 
 	user := session.GetUserFromSession(r)
 
@@ -72,6 +80,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 	email := r.FormValue("email")
 	password := r.FormValue("password") //password
+	id := r.FormValue("courseid")
 
 	if email == "" || password == "" { //login credentials cannot be empty
 		LoginGET(w, r)
@@ -101,21 +110,4 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 	//http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage //todo change redirection
 	IndexGET(w, r) //redirect to homepage
-}
-
-// getLinkCourseID checks for the courseID in the link and if it's valid
-func getLinkCourseID(w http.ResponseWriter, r *http.Request) string {
-
-	// Check if request has an courseID and it's not empty
-	id := r.FormValue("courseid")
-	if id != "" {
-
-		// Check if the id is a valid id
-		if course := db.CourseExists(id); course.ID == "" {
-			ErrorHandler(w, r, http.StatusBadRequest)
-			return "400"
-		}
-	}
-
-	return id
 }
