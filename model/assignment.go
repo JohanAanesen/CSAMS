@@ -24,8 +24,8 @@ func (adb *AssignmentDatabase) GetAll() []Assignment {
 }
 
 func (adb *AssignmentDatabase) Insert(a Assignment) (bool, error) {
-	rows, err := db.GetDB().Query("INSERT INTO assignments (assignment_course_id, assignment_title, assignment_description, assignment_publish, assignment_deadline)"+
-		"VALUES (?, ?, ?, ?, ?)", a.CourseID, a.Title, a.Description, a.Publish, a.Deadline)
+	rows, err := db.GetDB().Query("INSERT INTO assignments (courseid, assignment_title, assignment_description, assignment_publish, assignment_deadline, assignment_review)"+
+		"VALUES (?, ?, ?, ?, ?, ?)", a.CourseID, a.Title, a.Description, a.Publish, a.Deadline, a.EnableReview)
 	defer rows.Close()
 	if err != nil {
 		return false, err

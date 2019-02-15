@@ -195,7 +195,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//adb := model.AssignmentDatabase{}
+	adb := model.AssignmentDatabase{}
 
 	courseID, err := strconv.Atoi(r.FormValue("assignment_course_id"))
 	if err != nil {
@@ -228,7 +228,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("\n%v\n\n", assignment)
 
-	/*
+
 	success, err := adb.Insert(assignment)
 	if err != nil {
 		log.Println(err)
@@ -238,7 +238,6 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	if success {
 		// TODO (Svein): Celebrate
 	}
-	*/
 }
 
 func DatetimeLocalToRFC3339(str string) (time.Time, error) {
