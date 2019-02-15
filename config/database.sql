@@ -43,7 +43,7 @@ CREATE TABLE `assignments`
   `assignment_created`  timestamp  NOT NULL                DEFAULT CURRENT_TIMESTAMP,
   `assignment_publish` datetime NOT NULL,
   `assignment_deadline` datetime NOT NULL,
-  `assignment_type` tinytext NOT NULL,
+  `assignment_type` int(11) NOT NULL,
   `assignment_review` tinyint(1) NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
@@ -217,7 +217,8 @@ VALUES ('1', 'changedName', NULL, NULL, NULL, 'Ola Nordmann', 'Ola Svenskemann')
 --
 ALTER TABLE `assignments`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `courseid` (`courseid`);
+  ADD KEY `courseid` (`courseid`),
+  ADD KEY `assignment_type` (`assignment_type`);
 
 --
 -- Indexes for table `course`
@@ -358,9 +359,22 @@ ALTER TABLE `submissions`
 ALTER TABLE `usercourse`
   ADD CONSTRAINT `usercourse_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `usercourse_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION = @OLD_COLLATION_CONNECTION */;
 
+CREATE TABLE assignment_type (
+  id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name tinytext not null
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_danish_ci;
+
+ALTER TABLE `assignments`
+  ADD CONSTRAINT `assignments_ibfk_42` FOREIGN KEY (`assignment_type`) REFERENCES `assignment_type` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+
+
+COMMIT;

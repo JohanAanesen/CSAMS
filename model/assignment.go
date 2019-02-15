@@ -13,11 +13,12 @@ type Assignment struct {
 	Description  string    `json:"description" db:"assignment_description"`
 	Publish      time.Time `json:"publish" db:"assignment_publish"`
 	Deadline     time.Time `json:"deadline" db:"assignment_deadline"`
-	EnableReview bool
+	EnableReview bool      `json:"enable_review" db:"assignment_enable_review"`
+	Type         string    `json:"type" db:"assignment_type"`
 }
 
 // AssignmentDatabase holds all assignments, and DB-functions
-type AssignmentDatabase struct {}
+type AssignmentDatabase struct{}
 
 func (adb *AssignmentDatabase) GetAll() []Assignment {
 	return nil
@@ -29,10 +30,6 @@ func (adb *AssignmentDatabase) Insert(a Assignment) (bool, error) {
 	defer rows.Close()
 	if err != nil {
 		return false, err
-	}
-
-	if a.EnableReview {
-
 	}
 
 	return true, nil
