@@ -4,7 +4,8 @@ Svein's log
 
 
 ## 15/02/2019
-
+* Updated teh time.Time convert-function from datetime-local (HTML).
+* Looked at the database for assignments, 
 
 ## 14/02/2019
 * Worked on the design of assignments with the peer reviews, thinking about the data-structure, and how to store it, and where it should be written/read.

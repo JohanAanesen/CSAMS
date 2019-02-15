@@ -38,13 +38,13 @@ CREATE TABLE `assignments`
 (
   `id`       int(11)    NOT NULL,
   `courseid` int(11)    NOT NULL,
-  `created`  timestamp  NOT NULL                DEFAULT CURRENT_TIMESTAMP,
-  `due`      date       NOT NULL,
-  `peer`     tinyint(1) NOT NULL                DEFAULT '0',
-  `auto`     tinyint(1) NOT NULL                DEFAULT '0',
-  `language` varchar(20) COLLATE utf8_danish_ci DEFAULT NULL,
-  `tasktext` text COLLATE utf8_danish_ci,
-  `payload`  int(11)                            DEFAULT NULL
+  `assignment_title` tinytext NOT NULL,
+  `assignment_description` text NOT NULL,
+  `assignment_created`  timestamp  NOT NULL                DEFAULT CURRENT_TIMESTAMP,
+  `assignment_publish` datetime NOT NULL,
+  `assignment_deadline` datetime NOT NULL,
+  `assignment_type` tinytext NOT NULL,
+  `assignment_review` tinyint(1) NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_danish_ci;
@@ -201,10 +201,6 @@ VALUES (3, 1),
        (3, 2),
        (4, 3);
 
-INSERT INTO `assignments` (`id`, `courseid`, `created`, `due`, `peer`, `auto`, `language`, `tasktext`, `payload`)
-VALUES ('1', '2', CURRENT_TIMESTAMP, '2019-02-14', '1', '0', 'English',
-        '# Assignment 1\r\n* Doctors and nurses\r\n<!-- Hello -->', '13');
-
 INSERT INTO `submissions` (`id`, `userid`, `assignmentid`, `repo`, `deploy`, `comment`, `grade`, `test`, `vet`, `cycle`)
 VALUES ('1', '3', '1', 'www.github.com/user3/submission1', 'Hello', 'I am grate progrman', '6', NULL, NULL, NULL);
 
@@ -354,8 +350,7 @@ ALTER TABLE `reviewerpairs`
 -- Begrensninger for tabell `submissions`
 --
 ALTER TABLE `submissions`
-  ADD CONSTRAINT `submissions_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `submissions_ibfk_2` FOREIGN KEY (`assignmentid`) REFERENCES `assignments` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `submissions_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Begrensninger for tabell `usercourse`
