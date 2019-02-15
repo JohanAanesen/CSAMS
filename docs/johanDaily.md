@@ -102,3 +102,14 @@ Wednesday 13/2
 * Got the md -> html functionality working :)
 * This gonna look nice
 * Also some more db schtuf
+
+Thursday 14/2
+-----------
+* Cont #7 jesus fuck will it ever end
+* Made front end look nice :)
+* Changed markdown processor so it would read 'github flavored markdown' better
+* yeah!
+
+Friday 15/2
+----------
+* 
