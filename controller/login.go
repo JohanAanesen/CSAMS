@@ -17,9 +17,29 @@ func init() {
 
 //LoginGET serves login page to users
 func LoginGET(w http.ResponseWriter, r *http.Request) {
-	//check if user is already logged in
+
+	// Check if request has an courseID and it's not empty
+	id := r.FormValue("courseid")
+	if id != "" {
+
+		// Check if the id is a valid id
+		if course := db.CourseExists(id); course.ID == "" {
+			id = ""
+			ErrorHandler(w, r, http.StatusBadRequest)
+			return
+		}
+	}
+
+	// Check if user is already logged in
 	user := session.GetUserFromSession(r)
 	if user.Authenticated { //already logged in, redirect to homepage
+
+		// If id was valid, add user isn't in the course, then add user to course
+		if id != "" && !db.UserExistsInCourse(user.ID, id) {
+			db.AddUserToCourse(user.ID, id)
+			// TODO : maybe redirect to course page ?
+		}
+
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
@@ -31,9 +51,6 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "login"
 
 	v.Render(w)
-
-	//todo check if there is a class id in request
-	//if there is, add the user logging in to the class and redirect
 }
 
 //LoginPOST validates login requests
