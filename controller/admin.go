@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
@@ -241,6 +242,9 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 }
 
 func DatetimeLocalToRFC3339(str string) (time.Time, error) {
+	if len(str) < 16 {
+		return time.Time{}, errors.New("cannot convert a string less then 16 characters: DatetimeLocalToRFC3339()")
+	}
 	year := str[0:4]
 	month := str[5:7]
 	day := str[8:10]
