@@ -49,3 +49,31 @@ Negatives:
     - Fixed this in the major refactor i did on #8
 - Tasks could probably have been better defined from my end as the project leader
 
+Week 2
+===
+I have worked on
+* Refactoring the project
+* '#7 - Course Page'
+
+Design/Architectural descisions
+---
+I made the Course Page where I decided on a standard container width, with tabbed information pages. One tab for the
+course description, one for assignment links, one for participant list and one for questions. I am waiting on
+Christopher if I should implement the questions tab or not :/
+
+The good, the bad, the rest
+---
+I felt like I didn't get much done this week, the refactoring took a lot longer than I anticipated, and a lot of time
+was wasted just waiting for the refactoring to get anywhere because Svein had the main idea behind how the structure 
+should become. When he couldn't work too much the monday we ended up spending the whole tuesday aswell. Then I had birthday
+and some other stuff came up, Here's to hoping next week we're getting loads done :cheers:
+
+Positives:
++ New project structure is more tidy
++ Course page looks nice
++ Found a MD to HTML package that is perfect for our usage
++ Got time to do a lot of research
+
+Negatives:
+- Didn't get a lot done
+- Refactoring took a lot more time than anticipated

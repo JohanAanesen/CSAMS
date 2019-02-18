@@ -112,4 +112,5 @@ Thursday 14/2
 
 Friday 15/2
 ----------
-* 
+* Wrapping up #7
+* Added comment tab
