@@ -184,3 +184,23 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 	v.Render(w)
 }
+
+// AdminFaqGET
+func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
+	//check that user is a teacher
+	if !session.IsTeacher(r) { //not a teacher, error 401
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/faq/index"
+	v.Vars["FAQs"] = ""
+
+	v.Render(w)
+}
+
+

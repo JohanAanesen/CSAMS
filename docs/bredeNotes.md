@@ -95,7 +95,11 @@ I chose `github.com/rs/xid` because it was the length i wanted and quick and eas
 * \#23 Changed courseID back to int and auto increment so it's similar to the other tables. But i added a column for hash instead.
 * \#20 Started on home page, but could only finish one of two tasks since assignments isn't done yet.
 * We almost didn't have anything to talk about today with the supervisor.
-
+* I'm going to start on [#22 - Admin FAQ Page](https://trello.com/c/0trVQS8x) now :D
+* Looked at [this page](https://www.codeply.com/go/syFXJL6m5p/bootstrap-4-faq-accordion) for inspiration to the faq page, I liked the animations and stuff, but... If I use markdown instead
+it would be way easier to just add a new faq in frontend and is over all less code and easier to implement. Agreed with [Project Owner](https://www.ntnu.no/ansatte/christopher.frantz)
+to use md, it's also more consistence with this solution.
+* Have to find out if we just store a hardcoded md file for faqs or make it possible to edit in the front-end by any teacher tomorrow.
 
 ### Tuesday - 19/02/19
 ### Wednesday - 20/02/19
