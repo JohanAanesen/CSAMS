@@ -42,16 +42,16 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	//get user
 	user := session.GetUserFromSession(r)
 
+	//get info from db
+	course = db.GetCourse(courseID)
+
 	//check if user is an participant of said class or a teacher
-	participant := db.IsParticipant(user.ID, courseID)
+	participant := db.IsParticipant(user.ID, courseID) || user.ID == course.Teacher
 	if !participant {
 		log.Println("user not participant of class")
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
-
-	//get info from db
-	course = db.GetCourse(courseID)
 
 	//fmt.Println(course) //todo(johan) remove this
 
