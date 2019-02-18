@@ -1,35 +1,45 @@
 {{define "title"}}Homepage{{end}}
 {{define "head"}}{{end}}
-{{define "content"}}
-<main>
-    <div class="container pt-3">
-
-        <div class="row">
-            <div class="col">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control form-control-sm border-secondary" placeholder="Course code">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary btn-sm" type="button">Add course</button>
-                    </div>
+{{ define "content" }}
+    <main>
+        <div class="container pt-3">
+            <div class="row">
+                <div class="col">
+                    <form action="/" method="post">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control form-control-sm border-secondary" name="courseID"
+                                   id="course-id" placeholder="Course id" required>
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">Join
+                                    course
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </div>
-        </div><!-- /.row -->
+            </div><!-- /.row -->
 
-        <div class="row">
+            <div class="row">
 
-            {{ range .Courses }}
-                <div class="col-12 col-md-6 col-xl mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <h2 class="card-title">{{ .Name }}</h2>
-                            <a href="#" class="btn btn-dark">See assignments</a>
+                {{ range .Courses.Items }}
+                    <div class="col-12 col-md-6 col-xl mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h2 class="card-title">{{ .Code}} - {{ .Name }}</h2>
+                                <a href="#" class="btn btn-dark">See assignments</a> <!-- TODO : add link here -->
+                            </div>
                         </div>
                     </div>
-                </div>
-            {{ end }}
+                {{ end }}
 
-        </div><!-- /.row -->
-    </div><!-- /.container -->
-</main>
+            </div> <!-- /.row -->
+        </div> <!-- /.container -->
+    </main>
+{{ end }}
+{{define "foot"}}
+    <script>
+        {{ if .Message }}
+        confirm("You have successfully joined the course: " + {{ .Message}});
+        {{ end }}
+    </script>
 {{end}}
-{{define "foot"}}{{end}}

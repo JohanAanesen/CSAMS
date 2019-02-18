@@ -11,7 +11,7 @@
         </div>
 
         <hr>
-
+        <!-- TODO (Svein): Make this for horizontal. See https://getbootstrap.com/docs/4.3/components/forms/#horizontal-form -->
         <div class="row">
             <div class="col-12 col-lg">
                 <div class="form-group">
@@ -43,6 +43,11 @@
                     <input type="datetime-local" name="assignment_deadline" id="assignment_deadline" class="form-control" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}">
                 </div>
 
+                <div class="form-group">
+                    <label for="simplemde">Description</label>
+                    <textarea name="assignment_description" id="simplemde" placeholder="Description (Hint: Markdown)"></textarea>
+                </div>
+
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" name="assignment_enable_review" id="assignment_enable_review">
                     <label class="custom-control-label" for="assignment_enable_review">Enable Review</label>
@@ -51,13 +56,26 @@
 
             <div class="col-12 col-lg">
                 <div class="form-group">
-                    <label for="simplemde">Description</label>
-                    <textarea name="assignment_description" id="simplemde" placeholder="Description (Hint: Markdown)"></textarea>
+                    <label for="assignment_type">Type</label>
+                    <select name="assignment_type" id="assignment_type" class="form-control">
+                        <option value="1">Cloud Fall 2017 Assignment</option>
+                    </select>
                 </div>
+
+                <hr>
+
+                <fieldset>
+                    <legend>Preview:</legend>
+                    <hr>
+
+                    <div class="form-group">
+                        <label for="">Git-Repository:</label>
+                        <input type="url" class="form-control" placeholder="Git-repository" disabled>
+                    </div>
+                </fieldset>
             </div>
 
-            <div class="col-12">
-                <button type="button" id="test">Test</button>
+            <div class="col-12 py-3">
                 <input type="submit" class="btn btn-success">
             </div>
         </div>
