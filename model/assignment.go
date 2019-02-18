@@ -20,10 +20,13 @@ type Assignment struct {
 // AssignmentDatabase holds all assignments, and DB-functions
 type AssignmentDatabase struct{}
 
+// GetAll returns all assignments in the database
 func (adb *AssignmentDatabase) GetAll() []Assignment {
+	// TODO (Svein): Implement
 	return nil
 }
 
+// Insert a new assignment to the database
 func (adb *AssignmentDatabase) Insert(a Assignment) (bool, error) {
 	rows, err := db.GetDB().Query("INSERT INTO assignments (courseid, assignment_title, assignment_description, assignment_publish, assignment_deadline, assignment_review)"+
 		"VALUES (?, ?, ?, ?, ?, ?)", a.CourseID, a.Title, a.Description, a.Publish, a.Deadline, a.EnableReview)

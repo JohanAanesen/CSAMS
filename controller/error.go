@@ -19,10 +19,13 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request, status int) {
 	v.Render(w)
 }
 
+// NotFoundHandler handles 404 errors
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO (Svein): Check if client is trying to access dashboard, or any other sites, and send to /error or something
 	ErrorHandler(w, r, http.StatusNotFound)
 }
+
+// MethodNotAllowedHandler handles 405 errors
 func MethodNotAllowedHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO (Svein): Check if client is trying to access dashboard, or any other sites, and send to /error or something
 	ErrorHandler(w, r, http.StatusMethodNotAllowed)

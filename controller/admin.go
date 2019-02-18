@@ -249,7 +249,9 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// DatetimeLocalToRFC3339 converts a string from datetime-local HTML input-field to time.Time object
 func DatetimeLocalToRFC3339(str string) (time.Time, error) {
+	// TODO (Svein): Move this to a utils.go or something
 	if len(str) < 16 {
 		return time.Time{}, errors.New("cannot convert a string less then 16 characters: DatetimeLocalToRFC3339()")
 	}
