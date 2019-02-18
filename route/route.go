@@ -31,6 +31,7 @@ func routes() http.Handler {
 
 	// Index-page Handlers
 	router.HandleFunc("/", controller.IndexGET).Methods("GET")
+	router.HandleFunc("/", controller.JoinCoursePOST).Methods("POST")
 
 	// Course-page Handlers
 	router.HandleFunc("/course", controller.CourseGET).Methods("GET")

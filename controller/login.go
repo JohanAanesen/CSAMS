@@ -17,9 +17,33 @@ func init() {
 
 //LoginGET serves login page to users
 func LoginGET(w http.ResponseWriter, r *http.Request) {
-	//check if user is already logged in
+
+	course := model.Course{}
+
+	// Check if request has an courseID and it's not empty
+	hash := r.FormValue("courseid")
+	if hash != "" {
+
+		course = db.CourseExists(hash)
+
+		// Check if the hash is a valid hash
+		if course.ID == -1 {
+			ErrorHandler(w, r, http.StatusBadRequest)
+			hash = ""
+			return
+		}
+	}
+
+	// Check if user is already logged in
 	user := session.GetUserFromSession(r)
 	if user.Authenticated { //already logged in, redirect to homepage
+
+		// If hash was valid, add user isn't in the course, then add user to course
+		if hash != "" && !db.UserExistsInCourse(user.ID, course.ID) {
+			db.AddUserToCourse(user.ID, course.ID)
+			// TODO : maybe redirect to course page ?
+		}
+
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
@@ -30,14 +54,19 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "login"
 
-	v.Render(w)
+	// Send the correct link to template
+	if hash == "" {
+		v.Vars["Action"] = "/login"
+	} else {
+		v.Vars["Action"] = "/login?courseid=" + hash
+	}
 
-	//todo check if there is a class id in request
-	//if there is, add the user logging in to the class and redirect
+	v.Render(w)
 }
 
 //LoginPOST validates login requests
 func LoginPOST(w http.ResponseWriter, r *http.Request) {
+
 	user := session.GetUserFromSession(r)
 
 	if user.Authenticated { //already logged in, redirect to home page
@@ -45,8 +74,9 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	email := r.FormValue("email")
-	password := r.FormValue("password") //password
+	email := r.FormValue("email")       // email
+	password := r.FormValue("password") // password
+	hash := r.FormValue("courseid")     // courseID from link
 
 	if email == "" || password == "" { //login credentials cannot be empty
 		LoginGET(w, r)
@@ -59,6 +89,15 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		//save user to session values
 		user.Authenticated = true
 		session.SaveUserToSession(user, w, r)
+
+		// Add new user to course, if he's not in the course
+		if hash != "" {
+			if id := db.CourseExists(hash).ID; id != -1 && !db.UserExistsInCourse(user.ID, id) {
+				db.AddUserToCourse(user.ID, id)
+				// TODO : maybe redirect to course page ?
+			}
+		}
+
 	} else {
 		//redirect to errorhandler
 		ErrorHandler(w, r, http.StatusUnauthorized)

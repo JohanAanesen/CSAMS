@@ -58,6 +58,7 @@ CREATE TABLE `assignments`
 CREATE TABLE `course`
 (
   `id`          int(11)                                        NOT NULL,
+  `hash`        varchar(64)                                    NOT NULL,
   `coursecode`  varchar(10) COLLATE utf8_danish_ci             NOT NULL,
   `coursename`  varchar(64) COLLATE utf8_danish_ci             NOT NULL,
   `teacher`     int(11)                                        NOT NULL,
@@ -191,18 +192,19 @@ VALUES (1, 'Test User', 'hei@gmail.com', 1, 'test@yahoo.com',
         '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'); -- Password is 123abc --
 
 
-INSERT INTO `course` (`id`, `coursecode`, `coursename`, `teacher`, `year`, `semester`, `description`)
-VALUES (1, 'IMT1031', 'Grunnleggende Programmering', 2, 2019, 'fall', 'Write hello, world in C++'),
-       (2, 'IMT1082', 'Objekt-orientert programmering', 2, 2019, 'fall', 'Write Wazz up world in Python'),
-       (3, 'IMT2021', 'Algoritmiske metoder', 2, 2019, 'spring', 'Write an AI in C#');
+INSERT INTO `course` (`id`, `hash`, `coursecode`, `coursename`, `teacher`, `year`, `semester`, `description`)
+VALUES (1, '3876438629b786', 'IMT1031', 'Grunnleggende Programmering', 2, 2019, 'fall', 'Write hello, world in C++'),
+       (2, '12387teg817eg18', 'IMT1082', 'Objekt-orientert programmering', 2, 2019, 'fall',
+        'Write Wazz up world in Python'),
+       (3, '12e612eg1e17ge1', 'IMT2021', 'Algoritmiske metoder', 2, 2019, 'spring', 'Write an AI in C#');
 
 INSERT INTO `usercourse` (`userid`, `courseid`)
 VALUES (3, 1),
        (3, 2),
-       (4, 3);
+       (4, 2);
 
 INSERT INTO `assignments` (`id`, `courseid`, `created`, `due`, `peer`, `auto`, `language`, `tasktext`, `payload`)
-VALUES ('1', '2', CURRENT_TIMESTAMP, '2019-02-14', '1', '0', 'English',
+VALUES ('1', 1, CURRENT_TIMESTAMP, '2019-02-14', '1', '0', 'English',
         '# Assignment 1\r\n* Doctors and nurses\r\n<!-- Hello -->', '13');
 
 INSERT INTO `submissions` (`id`, `userid`, `assignmentid`, `repo`, `deploy`, `comment`, `grade`, `test`, `vet`, `cycle`)

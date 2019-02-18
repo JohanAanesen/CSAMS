@@ -1,5 +1,5 @@
 # The Log of Bread
-
+<!-- By BredeFK -->
 ## Week One
 ### Monday - 04/02/19
  *Started late today because of Super Bowl airing until 04.00 at the night.*
@@ -47,35 +47,6 @@
 * I'm going to fix one test today and Johan is refactoring the code, so after that, I can make a pull request.
 * Merged my branch to master
 
-### Report for Week One
-#### What I Have Done
-In the first week I have worked on only one story/card, [#8 - User Page](https://trello.com/c/FZk85I6L). I had to learn about Bootstrap and in general 
-web development before I could start properly. [#8 - User Page](https://trello.com/c/FZk85I6L) was about making the user profile. It had to
-Show the users information as his name, student email, private email and his courses. I also had to implement a way for the user
-to change information as his name, private email and password, but it also had to look nice (see Bootstrap). As most stories/cards 
-I had to make tests for some functions also.
-
-#### Design/Architecture Decisions
-I got my inspiration from [this page](https://getbootstrap.com/docs/4.2/examples/offcanvas/#) and i Liked it because it had a 
-"clean" look and the card design feels very modern. The page consists of two cards, one for the user information and one for the courses
-the user is assigned to. This was to separate the user with the courses and it just overall looked better this way than
-having all the information in one card. It's also easier for when the user needs to edit something to have all the editable 
-information in one card. Most user information (everything except `NoOfCourses`) is displayed in an input field so it's easier
-to change information. When teh user presses the edit button, the input fields is made editable by javascript. I also liked this design 
-better so the information displayed does not change that much when the edit button is pressed.
-
-#### What Went Good
-* The user profile page ended up looking better than expected.
-* I learned more about bootstrap and web development.
-* I got to work with front-end, back-end and the database. In other words, I understand more of the 
-projects design and are more prepared for the next card now. 
-
-#### What Went Bad
-* Loooots of bugs that ended up taking more time than it should. 
-* I was also new to bootstrap and web development in general.
-* I wrote messy code and didn't see it before Johan refactored it. 
-* I overslept two times and stopped earlier three times, so I had to work on a sunday.
-
 ## Week Two
 ### Monday - 11/02/19
 * Started on [#16 - Logging to database](https://trello.com/c/CwIxfhpk) - Log stuff that the user and/or admin does
@@ -97,9 +68,27 @@ So I have to figure out how to send nil instead of a number to the db.
 * I still had a bug with adding nil instead of int to the db with #16. I solved it with creating nasty
 if-else statements, I hope to refactor it later.
 * I also commented a lot for the function so it's more clear how to use it :D
-* Also merged with master today, that was fun 
+* Pushed #16 to master and started on #23. Need to fix homepage first tho :/
+* I'm unsure of how to go further as the home page seem to just be empty on purpose and other stuff.
+* I think I can finish tomorrow tho <3
+* Nothing much happened today :/
 
 ### Thursday - 14/02/19
+*I am 22 now, also the power went out home, so I went to the School of NTNU*
+* Started on restoring home page, currently stuck in a bug where the post function in index.go won't start.
+* I can now check if with a given course id, if it exists.
+* I need to figure out how to confirm that the user joined a class. I want to start an js script from go :/
+    * Solution: Global variable and send to template
+* Can now add user to course through home page :D
+* Course have an unique ID now, got inspiration form [here](https://blog.kowalczyk.info/article/JyRZ/generating-good-unique-ids-in-go.html), 
+I chose `github.com/rs/xid` because it was the length i wanted and quick and easy to use.
+* Added logging for create/join course
 
 ### Friday - 15/02/19
+* Added functionality for adding user to course through link when the user is logged in and when the user logs in.
+* Added functionality for adding a new user to course through link.
+* Added a test for RegisterGET handler :)
+* Short day I quess, I'm going to write the report today, also -> no bugs today woo.
+
+
 
