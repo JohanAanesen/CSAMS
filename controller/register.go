@@ -9,6 +9,19 @@ import (
 
 //RegisterGET serves register page to users
 func RegisterGET(w http.ResponseWriter, r *http.Request) {
+
+	// Check if request has an courseID and it's not empty
+	hash := r.FormValue("courseid")
+	if hash != "" {
+
+		// Check if the hash is a valid hash
+		if course := db.CourseExists(hash); course.ID == -1 {
+			ErrorHandler(w, r, http.StatusBadRequest)
+			hash = ""
+			return
+		}
+	}
+
 	if session.IsLoggedIn(r) {
 		IndexGET(w, r)
 		return
@@ -16,9 +29,15 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 
 	v := view.New(r)
 	v.Name = "register"
+	// Send the correct link to template
+	if hash == "" {
+		v.Vars["Action"] = "/register"
+	} else {
+		v.Vars["Action"] = "/register?courseid=" + hash
+	}
 	v.Render(w)
 
-	//todo check if there is a class id in request
+	//todo check if there is a class hash in request
 	//if there is, add the user logging in to the class and redirect
 }
 
@@ -32,9 +51,10 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	name := r.FormValue("name")         //get form value name
-	email := r.FormValue("email")       //get form value email
-	password := r.FormValue("password") //get form value password
+	name := r.FormValue("name")         // get form value name
+	email := r.FormValue("email")       // get form value email
+	password := r.FormValue("password") // get form value password
+	hash := r.FormValue("courseid")     // get from link courseID
 
 	//check that nothing is empty and password match passwordConfirm
 	if name == "" || email == "" || password == "" || password != r.FormValue("passwordConfirm") { //login credentials cannot be empty
@@ -48,6 +68,14 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		//save user to session values
 		user.Authenticated = true
 		session.SaveUserToSession(user, w, r)
+		// Add new user to course
+
+		if hash != "" {
+			if id := db.CourseExists(hash).ID; id != -1 {
+				db.AddUserToCourse(user.ID, id)
+				// TODO : maybe redirect to course page ?
+			}
+		}
 	} else {
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event
