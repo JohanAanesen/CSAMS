@@ -29,9 +29,6 @@
                     <li class="nav-item">
                         <a class="nav-link" id="participant-tab" data-toggle="tab" href="#participants" role="tab" aria-controls="participants" aria-selected="false">Participants</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="question-tab" data-toggle="tab" href="#questions" role="tab" aria-controls="questions" aria-selected="false">Questions</a>
-                    </li>
                 </ul>
             </div>
             <div class="card-body">
@@ -74,10 +71,30 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="participants" role="tabpanel" aria-labelledby="participant-tab">
-                        <h1>{{.User.Name}}</h1>
-                    </div>
-                    <div class="tab-pane fade" id="questions" role="tabpanel" aria-labelledby="question-tab">
-                        <h1></h1>
+
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Type</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{ range .Classmates.Items }}
+                            <tr>
+                                <th scope="row">{{.ID}}</th>
+                                <td>{{.Name}}</td>
+                                <td>{{.EmailStudent}}</td>
+                                <td>{{if .Teacher}} Teacher {{else}} Student {{end}}</td>
+                            </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+
+
+
                     </div>
                 </div>
 

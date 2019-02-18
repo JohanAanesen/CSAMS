@@ -124,3 +124,36 @@ func GetHash(id int) string {
 
 	return ""
 }
+
+func GetUsersToCourse(courseID int) model.Users{
+
+	//Create an empty courses array
+	var users model.Users
+
+	rows, err := GetDB().Query("SELECT users.id, users.name, users.email_student, teacher FROM users INNER JOIN usercourse ON users.id = usercourse.userid WHERE usercourse.courseid = ?", courseID)
+	if err != nil {
+		log.Println(err.Error()) // TODO : log error
+
+		// returns empty course array if it fails
+		return users
+	}
+
+	for rows.Next() {
+		var id int
+		var name string
+		var email string
+		var teacher bool
+
+		rows.Scan(&id, &name, &email, &teacher)
+
+		// Add course to courses array
+		users.Items = append(users.Items, model.User{
+			ID: id,
+			Name: name,
+			EmailStudent: email,
+			Teacher: teacher,
+		})
+	}
+
+	return users
+}
