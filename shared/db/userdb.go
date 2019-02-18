@@ -124,28 +124,3 @@ func GetHash(id int) string {
 
 	return ""
 }
-
-func IsParticipant(userID int, courseID int) bool {
-	particpant := false
-
-	rows, err := GetDB().Query("SELECT userid, courseid FROM usercourse WHERE userid = ? AND courseid = ?", userID, courseID)
-	if err != nil {
-		// TODO : log error
-		fmt.Println(err.Error())
-		return false
-	}
-
-	for rows.Next() {
-		var user int
-		var course int
-		rows.Scan(&user, &course)
-
-		if user == userID && course == courseID {
-			particpant = true
-		}
-	}
-
-	defer rows.Close()
-
-	return particpant
-}

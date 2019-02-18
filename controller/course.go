@@ -46,7 +46,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	course = db.GetCourse(courseID)
 
 	//check if user is an participant of said class or a teacher
-	participant := db.IsParticipant(user.ID, courseID) || user.ID == course.Teacher
+	participant := db.UserExistsInCourse(user.ID, courseID) || user.ID == course.Teacher
 	if !participant {
 		log.Println("user not participant of class")
 		ErrorHandler(w, r, http.StatusUnauthorized)

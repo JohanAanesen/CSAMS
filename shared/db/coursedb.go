@@ -63,6 +63,7 @@ func GetCourse(courseID int) model.Course {
 
 	for rows.Next() {
 		var id int
+		var hash string
 		var courseCode string
 		var courseName string
 		var teacher int
@@ -70,11 +71,12 @@ func GetCourse(courseID int) model.Course {
 		var year string
 		var semester string
 
-		rows.Scan(&id, &courseCode, &courseName, &teacher, &description, &year, &semester)
+		rows.Scan(&id, &hash, &courseCode, &courseName, &teacher, &description, &year, &semester)
 
 		// Add course to courses array
 		course = model.Course{
 			ID:          id,
+			Hash:        hash,
 			Code:        courseCode,
 			Name:        courseName,
 			Teacher:     teacher,
