@@ -86,6 +86,7 @@ func GetCourse(courseID int) model.Course {
 
 	return course
 }
+
 // CourseExists checks if the course exists in the database
 func CourseExists(hash string) model.Course {
 	rows, err := GetDB().Query("SELECT course.* FROM course WHERE hash = ?", hash)
