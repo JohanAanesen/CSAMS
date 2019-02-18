@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
@@ -59,12 +60,17 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	} else if name != user.Name && db.UpdateUserName(user.ID, name) {
 		log.Println("Success: name changed from " + user.Name + " to " + name)
 
+		// Save information to log struct
+		logData := model.Log{UserID: user.ID, Activity: model.ChangeName, OldValue: user.Name, NewValue: name}
+
 		//update session
 		user.Name = name
 		session.SaveUserToSession(user, w, r)
 
-		// Log name change in the database
-		//db.LogToDB(user.ID, db.ChangeName) //todo
+		// Log name change in the database and give error if something went wrong
+		if !db.LogToDB(logData) {
+			log.Fatal("Could not save name log to database! (userhandler.go)")
+		}
 	}
 
 	// Users Email
@@ -73,12 +79,17 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		if db.UpdateUserEmail(user.ID, secondaryEmail) {
 			log.Println("Success: Private email changed from " + user.EmailPrivate + " to " + secondaryEmail)
 
+			// Save information to log struct
+			logData := model.Log{UserID: user.ID, Activity: model.ChangeEmail, OldValue: user.EmailPrivate, NewValue: secondaryEmail}
+
 			//update session
 			user.EmailPrivate = secondaryEmail
 			session.SaveUserToSession(user, w, r)
 
-			// Log email change in the database
-			//db.LogToDB(user.ID, db.ChangeName)//todo
+			// Log email change in the database and give error if something went wrong
+			if !db.LogToDB(logData) {
+				log.Fatal("Could not save email log to database! (userhandler.go)")
+			}
 		}
 	}
 
@@ -92,8 +103,13 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		if db.UpdateUserPassword(user.ID, newPass) {
 			log.Println("Success: Password is now changed!")
 
-			// Log password change in the database
-			db.LogToDB(user.ID, db.ChangePassword)
+			// Save information to log struct
+			logData := model.Log{UserID: user.ID, Activity: model.ChangePassword}
+
+			// Log password change in the database and give error if something went wrong
+			if !db.LogToDB(logData) {
+				log.Fatal("Could not save password log to database! (userhandler.go)")
+			}
 		} else {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
