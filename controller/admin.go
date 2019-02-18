@@ -90,9 +90,10 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//insert into database
-	rows, err := db.GetDB().Query("INSERT INTO course(hash, coursecode, coursename, year, semester, description, teacher) VALUES(?, ?, ?, ?, ?, ?, ?)",
+	result, err := db.GetDB().Exec("INSERT INTO course(hash, coursecode, coursename, year, semester, description, teacher) VALUES(?, ?, ?, ?, ?, ?, ?)",
 		course.Hash, course.Code, course.Name, course.Year, course.Semester, course.Description, user.ID)
 
+	// Log error
 	if err != nil {
 		//todo log error
 		log.Println(err.Error())
@@ -100,15 +101,39 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer rows.Close()
+	// Get course id
+	id, err := result.LastInsertId()
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
 
-	/* TODO : get course id and add to logs
+	// Convert from int64 to int
+	course.ID = int(id)
+
 	// Log createCourse in the database and give error if something went wrong
-	lodData := model.Log{UserID: user.ID, Activity: model.CreatedCourse, CourseID: idGoesHere}
+	lodData := model.Log{UserID: user.ID, Activity: model.CreatedCourse, CourseID: course.ID}
 	if !db.LogToDB(lodData) {
 		log.Fatal("Could not save createCourse log to database! (admin.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
-	*/
+
+	// Add user to course
+	if !db.AddUserToCourse(user.ID, course.ID) {
+		log.Println("Could not add user to course! (admin.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log joinedCourse in the db and give error if something went wrong
+	lodData = model.Log{UserID: user.ID, Activity: model.JoinedCourse, CourseID: course.ID}
+	if !db.LogToDB(lodData) {
+		log.Fatal("Could not save createCourse log to database! (admin.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
 
 	IndexGET(w, r) //success redirect to homepage
 }
