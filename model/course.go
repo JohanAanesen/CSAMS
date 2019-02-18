@@ -13,7 +13,7 @@ type Courses struct {
 
 // Course holds the data for courses
 type Course struct {
-	ID          int       `json:"id"`
+	ID          int          `json:"id"`
 	Hash        string       `json:"hash"`
 	Code        string       `json:"code"`
 	Name        string       `json:"name"`
@@ -151,3 +151,45 @@ func AddUserToCourse(userID int, courseID int) bool {
 	// return true
 	return true
 }
+
+//GetCourse returns a given course
+func GetCourse(courseID int) Course {
+	//Create an empty courses array
+	var course Course
+
+	rows, err := db.GetDB().Query("SELECT course.* FROM course WHERE course.id = ?", courseID)
+	if err != nil {
+		fmt.Println(err.Error()) // TODO : log error
+
+		// returns empty course array if it fails
+		return Course{}
+	}
+
+	for rows.Next() {
+		var id int
+		var hash string
+		var courseCode string
+		var courseName string
+		var teacher int
+		var description string
+		var year string
+		var semester string
+
+		rows.Scan(&id, &hash, &courseCode, &courseName, &teacher, &description, &year, &semester)
+
+		// Add course to courses array
+		course = Course{
+			ID:          id,
+			Hash:        hash,
+			Code:        courseCode,
+			Name:        courseName,
+			Teacher:     teacher,
+			Description: description,
+			Year:        year,
+			Semester:    semester,
+		}
+	}
+
+	return course
+}
+
