@@ -185,7 +185,7 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 }
 
-// AdminFaqGET
+// AdminFaqGET handles GET-request at admin/faq/index
 func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
 	if !session.IsTeacher(r) { //not a teacher, error 401
@@ -202,5 +202,3 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 
 	v.Render(w)
 }
-
-
