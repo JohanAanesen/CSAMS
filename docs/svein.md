@@ -1,7 +1,11 @@
 Svein's log
 ============
 ## Week 7 Report
+This week I have been looking into data structure for the dynamic review form, and where and what should take care for the input/output for the form. From the research done, it seams like Javascript will be the best choice of creating and parsing data to strings, with JSON, as Javascript is well-equipped with JSON-functions.
 
+The database is also a challenge, because of the dynamic form, the database has to be design for a agile software, that needs to be flexible today, as well in a few years. I think I have found a good solution for the desgin of the database, but it is hard to implement cause of the auto-generated schema we are using from MySQL Workbench, but I think we need to rewrite the database-schema, and look more into normalization of relational databases, to make it flexible enough for the requirement-specs.
+
+Have also been working on the last touches of the restructuring of the project, making it more flexible with a MVC-architecture. Making less files, and all the files in a folder, does the same type of tasks.  
 
 ## 15/02/2019
 * Updated teh time.Time convert-function from datetime-local (HTML).
