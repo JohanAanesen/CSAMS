@@ -15,7 +15,7 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 	if hash != "" {
 
 		// Check if the hash is a valid hash
-		if course := db.CourseExists(hash); course.ID == -1 {
+		if course := model.CourseExists(hash); course.ID == -1 {
 			ErrorHandler(w, r, http.StatusBadRequest)
 			hash = ""
 			return
@@ -71,8 +71,8 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		// Add new user to course
 
 		if hash != "" {
-			if id := db.CourseExists(hash).ID; id != -1 {
-				db.AddUserToCourse(user.ID, id)
+			if id := model.CourseExists(hash).ID; id != -1 {
+				model.AddUserToCourse(user.ID, id)
 				// TODO : maybe redirect to course page ?
 			}
 		}

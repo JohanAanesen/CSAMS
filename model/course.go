@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
+	"log"
 )
 
 // Courses hold the data for a slice of Course-struct
@@ -41,6 +42,7 @@ func GetCoursesToUser(userID int) Courses {
 
 	for rows.Next() {
 		var id int
+		var hash string
 		var courseCode string
 		var courseName string
 		var teacher int
@@ -48,12 +50,12 @@ func GetCoursesToUser(userID int) Courses {
 		var year string
 		var semester string
 
-		// TODO (Svein): error-handling
-		rows.Scan(&id, &courseCode, &courseName, &teacher, &description, &year, &semester)
+		rows.Scan(&id, &hash, &courseCode, &courseName, &teacher, &description, &year, &semester)
 
 		// Add course to courses array
 		courses.Items = append(courses.Items, Course{
 			ID:          id,
+			Hash:        hash,
 			Code:        courseCode,
 			Name:        courseName,
 			Teacher:     teacher,
@@ -64,4 +66,88 @@ func GetCoursesToUser(userID int) Courses {
 	}
 
 	return courses
+}
+
+// CourseExists checks if the course exists in the database
+func CourseExists(hash string) Course {
+	rows, err := db.GetDB().Query("SELECT course.* FROM course WHERE hash = ?", hash)
+	if err != nil {
+		fmt.Println(err.Error()) // TODO : log error
+
+		// returns empty course if it fails
+		return Course{ID: -1}
+	}
+
+	for rows.Next() {
+		var id int
+		var hash string
+		var courseCode string
+		var courseName string
+		var teacher int
+		var description string
+		var year string
+		var semester string
+
+		rows.Scan(&id, &hash, &courseCode, &courseName, &teacher, &description, &year, &semester)
+
+		// Fill course object/struct
+		return Course{
+			ID:          id,
+			Hash:        hash,
+			Code:        courseCode,
+			Name:        courseName,
+			Teacher:     teacher,
+			Description: description,
+			Year:        year,
+			Semester:    semester,
+		}
+	}
+
+	return Course{ID: -1}
+}
+
+// UserExistsInCourse checks if user exists in course
+func UserExistsInCourse(userID int, courseID int) bool {
+
+	// Checks if user exists in course
+	rows, err := db.GetDB().Query("SELECT * FROM usercourse WHERE userid = ? AND courseid = ?", userID, courseID)
+
+	// return false if not
+	if err != nil {
+		log.Println(err.Error())
+
+		return false
+	}
+
+	for rows.Next() {
+		var userid int
+		var courseid string
+
+		rows.Scan(&userid, &courseid)
+
+		// return true if user exists in course
+		return true
+	}
+
+	// default: return false
+	return false
+}
+
+// AddUserToCourse adds the user to a course
+func AddUserToCourse(userID int, courseID int) bool {
+
+	// Sql query
+	rows, err := db.GetDB().Query("INSERT INTO `usercourse` (`userid`, `courseid`) VALUES (?, ?)", userID, courseID)
+
+	// Return false if error
+	if err != nil {
+		log.Fatal(err.Error())
+		return false
+	}
+
+	// Close this
+	defer rows.Close()
+
+	// return true
+	return true
 }
