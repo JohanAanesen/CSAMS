@@ -86,7 +86,7 @@
                             <tr>
                                 <th scope="row">{{.ID}}</th>
                                 <td>{{.Name}}</td>
-                                <td>{{.EmailStudent}}</td>
+                                <td><a href="mailto:{{.EmailStudent}}">{{.EmailStudent}}</a></td>
                                 <td>{{if .Teacher}} Teacher {{else}} Student {{end}}</td>
                             </tr>
                             {{ end }}
