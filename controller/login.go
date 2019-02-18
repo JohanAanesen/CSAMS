@@ -18,14 +18,18 @@ func init() {
 //LoginGET serves login page to users
 func LoginGET(w http.ResponseWriter, r *http.Request) {
 
-	// Check if request has an courseID and it's not empty
-	id := r.FormValue("courseid")
-	if id != "" {
+	course := model.Course{}
 
-		// Check if the id is a valid id
-		if course := db.CourseExists(id); course.ID == "" {
+	// Check if request has an courseID and it's not empty
+	hash := r.FormValue("courseid")
+	if hash != "" {
+
+		course = db.CourseExists(hash)
+
+		// Check if the hash is a valid hash
+		if course.ID == -1 {
 			ErrorHandler(w, r, http.StatusBadRequest)
-			id = ""
+			hash = ""
 			return
 		}
 	}
@@ -34,9 +38,9 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 	user := session.GetUserFromSession(r)
 	if user.Authenticated { //already logged in, redirect to homepage
 
-		// If id was valid, add user isn't in the course, then add user to course
-		if id != "" && !db.UserExistsInCourse(user.ID, id) {
-			db.AddUserToCourse(user.ID, id)
+		// If hash was valid, add user isn't in the course, then add user to course
+		if hash != "" && !db.UserExistsInCourse(user.ID, course.ID) {
+			db.AddUserToCourse(user.ID, course.ID)
 			// TODO : maybe redirect to course page ?
 		}
 
@@ -51,10 +55,10 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "login"
 
 	// Send the correct link to template
-	if id == "" {
+	if hash == "" {
 		v.Vars["Action"] = "/login"
 	} else {
-		v.Vars["Action"] = "/login?courseid=" + id
+		v.Vars["Action"] = "/login?courseid=" + hash
 	}
 
 	v.Render(w)
@@ -72,7 +76,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 	email := r.FormValue("email")       // email
 	password := r.FormValue("password") // password
-	id := r.FormValue("courseid")       // courseID from link
+	hash := r.FormValue("courseid")     // courseID from link
 
 	if email == "" || password == "" { //login credentials cannot be empty
 		LoginGET(w, r)
@@ -87,9 +91,11 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		session.SaveUserToSession(user, w, r)
 
 		// Add new user to course, if he's not in the course
-		if id != "" && !db.UserExistsInCourse(user.ID, id) {
-			db.AddUserToCourse(user.ID, id)
-			// TODO : maybe redirect to course page ?
+		if hash != "" {
+			if id := db.CourseExists(hash).ID; id != -1 && !db.UserExistsInCourse(user.ID, id) {
+				db.AddUserToCourse(user.ID, id)
+				// TODO : maybe redirect to course page ?
+			}
 		}
 
 	} else {

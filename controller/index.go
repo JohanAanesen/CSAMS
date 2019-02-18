@@ -41,7 +41,7 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	course := db.CourseExists(r.FormValue("courseID"))
 
 	// If course ID == "", it doesn't exist
-	if course.ID == "" {
+	if course.ID == -1 {
 		ErrorHandler(w, r, http.StatusNotFound)
 		return
 	}
@@ -51,6 +51,7 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Check that user isn't in this class
 	if db.UserExistsInCourse(user.ID, course.ID) {
+		//joinedCourse = ""
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}

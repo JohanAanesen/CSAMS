@@ -22,7 +22,7 @@ type Log struct {
 	Activity     activity // [NOT NULL][all] User activity
 	IsTeacher    bool     // [NULLABLE][later user] Says if the user is student or teacher (This is later checked from database)
 	AssignmentID int      // [NULLABLE][DeliveredAssignment/FinishedPeerReview/PeerReviewDone/CreatAssignment] ID to relative assignment
-	CourseID     string   // [NULLABLE][JoinedCourse/CreatedCourse] ID to relative course
+	CourseID     int      // [NULLABLE][JoinedCourse/CreatedCourse] ID to relative course
 	SubmissionID int      // [NULLABLE][DeliveredAssignment/FinishedPeerReview/PeerReviewDone] ID to relative submission
 	OldValue     string   // [NULLABLE][ChangeName/ChangeEmail] Value before changing name/email
 	NewValue     string   // [NULLABLE][ChangeName/ChangeEmail] Value after changing name/email

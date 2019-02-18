@@ -11,13 +11,13 @@ import (
 func RegisterGET(w http.ResponseWriter, r *http.Request) {
 
 	// Check if request has an courseID and it's not empty
-	id := r.FormValue("courseid")
-	if id != "" {
+	hash := r.FormValue("courseid")
+	if hash != "" {
 
-		// Check if the id is a valid id
-		if course := db.CourseExists(id); course.ID == "" {
+		// Check if the hash is a valid hash
+		if course := db.CourseExists(hash); course.ID == -1 {
 			ErrorHandler(w, r, http.StatusBadRequest)
-			id = ""
+			hash = ""
 			return
 		}
 	}
@@ -30,14 +30,14 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "register"
 	// Send the correct link to template
-	if id == "" {
+	if hash == "" {
 		v.Vars["Action"] = "/register"
 	} else {
-		v.Vars["Action"] = "/register?courseid=" + id
+		v.Vars["Action"] = "/register?courseid=" + hash
 	}
 	v.Render(w)
 
-	//todo check if there is a class id in request
+	//todo check if there is a class hash in request
 	//if there is, add the user logging in to the class and redirect
 }
 
@@ -54,7 +54,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")         // get form value name
 	email := r.FormValue("email")       // get form value email
 	password := r.FormValue("password") // get form value password
-	id := r.FormValue("courseid")       // get from link courseID
+	hash := r.FormValue("courseid")     // get from link courseID
 
 	//check that nothing is empty and password match passwordConfirm
 	if name == "" || email == "" || password == "" || password != r.FormValue("passwordConfirm") { //login credentials cannot be empty
@@ -69,9 +69,12 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		user.Authenticated = true
 		session.SaveUserToSession(user, w, r)
 		// Add new user to course
-		if id != "" {
-			db.AddUserToCourse(user.ID, id)
-			// TODO : maybe redirect to course page ?
+
+		if hash != "" {
+			if id := db.CourseExists(hash).ID; id != -1 {
+				db.AddUserToCourse(user.ID, id)
+				// TODO : maybe redirect to course page ?
+			}
 		}
 	} else {
 		ErrorHandler(w, r, http.StatusUnauthorized)
