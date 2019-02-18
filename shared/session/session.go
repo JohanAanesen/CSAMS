@@ -32,7 +32,7 @@ func Instance(r *http.Request) (*sessions.Session, error) {
 	return store.Get(r, name)
 }
 
-// Empty
+// Empty deletes all keys and values in the session
 func Empty(sess *sessions.Session) {
 	for k := range sess.Values {
 		delete(sess.Values, k)

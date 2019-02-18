@@ -12,6 +12,7 @@ import (
 	"os"
 )
 
+// Configuration struct
 type Configuration struct {
 	Database *db.MySQLInfo  `json:"database"`
 	Server   *server.Server `json:"server"`
@@ -25,6 +26,7 @@ type Configuration struct {
 	TemplateAdmin *view.Template `json:"template_admin"`
 }
 
+// Load a JSON file making a Configuration pointer
 func Load(configFile string) (*Configuration, error) {
 	// Open file
 	file, err := os.Open(configFile)
@@ -54,6 +56,7 @@ func Load(configFile string) (*Configuration, error) {
 	return &cfg, nil
 }
 
+// Initialize the configuration
 func Initialize() *Configuration {
 	var cfg = &Configuration{}
 	cfg, err := Load("config/config.json")

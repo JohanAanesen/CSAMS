@@ -9,22 +9,22 @@ import (
 	"os"
 )
 
+// Load ...
 func Load() http.Handler {
 	return routes()
 }
 
-func LoadHTTP() http.Handler {
-	return routes()
-}
-
+// LoadHTTPS ...
 func LoadHTTPS() http.Handler {
 	return routes()
 }
 
+// redirectToHTTPS ....
 func redirectToHTTPS(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("https://%s", r.Host), http.StatusMovedPermanently)
 }
 
+// routes setups all routes
 func routes() http.Handler {
 	// Instantiate mux-router
 	router := mux.NewRouter().StrictSlash(true)
