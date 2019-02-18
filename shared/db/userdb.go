@@ -132,7 +132,7 @@ func IsParticipant(userID int, courseID int) bool {
 	if err != nil {
 		// TODO : log error
 		fmt.Println(err.Error())
-		return particpant
+		return false
 	}
 
 	for rows.Next() {

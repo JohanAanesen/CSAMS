@@ -50,19 +50,19 @@ func GetCoursesToUser(userID int) model.Courses {
 
 //GetCourse returns a given course
 func GetCourse(courseID int) model.Course {
+	//Create an empty courses array
+	var course model.Course
 
 	rows, err := GetDB().Query("SELECT course.* FROM course WHERE course.id = ?", courseID)
 	if err != nil {
 		fmt.Println(err.Error()) // TODO : log error
 
 		// returns empty course array if it fails
-		return model.Course{ID:-1}
-
+		return model.Course{}
 	}
 
 	for rows.Next() {
 		var id int
-		var hash string
 		var courseCode string
 		var courseName string
 		var teacher int
@@ -70,12 +70,11 @@ func GetCourse(courseID int) model.Course {
 		var year string
 		var semester string
 
-		rows.Scan(&id, &hash, &courseCode, &courseName, &teacher, &description, &year, &semester)
+		rows.Scan(&id, &courseCode, &courseName, &teacher, &description, &year, &semester)
 
-		// Fill course object/struct
-		return model.Course{
+		// Add course to courses array
+		course = model.Course{
 			ID:          id,
-			Hash:        hash,
 			Code:        courseCode,
 			Name:        courseName,
 			Teacher:     teacher,
@@ -85,7 +84,7 @@ func GetCourse(courseID int) model.Course {
 		}
 	}
 
-	return model.Course{ID:-1}
+	return course
 }
 // CourseExists checks if the course exists in the database
 func CourseExists(hash string) model.Course {
