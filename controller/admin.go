@@ -238,7 +238,6 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("\n%v\n\n", assignment)
 
-
 	success, err := adb.Insert(assignment)
 	if err != nil {
 		log.Println(err)

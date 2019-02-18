@@ -34,7 +34,6 @@ type Log struct {
 	NewValue     string   // [NULLABLE][ChangeName/ChangeEmail] Value after changing name/email
 }
 
-
 // TODO (Svein): make this a method of a struct (From: logdb.go)
 // LogToDB adds logs to the database when an user/admin does something noteworthy
 func LogToDB(payload Log) bool {

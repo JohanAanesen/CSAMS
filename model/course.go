@@ -24,7 +24,6 @@ type Course struct {
 	Assignments []Assignment `json:"assignments"`
 }
 
-
 // TODO (Svein): make this a method of a struct (From: coursedb.go)
 //GetCoursesToUser returns all the courses to the user
 func GetCoursesToUser(userID int) Courses {
@@ -192,4 +191,3 @@ func GetCourse(courseID int) Course {
 
 	return course
 }
-
