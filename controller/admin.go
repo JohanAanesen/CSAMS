@@ -10,7 +10,6 @@ import (
 	"github.com/rs/xid"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -205,6 +204,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	/*
 	adb := model.AssignmentDatabase{}
 
 	courseID, err := strconv.Atoi(r.FormValue("assignment_course_id"))
@@ -247,6 +247,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	if success {
 		// TODO (Svein): Celebrate
 	}
+	*/
 }
 
 // AdminSubmissionCreateGET ...
