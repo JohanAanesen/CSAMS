@@ -249,6 +249,19 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// AdminSubmissionCreateGET ...
+func AdminSubmissionCreateGET(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/submission/create"
+
+	// TODO (Svein): Add data to the page (courses, assignments, etc)
+
+	v.Render(w)
+}
+
 // DatetimeLocalToRFC3339 converts a string from datetime-local HTML input-field to time.Time object
 func DatetimeLocalToRFC3339(str string) (time.Time, error) {
 	// TODO (Svein): Move this to a utils.go or something

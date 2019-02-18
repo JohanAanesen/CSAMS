@@ -1,0 +1,79 @@
+{{define "title"}}Create Submission{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+    <div class="container py-5">
+
+        <div class="row">
+
+            <div class="col">
+                <button type="button" class="btn btn-default" id="addField">Add field</button>
+                <hr>
+
+                <div class="accordion" id="formAccordion">
+                    <div class="card">
+                        <div class="card-header" id="heading_0">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse_0" aria-expanded="false" aria-controls="collapse_0">Question 0</button>
+                            </h2>
+                        </div><!-- /.card-header -->
+
+                        <div class="collapse" id="collapse_0" aria-labelledby="heading_0" data-parent="#formAccordion">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="">Type</label>
+                                    <select name="" id="" class="form-control">
+                                        <!--<option value="color">Color</option>-->
+                                        <option value="checkbox">Checkbox</option>
+                                        <option value="date">Date</option>
+                                        <option value="datetime-local">Datetime Local</option>
+                                        <option value="email">Email</option>
+                                        <option value="file">File</option>
+                                        <!--<option value="month">Month</option>-->
+                                        <option value="number">Number</option>
+                                        <option value="radio">Radio</option>
+                                        <option value="range">Range</option>
+                                        <!--<option value="search">Search</option>-->
+                                        <option value="tel">Tel</option>
+                                        <option value="time">Time</option>
+                                        <option value="text">Text</option>
+                                        <option value="url">URL</option>
+                                        <!--<option value="week">Week</option>-->
+                                    </select>
+                                    <small class="form-text text-muted">See <a href="https://www.w3schools.com/html/html_form_input_types.asp" target="_blank">W3Schools</a> for more information.</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="">Label</label>
+                                    <input type="text" class="form-control">
+                                </div>
+
+                                <!-- TODO (Svein): Is this needed, can type and some DB magic fix this? -->
+                                <div class="form-group">
+                                    <label for="">Name</label>
+                                    <input type="text" class="form-control">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="">Order</label>
+                                    <input type="number" class="form-control">
+                                    <small class="form-text text-muted">Ordered by number, ascending. 0 is first, N is last.</small>
+                                </div>
+
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="required_0" checked>
+                                    <label class="custom-control-label" for="required_0">Required?</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- /.card -->
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+{{end}}
+{{define "foot"}}
+<script src="/static/js/form.js"></script>
+{{end}}
