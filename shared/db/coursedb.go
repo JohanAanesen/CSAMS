@@ -48,6 +48,47 @@ func GetCoursesToUser(userID int) model.Courses {
 	return courses
 }
 
+//GetCourse returns a given course
+func GetCourse(courseID int) model.Course {
+	//Create an empty courses array
+	var course model.Course
+
+	rows, err := GetDB().Query("SELECT course.* FROM course WHERE course.id = ?", courseID)
+	if err != nil {
+		fmt.Println(err.Error()) // TODO : log error
+
+		// returns empty course array if it fails
+		return model.Course{}
+	}
+
+	for rows.Next() {
+		var id int
+		var hash string
+		var courseCode string
+		var courseName string
+		var teacher int
+		var description string
+		var year string
+		var semester string
+
+		rows.Scan(&id, &hash, &courseCode, &courseName, &teacher, &description, &year, &semester)
+
+		// Add course to courses array
+		course = model.Course{
+			ID:          id,
+			Hash:        hash,
+			Code:        courseCode,
+			Name:        courseName,
+			Teacher:     teacher,
+			Description: description,
+			Year:        year,
+			Semester:    semester,
+		}
+	}
+
+	return course
+}
+
 // CourseExists checks if the course exists in the database
 func CourseExists(hash string) model.Course {
 	rows, err := GetDB().Query("SELECT course.* FROM course WHERE hash = ?", hash)
