@@ -96,12 +96,14 @@ I chose `github.com/rs/xid` because it was the length i wanted and quick and eas
 * \#20 Started on home page, but could only finish one of two tasks since assignments isn't done yet.
 * We almost didn't have anything to talk about today with the supervisor.
 * I'm going to start on [#22 - Admin FAQ Page](https://trello.com/c/0trVQS8x) now :D
-* Looked at [this page](https://www.codeply.com/go/syFXJL6m5p/bootstrap-4-faq-accordion) for inspiration to the faq page, I liked the animations and stuff, but... If I use markdown instead
+* \#22 Looked at [this page](https://www.codeply.com/go/syFXJL6m5p/bootstrap-4-faq-accordion) for inspiration to the faq page, I liked the animations and stuff, but... If I use markdown instead
 it would be way easier to just add a new faq in frontend and is over all less code and easier to implement. Agreed with [Project Owner](https://www.ntnu.no/ansatte/christopher.frantz)
 to use md, it's also more consistence with this solution.
 * Have to find out if we just store a hardcoded md file for faqs or make it possible to edit in the front-end by any teacher tomorrow.
 
 ### Tuesday - 19/02/19
+* \#22 Decided on storing the md in db and let any teacher edit it, but also log every update.
+* I chose to copy some of the design Johan used for course page to keep it more constance all over <3 
 ### Wednesday - 20/02/19
 ### ~~Thursday - 21/02/19~~ Ski day!
 ### Friday - 22/02/19

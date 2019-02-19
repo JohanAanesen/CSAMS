@@ -6,6 +6,8 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
 	"github.com/rs/xid"
+	"github.com/shurcooL/github_flavored_markdown"
+	"html/template"
 	"log"
 	"net/http"
 	"time"
@@ -196,9 +198,13 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
+	content := "Q: WhaT'S A coMpUtEr?\n====\nA: Yes\n"
+	md := []byte(content)
+	questions := github_flavored_markdown.Markdown(md)
+
 	v := view.New(r)
 	v.Name = "admin/faq/index"
-	v.Vars["FAQs"] = ""
+	v.Vars["Questions"] = template.HTML(questions)
 
 	v.Render(w)
 }
