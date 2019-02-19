@@ -16,7 +16,7 @@ USE cs53;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
-SET time_zone = "+01:00";
+SET time_zone = "+01:00"; -- Norwegian time zone! --
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT = @@CHARACTER_SET_CLIENT */;
@@ -225,7 +225,7 @@ VALUES ('1', '3', '1', 'https://github.com/JohanAanesen/NTNU-Bachelor-Management
         'I am grate progrman', '6', NULL, NULL, NULL);
 
 INSERT INTO `adminfaq` (`id`, `timestamp`, `questions`)
-VALUES ('1', '2019-02-19 13:37:00',
+VALUES ('1', '1997-02-13 13:37:00',
         'Q: How do I make a course + link?\r\n--------------------------------\r\n**A:** Dashboard -> Courses -> new. And create the course there\r\n\r\nQ: How do I make an assignment?\r\n--------------------------------\r\n**A:** Dashboard -> Assignments-> new. And create the assignment there\r\n\r\nQ: How do I invite students to the course?\r\n--------------------------------\r\n**A:** Create a link for the course and email the students the link\r\n\r\nQ: How do I import database?\r\n--------------------------------\r\n**A:** Start xampp and go to import in phpmyadmin\r\n\r\nQ: How do I export database?\r\n--------------------------------\r\n**A:** Start xampp and go to export in phpmyadmin\r\n\r\nQ: How do I sign up?\r\n--------------------------------\r\n**A:** You go to `/register` and register a user there');
 -- end --
 

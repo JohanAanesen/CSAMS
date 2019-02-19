@@ -42,3 +42,24 @@ func GetDateAndQuestionsFAQ() Faq {
 	return content
 
 }
+
+// UpdateFaq updates the questions and date in FAQ
+func UpdateFAQ(newFaq string) bool {
+
+	// Get current Norwegian time
+	date := time.Now().UTC().Add(time.Hour)
+
+	// Update to database
+	rows, err := db.GetDB().Query("UPDATE `adminfaq` SET `timestamp` = ?, `questions` = ? WHERE `id` = 1", date, newFaq)
+
+	// Log error if it exists
+	if err != nil {
+		log.Fatal(err.Error())
+		return false
+	}
+
+	defer rows.Close()
+
+	return true
+
+}

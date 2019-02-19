@@ -220,12 +220,14 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminFaqUpdatePOST handles the edit of the markdown faq
 func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
+
 	//check that user is a teacher
 	if !session.IsTeacher(r) { //not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
 
+	// Check that the questions arrived
 	updatedFAQ := r.FormValue("questions")
 	if updatedFAQ == "" {
 		log.Println("Form is empty! (admin.go)")
@@ -233,4 +235,45 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check that it's possible to get the old faq from db
+	content := model.GetDateAndQuestionsFAQ()
+	if content.Questions == "-1" {
+		log.Println("Something went wrong with getting the faq (admin.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Check that it's changes to the new faq
+	if content.Questions == updatedFAQ {
+		log.Println("Old and new faq can not be equal! (admin.go)")
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	// Check that it went okay to add new faq to db
+	if !model.UpdateFAQ(updatedFAQ) {
+		log.Println("Something went wrong with updating the faq! (admin.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get user for logging purposes
+	user := session.GetUserFromSession(r)
+
+	// Collect the log data
+	logData := model.Log{
+		UserID:   user.ID,
+		Activity: model.UpdateAdminFAQ,
+		OldValue: content.Questions,
+		NewValue: updatedFAQ,
+	}
+
+	// Log that a teacher has changed the faq
+	if !model.LogToDB(logData) {
+		log.Println("Something went wrong with logging the new faq! (admin.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	AdminFaqGET(w, r)
 }

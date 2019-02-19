@@ -104,6 +104,11 @@ to use md, it's also more consistence with this solution.
 ### Tuesday - 19/02/19
 * \#22 Decided on storing the md in db and let any teacher edit it, but also log every update.
 * I chose to copy some of the design Johan used for course page to keep it more constance all over <3 
+* I have some bugs on the faq site, but the main functionality is all done soon.
+* I also moved db functions from shared/db to model and gave a temp fix to the extremely annoying go lint errors...
+* All functions for faq is now done, each time a teacher updates the faq, the time is added **IN NORWEGIAN TIME**, this has to be written somewhere
+as we talked about with the [Project Owner](https://www.ntnu.no/ansatte/christopher.frantz) yesterday.
+
 ### Wednesday - 20/02/19
 ### ~~Thursday - 21/02/19~~ Ski day!
 ### Friday - 22/02/19

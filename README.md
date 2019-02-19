@@ -22,6 +22,11 @@
 ## Supervisor
 * [Ivar Farup](https://www.ntnu.no/ansatte/ivar.farup)
 
+## OBS!
+This project is in the norwegian timezone! At least the:
+* [`config/database.sql`](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/b74344a4a1673c4473442db99f965c17643d83c1/config/database.sql#L19) file at line `19`: `SET time_zone = "+01:00";`
+* [`model/adminfaq.go`](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/master/model/adminfaq.go) file at line `50`: `date := time.Now().UTC().Add(time.Hour)`
+
 ## Commit messages guideline
 start med #69 der nummeret er nummeret på "kortet" du jobber på trello etterfulgt av:
 * update	- oppdatert funksjon/fil
