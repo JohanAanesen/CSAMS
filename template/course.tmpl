@@ -72,7 +72,7 @@
                     </div>
                     <div class="tab-pane fade" id="participants" role="tabpanel" aria-labelledby="participant-tab">
 
-                        <table class="table">
+                        <table class="table table-borderless table-sm">
                             <thead>
                             <tr>
                                 <th scope="col">#</th>
@@ -83,7 +83,7 @@
                             </thead>
                             <tbody>
                             {{ range .Classmates.Items }}
-                            <tr>
+                            <tr {{if .Teacher}} class="bg-primary" {{end}}>
                                 <th scope="row">{{.ID}}</th>
                                 <td>{{.Name}}</td>
                                 <td><a href="mailto:{{.EmailStudent}}">{{.EmailStudent}}</a></td>
