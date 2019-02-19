@@ -1,26 +1,13 @@
 {{define "title"}}FAQ{{end}}
 {{define "head"}}
-    <style>
-        a {
-            color: #888888;
-        }
-
-        a:hover {
-            color: #888888;
-        }
-
-        pre {
-            color: #888888;
-        }
-    </style>
 {{end}}
 {{define "content"}}
     <main role="main" class="container">
-        <div class="col my-3">
+        <div class="col my-3 col-sm-12">
             <div class="card text-white bg-dark mb-3">
                 <div class="card-header">
-                    <h4 style="float:left;">Frequently Asked Questions</h4>
-                    <p class="text-right"><strong>Last Updated:</strong> 19. February 2019</p>
+                    <h2 style="float:left;" class="display-6 mb-3">Frequently Asked Questions</h2>
+                    <p class="text-right"><strong>Last Updated:</strong> {{ .Updated }}</p>
                 </div>
                 <div class="card-body">
                     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">

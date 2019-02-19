@@ -175,6 +175,19 @@ CREATE TABLE `users`
   DEFAULT CHARSET = utf8
   COLLATE = utf8_danish_ci;
 
+
+CREATE TABLE `adminfaq`
+(
+  `id`        int(11)  NOT NULL,
+  `timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `questions` text     NOT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_danish_ci;
+
+--
+-- Indexes for dumped tables
+--
 --
 -- Indexes for dumped tables
 --
@@ -196,9 +209,7 @@ INSERT INTO `course` (`id`, `hash`, `coursecode`, `coursename`, `teacher`, `year
 VALUES (1, '3876438629b786', 'IMT1031', 'Grunnleggende Programmering', 2, 2019, 'fall', 'Write hello, world in C++'),
        (2, '12387teg817eg18', 'IMT1082', 'Objekt-orientert programmering', 2, 2019, 'fall',
         'Write Wazz up world in Python'),
-       (3, '12e612eg1e17ge1', 'IMT2021', 'Algoritmiske metoder', 2, 2019, 'spring', 'Write an AI in C#'),
-       (4, '1337-420-69', 'IMT1337', 'Quick Markdown Example', 3, 1814, 'spring',
-        'An h1 header\r\n============\r\n\r\nParagraphs are separated by a blank line.\r\n\r\n2nd paragraph. *Italic*, **bold**, and `monospace`. Itemized lists\r\nlook like:\r\n\r\n  * this one\r\n  * that one\r\n  * the other one\r\n\r\nNote that --- not considering the asterisk --- the actual text\r\ncontent starts at 4-columns in.\r\n\r\n> Block quotes are\r\n> written like so.\r\n>\r\n> They can span multiple paragraphs,\r\n> if you like.\r\n\r\nUse 3 dashes for an em-dash. Use 2 dashes for ranges (ex., \"it\'s all\r\nin chapters 12--14\"). Three dots ... will be converted to an ellipsis.\r\nUnicode is supported. ☺\r\n\r\n\r\n\r\nAn h2 header\r\n------------\r\n\r\nHere\'s a numbered list:\r\n\r\n 1. first item\r\n 2. second item\r\n 3. third item\r\n\r\nNote again how the actual text starts at 4 columns in (4 characters\r\nfrom the left side). Here\'s a code sample:\r\n\r\n    # Let me re-iterate ...\r\n    for i in 1 .. 10 { do-something(i) }\r\n\r\nAs you probably guessed, indented 4 spaces. By the way, instead of\r\nindenting the block, you can use delimited blocks, if you like:\r\n\r\n~~~\r\ndefine foobar() {\r\n    print \"Welcome to flavor country!\";\r\n}\r\n~~~\r\n\r\n(which makes copying & pasting easier). You can optionally mark the\r\ndelimited block for Pandoc to syntax highlight it:\r\n\r\n~~~python\r\nimport time\r\n# Quick, count to ten!\r\nfor i in range(10):\r\n    # (but not *too* quick)\r\n    time.sleep(0.5)\r\n    print(i)\r\n~~~\r\n\r\n\r\n\r\n### An h3 header ###\r\n\r\nNow a nested list:\r\n\r\n 1. First, get these ingredients:\r\n\r\n      * carrots\r\n      * celery\r\n      * lentils\r\n\r\n 2. Boil some water.\r\n\r\n 3. Dump everything in the pot and follow\r\n    this algorithm:\r\n\r\n        find wooden spoon\r\n        uncover pot\r\n        stir\r\n        cover pot\r\n        balance wooden spoon precariously on pot handle\r\n        wait 10 minutes\r\n        goto first step (or shut off burner when done)\r\n\r\n    Do not bump wooden spoon or it will fall.\r\n\r\nNotice again how text always lines up on 4-space indents (including\r\nthat last line which continues item 3 above).\r\n\r\nHere\'s a link to [a website](http://foo.bar), to a [local\r\ndoc](local-doc.html), and to a [section heading in the current\r\ndoc](#an-h2-header). Here\'s a footnote [^1].\r\n\r\n[^1]: Some footnote text.\r\n\r\nTables can look like this:\r\n\r\nName           Size  Material      Color\r\n------------- -----  ------------  ------------\r\nAll Business      9  leather       brown\r\nRoundabout       10  hemp canvas   natural\r\nCinderella       11  glass         transparent\r\n\r\nTable: Shoes sizes, materials, and colors.\r\n\r\n(The above is the caption for the table.) Pandoc also supports\r\nmulti-line tables:\r\n\r\n--------  -----------------------\r\nKeyword   Text\r\n--------  -----------------------\r\nred       Sunsets, apples, and\r\n          other red or reddish\r\n          things.\r\n\r\ngreen     Leaves, grass, frogs\r\n          and other things it\'s\r\n          not easy being.\r\n--------  -----------------------\r\n\r\nA horizontal rule follows.\r\n\r\n***\r\n\r\nHere\'s a definition list:\r\n\r\napples\r\n  : Good for making applesauce.\r\n\r\noranges\r\n  : Citrus!\r\n\r\ntomatoes\r\n  : There\'s no \"e\" in tomatoe.\r\n\r\nAgain, text is indented 4 spaces. (Put a blank line between each\r\nterm and  its definition to spread things out more.)\r\n\r\nHere\'s a \"line block\" (note how whitespace is honored):\r\n\r\n| Line one\r\n|   Line too\r\n| Line tree\r\n\r\nand images can be specified like so:\r\n\r\n![example image](https://external-preview.redd.it/6PB4LMzhKCFDUH15pwTJHT4b1Y63kq5Zjemvj0qbnrY.jpg?width=640&crop=smart&auto=webp&s=d2cfb9f54a8fc18d65b185a80b8473aba188be9b \"An exemplary image\")\r\n\r\nInline math equation: $\\omega = d\\phi / dt$. Display\r\nmath should get its own line like so:\r\n\r\n$$I = \\int \\rho R^{2} dV$$\r\n\r\nAnd note that you can backslash-escape any punctuation characters\r\nwhich you wish to be displayed literally, ex.: \\`foo\\`, \\*bar\\*, etc.');
+       (3, '12e612eg1e17ge1', 'IMT2021', 'Algoritmiske metoder', 2, 2019, 'spring', 'Write an AI in C#');
 
 INSERT INTO `usercourse` (`userid`, `courseid`)
 VALUES (3, 1),
@@ -211,6 +222,10 @@ VALUES ('1', 1, CURRENT_TIMESTAMP, '2019-02-14', '1', '0', 'English',
 
 INSERT INTO `submissions` (`id`, `userid`, `assignmentid`, `repo`, `deploy`, `comment`, `grade`, `test`, `vet`, `cycle`)
 VALUES ('1', '3', '1', 'www.github.com/user3/submission1', 'Hello', 'I am grate progrman', '6', NULL, NULL, NULL);
+
+INSERT INTO `adminfaq` (`id`, `timestamp`, `questions`)
+VALUES ('1', CURRENT_TIMESTAMP,
+        'Q: How do I make a course + link?\r\n--------------------------------\r\n**A:** Dashboard -> Courses -> new. And create the course there\r\n\r\nQ: How do I make an assignment?\r\n--------------------------------\r\n**A:** Dashboard -> Assignments-> new. And create the assignment there\r\n\r\nQ: How do I invite students to the course?\r\n--------------------------------\r\n**A:** Create a link for the course and email the students the link\r\n\r\nQ: How do I import database?\r\n--------------------------------\r\n**A:** Start xampp and go to import in phpmyadmin\r\n\r\nQ: How do I export database?\r\n--------------------------------\r\n**A:** Start xampp and go to export in phpmyadmin\r\n\r\nQ: How do I sign up?\r\n--------------------------------\r\n**A:** You go to `/register` and register a user there');
 -- end --
 
 --
@@ -277,6 +292,9 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email_student` (`email_student`),
   ADD UNIQUE KEY `email_private` (`email_private`);
 
+ALTER TABLE `adminfaq`
+  ADD PRIMARY KEY (`id`);
+
 --
 -- AUTO_INCREMENT for dumped tables
 --
@@ -303,6 +321,10 @@ ALTER TABLE `submissions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+
+ALTER TABLE `adminfaq`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
