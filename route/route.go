@@ -9,14 +9,17 @@ import (
 	"os"
 )
 
+// Load ... TODO (Svein) add comment here
 func Load() http.Handler {
 	return routes()
 }
 
+// LoadHTTP ... TODO (Svein) add comment here
 func LoadHTTP() http.Handler {
 	return routes()
 }
 
+// LoadHTTPS ... TODO (Svein) add comment here
 func LoadHTTPS() http.Handler {
 	return routes()
 }

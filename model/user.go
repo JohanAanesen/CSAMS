@@ -141,6 +141,7 @@ func GetHash(id int) string {
 	return ""
 }
 
+// GetUsersToCourse returns all users to one course
 func GetUsersToCourse(courseID int) Users {
 
 	//Create an empty courses array

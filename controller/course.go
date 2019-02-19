@@ -86,7 +86,7 @@ func CourseListGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Fprintf(w, "Id is %s\n", id)
+		fmt.Fprintf(w, "ID is %s\n", id)
 	}
 	//check if user is an participant of said class or a teacher
 

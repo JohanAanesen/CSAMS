@@ -53,6 +53,7 @@ func LoadTemplate(root string, children []string) {
 	childTemplates = children
 }
 
+// LoadAdminTemplate ... TODO (Svein) add comment here
 func LoadAdminTemplate(root string, children []string) {
 	adminRootTemplate = root
 	adminChildTemplates = children
