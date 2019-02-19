@@ -1,5 +1,18 @@
 Svein's log
 ============
+## 18/02/2019
+* Talked with product owner about the database-design for the custom forms, and found a solution together that will not be too hard to implement.
+  * Later found a more generic way to design the database, with a `forms` and `fields` table:
+  
+#### Forms-table
+| id  | name | description | created | prefix |
+| --- | ---- | ----------- | ------- | ------ |
+| PK  | Display name | Description .. | TIMESTAMP | prefix for fields (HTML)
+#### Fields-table
+| id | data | order | form_id |
+| --- | --- | --- | --- |
+| PK | JSON | needed? | FK for `forms` |
+
 ## Week 7 Report
 This week I have been looking into data structure for the dynamic review form, and where and what should take care for the input/output for the form. From the research done, it seams like Javascript will be the best choice of creating and parsing data to strings, with JSON, as Javascript is well-equipped with JSON-functions.
 
