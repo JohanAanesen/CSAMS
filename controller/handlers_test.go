@@ -116,14 +116,14 @@ func TestLoggingIn(t *testing.T) {
 
 	status := resp.Code
 
-	if status != http.StatusOK {
-		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	if status != http.StatusFound {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusFound, status)
 	}
 
 	body := resp.Body
 
-	if body.Len() <= 0 {
-		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	if body.Len() != 0 { //should be 0 because redirect if success
+		t.Errorf("Response body error, expected 0, got %d", body.Len())
 	}
 }
 
@@ -209,7 +209,7 @@ func TestMainHandler(t *testing.T) {
 
 func TestCourseHandler(t *testing.T) {
 
-	req, err := http.NewRequest("GET", "/course?id=asdfcvgbhnjk", nil)
+	req, err := http.NewRequest("GET", "/course?id=1", nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -382,14 +382,14 @@ func TestUserUpdateRequest(t *testing.T) {
 	status := resp.Code
 
 	// Status should be 200/OK if it went by okey
-	if status != http.StatusOK {
-		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusOK, status)
+	if status != http.StatusFound {
+		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusFound, status)
 	}
 
 	body := resp.Body
 
-	if body.Len() <= 0 {
-		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
+	if body.Len() != 0 { //should be 0 because of redirect if successfull
+		t.Errorf("Response body error, expected 0, got %d", body.Len())
 	}
 }
 

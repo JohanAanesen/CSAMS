@@ -22,11 +22,11 @@
             <div class="row">
 
                 {{ range .Courses.Items }}
-                    <div class="col-12 col-md-6 col-xl mb-3">
+                    <div class="col-md-6 mb-3">
                         <div class="card">
                             <div class="card-body">
                                 <h2 class="card-title">{{ .Code}} - {{ .Name }}</h2>
-                                <a href="#" class="btn btn-dark">See assignments</a> <!-- TODO : add link here -->
+                                <a href="course?id={{ .ID }}" class="btn btn-dark">See Course</a> <!-- TODO : add link here -->
                             </div>
                         </div>
                     </div>

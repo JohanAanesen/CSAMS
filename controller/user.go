@@ -116,5 +116,6 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	UserGET(w, r)
+	//UserGET(w, r)
+	http.Redirect(w, r, "/user", http.StatusFound) //success redirect to homepage
 }
