@@ -41,10 +41,10 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 		// If hash was valid, add user isn't in the course, then add user to course
 		if hash != "" && !db.UserExistsInCourse(user.ID, course.ID) {
 			db.AddUserToCourse(user.ID, course.ID)
-			// TODO : maybe redirect to course page ?
+			// TODO : maybe redirect to course page ? johan: I think no.
 		}
 
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/", http.StatusFound) //redirect
 		return
 	}
 
@@ -106,6 +106,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage //todo change redirection
-	IndexGET(w, r) //redirect to homepage
+	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage //todo change redirection
+	//IndexGET(w, r) //redirect to homepage
+
 }
