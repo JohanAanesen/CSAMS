@@ -25,8 +25,38 @@
          * @type {{output: HTMLElement, weighted: boolean}}
          */
         this.settings = {
+            name: document.querySelector(settings.name),
             output: document.querySelector(settings.selector),
             weighted: settings.weighted || false,
+        };
+
+        /**
+         *
+         * @type {string}
+         */
+        this.name = '';
+
+        /**
+         *
+         * @type {string}
+         */
+        this.prefix = '';
+
+        /**
+         * Initialize some event listeners
+         */
+        this.init = function() {
+            if (this.settings.name !== null) {
+                this.settings.name.addEventListener('keyup', () => {
+                    this.name = this.settings.name.value;
+                    this.prefix = this.name.replaceAll(' ', '_').toLowerCase();
+                    console.log(this.prefix);
+
+                    this.fields.forEach((e, i) => {
+                       e.name = `${this.prefix}_${e.type}_${i}`;
+                    });
+                });
+            }
         };
 
         /**
@@ -74,15 +104,22 @@
 
         /**
          * Returns the for as an Javascript Object, easy translated to JSON.
-         * @returns {Array}
+         * @returns {object}
          */
         this.toJSON = function() {
             let result = [];
             this.fields.forEach(e => {
                 result.push(e.toJSON());
             });
-            return result;
+            return {
+                name: this.name,
+                prefix: this.prefix,
+                fields: result,
+            };
         };
+
+        // Call init()
+        this.init();
     };
 
     /**
@@ -122,6 +159,12 @@
 
         /**
          *
+         * @type {Array}
+         */
+        this.choices = [];
+
+        /**
+         *
          * @type {object}
          */
         this.settings = {
@@ -137,6 +180,8 @@
             // Declaring all variable names
             let card, cardHeader, cardBody, h2, button, collapse,
                 formGroup, label, select, input, option, small, textarea;
+
+            this.name = `${this.type}_${id}`;
 
             // Defining the card-wrapper
             card = document.createElement('div');
@@ -216,6 +261,8 @@
                 } else {
                     document.getElementById(`choices_form-group_${id}`).classList.add(...['sr-only']);
                 }
+
+                this.name = `${this.type}_${id}`;
             });
 
             formGroup.appendChild(label);
@@ -237,16 +284,23 @@
             textarea.setAttribute('name', `choices_${id}`);
             textarea.id = `choices_${id}`;
 
+            textarea.addEventListener('keyup', e => {
+                this.choices = e.target.value.split('\n');
+                let index = this.choices.indexOf('');
+                if (index !== -1) {
+                    this.choices.splice(index, 1);
+                }
+            });
+
             small = document.createElement('small');
             small.classList.add(...['form-text', 'text-muted']);
-            small.innerText = 'Separate choices per line.';
+            small.innerText = 'Separate choices per line. Watch out for blank lines!';
 
             formGroup.appendChild(label);
             formGroup.appendChild(textarea);
             formGroup.appendChild(small);
             cardBody.appendChild(formGroup);
             // == CHOICES END ==
-
 
             // == LABEL START ==
             formGroup = document.createElement('div');
@@ -272,31 +326,6 @@
             formGroup.appendChild(input);
             cardBody.appendChild(formGroup);
             // == LABEL END ==
-
-            // == NAME START ==
-            formGroup = document.createElement('div');
-            formGroup.classList.add(...['form-group']);
-
-            label = document.createElement('label');
-            label.setAttribute('for', `name_${id}`);
-            label.innerText = 'Name';
-
-            input = document.createElement('input');
-            input.classList.add(...['form-control']);
-            input.setAttribute('type', 'text');
-            input.setAttribute('name', `name_${id}`);
-            input.id = `name_${id}`;
-            input.value = this.name;
-            // EventListener to the input-field, saving the value
-            input.addEventListener('keyup', e => {
-                e.preventDefault();
-                this.name = e.target.value;
-            });
-
-            formGroup.appendChild(label);
-            formGroup.appendChild(input);
-            cardBody.appendChild(formGroup);
-            // == NAME END ==
 
             // == ORDER START ==
             formGroup = document.createElement('div');
@@ -375,14 +404,21 @@
                 label: this.label,
                 order: this.order,
                 weight: this.weight,
+                choices: this.choices,
             }
         };
+    };
+
+    String.prototype.replaceAll = function(search, replacement) {
+        let target = this;
+        return target.replace(new RegExp(search, 'g'), replacement);
     };
 
     // TODO (Svein): This needs to be moved in the foot afterwards
     let button = document.getElementById('addField');
     let exportJSON = document.getElementById('export');
     let form = new Form({
+        name: '#submission_name',
         selector: '#formAccordion',
         weighted: false,
     });
@@ -392,8 +428,7 @@
     });
 
     exportJSON.addEventListener('click', () => {
-        form.sort();
-        //console.log(form.toJSON());
+        console.log(form.toJSON());
     });
 
 })();
