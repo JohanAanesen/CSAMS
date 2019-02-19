@@ -43,7 +43,7 @@ func GetDateAndQuestionsFAQ() Faq {
 
 }
 
-// UpdateFaq updates the questions and date in FAQ
+// UpdateFAQ updates the questions and date in FAQ
 func UpdateFAQ(newFaq string) bool {
 
 	// Get current Norwegian time

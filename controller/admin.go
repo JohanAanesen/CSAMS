@@ -228,7 +228,7 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check that the questions arrived
-	updatedFAQ := r.FormValue("questions")
+	updatedFAQ := r.FormValue("rawQuestions")
 	if updatedFAQ == "" {
 		log.Println("Form is empty! (admin.go)")
 		ErrorHandler(w, r, http.StatusBadRequest)

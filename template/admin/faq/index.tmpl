@@ -1,10 +1,6 @@
 {{define "title"}}FAQ{{end}}
 {{define "head"}}
-    <!-- TODO : fix tab to left bug -->
-    <!-- TODO : fix textarea color bug -->
-    <!-- TODO : fix textarea size bug -->
     <!-- TODO : fix textarea content not showing right away bug -->
-    <!-- TODO : Add functionality to post changes and update, also log -->
     <!-- This is for the editing -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
     <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
@@ -31,7 +27,7 @@
                 <div class="card-header">
                     <h4 style="float:left;">Frequently Asked Questions</h4>
                     <p class="text-right"><strong>Last Updated:</strong> {{ .Updated }}</p>
-                    <ul class="nav nav-tabs card-header-tabs pull-right" id="myTab" role="tablist">
+                    <ul class="nav nav-tabs card-header-tabs pull-left" id="myTab" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" id="faq-tab" data-toggle="tab" href="#faq" role="tab"
                                aria-controls="faq" aria-selected="true">FAQ</a>
@@ -50,9 +46,10 @@
                         <div class="tab-pane fade" id="edit" role="tabpanel" aria-labelledby="assignment-tab">
                             <form action="/admin/faq/update" method="post">
                                 <div class="row">
-                                    <div class="form-group">
-                                        <label for="questions">Edit markdown:</label>
-                                        <textarea name="questions" id="questions"
+                                    <div class="form-group bg-light col-lg-12 col-md-12 col-sm-12 col-xs-12"
+                                         id="question-form">
+                                        <label for="rawQuestions" class="text-dark">Edit markdown</label>
+                                        <textarea name="rawQuestions" id="rawQuestions"
                                                   class="form-control">{{ .RawContent }}</textarea>
                                     </div>
                                 </div>
