@@ -125,7 +125,7 @@ func GetHash(id int) string {
 	return ""
 }
 
-func GetUsersToCourse(courseID int) model.Users{
+func GetUsersToCourse(courseID int) model.Users {
 
 	//Create an empty courses array
 	var users model.Users
@@ -148,10 +148,10 @@ func GetUsersToCourse(courseID int) model.Users{
 
 		// Add course to courses array
 		users.Items = append(users.Items, model.User{
-			ID: id,
-			Name: name,
+			ID:           id,
+			Name:         name,
 			EmailStudent: email,
-			Teacher: teacher,
+			Teacher:      teacher,
 		})
 	}
 
