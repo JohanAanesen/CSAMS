@@ -26,7 +26,7 @@
         this.fields = [];
 
         /**
-         *
+         * Add a new field into the fields array
          * @param {Field} field
          */
         this.add = function(field) {
@@ -34,7 +34,8 @@
         };
 
         /**
-         *
+         * Sorts the field based on the value of 'order'.
+         * Lowest first, highest last.
          */
         this.sort = function() {
             this.fields.sort((a, b) => {
@@ -45,20 +46,19 @@
                 } else {
                     return 0;
                 }
-            })
+            });
         };
 
         /**
-         *
+         * Creates a new field in the 'fields' array, then renders all.
          */
         this.newField = function() {
             this.fields.push(new Field());
-
             this.renderAll();
         };
 
         /**
-         *
+         * Clean the output HTML, then render all fields in it.
          */
         this.renderAll = function() {
             this.output.innerHTML = '';
@@ -66,7 +66,19 @@
             this.fields.forEach((e, i) => {
                 this.output.appendChild(e.render(i));
             });
-        }
+        };
+
+        /**
+         * Returns the for as an Javascript Object, easy translated to JSON.
+         * @returns {Array}
+         */
+        this.toJSON = function() {
+            let result = [];
+            this.fields.forEach(e => {
+                result.push(e.toJSON());
+            });
+            return result;
+        };
     };
 
     /**
@@ -88,12 +100,6 @@
 
         /**
          *
-         * @type {string|number}
-         */
-        this.value = '';
-
-        /**
-         *
          * @type {string}
          */
         this.label = '';
@@ -110,7 +116,7 @@
          * @returns {HTMLElement}
          */
         this.render = function(id) {
-            let card, cardHeader, cardBody, h2, button, collapse, formGroup, label, select, input, option;
+            let card, cardHeader, cardBody, h2, button, collapse, formGroup, label, select, input, option, small;
 
             card = document.createElement('div');
             card.classList.add(...['card']);
@@ -200,7 +206,7 @@
             // EventListener to the input-field, saving the value
             input.addEventListener('keyup', e => {
                 e.preventDefault();
-                this.label = input.value;
+                this.label = e.target.value;
             });
 
             formGroup.appendChild(label);
@@ -225,7 +231,7 @@
             // EventListener to the input-field, saving the value
             input.addEventListener('keyup', e => {
                 e.preventDefault();
-                this.name = input.value;
+                this.name = e.target.value;
             });
 
             formGroup.appendChild(label);
@@ -233,19 +239,68 @@
             cardBody.appendChild(formGroup);
             // == NAME END ==
 
+            // == ORDER START ==
+            formGroup = document.createElement('div');
+            formGroup.classList.add(...['form-group']);
+
+            label = document.createElement('label');
+            label.setAttribute('for', `order_${id}`);
+            label.innerText = 'Order';
+
+            input = document.createElement('input');
+            input.classList.add(...['form-control']);
+            input.setAttribute('type', 'number');
+            input.setAttribute('min', '0');
+            input.setAttribute('name', `order_${id}`);
+            input.id = `order_${id}`;
+            input.value = this.order;
+            // EventListener to the input-field, saving the value
+            input.addEventListener('keyup', e => {
+                e.preventDefault();
+                this.order = parseInt(e.target.value);
+            });
+
+            small = document.createElement('small');
+            small.classList.add(...['form-text', 'text-muted']);
+            small.innerText = 'Ordered ascending by number. Smallest first. Minimum value: 0.';
+
+            formGroup.appendChild(label);
+            formGroup.appendChild(input);
+            formGroup.appendChild(small);
+            cardBody.appendChild(formGroup);
+            // == ORDER END ==
 
             card.appendChild(cardHeader);
             card.appendChild(collapse);
 
             return card;
         };
+
+        /**
+         *
+         * @returns {object}
+         */
+        this.toJSON = function() {
+            return {
+                type: this.type,
+                name: this.name,
+                label: this.label,
+                order: this.order,
+            }
+        };
     };
 
     let button = document.getElementById('addField');
+    let exportJSON = document.getElementById('export');
     let form = new Form('formAccordion');
 
     button.addEventListener('click', () => {
         form.newField();
+    });
+
+    exportJSON.addEventListener('click', () => {
+        form.sort();
+        //console.log(form.toJSON());
     });
 
 })();
