@@ -221,10 +221,11 @@ VALUES ('1', 1, CURRENT_TIMESTAMP, '2019-02-14', '1', '0', 'English',
         '# Assignment 1\r\n* Doctors and nurses\r\n<!-- Hello -->', '13');
 
 INSERT INTO `submissions` (`id`, `userid`, `assignmentid`, `repo`, `deploy`, `comment`, `grade`, `test`, `vet`, `cycle`)
-VALUES ('1', '3', '1', 'www.github.com/user3/submission1', 'Hello', 'I am grate progrman', '6', NULL, NULL, NULL);
+VALUES ('1', '3', '1', 'https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments', 'Hello',
+        'I am grate progrman', '6', NULL, NULL, NULL);
 
 INSERT INTO `adminfaq` (`id`, `timestamp`, `questions`)
-VALUES ('1', CURRENT_TIMESTAMP,
+VALUES ('1', '2019-02-19 13:37:00',
         'Q: How do I make a course + link?\r\n--------------------------------\r\n**A:** Dashboard -> Courses -> new. And create the course there\r\n\r\nQ: How do I make an assignment?\r\n--------------------------------\r\n**A:** Dashboard -> Assignments-> new. And create the assignment there\r\n\r\nQ: How do I invite students to the course?\r\n--------------------------------\r\n**A:** Create a link for the course and email the students the link\r\n\r\nQ: How do I import database?\r\n--------------------------------\r\n**A:** Start xampp and go to import in phpmyadmin\r\n\r\nQ: How do I export database?\r\n--------------------------------\r\n**A:** Start xampp and go to export in phpmyadmin\r\n\r\nQ: How do I sign up?\r\n--------------------------------\r\n**A:** You go to `/register` and register a user there');
 -- end --
 

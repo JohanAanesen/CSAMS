@@ -13,12 +13,6 @@ import (
 	"time"
 )
 
-// Struct for keeping the frequently asked questions under /admin/faq
-type faq struct {
-	date      time.Time // Last edited time
-	questions string    // The markdown with questions and answers
-}
-
 // AdminGET handles GET-request at /admin
 func AdminGET(w http.ResponseWriter, r *http.Request) {
 	//check that user is a teacher
@@ -122,14 +116,14 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Log createCourse in the database and give error if something went wrong
 	lodData := model.Log{UserID: user.ID, Activity: model.CreatedCourse, CourseID: course.ID}
-	if !db.LogToDB(lodData) {
+	if !model.LogToDB(lodData) {
 		log.Fatal("Could not save createCourse log to database! (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	// Add user to course
-	if !db.AddUserToCourse(user.ID, course.ID) {
+	if !model.AddUserToCourse(user.ID, course.ID) {
 		log.Println("Could not add user to course! (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
@@ -137,7 +131,7 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Log joinedCourse in the db and give error if something went wrong
 	lodData = model.Log{UserID: user.ID, Activity: model.JoinedCourse, CourseID: course.ID}
-	if !db.LogToDB(lodData) {
+	if !model.LogToDB(lodData) {
 		log.Fatal("Could not save createCourse log to database! (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
@@ -202,33 +196,9 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	content := faq{questions: "-1"}
+	content := model.GetDateAndQuestionsFAQ()
 
-	// TODO : it feels wrong to have this here, but I think this is correct :S
-
-	//insert into database
-	rows, err := db.GetDB().Query("SELECT timestamp, questions FROM `adminfaq` WHERE id = 1") // OBS! Id is always 1 since it's only one entry in the table
-
-	// Log error
-	if err != nil {
-		log.Println(err.Error())
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
-
-	for rows.Next() {
-		var timestamp time.Time
-		var questions string
-
-		rows.Scan(&timestamp, &questions)
-
-		content = faq{
-			date:      timestamp,
-			questions: questions,
-		}
-	}
-
-	if content.questions == "-1" {
+	if content.Questions == "-1" {
 		log.Println("Something went wrong with getting the faq (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
@@ -237,12 +207,30 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
-	questions := github_flavored_markdown.Markdown([]byte(content.questions))
+	questions := github_flavored_markdown.Markdown([]byte(content.Questions))
 
 	v := view.New(r)
 	v.Name = "admin/faq/index"
-	v.Vars["Updated"] = content.date.Format("02. January 2006")
+	v.Vars["Updated"] = content.Date.Format("02. January 2006 - 15:04")
+	v.Vars["RawContent"] = content.Questions
 	v.Vars["Questions"] = template.HTML(questions)
 
 	v.Render(w)
+}
+
+// AdminFaqUpdatePOST handles the edit of the markdown faq
+func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
+	//check that user is a teacher
+	if !session.IsTeacher(r) { //not a teacher, error 401
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
+
+	updatedFAQ := r.FormValue("questions")
+	if updatedFAQ == "" {
+		log.Println("Form is empty! (admin.go)")
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
 }
