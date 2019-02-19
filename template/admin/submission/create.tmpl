@@ -1,25 +1,16 @@
 {{define "title"}}Create Submission{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-    <div class="container py-5">
-
-        <div class="row">
-
-            <div class="col">
-                <input type="text" class="form-control form-control-lg" name="submission_name" id="submission_name" placeholder="Submission Name">
-                <hr>
-                <button type="button" class="btn btn-dark" id="addField">Add field</button>
-                <hr>
-
-                <div class="accordion mb-5" id="formAccordion"></div>
-
-                <button type="button" class="btn btn-outline-dark" id="export">Export JSON</button>
-            </div>
-
-        </div>
-
-    </div>
+    <div id="output"></div>
 {{end}}
 {{define "foot"}}
 <script src="/static/js/form.js"></script>
+<script>
+    let form = new Form();
+    form.Initialize({
+        output: '#output',
+        request: '/admin/submission/create',
+        weighted: false,
+    });
+</script>
 {{end}}

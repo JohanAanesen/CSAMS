@@ -10,6 +10,7 @@ import (
 	"github.com/rs/xid"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"time"
 )
 
@@ -261,6 +262,16 @@ func AdminSubmissionCreateGET(w http.ResponseWriter, r *http.Request) {
 	// TODO (Svein): Add data to the page (courses, assignments, etc)
 
 	v.Render(w)
+}
+
+// AdminSubmissionCreatePOST ...
+func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
+	dump, err := httputil.DumpRequest(r, true)
+	if err != nil {
+		log.Println(err)
+	}
+
+	fmt.Println(string(dump))
 }
 
 // DatetimeLocalToRFC3339 converts a string from datetime-local HTML input-field to time.Time object
