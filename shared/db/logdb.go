@@ -21,7 +21,7 @@ func LogToDB(payload model.Log) bool {
 	var err error
 
 	// User changes name or email
-	if payload.Activity == model.ChangeEmail || payload.Activity == model.ChangeName {
+	if payload.Activity == model.ChangeEmail || payload.Activity == model.ChangeName || payload.Activity == model.UpdateAdminFAQ {
 		rows, err = GetDB().Query("INSERT INTO `logs` (`userid`, `activity`, `oldvalue`, `newvalue`) "+
 			"VALUES (?, ?, ?, ?)", payload.UserID, payload.Activity, payload.OldValue, payload.NewValue)
 
