@@ -3,15 +3,29 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
 )
+
+type Payload struct{
+	Submissions Submissions
+	AfterShuffle Submissions
+}
 
 // HandlerGET
 func HandlerGET(w http.ResponseWriter, r *http.Request) {
 
-	submissions := GetSubmissions(1)
+	payload := Payload{
+		Submissions: GetSubmissions(1),
+		AfterShuffle: GetSubmissions(1),
+	}
 
-	if err := json.NewEncoder(w).Encode(submissions); err != nil {
+	for i := range payload.AfterShuffle.Items {
+		j := rand.Intn(i + 1)
+		payload.AfterShuffle.Items[i], payload.AfterShuffle.Items[j] = payload.AfterShuffle.Items[j], payload.AfterShuffle.Items[i]
+	}
+
+	if err := json.NewEncoder(w).Encode(payload); err != nil {
 		panic(err)
 	}
 
