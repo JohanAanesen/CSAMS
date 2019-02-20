@@ -30,14 +30,51 @@ func (repo *AssignmentRepository) GetAll() []Assignment {
 }
 
 // Insert a new assignment to the database
-func (repo *AssignmentRepository) Insert(assignment Assignment) (bool, error) {
-	query := "INSERT INTO assignments (name, description, publish, deadline, course_id, submission_id, review_id) VALUES (?, ?, ?, ?, ?, ?, ?);"
-	rows, err := db.GetDB().Query(query, assignment.Name, assignment.Description, assignment.Publish, assignment.Deadline, assignment.CourseID, assignment.SubmissionID, assignment.ReviewID)
+func (repo *AssignmentRepository) Insert(assignment Assignment) error {
+	// Create query string
+	query := "INSERT INTO assignments (name, description, publish, deadline, course_id) VALUES (?, ?, ?, ?, ?);"
+	// Prepare and execute query
+	rows, err := db.GetDB().Exec(query, assignment.Name, assignment.Description, assignment.Publish, assignment.Deadline, assignment.CourseID)
+	// Check for error
 	if err != nil {
-		return false, err
+		return err
 	}
 
-	defer rows.Close()
+	// Get last inserted ID
+	id, err := rows.LastInsertId()
+	// Check for error
+	if err != nil {
+		return err
+	}
 
-	return true, nil
+	// Check if we have set a submission_id
+	if assignment.SubmissionID != 0 {
+		// Create query string
+		query := "UPDATE assignments SET submission_id = ? WHERE id = ?;"
+		// Prepare and execute query
+		rows, err := db.GetDB().Query(query, assignment.SubmissionID, id)
+		// Check for error
+		if err != nil {
+			return err
+		}
+		// Close connection
+		defer rows.Close()
+	}
+
+	// Check if we have set a review_id
+	if assignment.ReviewID != 0 {
+		// Create query string
+		query := "UPDATE assignments SET review_id = ? WHERE id = ?;"
+		// Prepare and execute query
+		rows, err := db.GetDB().Query(query, assignment.ReviewID, id)
+		// Check for error
+		if err != nil {
+			return err
+		}
+		// Close connection
+		defer rows.Close()
+	}
+
+
+	return nil
 }

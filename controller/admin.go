@@ -220,15 +220,7 @@ func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/assignment/create"
 
-	v.Vars["Courses"] = []struct { // TODO (Svein): use database
-		ID   int
-		Code string
-		Name string
-	}{
-		{ID: 1, Code: "IMT1031", Name: "Grunnleggende Programmering"},
-		{ID: 2, Code: "IMT1082", Name: "Objekt-Orientert Programmering"},
-		{ID: 3, Code: "IMT2021", Name: "Algoritmiske Metoder"},
-	}
+	v.Vars["Courses"] = model.GetCoursesToUser(session.GetUserFromSession(r).ID)
 
 	v.Vars["Submissions"] = submissions
 
@@ -254,6 +246,12 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	deadline, err := DatetimeLocalToRFC3339(r.FormValue("deadline"))
 	if err != nil {
 		log.Println(err)
+		return
+	}
+
+	if publish.After(deadline) {
+		// TODO (Svein): Give feedback on this. Also add this in the Javascript
+		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
@@ -295,15 +293,13 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		ReviewID:     reviewID,
 	}
 
-	success, err := assignmentRepository.Insert(assignment)
+	err = assignmentRepository.Insert(assignment)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	if success {
-		// TODO (Svein): Celebrate
-	}
+	http.Redirect(w, r, "/admin/assignment", http.StatusOK)
 
 }
 
@@ -361,11 +357,14 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO (Svein): Redirect or something!?
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 // DatetimeLocalToRFC3339 converts a string from datetime-local HTML input-field to time.Time object
 func DatetimeLocalToRFC3339(str string) (time.Time, error) {
+	if str == "" {
+		return time.Time{}, errors.New("error: could not parse empty datetime-string")
+	}
 	// TODO (Svein): Move this to a utils.go or something
 	if len(str) < 16 {
 		return time.Time{}, errors.New("cannot convert a string less then 16 characters: DatetimeLocalToRFC3339()")

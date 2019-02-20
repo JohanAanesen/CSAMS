@@ -1,5 +1,11 @@
 Svein's log
 ============
+## 20/02/2019
+* Cluster fuck of a database, but fixed it
+
+## 19/02/2019
+* Short day of working. Got the basic framework for the dynamic form together
+
 ## 18/02/2019
 * Talked with product owner about the database-design for the custom forms, and found a solution together that will not be too hard to implement.
   * Later found a more generic way to design the database, with a `forms` and `fields` table:

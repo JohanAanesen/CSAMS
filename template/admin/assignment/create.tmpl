@@ -22,7 +22,7 @@
                 <div class="form-group">
                     <label for="course_id">Course</label>
                     <select name="course_id" id="course_id" class="form-control">
-                        {{range .Courses}}
+                        {{range .Courses.Items}}
                             <option value="{{.ID}}">{{.Code}} {{.Name}}</option>
                         {{end}}
                     </select>
@@ -98,7 +98,7 @@
 
         <div class="row mb-5">
             <div class="col">
-                <input type="submit" class="btn btn-success btn-lg btn-block">
+                <input type="submit" class="btn btn-success btn-lg btn-block" id="submit">
             </div>
         </div>
 
@@ -139,9 +139,11 @@
             });
 
             let publishNowButton = document.getElementById('publish_now');
-            let publishField = document.getElementById('publish');
+            let publish = document.getElementById('publish');
+            let deadline = document.getElementById('deadline');
+
             publishNowButton.addEventListener('click', () => {
-                publishField.value = new Date().toISOString().substring(0, 16);
+                publish.value = new Date().toISOString().substring(0, 16);
             });
         })();
     </script>
