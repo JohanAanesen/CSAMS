@@ -7,7 +7,7 @@ import (
 
 type Request struct {
 	ID           int `json:"id"`
-	AssignmentID int `json:"assignmentid"`
+	SubmissionID int `json:"submissionid"`
 }
 
 type Response struct {
@@ -21,7 +21,7 @@ type Submissions struct {
 type Submission struct {
 	ID           int `json:"id"`
 	UserID       int `json:"userid"`
-	AssignmentID int `json:"assignmentid"`
+	SubmissionID int `json:"submissionid"`
 }
 
 type Pairs struct{
@@ -29,18 +29,18 @@ type Pairs struct{
 }
 
 type SubPair struct{
+	SubmissionID int `json:"submissionid"`
 	UserID       int `json:"userid"`
-	AssignmentID int `json:"assignmentid"`
-	SubmissionID1 int `json:"submissionid1"`
-	SubmissionID2 int `json:"submissionid2"`
+	UserSub1 int `json:"useruub1"`
+	UserSub2 int `json:"usersub2"`
 }
 
-func GetSubmissions(AssignmentID int) Submissions {
+func GetSubmissions(SubmissionID int) Submissions {
 
 	//Create an empty courses array
 	var submissions Submissions
 
-	rows, err := GetDB().Query("SELECT id, userid, assignmentid FROM submissions WHERE submissions.assignmentid = ?", AssignmentID)
+	rows, err := GetDB().Query("SELECT id, user_id, submission_id FROM user_submissions WHERE submission_id = ?", SubmissionID)
 	if err != nil {
 		log.Println(err.Error()) // TODO : log error
 		// returns empty course array if it fails
@@ -50,15 +50,15 @@ func GetSubmissions(AssignmentID int) Submissions {
 	for rows.Next() {
 		var id int
 		var userid int
-		var assignmentid int
+		var submissionid int
 
-		rows.Scan(&id, &userid, &assignmentid)
+		rows.Scan(&id, &userid, &submissionid)
 
 		// Add course to courses array
 		submissions.Items = append(submissions.Items, Submission{
 			ID:           id,
 			UserID:       userid,
-			AssignmentID: assignmentid,
+			SubmissionID: submissionid,
 		})
 	}
 
@@ -67,26 +67,26 @@ func GetSubmissions(AssignmentID int) Submissions {
 
 func createReviewPair(pairs Pairs)bool{
 
-	tx, err := GetDB().Begin()
+	tx, err := GetDB().Begin() //start transaction
 	if err != nil {
 		log.Println(err.Error())
 		return false
 	}
 
 	for _, pair := range pairs.Items {
-		_, err := tx.Exec("INSERT INTO reviewerpairs(assignmentid, userid, submissionid1, submissionid2) VALUES(?, ?, ?, ?)", pair.AssignmentID, pair.UserID, pair.SubmissionID1, pair.SubmissionID2)
+		_, err := tx.Exec("INSERT INTO reviewpairs(submissionid, userid, usersub1, usersub2) VALUES(?, ?, ?, ?)", pair.SubmissionID, pair.UserID, pair.UserSub1, pair.UserSub2)
 
 		if err != nil {
 			//todo log error
 			log.Fatal(err.Error())
-			tx.Rollback()
+			tx.Rollback() //quit transaction if error
 			return false
 		}
 	}
 
-	err = tx.Commit()
+	err = tx.Commit() //finish transaction
 	if err != nil {
-		log.Println(err.Error())
+		log.Fatal(err.Error())
 		return false
 	}
 
