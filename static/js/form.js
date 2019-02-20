@@ -1,3 +1,7 @@
+/**
+ * The types that can be used in this system.
+ * @type {{CHECKBOX: string, NUMBER: string, TEXTAREA: string, RADIO: string, TEXT: string, URL: string}}
+ */
 const TYPES = {
     CHECKBOX: 'checkbox',
     NUMBER: 'number',
@@ -13,42 +17,43 @@ const TYPES = {
  */
 let Form = function() {
     /**
-     *
+     * Holds the fields of the form
      * @type {Object[]}
      */
     this.fields = [];
 
     /**
-     *
+     * Holds the name of the form
      * @type {string}
      */
     this.name = '';
 
     /**
-     *
+     * Holds the description of the form
      * @type {string}
      */
     this.description = '';
 
     /**
-     *
+     * Holds the prefix of the form
      * @type {string}
      */
     this.prefix = '';
 
     /**
+     * Holds the output of the form
      * @type {HTMLElement}
      */
     this.output = null;
 
     /**
-     *
+     * Holds the boolean value if the form is weighted
      * @type {boolean}
      */
     this.weighted = false;
 
     /**
-     *
+     * Holds the request URL for the form
      * @type {string}
      */
     this.request = '';
@@ -215,6 +220,12 @@ let Form = function() {
         button.innerText = 'Submit';
 
         button.addEventListener('click', () => {
+            this.prefix = this.name.replaceAll(' ', '_').toLowerCase();
+
+            this.fields.forEach((e, i) => {
+                e.name = `${this.prefix}_${e.type}_${i}`;
+            });
+
             fetch(this.request, {
                 method: 'POST',
                 mode: 'cors',
@@ -226,13 +237,12 @@ let Form = function() {
                 redirect: 'follow',
                 body: this.toJSON()
             })
-            .then(data => {
-                console.log(data);
+            .then(response => {
+                console.log(response);
             })
             .catch(error => {
                 console.error(error);
-            })
-            .finally();
+            });
         });
 
         col.appendChild(button);
@@ -264,71 +274,72 @@ let Form = function() {
         });
 
         return JSON.stringify({
-            prefix: this.prefix,
-            name: this.name,
-            description: this.description,
-            fields: result,
+            prefix:         this.prefix,
+            name:           this.name,
+            description:    this.description,
+            fields:         result,
         });
     };
 };
 
 /**
- *
+ * Field is an object that holds data about fields, and functions for displaying it.
+ * @param {object} settings
  * @constructor
  */
 let Field = function(settings) {
     /**
-     *
+     * Holds the type of the field
      * @type {string}
      */
     this.type = TYPES.TEXT;
 
     /**
-     *
+     * Holds the name of the field
      * @type {string}
      */
     this.name = '';
 
     /**
-     *
+     * Holds the label of the field
      * @type {string}
      */
     this.label = '';
 
     /**
-     *
+     * Holds the description of the field
      * @type {string}
      */
     this.description = '';
 
     /**
-     *
+     * Holds the order of the field
      * @type {number}
      */
     this.order = 0;
 
     /**
-     *
+     * Holds the weight of the field
      * @type {number}
      */
     this.weight = 0;
 
     /**
-     *
+     * Holds the choices if the type is a multi-choice type
      * @type {Array}
      */
     this.choices = [];
 
     /**
-     *
-     * @type {object}
+     * Holds the settings for the field
+     * @type {{weighted: (boolean)}}
      */
     this.settings = {
         weighted: settings.weighted || false,
     };
 
     /**
-     *
+     * Creates a card with fields, and Bootstrap-styling
      * @param {number} id
      * @returns {HTMLElement}
      */
@@ -593,6 +604,12 @@ let Field = function(settings) {
     };
 };
 
+/**
+ * A replace-function that takes all replacements, not just the first.
+ * @param {string} search
+ * @param {string} replacement
+ * @returns {string}
+ */
 String.prototype.replaceAll = function(search, replacement) {
     let target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
