@@ -12,7 +12,6 @@ import (
 	"github.com/rs/xid"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -275,31 +274,18 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&form)
 	if err != nil {
 		log.Println(err)
+		return
 	}
 
-	// TODO (Svein): Move this to /model
-	rows, err := db.GetDB().Exec("INSERT INTO forms (prefix, name, description) VALUES (?, ?, ?);", form.Prefix, form.Name, form.Description)
+	var repo = model.FormRepository{}
+
+	err = repo.Insert(form)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	formId, err := rows.LastInsertId()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	for _, field := range form.Fields {
-		choices := strings.Join(field.Choices, ",")
-		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
-		rows, err := db.GetDB().Query(query, int(formId), field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, choices)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		rows.Close()
-	}
+	http.Redirect(w, r, "/admin/submission/create", 200)
 }
 
 // DatetimeLocalToRFC3339 converts a string from datetime-local HTML input-field to time.Time object
