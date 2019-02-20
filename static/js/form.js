@@ -28,6 +28,12 @@ let Form = function() {
      *
      * @type {string}
      */
+    this.description = '';
+
+    /**
+     *
+     * @type {string}
+     */
     this.prefix = '';
 
     /**
@@ -85,7 +91,7 @@ let Form = function() {
     /**
      * Creates a new field in the 'fields' array, then renders all.
      */
-    this.newField = function() {
+    this.NewField = function() {
         this.fields.push(new Field({
             weighted: this.weighted,
         }));
@@ -97,23 +103,39 @@ let Form = function() {
      * Clean the output HTML, then render all fields in it.
      */
     this.renderAll = function() {
+        let container, row, col, formGroup, label, input, textarea, hr, button, accordion;
+
         this.output.innerHTML = '';
 
-        let container = document.createElement('div');
+        // <div class="container">...</div>
+        container = document.createElement('div');
         container.classList.add(...['container']);
 
-        let row = document.createElement('div');
+        // <div class="row">...</div>
+        row = document.createElement('div');
         row.classList.add(...['row']);
 
-        let col = document.createElement('div');
+        // <div class="col">...</div>
+        col = document.createElement('div');
         col.classList.add(...['col']);
 
-        let input = document.createElement('input');
+        // <div class="form-group">...</div>
+        formGroup = document.createElement('div');
+        formGroup.classList.add(...['form-group']);
+
+        // <label for="form_name">Form Name</label>
+        label = document.createElement('label');
+        label.setAttribute('for', 'form_name');
+        label.innerText = 'Form Name';
+
+        // <input type="text" name="form_name" id="form_name" placeholder="Form Name">
+        input = document.createElement('input');
         input.setAttribute('type', 'text');
         input.setAttribute('name', 'form_name');
         input.setAttribute('placeholder', 'Form Name');
-        input.classList.add(...['form-control', 'form-control-lg']);
+        input.classList.add(...['form-control']);
         input.id = 'form_name';
+        input.value = this.name;
 
         input.addEventListener('keyup', e => {
             this.name = e.target.value;
@@ -124,41 +146,75 @@ let Form = function() {
             });
         });
 
-        col.appendChild(input);
+        formGroup.appendChild(label);
+        formGroup.appendChild(input);
 
-        let hr = document.createElement('hr');
+        col.appendChild(formGroup);
+
+        // <div class="form-group">...</div>
+        formGroup = document.createElement('div');
+        formGroup.classList.add(...['form-group']);
+
+        // <label for="form_description">Form Description</label>
+        label = document.createElement('label');
+        label.setAttribute('for', 'form_description');
+        label.innerText = 'Form Description';
+
+        // <textarea class="form-control" id="form_description" placeholder="Form Description"></textarea>
+        textarea = document.createElement('textarea');
+        textarea.classList.add(...['form-control']);
+        textarea.setAttribute('placeholder', 'Form Description');
+        textarea.id = 'form_description';
+        textarea.value = this.description;
+
+        textarea.addEventListener('keyup', e => {
+            this.description = e.target.value;
+        });
+
+        formGroup.appendChild(label);
+        formGroup.appendChild(textarea);
+
+        col.appendChild(formGroup);
+
+        // <hr>
+        hr = document.createElement('hr');
         col.appendChild(hr);
 
-        let button = document.createElement('button');
+        // <button type="button" class="btn btn-dark" id="add_field">Add field</button>
+        button = document.createElement('button');
         button.setAttribute('type', 'button');
         button.classList.add(...['btn', 'btn-dark']);
         button.id = 'add_field';
         button.innerText = 'Add field';
 
         button.addEventListener('click', () => {
-            this.newField();
+            this.NewField();
         });
 
         col.appendChild(button);
 
+        // <hr>
         hr = document.createElement('hr');
         col.appendChild(hr);
 
-        let accordion = document.createElement('div');
+        // <div class="accordion mb-5" id="accordion">...</div>
+        accordion = document.createElement('div');
         accordion.classList.add(...['accordion', 'mb-5']);
         accordion.id = 'accordion';
 
         col.appendChild(accordion);
 
+        // <hr>
         hr = document.createElement('hr');
         col.appendChild(hr);
 
+        // <button type="button" class="btn btn-primary">Submit</button>
         button = document.createElement('button');
         button.setAttribute('type', 'button');
         button.classList.add(...['btn', 'btn-primary']);
         button.innerText = 'Submit';
 
-        button.addEventListener('click', e => {
+        button.addEventListener('click', () => {
             fetch(this.request, {
                 method: 'POST',
                 mode: 'cors',
@@ -181,6 +237,7 @@ let Form = function() {
 
         col.appendChild(button);
 
+        // <hr>
         hr = document.createElement('hr');
         col.appendChild(hr);
 
@@ -203,12 +260,13 @@ let Form = function() {
         let result = [];
 
         this.fields.forEach(element => {
-            result.push(element.toJSON());
+            result.push(element.Get());
         });
 
         return JSON.stringify({
-            name: this.name,
             prefix: this.prefix,
+            name: this.name,
+            description: this.description,
             fields: result,
         });
     };
@@ -411,9 +469,11 @@ let Field = function(settings) {
         input = document.createElement('input');
         input.classList.add(...['form-control']);
         input.setAttribute('type', 'text');
+        input.setAttribute('placeholder', 'Label');
         input.setAttribute('name', `label_${id}`);
         input.id = `label_${id}`;
         input.value = this.label;
+
         // EventListener to the input-field, saving the value
         input.addEventListener('keyup', e => {
             e.preventDefault();
@@ -424,6 +484,31 @@ let Field = function(settings) {
         formGroup.appendChild(input);
         cardBody.appendChild(formGroup);
         // == LABEL END ==
+
+        // == DESCRIPTION START ==
+        formGroup = document.createElement('div');
+        formGroup.classList.add(...['form-group']);
+
+        label = document.createElement('label');
+        label.setAttribute('for', `description_${id}`);
+        label.innerText = 'Description';
+
+        textarea = document.createElement('textarea');
+        textarea.classList.add(...['form-control']);
+        textarea.setAttribute('placeholder', 'Description');
+        textarea.setAttribute('placeholder', 'Description');
+        textarea.setAttribute('name', `description_${id}`);
+        textarea.id = `description_${id}`;
+        textarea.value = this.description;
+
+        textarea.addEventListener('keyup', e => {
+            this.description = e.target.value;
+        });
+
+        formGroup.appendChild(label);
+        formGroup.appendChild(textarea);
+        cardBody.appendChild(formGroup);
+        // == DESCRIPTION END ==
 
         // == ORDER START ==
         formGroup = document.createElement('div');
@@ -492,17 +577,18 @@ let Field = function(settings) {
     };
 
     /**
-     *
+     * Returns the Field-object as a simple object
      * @returns {object}
      */
-    this.toJSON = function() {
+    this.Get = function() {
         return {
-            type: this.type,
-            name: this.name,
-            label: this.label,
-            order: this.order,
-            weight: this.weight,
-            choices: this.choices,
+            type:           this.type,
+            name:           this.name,
+            label:          this.label,
+            description:    this.description,
+            order:          this.order,
+            weight:         this.weight,
+            choices:        this.choices,
         }
     };
 };
