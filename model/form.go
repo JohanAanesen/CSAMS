@@ -19,7 +19,7 @@ type Form struct {
 		Name        string   `json:"name" db:"name"`
 		Label       string   `json:"label" db:"label"`
 		Description string   `json:"description" db:"description"`
-		Order       int      `json:"order" db:"order"`
+		Order       int      `json:"order" db:"priority"`
 		Weight      int      `json:"weight" db:"weight"`
 		Choices     []string `json:"choices" db:"choices"`
 	} `json:"fields"`
