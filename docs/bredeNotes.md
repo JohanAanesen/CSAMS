@@ -116,6 +116,9 @@ as we talked about with the [Project Owner](https://www.ntnu.no/ansatte/christop
     * I fixed the problem by removing the tabs and having the edit page on it's on page.
     * I also changed the design so it's more consistence to the admin dashboard.
     * Not really sure how to write tests for \#22 yet so I'll leave that for later.
+    * Finished for now
+* Started on [#21 - Admin Page Dynamic](https://trello.com/c/J8GQvTCt)
+    * 'text'
 ### ~~Thursday - 21/02/19~~ Ski day!
 ### Friday - 22/02/19
 
