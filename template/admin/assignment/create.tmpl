@@ -23,7 +23,7 @@
                     <label for="assignment_course_id">Course</label>
                     <select name="assignment_course_id" id="assignment_course_id" class="form-control">
                         {{range .Courses}}
-                            <option value="{{.ID}}">{{.CourseCode}} {{.Name}}</option>
+                            <option value="{{.ID}}">{{.Code}} {{.Name}}</option>
                         {{end}}
                     </select>
                 </div>
@@ -56,23 +56,25 @@
 
             <div class="col-12 col-lg">
                 <div class="form-group">
-                    <label for="assignment_type">Type</label>
+                    <label for="assignment_type">Submission Form</label>
                     <select name="assignment_type" id="assignment_type" class="form-control">
-                        <option value="1">Cloud Fall 2017 Assignment</option>
+                        <option value="">None</option>
+                        {{range .Submissions}}
+                            <option value="{{.ID}}">{{.Form.Name}}</option>
+                        {{end}}
+                        <!-- TODO (Svein): Create an API-call for getting the JSON og the submission form -->
                     </select>
                 </div>
 
                 <hr>
 
-                <fieldset>
-                    <legend>Preview:</legend>
-                    <hr>
-
-                    <div class="form-group">
-                        <label for="">Git-Repository:</label>
-                        <input type="url" class="form-control" placeholder="Git-repository" disabled>
+                <div class="row">
+                    <div class="col">
+                        <h4>Preview</h4>
+                        <hr>
+                        <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
                     </div>
-                </fieldset>
+                </div>
             </div>
 
             <div class="col-12 py-3">
@@ -87,6 +89,7 @@
                 <div class="col">
                     <h2 class="display-4">Review Form</h2>
                     <hr>
+                    <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
                 </div>
             </div>
 
@@ -159,11 +162,6 @@
             publishNowButton.addEventListener('click', () => {
                 publishField.value = new Date().toISOString().substring(0, 16);
             });
-
-            document.getElementById('test').addEventListener('click', () => {
-                console.log(document.getElementById('assignment_deadline').value);
-            })
-
         })();
     </script>
 {{end}}

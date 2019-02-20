@@ -177,23 +177,30 @@ func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var subRepo = model.SubmissionRepository{}
+	submissions, err := subRepo.GetAll()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
 	v.Name = "admin/assignment/create"
 
-	v.Vars["Courses"] = []struct {
-		ID         int
-		CourseCode string
-		Name       string
+	v.Vars["Courses"] = []struct { // TODO (Svein): use database
+		ID   int
+		Code string
+		Name string
 	}{
-		{ID: 1, CourseCode: "IMT1031", Name: "Grunnleggende Programmering"},
-		{ID: 2, CourseCode: "IMT1082", Name: "Objekt-Orientert Programmering"},
-		{ID: 3, CourseCode: "IMT2021", Name: "Algoritmiske Metoder"},
+		{ID: 1, Code: "IMT1031", Name: "Grunnleggende Programmering"},
+		{ID: 2, Code: "IMT1082", Name: "Objekt-Orientert Programmering"},
+		{ID: 3, Code: "IMT2021", Name: "Algoritmiske Metoder"},
 	}
 
-	// TODO (Svein): Add data to the page (courses, assignments, etc)
+	v.Vars["Submissions"] = submissions
 
 	v.Render(w)
 }
@@ -207,48 +214,48 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	/*
-	adb := model.AssignmentDatabase{}
+		adb := model.AssignmentDatabase{}
 
-	courseID, err := strconv.Atoi(r.FormValue("assignment_course_id"))
-	if err != nil {
-		log.Println(err)
-		return
-	}
+		courseID, err := strconv.Atoi(r.FormValue("assignment_course_id"))
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
-	publish, err := DatetimeLocalToRFC3339(r.FormValue("assignment_publish"))
-	if err != nil {
-		log.Println(err)
-		return
-	}
+		publish, err := DatetimeLocalToRFC3339(r.FormValue("assignment_publish"))
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
-	deadline, err := DatetimeLocalToRFC3339(r.FormValue("assignment_deadline"))
-	if err != nil {
-		log.Println(err)
-		return
-	}
+		deadline, err := DatetimeLocalToRFC3339(r.FormValue("assignment_deadline"))
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
-	enableReview := r.FormValue("assignment_enable_review") == "on"
+		enableReview := r.FormValue("assignment_enable_review") == "on"
 
-	assignment := model.Assignment{
-		Title:        r.FormValue("assignment_title"),
-		Description:  r.FormValue("assignment_description"),
-		CourseID:     courseID,
-		Publish:      publish,
-		Deadline:     deadline,
-		EnableReview: enableReview,
-	}
+		assignment := model.Assignment{
+			Title:        r.FormValue("assignment_title"),
+			Description:  r.FormValue("assignment_description"),
+			CourseID:     courseID,
+			Publish:      publish,
+			Deadline:     deadline,
+			EnableReview: enableReview,
+		}
 
-	fmt.Printf("\n%v\n\n", assignment)
+		fmt.Printf("\n%v\n\n", assignment)
 
-	success, err := adb.Insert(assignment)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+		success, err := adb.Insert(assignment)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
-	if success {
-		// TODO (Svein): Celebrate
-	}
+		if success {
+			// TODO (Svein): Celebrate
+		}
 	*/
 }
 

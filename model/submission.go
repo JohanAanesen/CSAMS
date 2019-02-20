@@ -7,14 +7,13 @@ import (
 
 // Submission TODO (Svein): comment
 type Submission struct {
-	ID     int   `json:"id" db:"id"`
-	FormID int   `json:"-" db:"form_id"`
+	ID     int  `json:"id" db:"id"`
+	FormID int  `json:"-" db:"form_id"`
 	Form   Form `json:"form"`
 }
 
 // SubmissionRepository TODO (Svein): comment
 type SubmissionRepository struct {
-
 }
 
 // Insert form and fields to database

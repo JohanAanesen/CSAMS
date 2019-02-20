@@ -14,7 +14,7 @@ type Form struct {
 	Description string    `json:"description" db:"description"`
 	Created     time.Time `json:"created" db:"created"`
 
-	Fields      []struct {
+	Fields []struct {
 		ID          int      `json:"id" db:"id"`
 		Type        string   `json:"type" db:"type"`
 		Name        string   `json:"name" db:"name"`
@@ -28,7 +28,6 @@ type Form struct {
 
 // FormRepository TODO (Svein): comment
 type FormRepository struct {
-
 }
 
 // Insert form to database
