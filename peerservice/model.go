@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"math/rand"
+	"time"
 )
 
 type Request struct {
@@ -94,10 +95,12 @@ func createReviewPair(pairs Pairs)bool{
 }
 
 func (subs Submissions) shuffle() Submissions{
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+
 	for i := range subs.Items {
-		j := rand.Intn(i + 1)
+		j := r.Intn(i + 1)
 		subs.Items[i], subs.Items[j] = subs.Items[j], subs.Items[i]
 	}
-
+	
 	return subs
 }
