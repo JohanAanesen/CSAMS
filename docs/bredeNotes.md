@@ -118,7 +118,9 @@ as we talked about with the [Project Owner](https://www.ntnu.no/ansatte/christop
     * Not really sure how to write tests for \#22 yet so I'll leave that for later.
     * Finished for now
 * Started on [#21 - Admin Page Dynamic](https://trello.com/c/J8GQvTCt)
-    * 'text'
+* Used some time looking at a pull request
+* Updated the getCoursesToUser to get the courses sorted by the year and then semester in descending order.
+It's nicer this way and more effective to have current classes at the top where they are easy reachable.
 ### ~~Thursday - 21/02/19~~ Ski day!
 ### Friday - 22/02/19
 

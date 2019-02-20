@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
@@ -46,7 +47,10 @@ func AdminCourseGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/course/index"
 
-	// TODO (Svein): Add data to the page
+	user := session.GetUserFromSession(r)
+
+	fmt.Println("YET")
+	v.Vars["Courses"] = model.GetCoursesToUser(user.ID)
 
 	v.Render(w)
 }

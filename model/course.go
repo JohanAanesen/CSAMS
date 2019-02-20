@@ -27,10 +27,11 @@ type Course struct {
 //GetCoursesToUser returns all the courses to the user
 func GetCoursesToUser(userID int) Courses {
 
-	//Create an empty courses array
+	// Create an empty courses array
 	var courses Courses
 
-	rows, err := db.GetDB().Query("SELECT course.* FROM course INNER JOIN usercourse ON course.id = usercourse.courseid WHERE usercourse.userid = ?", userID)
+	// Query gets all courses to user with userid: userID and sort them by year and semester
+	rows, err := db.GetDB().Query("SELECT course.* FROM course INNER JOIN usercourse ON course.id = usercourse.courseid WHERE usercourse.userid = ? ORDER BY course.year DESC, course.semester DESC", userID)
 	if err != nil {
 		fmt.Println(err.Error()) // TODO : log error
 
