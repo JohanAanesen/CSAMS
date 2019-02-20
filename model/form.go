@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"time"
 )
@@ -49,4 +50,31 @@ func (repo *FormRepository) Insert(form Form) (int64, error) {
 	}
 
 	return id, nil
+}
+
+func (repo *FormRepository) Get(id int) (Form, error) {
+	// Create query-string
+	query := "SELECT id, prefix, name, description, created FROM forms WHERE id = ?"
+	// Perform query
+	rows, err := db.GetDB().Query(query, id)
+	// Check for error
+	if err != nil {
+		return Form{}, err
+	}
+
+	// Check if there is any rows
+	if rows.Next() {
+		// Declare an empty Form
+		var form = Form{}
+		// Scan
+		err = rows.Scan(&form.ID, &form.Prefix, &form.Name, &form.Description, &form.Created)
+		// Check for error
+		if err != nil {
+			return Form{}, err
+		}
+
+		return form, nil
+	} else {
+		return Form{}, errors.New("form: Could not do rows.Next()")
+	}
 }

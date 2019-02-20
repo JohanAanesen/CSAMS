@@ -57,6 +57,7 @@ func routes() http.Handler {
 	router.HandleFunc("/admin/assignment/create", controller.AdminAssignmentCreateGET).Methods("GET")
 	router.HandleFunc("/admin/assignment/create", controller.AdminAssignmentCreatePOST).Methods("POST")
 
+	router.HandleFunc("/admin/submission", controller.AdminSubmissionGET).Methods("GET")
 	router.HandleFunc("/admin/submission/create", controller.AdminSubmissionCreateGET).Methods("GET")
 	router.HandleFunc("/admin/submission/create", controller.AdminSubmissionCreatePOST).Methods("POST")
 

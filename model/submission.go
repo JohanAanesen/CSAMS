@@ -9,7 +9,7 @@ import (
 type Submission struct {
 	ID     int   `json:"id" db:"id"`
 	FormID int   `json:"-" db:"form_id"`
-	Form   *Form `json:"form"`
+	Form   Form `json:"form"`
 }
 
 // SubmissionRepository TODO (Svein): comment
@@ -59,3 +59,50 @@ func (repo *SubmissionRepository) Insert(form Form) error {
 	return nil
 }
 
+func (repo *SubmissionRepository) GetAll() ([]Submission, error) {
+	// Declare return array
+	var result = make([]Submission, 0)
+	// Create query-string
+	query := "SELECT * FROM submissions"
+	// Perform query
+	rows, err := db.GetDB().Query(query)
+	// Check for error
+	if err != nil {
+		return []Submission{}, err
+	}
+	// Close connection
+	defer rows.Close()
+
+	// Loop through rows
+	for rows.Next() {
+		// Declare a single Submission
+		var submission = Submission{}
+		// Scan the data from the rows
+		err = rows.Scan(&submission.ID, &submission.FormID)
+		// Check for error
+		if err != nil {
+			return []Submission{}, err
+		}
+
+		// Append scan-result to result
+		result = append(result, submission)
+	}
+
+	// Declare a FormRepository
+	var formRepo = FormRepository{}
+	// Loop through all submissions
+	for index, submission := range result {
+		// Get form from database
+		form, err := formRepo.Get(submission.FormID)
+		// Check for error
+		if err != nil {
+			return []Submission{}, nil
+		}
+		// Get the form
+		submission.Form = form
+		// Set the new values
+		result[index] = submission
+	}
+
+	return result, nil
+}

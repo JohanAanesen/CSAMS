@@ -252,6 +252,26 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	*/
 }
 
+func AdminSubmissionGET(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	var subRepo = model.SubmissionRepository{}
+
+	submissions, err := subRepo.GetAll()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	v := view.New(r)
+	v.Name = "admin/submission/index"
+
+	v.Vars["Submissions"] = submissions
+
+	v.Render(w)
+}
+
 // AdminSubmissionCreateGET ...
 func AdminSubmissionCreateGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
