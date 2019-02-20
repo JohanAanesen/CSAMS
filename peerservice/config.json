@@ -1,0 +1,20 @@
+{
+  "database": {
+    "hostname": "localhost",
+    "port": 3306,
+    "username": "root",
+    "password": "",
+    "database": "cs53",
+    "parseTime": true
+  },
+
+  "server": {
+    "hostname": "localhost",
+    "useHTTP": true,
+    "useHTTPS": false,
+    "HTTPPort": 8087,
+    "HTTPSPort": 4430,
+    "certFile": "",
+    "keyFile": ""
+  }
+}
