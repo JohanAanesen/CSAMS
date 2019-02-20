@@ -12,6 +12,7 @@ import (
 	"github.com/rs/xid"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -29,7 +30,7 @@ func AdminGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/index"
 
-	assignmentRepo := model.AssignmentDatabase{}
+	assignmentRepo := model.AssignmentRepository{}
 	assignments := assignmentRepo.GetAll()
 
 	v.Vars["Assignments"] = assignments
@@ -98,6 +99,7 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		Semester:    r.FormValue("semester"),
 	}
 
+	// TODO (Svein): Move this to model, in a function
 	//insert into database
 	rows, err := db.GetDB().Query("INSERT INTO course(hash, coursecode, coursename, year, semester, description, teacher) VALUES(?, ?, ?, ?, ?, ?, ?)",
 		course.Hash, course.Code, course.Name, course.Year, course.Semester, course.Description, user.ID)
@@ -213,50 +215,68 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/*
-		adb := model.AssignmentDatabase{}
+	assignmentRepository := model.AssignmentRepository{}
 
-		courseID, err := strconv.Atoi(r.FormValue("assignment_course_id"))
+	publish, err := DatetimeLocalToRFC3339(r.FormValue("publish"))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	deadline, err := DatetimeLocalToRFC3339(r.FormValue("deadline"))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	courseIDString := r.FormValue("course_id")
+	submissionIDString := r.FormValue("submission_id")
+	reviewIDString := r.FormValue("review_id")
+
+	courseID, err := strconv.Atoi(courseIDString)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	var submissionID int
+	if submissionIDString != "" {
+		submissionID, err = strconv.Atoi(submissionIDString)
 		if err != nil {
 			log.Println(err)
 			return
 		}
+	}
 
-		publish, err := DatetimeLocalToRFC3339(r.FormValue("assignment_publish"))
+	var reviewID int
+	if reviewIDString != "" {
+		reviewID, err = strconv.Atoi(reviewIDString)
 		if err != nil {
 			log.Println(err)
 			return
 		}
+	}
 
-		deadline, err := DatetimeLocalToRFC3339(r.FormValue("assignment_deadline"))
-		if err != nil {
-			log.Println(err)
-			return
-		}
+	assignment := model.Assignment{
+		Name:         r.FormValue("name"),
+		Description:  r.FormValue("description"),
+		Publish:      publish,
+		Deadline:     deadline,
+		CourseID:     courseID,
+		SubmissionID: submissionID,
+		ReviewID:     reviewID,
+	}
 
-		enableReview := r.FormValue("assignment_enable_review") == "on"
+	success, err := assignmentRepository.Insert(assignment)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
-		assignment := model.Assignment{
-			Title:        r.FormValue("assignment_title"),
-			Description:  r.FormValue("assignment_description"),
-			CourseID:     courseID,
-			Publish:      publish,
-			Deadline:     deadline,
-			EnableReview: enableReview,
-		}
+	if success {
+		// TODO (Svein): Celebrate
+	}
 
-		fmt.Printf("\n%v\n\n", assignment)
-
-		success, err := adb.Insert(assignment)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		if success {
-			// TODO (Svein): Celebrate
-		}
-	*/
 }
 
 // AdminSubmissionGET TODO (Svein): comment

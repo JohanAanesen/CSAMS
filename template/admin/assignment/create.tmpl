@@ -15,13 +15,13 @@
         <div class="row">
             <div class="col-12 col-lg">
                 <div class="form-group">
-                    <label for="assignment_title">Title</label>
-                    <input type="text" id="assignment_title" name="assignment_title" class="form-control" placeholder="Assignment Title">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Assignment Name">
                 </div>
 
                 <div class="form-group">
-                    <label for="assignment_course_id">Course</label>
-                    <select name="assignment_course_id" id="assignment_course_id" class="form-control">
+                    <label for="course_id">Course</label>
+                    <select name="course_id" id="course_id" class="form-control">
                         {{range .Courses}}
                             <option value="{{.ID}}">{{.Code}} {{.Name}}</option>
                         {{end}}
@@ -29,84 +29,76 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="assignment_publish">Publish</label>
+                    <label for="publish">Publish</label>
                     <div class="input-group">
-                        <input type="datetime-local" name="assignment_publish" id="assignment_publish" class="form-control">
+                        <input type="datetime-local" name="publish" id="publish" class="form-control">
                         <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button" id="assignment_publish_now">Now</button>
+                            <button class="btn btn-outline-secondary" type="button" id="publish_now">Now</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="assignment_deadline">Deadline</label>
-                    <input type="datetime-local" name="assignment_deadline" id="assignment_deadline" class="form-control" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}">
+                    <label for="deadline">Deadline</label>
+                    <input type="datetime-local" name="deadline" id="deadline" class="form-control">
                 </div>
 
                 <div class="form-group">
                     <label for="simplemde">Description</label>
-                    <textarea name="assignment_description" id="simplemde" placeholder="Description (Hint: Markdown)"></textarea>
-                </div>
-
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" name="assignment_enable_review" id="assignment_enable_review">
-                    <label class="custom-control-label" for="assignment_enable_review">Enable Review</label>
+                    <textarea name="description" id="simplemde" placeholder="Description (Hint: Markdown)"></textarea>
                 </div>
             </div>
 
             <div class="col-12 col-lg">
-                <div class="form-group">
-                    <label for="assignment_type">Submission Form</label>
-                    <select name="assignment_type" id="assignment_type" class="form-control">
-                        <option value="">None</option>
-                        {{range .Submissions}}
-                            <option value="{{.ID}}">{{.Form.Name}}</option>
-                        {{end}}
-                        <!-- TODO (Svein): Create an API-call for getting the JSON og the submission form -->
-                    </select>
-                </div>
+                <div class="row">
+                    <div class="col">
+                        <h3>Submission Form</h3>
+                        <div class="form-group">
+                            <label for="submission_id">Select Form</label>
+                            <select name="submission_id" id="submission_id" class="form-control">
+                                <option value="">None</option>
+                                {{range .Submissions}}
+                                    <option value="{{.ID}}">{{.Form.Name}}</option>
+                                {{end}}
+                                <!-- TODO (Svein): Create an API-call for getting the JSON og the submission form -->
+                            </select>
+                        </div>
 
-                <hr>
+                        <hr>
+
+                        <h6>Preview</h6>
+                        <hr>
+                        <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
+                        <hr>
+                    </div>
+                </div>
 
                 <div class="row">
                     <div class="col">
-                        <h4>Preview</h4>
+                        <h3>Review Form</h3>
+                        <div class="form-group">
+                            <label for="review_id">Select Form</label>
+                            <select name="review_id" id="review_id" class="form-control">
+                                <option value="">None</option>
+                            </select>
+                        </div>
+
+                        <hr>
+
+                        <h6>Preview</h6>
                         <hr>
                         <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
+                        <hr>
+                        <div id="review_container"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-12 py-3">
-                <input type="submit" class="btn btn-success">
-            </div>
         </div>
 
-        <div id="review_container">
-            <hr>
-
-            <div class="row">
-                <div class="col">
-                    <h2 class="display-4">Review Form</h2>
-                    <hr>
-                    <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
-                </div>
-            </div>
-
-            <div class="row pb-5">
-                <div class="col-md-3">
-                    <p class="lead">Add field to form</p>
-                    <hr>
-                    <button type="button" class="btn btn-light btn-block border" id="btn_textfield">Textfield</button>
-                    <button type="button" class="btn btn-light btn-block border" id="btn_textarea">Textarea</button>
-                    <button type="button" class="btn btn-light btn-block border" id="btn_checkbox">Checkbox</button>
-                    <button type="button" class="btn btn-light btn-block border" id="btn_radio">Radio</button>
-                    <hr>
-                </div>
-
-                <div class="col-md-9" id="output">
-
-                </div>
+        <div class="row mb-5">
+            <div class="col">
+                <input type="submit" class="btn btn-success btn-lg btn-block">
             </div>
         </div>
 
@@ -146,19 +138,8 @@
                 hideIcons: ["side-by-side", "fullscreen"],
             });
 
-            // Get the checkbox for enabling review
-            let enableReviewCheckbox = document.getElementById('assignment_enable_review');
-            // Get the review-container
-            let reviewContainer = document.getElementById('review_container');
-            // Hide/display the review-container
-            reviewContainer.hidden = !enableReviewCheckbox.checked;
-            // Hide/display the review-container based on the checkbox
-            enableReviewCheckbox.addEventListener('click', () => {
-                reviewContainer.hidden = !enableReviewCheckbox.checked;
-            });
-
-            let publishNowButton = document.getElementById('assignment_publish_now');
-            let publishField = document.getElementById('assignment_publish');
+            let publishNowButton = document.getElementById('publish_now');
+            let publishField = document.getElementById('publish');
             publishNowButton.addEventListener('click', () => {
                 publishField.value = new Date().toISOString().substring(0, 16);
             });
