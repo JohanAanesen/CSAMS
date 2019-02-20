@@ -285,7 +285,7 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/admin/submission/create", 200)
+	// TODO (Svein): Redirect or something!?
 }
 
 // DatetimeLocalToRFC3339 converts a string from datetime-local HTML input-field to time.Time object

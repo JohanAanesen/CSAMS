@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Form TODO (Svein): comment
 type Form struct {
 	ID          int       `json:"id" db:"id"`
 	Prefix      string    `json:"prefix" db:"prefix"`
@@ -24,10 +25,12 @@ type Form struct {
 	} `json:"fields"`
 }
 
+// FormRepository TODO (Svein): comment
 type FormRepository struct {
 
 }
 
+// Insert form to database
 func (repo *FormRepository) Insert(form Form) (int64, error) {
 	// Insertions Query
 	query := "INSERT INTO forms (prefix, name, description) VALUES (?, ?, ?);"
