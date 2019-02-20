@@ -23,8 +23,6 @@ type User struct {
 	Authenticated bool   `json:"authenticated"`
 }
 
-// TODO (Svein): Move this to model/user.go
-
 // UpdateUserName updates the users name in the db
 func UpdateUserName(userID int, newName string) bool {
 

@@ -14,20 +14,17 @@ func Load() http.Handler {
 	return routes()
 }
 
-// LoadHTTP ... TODO (Svein) add comment here
-func LoadHTTP() http.Handler {
-	return routes()
-}
-
-// LoadHTTPS ... TODO (Svein) add comment here
+// LoadHTTPS ... TODO (Svein): Add TLS settings
 func LoadHTTPS() http.Handler {
 	return routes()
 }
 
+// redirectToHTTPS ....
 func redirectToHTTPS(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("https://%s", r.Host), http.StatusMovedPermanently)
 }
 
+// routes setups all routes
 func routes() http.Handler {
 	// Instantiate mux-router
 	router := mux.NewRouter().StrictSlash(true)
@@ -51,12 +48,21 @@ func routes() http.Handler {
 
 	// Admin-page Handlers
 	router.HandleFunc("/admin", controller.AdminGET).Methods("GET")
+
 	router.HandleFunc("/admin/course", controller.AdminCourseGET).Methods("GET")
 	router.HandleFunc("/admin/course/create", controller.AdminCreateCourseGET).Methods("GET")
 	router.HandleFunc("/admin/course/create", controller.AdminCreateCoursePOST).Methods("POST")
 	router.HandleFunc("/admin/course/update/{id}", controller.AdminUpdateCourseGET).Methods("GET")
 	router.HandleFunc("/admin/course/update/{id}", controller.AdminUpdateCoursePOST).Methods("POST")
+
 	router.HandleFunc("/admin/assignment", controller.AdminAssignmentGET).Methods("GET")
+	router.HandleFunc("/admin/assignment/create", controller.AdminAssignmentCreateGET).Methods("GET")
+	router.HandleFunc("/admin/assignment/create", controller.AdminAssignmentCreatePOST).Methods("POST")
+
+	router.HandleFunc("/admin/submission", controller.AdminSubmissionGET).Methods("GET")
+	router.HandleFunc("/admin/submission/create", controller.AdminSubmissionCreateGET).Methods("GET")
+	router.HandleFunc("/admin/submission/create", controller.AdminSubmissionCreatePOST).Methods("POST")
+
 	router.HandleFunc("/admin/faq", controller.AdminFaqGET).Methods("GET")
 	router.HandleFunc("/admin/faq/edit", controller.AdminFaqEditGET).Methods("GET")
 	router.HandleFunc("/admin/faq/update", controller.AdminFaqUpdatePOST).Methods("POST")

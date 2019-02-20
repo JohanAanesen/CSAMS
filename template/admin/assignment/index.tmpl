@@ -1,6 +1,12 @@
 {{define "title"}}Assignments{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-
+    <h2 class="display-4 mb-3">Assignments <a href="/admin/assignment/create" class="btn btn-success btn-sm px-3">New</a></h2>
+    <hr>
+    <div class="row">
+        {{range .Assignments}}
+            <!-- TODO (Svein): Show assignments -->
+        {{end}}
+    </div>
 {{end}}
 {{define "foot"}}{{end}}
