@@ -28,6 +28,17 @@ func (repo *SubmissionRepository) Insert(form Form) error {
 		return err
 	}
 
+	// Insertions query
+	query := "INSERT INTO submissions (form_id) VALUES(?)"
+	// Insert form_id into submissions
+	rows, err := db.GetDB().Query(query, formId)
+	// Check for error
+	if err != nil {
+		return err
+	}
+	// Close the connections
+	defer rows.Close()
+
 	// Loop trough fields in the forms
 	for _, field := range form.Fields {
 		// Join the array to a single string for 'choices'
