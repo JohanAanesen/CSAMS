@@ -28,17 +28,17 @@ This project is in the norwegian timezone! At least the:
 * [`model/adminfaq.go`](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/master/model/adminfaq.go) file at line `50`: `date := time.Now().UTC().Add(time.Hour)`
 
 ## Commit messages guideline
-start med #69 der nummeret er nummeret på "kortet" du jobber på trello etterfulgt av:
-* update	- oppdatert funksjon/fil
-* add	- lagt til funksjon/fil
-* fix	- fikset en bug
-* remove	- fjernet funksjon/fil
-* test	- lagt til test for en funksjon
-* refactor - endret kodestruktur, flyttet en fil eller endret visuell representasjon av kode
+Start with the numger `#42` where the number is the number to the `card` you're working on Trello followed by:
+* update	- updated dunction/file
+* add	- added function/file
+* fix	- fixed a bug
+* remove	- removed a function/file
+* test	- added a test for a function
+* refactor - refactored the codestructure, moved a file or changed the visual representation of code.
 
 Aka #CARDNR ACTION BRIEF_EXPLANATION
 
-eksempler:
+Examples:
 * "#2 add database.sql initial table file"
 * "#8 fix changing password bug"
 * "#14 update weekly report for week 2"
