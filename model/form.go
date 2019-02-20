@@ -26,7 +26,7 @@ type Form struct {
 	} `json:"fields"`
 }
 
-// FormRepository TODO (Svein): comment
+// FormRepository ... TODO (Svein): comment
 type FormRepository struct {
 }
 
@@ -51,6 +51,7 @@ func (repo *FormRepository) Insert(form Form) (int64, error) {
 	return id, nil
 }
 
+// Get a single form based on the Primary Key, 'id'
 func (repo *FormRepository) Get(id int) (Form, error) {
 	// Create query-string
 	query := "SELECT id, prefix, name, description, created FROM forms WHERE id = ?"
@@ -73,7 +74,7 @@ func (repo *FormRepository) Get(id int) (Form, error) {
 		}
 
 		return form, nil
-	} else {
-		return Form{}, errors.New("form: Could not do rows.Next()")
 	}
+
+	return Form{}, errors.New("form: Could not do rows.Next()")
 }

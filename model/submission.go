@@ -5,14 +5,14 @@ import (
 	"strings"
 )
 
-// Submission TODO (Svein): comment
+// Submission .... TODO (Svein): comment
 type Submission struct {
 	ID     int  `json:"id" db:"id"`
 	FormID int  `json:"-" db:"form_id"`
 	Form   Form `json:"form"`
 }
 
-// SubmissionRepository TODO (Svein): comment
+// SubmissionRepository ... TODO (Svein): comment
 type SubmissionRepository struct {
 }
 
@@ -22,7 +22,7 @@ func (repo *SubmissionRepository) Insert(form Form) error {
 	var formRepo = FormRepository{}
 
 	// Insert form to database, and get last inserted Id from it
-	formId, err := formRepo.Insert(form)
+	formID, err := formRepo.Insert(form)
 	if err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func (repo *SubmissionRepository) Insert(form Form) error {
 	// Insertions query
 	query := "INSERT INTO submissions (form_id) VALUES(?)"
 	// Insert form_id into submissions
-	rows, err := db.GetDB().Query(query, formId)
+	rows, err := db.GetDB().Query(query, formID)
 	// Check for error
 	if err != nil {
 		return err
@@ -45,7 +45,7 @@ func (repo *SubmissionRepository) Insert(form Form) error {
 		// Insertion query
 		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
 		// Execute the query
-		rows, err := db.GetDB().Query(query, int(formId), field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, choices)
+		rows, err := db.GetDB().Query(query, int(formID), field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, choices)
 		// Check for error
 		if err != nil {
 			return err
@@ -58,6 +58,7 @@ func (repo *SubmissionRepository) Insert(form Form) error {
 	return nil
 }
 
+// GetAll returns all submission in the database
 func (repo *SubmissionRepository) GetAll() ([]Submission, error) {
 	// Declare return array
 	var result = make([]Submission, 0)
