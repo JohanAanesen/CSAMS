@@ -54,7 +54,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	classmates := db.GetUsersToCourse(courseID)
+	classmates := model.GetUsersToCourse(courseID)
 
 	//all a-ok
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -86,7 +86,7 @@ func CourseListGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Fprintf(w, "Id is %s\n", id)
+		fmt.Fprintf(w, "ID is %s\n", id)
 	}
 	//check if user is an participant of said class or a teacher
 

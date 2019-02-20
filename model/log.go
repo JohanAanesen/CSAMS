@@ -20,6 +20,7 @@ const (
 	JoinedCourse        activity = "JOINED-COURSE"                          // User joined course
 	CreatedCourse       activity = "COURSE-CREATED"                         // Course is created
 	CreatAssignment     activity = "ASSIGNMENT-CREATED"                     // Assignment is created
+	UpdateAdminFAQ      activity = "UPDATE-ADMIN-FAQ"                       // The admins faq is updated
 )
 
 // Log struct to hold log-data
@@ -30,11 +31,10 @@ type Log struct {
 	AssignmentID int      // [NULLABLE][DeliveredAssignment/FinishedPeerReview/PeerReviewDone/CreatAssignment] ID to relative assignment
 	CourseID     int      // [NULLABLE][JoinedCourse/CreatedCourse] ID to relative course
 	SubmissionID int      // [NULLABLE][DeliveredAssignment/FinishedPeerReview/PeerReviewDone] ID to relative submission
-	OldValue     string   // [NULLABLE][ChangeName/ChangeEmail] Value before changing name/email
-	NewValue     string   // [NULLABLE][ChangeName/ChangeEmail] Value after changing name/email
+	OldValue     string   // [NULLABLE][ChangeName/ChangeEmail/UpdateAdminFAQ] Value before changing name/email/faq
+	NewValue     string   // [NULLABLE][ChangeName/ChangeEmail/UpdateAdminFAQ] Value after changing name/email/faq
 }
 
-// TODO (Svein): make this a method of a struct (From: logdb.go)
 // LogToDB adds logs to the database when an user/admin does something noteworthy
 func LogToDB(payload Log) bool {
 
@@ -50,7 +50,7 @@ func LogToDB(payload Log) bool {
 	var err error
 
 	// User changes name or email
-	if payload.Activity == ChangeEmail || payload.Activity == ChangeName {
+	if payload.Activity == ChangeEmail || payload.Activity == ChangeName || payload.Activity == UpdateAdminFAQ {
 		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `activity`, `oldvalue`, `newvalue`) "+
 			"VALUES (?, ?, ?, ?)", payload.UserID, payload.Activity, payload.OldValue, payload.NewValue)
 

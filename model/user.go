@@ -23,7 +23,6 @@ type User struct {
 	Authenticated bool   `json:"authenticated"`
 }
 
-// TODO (Svein): Make these methods of a struct (from userdb.go)
 // UpdateUserName updates the users name in the db
 func UpdateUserName(userID int, newName string) bool {
 
@@ -140,7 +139,40 @@ func GetHash(id int) string {
 	return ""
 }
 
-// TODO (Svein): Do something (this is from authdb.go)
+// GetUsersToCourse returns all users to one course
+func GetUsersToCourse(courseID int) Users {
+
+	//Create an empty courses array
+	var users Users
+
+	rows, err := db.GetDB().Query("SELECT users.id, users.name, users.email_student, teacher FROM users INNER JOIN usercourse ON users.id = usercourse.userid WHERE usercourse.courseid = ?", courseID)
+	if err != nil {
+		log.Println(err.Error()) // TODO : log error
+
+		// returns empty course array if it fails
+		return users
+	}
+
+	for rows.Next() {
+		var id int
+		var name string
+		var email string
+		var teacher bool
+
+		rows.Scan(&id, &name, &email, &teacher)
+
+		// Add course to courses array
+		users.Items = append(users.Items, User{
+			ID:           id,
+			Name:         name,
+			EmailStudent: email,
+			Teacher:      teacher,
+		})
+	}
+
+	return users
+}
+
 //UserAuth authenticates users
 func UserAuth(email string, password string) (User, bool) {
 	rows, err := db.GetDB().Query("SELECT id, password FROM users WHERE email_student = ?", email)

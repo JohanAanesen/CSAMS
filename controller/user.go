@@ -68,7 +68,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 
 		// Log name change in the database and give error if something went wrong
 		if !model.LogToDB(logData) {
-			log.Fatal("Could not save name log to database! (userhandler.go)")
+			log.Fatal("Could not save name log to database! (user.go)")
 		}
 	}
 
@@ -87,7 +87,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 
 			// Log email change in the database and give error if something went wrong
 			if !model.LogToDB(logData) {
-				log.Fatal("Could not save email log to database! (userhandler.go)")
+				log.Fatal("Could not save email log to database! (user.go)")
 			}
 		}
 	}
@@ -107,7 +107,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 
 			// Log password change in the database and give error if something went wrong
 			if !model.LogToDB(logData) {
-				log.Fatal("Could not save password log to database! (userhandler.go)")
+				log.Fatal("Could not save password log to database! (user.go)")
 			}
 		} else {
 			ErrorHandler(w, r, http.StatusInternalServerError)

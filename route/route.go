@@ -9,12 +9,11 @@ import (
 	"os"
 )
 
-// Load ...
+// Load ... TODO (Svein) add comment here
 func Load() http.Handler {
 	return routes()
 }
 
-// LoadHTTPS ...
 func LoadHTTPS() http.Handler {
 	return routes()
 }
@@ -48,11 +47,13 @@ func routes() http.Handler {
 
 	// Admin-page Handlers
 	router.HandleFunc("/admin", controller.AdminGET).Methods("GET")
+
 	router.HandleFunc("/admin/course", controller.AdminCourseGET).Methods("GET")
 	router.HandleFunc("/admin/course/create", controller.AdminCreateCourseGET).Methods("GET")
 	router.HandleFunc("/admin/course/create", controller.AdminCreateCoursePOST).Methods("POST")
 	router.HandleFunc("/admin/course/update/{id}", controller.AdminUpdateCourseGET).Methods("GET")
 	router.HandleFunc("/admin/course/update/{id}", controller.AdminUpdateCoursePOST).Methods("POST")
+
 	router.HandleFunc("/admin/assignment", controller.AdminAssignmentGET).Methods("GET")
 	router.HandleFunc("/admin/assignment/create", controller.AdminAssignmentCreateGET).Methods("GET")
 	router.HandleFunc("/admin/assignment/create", controller.AdminAssignmentCreatePOST).Methods("POST")
@@ -60,6 +61,10 @@ func routes() http.Handler {
 	router.HandleFunc("/admin/submission", controller.AdminSubmissionGET).Methods("GET")
 	router.HandleFunc("/admin/submission/create", controller.AdminSubmissionCreateGET).Methods("GET")
 	router.HandleFunc("/admin/submission/create", controller.AdminSubmissionCreatePOST).Methods("POST")
+
+	router.HandleFunc("/admin/faq", controller.AdminFaqGET).Methods("GET")
+	router.HandleFunc("/admin/faq/edit", controller.AdminFaqEditGET).Methods("GET")
+	router.HandleFunc("/admin/faq/update", controller.AdminFaqUpdatePOST).Methods("POST")
 
 	// Login/Register Handlers
 	router.HandleFunc("/login", controller.LoginGET).Methods("GET")

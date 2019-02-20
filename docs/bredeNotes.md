@@ -95,10 +95,27 @@ I chose `github.com/rs/xid` because it was the length i wanted and quick and eas
 * \#23 Changed courseID back to int and auto increment so it's similar to the other tables. But i added a column for hash instead.
 * \#20 Started on home page, but could only finish one of two tasks since assignments isn't done yet.
 * We almost didn't have anything to talk about today with the supervisor.
-
+* I'm going to start on [#22 - Admin FAQ Page](https://trello.com/c/0trVQS8x) now :D
+* \#22 Looked at [this page](https://www.codeply.com/go/syFXJL6m5p/bootstrap-4-faq-accordion) for inspiration to the faq page, I liked the animations and stuff, but... If I use markdown instead
+it would be way easier to just add a new faq in frontend and is over all less code and easier to implement. Agreed with [Project Owner](https://www.ntnu.no/ansatte/christopher.frantz)
+to use md, it's also more consistence with this solution.
+* Have to find out if we just store a hardcoded md file for faqs or make it possible to edit in the front-end by any teacher tomorrow.
 
 ### Tuesday - 19/02/19
+* \#22 Decided on storing the md in db and let any teacher edit it, but also log every update.
+* I chose to copy some of the design Johan used for course page to keep it more constance all over <3 
+* I have some bugs on the faq site, but the main functionality is all done soon.
+* I also moved db functions from shared/db to model and gave a temp fix to the extremely annoying go lint errors...
+* All functions for faq is now done, each time a teacher updates the faq, the time is added **IN NORWEGIAN TIME**, this has to be written somewhere
+as we talked about with the [Project Owner](https://www.ntnu.no/ansatte/christopher.frantz) yesterday.
+
 ### Wednesday - 20/02/19
+* \#22 Tried to switch to a new package to get the text in the textarea editor to show, it still didn't work >:(
+    * I think the problem is that id doesn't load again when the tab is shown.
+    * It was bootstrap all along :'( 
+    * I fixed the problem by removing the tabs and having the edit page on it's on page.
+    * I also changed the design so it's more consistence to the admin dashboard.
+    * Not really sure how to write tests for \#22 yet so I'll leave that for later.
 ### ~~Thursday - 21/02/19~~ Ski day!
 ### Friday - 22/02/19
 
