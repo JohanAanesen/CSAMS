@@ -151,7 +151,7 @@ let Form = function() {
         col.appendChild(accordion);
 
         hr = document.createElement('hr');
-        col.appendChild(hr)
+        col.appendChild(hr);
 
         button = document.createElement('button');
         button.setAttribute('type', 'button');
@@ -168,11 +168,14 @@ let Form = function() {
                     'Content-Type': 'application/json',
                 },
                 redirect: 'follow',
-                referrer: 'no-referrer',
                 body: this.toJSON()
             })
-            .then()
-            .catch()
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error(error);
+            })
             .finally();
         });
 
@@ -233,6 +236,12 @@ let Field = function(settings) {
      * @type {string}
      */
     this.label = '';
+
+    /**
+     *
+     * @type {string}
+     */
+    this.description = '';
 
     /**
      *
@@ -448,7 +457,7 @@ let Field = function(settings) {
         // == ORDER END ==
 
         // Check if form is weighted
-        if (settings.weighted) {
+        if (this.settings.weighted) {
             // == WEIGHT START ==
             formGroup = document.createElement('div');
             formGroup.classList.add(...['form-group']);
