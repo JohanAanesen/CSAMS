@@ -1,76 +1,20 @@
 {{define "title"}}FAQ{{end}}
 {{define "head"}}
-    <!-- TODO : fix textarea content not showing right away bug -->
-    <!-- This is for the editing -->
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
-    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
-
-    <style>
-        a {
-            color: #888888;
-        }
-
-        a:hover {
-            color: #888888;
-        }
-
-        pre {
-            color: #888888;
-        }
-    </style>
 {{end}}
 {{define "content"}}
+    <h2 class="display-4 mb-3" style="float:left;">Frequently Asked Questions <a href="/admin/faq/edit"
+                                                                                 class="btn btn-success btn-sm px-3">Edit</a>
+    </h2>
+    <p class="text-right" style="margin-top: 20px"><strong>Last Updated:</strong> {{ .Updated }}</p>
 
-    <!-- A lot of this is code I borrowed from Johan :D -->
-    <main role="main" class="container">
-        <div class="col my-3">
-            <div class="card text-white bg-dark mb-3">
-                <div class="card-header">
-                    <h4 style="float:left;">Frequently Asked Questions</h4>
-                    <p class="text-right"><strong>Last Updated:</strong> {{ .Updated }}</p>
-                    <ul class="nav nav-tabs card-header-tabs pull-left" id="myTab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="faq-tab" data-toggle="tab" href="#faq" role="tab"
-                               aria-controls="faq" aria-selected="true">FAQ</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="edit-tab" data-toggle="tab" href="#edit" role="tab"
-                               aria-controls="edit" aria-selected="false">Edit</a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="card-body">
-                    <div class="tab-content" id="myTabContent">
-                        <div class="tab-pane fade show active" id="faq" role="tabpanel" aria-labelledby="faq-tab">
-                            {{ .Questions }}
-                        </div>
-                        <div class="tab-pane fade" id="edit" role="tabpanel" aria-labelledby="assignment-tab">
-                            <form action="/admin/faq/update" method="post">
-                                <div class="row">
-                                    <div class="form-group bg-light col-lg-12 col-md-12 col-sm-12 col-xs-12"
-                                         id="question-form">
-                                        <label for="rawQuestions" class="text-dark">Edit markdown</label>
-                                        <textarea name="rawQuestions" id="rawQuestions"
-                                                  class="form-control" placeholder="This should not be empty! >:(">{{ .RawContent }}</textarea>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-light">Update</button>
-                            </form>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+    <br>
+    <br>
+    <div>
+        <div class="" id="faq">
+            {{ .Questions }}
         </div>
-
-
-    </main>
-
+    </div>
 
 {{end}}
 {{define "foot"}}
-    <script>
-        new SimpleMDE({element: document.getElementById("rawQuestions")});
-    </script>
 {{end}}

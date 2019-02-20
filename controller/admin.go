@@ -212,13 +212,39 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/faq/index"
 	v.Vars["Updated"] = content.Date.Format("02. January 2006 - 15:04")
-	v.Vars["RawContent"] = content.Questions
 	v.Vars["Questions"] = template.HTML(questions)
 
 	v.Render(w)
 }
 
-// AdminFaqUpdatePOST handles the edit of the markdown faq
+// AdminFaqEditGET returns the edit view for the faq
+func AdminFaqEditGET(w http.ResponseWriter, r *http.Request) {
+	//check that user is a teacher
+	if !session.IsTeacher(r) { //not a teacher, error 401
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
+
+	content := model.GetDateAndQuestionsFAQ()
+
+	if content.Questions == "-1" {
+		log.Println("Something went wrong with getting the faq (admin.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/faq/edit"
+	v.Vars["Updated"] = content.Date.Format("02. January 2006 - 15:04")
+	v.Vars["RawContent"] = content.Questions
+
+	v.Render(w)
+}
+
+// AdminFaqUpdatePOST handles the edited markdown faq
 func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 
 	//check that user is a teacher
