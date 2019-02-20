@@ -21,21 +21,19 @@
     <h2 class="display-4 mb-3">Assignments <a href="/admin/assignment/create" class="btn btn-success btn-sm px-3">New</a></h2>
     <hr>
     <div class="row">
-        {{ range $c := .Courses.Items }}
-            {{ range .Assignments }}
-                <div class="col-12 col-md-6 col-lg-4 mb-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h2 class="display-5">{{ .Name }}</h2>
-                            <h5>{{ $c.Code }}</h5>
-                            <p><strong>Deadline: </strong> {{ .Deadline }}</p>
-                            <p class="card-text">{{ .Description }}</p>
-                            <hr>
-                            <a href="#" class="btn btn-outline-dark btn-sm">See details</a>
-                        </div>
+        {{ range .Assignments }}
+            <div class="col-12 col-md-6 col-lg-4 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="display-5">{{ .Name }}</h2>
+                        <h5><code>COURSE_CODE</code></h5>
+                        <p><strong>Deadline: </strong> {{ .Deadline }}</p>
+                        <p class="card-text">{{ .Description }}</p>
+                        <hr>
+                        <a href="#" class="btn btn-outline-dark btn-sm">See details</a>
                     </div>
                 </div>
-            {{ end }}
+            </div>
         {{ end }}
     </div>
 {{end}}

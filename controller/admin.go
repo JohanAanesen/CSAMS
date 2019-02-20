@@ -33,7 +33,11 @@ func AdminGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "admin/index"
 
 	assignmentRepo := model.AssignmentRepository{}
-	assignments := assignmentRepo.GetAll()
+	assignments, err := assignmentRepo.GetAll()
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	v.Vars["Assignments"] = assignments
 
@@ -180,11 +184,21 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	assignmentRepo := model.AssignmentRepository{}
+
+	assignments, err := assignmentRepo.GetAll()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
 	v.Name = "admin/assignment/index"
+
+	v.Vars["Assignments"] = assignments
 
 	v.Render(w)
 }
@@ -245,10 +259,12 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get form values
 	courseIDString := r.FormValue("course_id")
 	submissionIDString := r.FormValue("submission_id")
 	reviewIDString := r.FormValue("review_id")
 
+	// String converted into integer
 	courseID, err := strconv.Atoi(courseIDString)
 	if err != nil {
 		log.Println(err)
@@ -256,6 +272,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var submissionID int
+	// String converted into integer
 	if submissionIDString != "" {
 		submissionID, err = strconv.Atoi(submissionIDString)
 		if err != nil {
@@ -265,6 +282,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var reviewID int
+	// String converted into integer
 	if reviewIDString != "" {
 		reviewID, err = strconv.Atoi(reviewIDString)
 		if err != nil {
@@ -273,6 +291,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Put all data into an Assignment-struct
 	assignment := model.Assignment{
 		Name:         r.FormValue("name"),
 		Description:  r.FormValue("description"),
@@ -283,13 +302,15 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		ReviewID:     reviewID,
 	}
 
+	// Insert data to database
 	err = assignmentRepository.Insert(assignment)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	http.Redirect(w, r, "/admin/assignment", http.StatusOK)
+	// Redirect client to '/'
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 // AdminSubmissionGET handles GET-request to /admin/submission

@@ -60,8 +60,8 @@ func (repo *SubmissionRepository) Insert(form Form) error {
 
 // GetAll returns all submission in the database
 func (repo *SubmissionRepository) GetAll() ([]Submission, error) {
-	// Declare return array
-	var result = make([]Submission, 0)
+	// Declare return slice
+	var result []Submission
 	// Create query-string
 	query := "SELECT * FROM submissions"
 	// Perform query
