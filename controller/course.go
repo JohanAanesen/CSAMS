@@ -3,7 +3,6 @@ package controller
 import (
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
 	"github.com/shurcooL/github_flavored_markdown"
@@ -45,17 +44,17 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	user := session.GetUserFromSession(r)
 
 	//get info from db
-	course = db.GetCourse(courseID)
+	course = model.GetCourse(courseID)
 
 	//check if user is an participant of said class or a teacher
-	participant := db.UserExistsInCourse(user.ID, courseID) || user.ID == course.Teacher
+	participant := model.UserExistsInCourse(user.ID, courseID) || user.ID == course.Teacher
 	if !participant {
 		log.Println("user not participant of class")
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
 
-	classmates := db.GetUsersToCourse(courseID)
+	classmates := model.GetUsersToCourse(courseID)
 
 	//all a-ok
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -87,7 +86,7 @@ func CourseListGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Fprintf(w, "Id is %s\n", id)
+		fmt.Fprintf(w, "ID is %s\n", id)
 	}
 	//check if user is an participant of said class or a teacher
 

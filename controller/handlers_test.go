@@ -352,7 +352,6 @@ func TestCheckUserStatusLoggedIn(t *testing.T) {
 }
 
 func TestUserUpdateRequest(t *testing.T) {
-	// TODO : Fix code
 	// Change name and email
 	form := url.Values{}
 	form.Add("usersName", "Ken Thompson") // One of the Golang creators
@@ -527,6 +526,18 @@ func TestAdminUpdateCourseHandler(t *testing.T) {
 	if body.Len() <= 0 {
 		t.Errorf("Response body error, expected greater than 0, got %d", body.Len())
 	}
+}
+
+func TestAdminFaqGET(t *testing.T) {
+	// TODO brede : write test here
+}
+
+func TestAdminFaqEditGET(t *testing.T) {
+	// TODO brede : write test here
+}
+
+func TestAdminFaqUpdatePOST(t *testing.T) {
+	// TODO brede : write test here
 }
 
 func TestAssignmentHandlerHandler(t *testing.T) {
