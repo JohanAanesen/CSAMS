@@ -45,6 +45,7 @@ func HandlerGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 
+	savePairs(payload.GeneratedPairs)
 
 	if err := json.NewEncoder(w).Encode(payload); err != nil {
 		panic(err)

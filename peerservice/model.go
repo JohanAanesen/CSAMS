@@ -66,7 +66,7 @@ func GetSubmissions(SubmissionID int) Submissions {
 	return submissions
 }
 
-func createReviewPair(pairs Pairs) bool {
+func savePairs(pairs Pairs) bool {
 
 	tx, err := GetDB().Begin() //start transaction
 	if err != nil {
@@ -75,7 +75,7 @@ func createReviewPair(pairs Pairs) bool {
 	}
 
 	for _, pair := range pairs.Items {
-		_, err := tx.Exec("INSERT INTO reviewpairs(submission_id, user_id, review_submission_id) VALUES(?, ?, ?)", pair.SubmissionID, pair.UserID, pair.ReviewID)
+		_, err := tx.Exec("INSERT INTO peer_reviews(submission_id, user_id, review_submission_id) VALUES(?, ?, ?)", pair.SubmissionID, pair.UserID, pair.ReviewID)
 
 		if err != nil {
 			//todo log error
