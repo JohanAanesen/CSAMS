@@ -1,16 +1,18 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
+	_ "github.com/go-sql-driver/mysql" //database driver
 	"github.com/rs/xid"
 	"log"
 	"net/http"
-	"net/http/httputil"
+	"strings"
 	"time"
 )
 
@@ -266,12 +268,38 @@ func AdminSubmissionCreateGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminSubmissionCreatePOST ...
 func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
-	dump, err := httputil.DumpRequest(r, true)
+	decoder := json.NewDecoder(r.Body)
+
+	var form = model.Form{}
+
+	err := decoder.Decode(&form)
 	if err != nil {
 		log.Println(err)
 	}
 
-	fmt.Println(string(dump))
+	// TODO (Svein): Move this to /model
+	rows, err := db.GetDB().Exec("INSERT INTO forms (prefix, name, description) VALUES (?, ?, ?);", form.Prefix, form.Name, form.Description)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	formId, err := rows.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	for _, field := range form.Fields {
+		choices := strings.Join(field.Choices, ",")
+		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+		rows, err := db.GetDB().Query(query, int(formId), field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, choices)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		rows.Close()
+	}
 }
 
 // DatetimeLocalToRFC3339 converts a string from datetime-local HTML input-field to time.Time object
