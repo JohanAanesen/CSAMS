@@ -1,0 +1,16 @@
+{{define "title"}}Create Submission{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+    <div id="output"></div>
+{{end}}
+{{define "foot"}}
+<script src="/static/js/form.js"></script>
+<script>
+    let form = new Form();
+    form.Initialize({
+        output: '#output',
+        request: '/admin/submission/create',
+        weighted: false,
+    });
+</script>
+{{end}}

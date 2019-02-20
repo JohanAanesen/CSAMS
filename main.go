@@ -14,5 +14,5 @@ func main() {
 	defer db.CloseDB()
 
 	// Run Server
-	server.Run(route.LoadHTTP(), route.LoadHTTPS(), cfg.Server)
+	server.Run(route.Load(), route.LoadHTTPS(), cfg.Server)
 }
