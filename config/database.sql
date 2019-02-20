@@ -199,7 +199,7 @@ VALUES (1, 'Test User', 'hei@gmail.com', 1, 'test@yahoo.com',
         '$2a$14$MZj24p41j2NNGn6JDsQi0OsDb56.0LcfrIdgjE6WmZzp58O6V/VhK'),
        (2, 'Frode Haug', 'frodehg@teach.ntnu.no', 1, NULL,
         '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'), -- Password is 123abc --
-       (3, 'Ola Nordmann', 'olanor@stud.ntnu.no', 0, 'swag-meister69@ggmail.com',
+       (3, 'Ola Nordmann', 'olanor@stud.ntnu.no', 1, 'swag-meister69@ggmail.com',
         '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'), -- Password is 123abc --
        (4, 'Johan Klausen', 'johkl@stu.ntnu.no', 0, NULL,
         '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'); -- Password is 123abc --

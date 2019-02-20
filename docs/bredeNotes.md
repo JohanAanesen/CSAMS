@@ -110,6 +110,9 @@ to use md, it's also more consistence with this solution.
 as we talked about with the [Project Owner](https://www.ntnu.no/ansatte/christopher.frantz) yesterday.
 
 ### Wednesday - 20/02/19
+* \#22 Tried to switch to a new package to get the text in the textarea editor to show, it still didn't work >:(
+    * I think the problem is that id doesn't load again when the tab is shown.
+    * It wass bootstrap all along :'( 
 ### ~~Thursday - 21/02/19~~ Ski day!
 ### Friday - 22/02/19
 

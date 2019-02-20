@@ -2,8 +2,10 @@
 {{define "head"}}
     <!-- TODO : fix textarea content not showing right away bug -->
     <!-- This is for the editing -->
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
     <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+
     <style>
         a {
             color: #888888;
@@ -50,7 +52,7 @@
                                          id="question-form">
                                         <label for="rawQuestions" class="text-dark">Edit markdown</label>
                                         <textarea name="rawQuestions" id="rawQuestions"
-                                                  class="form-control">{{ .RawContent }}</textarea>
+                                                  class="form-control" placeholder="This should not be empty! >:(">{{ .RawContent }}</textarea>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-light">Update</button>
@@ -69,6 +71,6 @@
 {{end}}
 {{define "foot"}}
     <script>
-        new SimpleMDE({element: document.getElementById("questions")});
+        new SimpleMDE({element: document.getElementById("rawQuestions")});
     </script>
 {{end}}
