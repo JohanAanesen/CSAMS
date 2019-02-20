@@ -43,7 +43,7 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 			// TODO : maybe redirect to course page ?
 		}
 
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/", http.StatusFound) //redirect
 		return
 	}
 
@@ -105,6 +105,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage //todo change redirection
-	IndexGET(w, r) //redirect to homepage
+	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage //todo change redirection
+	//IndexGET(w, r) //redirect to homepage
+
 }

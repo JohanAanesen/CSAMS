@@ -43,3 +43,10 @@
 * Look up Go modules.
 * We are fast bois **gg**
 
+## Monday - 18/02/19
+* Assignment review 
+    * Mandatory and voluntary questions
+    * Talked about [#12 - Create Assignment form/page](https://trello.com/c/QpvcbVb6) for 25min
+* Add deadline to assignments and gray out former assignments
+* We informed [Project Owner](https://www.ntnu.no/ansatte/christopher.frantz) that it's [skiday](https://www.facebook.com/events/2070975702972081/) on thursday :)
+* Document all smaller things that's vital for others later, ex. timezone in the sql file.

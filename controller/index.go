@@ -70,5 +70,6 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	// Give feedback to user
 	joinedCourse = course.Code + " - " + course.Name
 
-	IndexGET(w, r)
+	//IndexGET(w, r)
+	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
 }

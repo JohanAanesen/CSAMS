@@ -17,7 +17,7 @@ const (
 	DeliveredAssignment activity = "ASSIGNMENT-DELIVERED"                   // User delivered assignment
 	FinishedPeerReview  activity = "FINISHED-PEER-REVIEWING"                // User is done peer reviewing two assignments
 	PeerReviewDone      activity = "PEER-REVIEW-IS-DONE-FOR-ONE-ASSIGNMENT" // Users assignment is finished peer-reviewd
-	JoinedCourse        activity = "STUDENT-JOINED-COURSE"                  // User joined course
+	JoinedCourse        activity = "JOINED-COURSE"                          // User joined course
 	CreatedCourse       activity = "COURSE-CREATED"                         // Course is created
 	CreatAssignment     activity = "ASSIGNMENT-CREATED"                     // Assignment is created
 )

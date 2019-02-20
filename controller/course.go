@@ -17,11 +17,6 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 
 	var course model.Course
 
-	if !session.GetUserFromSession(r).Authenticated {
-		LoginGET(w, r)
-		return
-	}
-
 	//check if request has an classID
 	id := r.FormValue("id")
 	if id == "" {
@@ -30,11 +25,18 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//check that id is a number
 	courseID, err := strconv.Atoi(id)
 	if err != nil {
 		//redirect to error pageinfo
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	//check if user is logged in
+	if !session.GetUserFromSession(r).Authenticated {
+		LoginGET(w, r)
 		return
 	}
 
@@ -52,8 +54,9 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//fmt.Println(course) //todo(johan) remove this
+	classmates := db.GetUsersToCourse(courseID)
 
+	//all a-ok
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
@@ -64,6 +67,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "course"
 	v.Vars["Course"] = course
 	v.Vars["User"] = user
+	v.Vars["Classmates"] = classmates
 	v.Vars["Description"] = template.HTML(description)
 	v.Render(w)
 }

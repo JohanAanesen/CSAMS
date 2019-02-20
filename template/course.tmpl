@@ -29,9 +29,6 @@
                     <li class="nav-item">
                         <a class="nav-link" id="participant-tab" data-toggle="tab" href="#participants" role="tab" aria-controls="participants" aria-selected="false">Participants</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="question-tab" data-toggle="tab" href="#questions" role="tab" aria-controls="questions" aria-selected="false">Questions</a>
-                    </li>
                 </ul>
             </div>
             <div class="card-body">
@@ -41,37 +38,61 @@
                     </div>
                     <div class="tab-pane fade" id="assignments" role="tabpanel" aria-labelledby="assignment-tab">
                         <div class="row">
-                            <div class="card border-dark my-3 mx-2 text-dark bg-light" style="max-width: 48%;">
-                                <div class="card-header">Assignment 1</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">Light card title</h5>
-                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                    <a href="#" class="btn btn-outline-dark">Go somewhere</a>
+                            <div class="col-md-6">
+                                <div class="card my-1 border-dark text-dark bg-light">
+                                    <div class="card-header">Assignment 1</div>
+                                    <div class="card-body">
+                                        <h5 class="card-title">Light card title</h5>
+                                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                        <a href="#" class="btn btn-outline-dark">Go somewhere</a>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="card border-dark my-3 mx-2 text-dark bg-light" style="max-width: 48%;">
-                                <div class="card-header">Assignment 2</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">Light card title</h5>
-                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                    <a href="#" class="btn btn-outline-dark">Go somewhere</a>
+                            <div class="col-md-6">
+                                <div class="card my-1 border-dark text-dark bg-light">
+                                    <div class="card-header">Assignment 2</div>
+                                    <div class="card-body">
+                                        <h5 class="card-title">Light card title</h5>
+                                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.Some quick example text to build on the card title and make up the bulk of the card's content.Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                        <a href="admin" class="btn btn-outline-dark">Go somewhere</a>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="card border-dark my-3 mx-2 text-dark bg-light" style="max-width: 48%;">
-                                <div class="card-header">Assignment 3</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">Light card title</h5>
-                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                    <a href="#" class="btn btn-outline-dark">Go somewhere</a>
+                            <div class="col-md-6">
+                                <div class="card my-1 border-dark text-dark bg-light">
+                                    <div class="card-header">Assignment 3</div>
+                                    <div class="card-body">
+                                        <h5 class="card-title">Light card title</h5>
+                                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                        <a href="user" class="btn btn-outline-dark">Go somewhere</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="participants" role="tabpanel" aria-labelledby="participant-tab">
-                        <h1>{{.User.Name}}</h1>
-                    </div>
-                    <div class="tab-pane fade" id="questions" role="tabpanel" aria-labelledby="question-tab">
-                        <h1></h1>
+
+                        <table class="table table-borderless table-sm">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Type</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{ range .Classmates.Items }}
+                            <tr {{if .Teacher}} class="bg-primary" {{end}}>
+                                <th scope="row">{{.ID}}</th>
+                                <td>{{.Name}}</td>
+                                <td><a href="mailto:{{.EmailStudent}}">{{.EmailStudent}}</a></td>
+                                <td>{{if .Teacher}} Teacher {{else}} Student {{end}}</td>
+                            </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+
                     </div>
                 </div>
 

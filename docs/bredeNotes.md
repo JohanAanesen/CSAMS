@@ -90,5 +90,17 @@ I chose `github.com/rs/xid` because it was the length i wanted and quick and eas
 * Added a test for RegisterGET handler :)
 * Short day I quess, I'm going to write the report today, also -> no bugs today woo.
 
+## Week Three
+### Monday - 18/02/19
+* \#23 Changed courseID back to int and auto increment so it's similar to the other tables. But i added a column for hash instead.
+* \#20 Started on home page, but could only finish one of two tasks since assignments isn't done yet.
+* We almost didn't have anything to talk about today with the supervisor.
+
+
+### Tuesday - 19/02/19
+### Wednesday - 20/02/19
+### ~~Thursday - 21/02/19~~ Ski day!
+### Friday - 22/02/19
+
 
 
