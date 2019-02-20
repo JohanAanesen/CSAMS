@@ -16,7 +16,7 @@ USE cs53;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
-SET time_zone = "+01:00";
+SET time_zone = "+01:00"; -- Norwegian time zone! --
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT = @@CHARACTER_SET_CLIENT */;
@@ -83,8 +83,8 @@ CREATE TABLE `logs`
   `assignmentid` int(11)                                     DEFAULT NULL,
   `courseid`     int(11)                                     DEFAULT NULL,
   `submissionid` int(11)                                     DEFAULT NULL,
-  `oldvalue`     varchar(64) COLLATE utf8_danish_ci          DEFAULT NULL,
-  `newValue`     varchar(64) COLLATE utf8_danish_ci          DEFAULT NULL
+  `oldvalue`     text COLLATE utf8_danish_ci                 DEFAULT NULL,
+  `newValue`     text COLLATE utf8_danish_ci                 DEFAULT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_danish_ci;
@@ -175,6 +175,19 @@ CREATE TABLE `users`
   DEFAULT CHARSET = utf8
   COLLATE = utf8_danish_ci;
 
+
+CREATE TABLE `adminfaq`
+(
+  `id`        int(11)  NOT NULL,
+  `timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `questions` text     NOT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_danish_ci;
+
+--
+-- Indexes for dumped tables
+--
 --
 -- Indexes for dumped tables
 --
@@ -186,7 +199,7 @@ VALUES (1, 'Test User', 'hei@gmail.com', 1, 'test@yahoo.com',
         '$2a$14$MZj24p41j2NNGn6JDsQi0OsDb56.0LcfrIdgjE6WmZzp58O6V/VhK'),
        (2, 'Frode Haug', 'frodehg@teach.ntnu.no', 1, NULL,
         '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'), -- Password is 123abc --
-       (3, 'Ola Nordmann', 'olanor@stud.ntnu.no', 0, 'swag-meister69@ggmail.com',
+       (3, 'Ola Nordmann', 'olanor@stud.ntnu.no', 1, 'swag-meister69@ggmail.com',
         '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'), -- Password is 123abc --
        (4, 'Johan Klausen', 'johkl@stu.ntnu.no', 0, NULL,
         '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'); -- Password is 123abc --
@@ -208,14 +221,12 @@ VALUES ('1', 1, CURRENT_TIMESTAMP, '2019-02-14', '1', '0', 'English',
         '# Assignment 1\r\n* Doctors and nurses\r\n<!-- Hello -->', '13');
 
 INSERT INTO `submissions` (`id`, `userid`, `assignmentid`, `repo`, `deploy`, `comment`, `grade`, `test`, `vet`, `cycle`)
-VALUES ('1', '3', '1', 'www.github.com/user3/submission1', 'Hello', 'I am grate progrman', '6', NULL, NULL, NULL);
+VALUES ('1', '3', '1', 'https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments', 'Hello',
+        'I am grate progrman', '6', NULL, NULL, NULL);
 
-/*
-INSERT INTO `logs` (`userid`, `activity`, `assignmentID`, `courseID`, `submissionid`, `oldvalue`,
-                    `newValue`)
-VALUES ('1', 'changedName', NULL, NULL, NULL, 'Ola Nordmann', 'Ola Svenskemann'),
-       ('1', 'changedEmail', NULL, NULL, NULL, 'ola-meiseter@gmail.com', 'ola-meister@yahoo.com');
-*/
+INSERT INTO `adminfaq` (`id`, `timestamp`, `questions`)
+VALUES ('1', '1997-02-13 13:37:00',
+        'Q: How do I make a course + link?\r\n--------------------------------\r\n**A:** Dashboard -> Courses -> new. And create the course there\r\n\r\nQ: How do I make an assignment?\r\n--------------------------------\r\n**A:** Dashboard -> Assignments-> new. And create the assignment there\r\n\r\nQ: How do I invite students to the course?\r\n--------------------------------\r\n**A:** Create a link for the course and email the students the link\r\n\r\nQ: How do I import database?\r\n--------------------------------\r\n**A:** Start xampp and go to import in phpmyadmin\r\n\r\nQ: How do I export database?\r\n--------------------------------\r\n**A:** Start xampp and go to export in phpmyadmin\r\n\r\nQ: How do I sign up?\r\n--------------------------------\r\n**A:** You go to `/register` and register a user there\n\n![Reddit](https://external-preview.redd.it/lzcL5WbUuBr7pI9zIM9ZbUSrETZR1UNb-g6C5DehYss.jpg?width=960&crop=smart&auto=webp&s=4b483a024ac9103bfe6df2e98599043bbed29146)');
 -- end --
 
 --
@@ -282,6 +293,9 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email_student` (`email_student`),
   ADD UNIQUE KEY `email_private` (`email_private`);
 
+ALTER TABLE `adminfaq`
+  ADD PRIMARY KEY (`id`);
+
 --
 -- AUTO_INCREMENT for dumped tables
 --
@@ -308,6 +322,10 @@ ALTER TABLE `submissions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+
+ALTER TABLE `adminfaq`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

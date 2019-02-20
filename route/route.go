@@ -9,14 +9,17 @@ import (
 	"os"
 )
 
+// Load ... TODO (Svein) add comment here
 func Load() http.Handler {
 	return routes()
 }
 
+// LoadHTTP ... TODO (Svein) add comment here
 func LoadHTTP() http.Handler {
 	return routes()
 }
 
+// LoadHTTPS ... TODO (Svein) add comment here
 func LoadHTTPS() http.Handler {
 	return routes()
 }
@@ -54,6 +57,9 @@ func routes() http.Handler {
 	router.HandleFunc("/admin/course/update/{id}", controller.AdminUpdateCourseGET).Methods("GET")
 	router.HandleFunc("/admin/course/update/{id}", controller.AdminUpdateCoursePOST).Methods("POST")
 	router.HandleFunc("/admin/assignment", controller.AdminAssignmentGET).Methods("GET")
+	router.HandleFunc("/admin/faq", controller.AdminFaqGET).Methods("GET")
+	router.HandleFunc("/admin/faq/edit", controller.AdminFaqEditGET).Methods("GET")
+	router.HandleFunc("/admin/faq/update", controller.AdminFaqUpdatePOST).Methods("POST")
 
 	// Login/Register Handlers
 	router.HandleFunc("/login", controller.LoginGET).Methods("GET")

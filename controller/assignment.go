@@ -20,7 +20,7 @@ func AssignmentGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Fprintf(w, "Id is %s\nClass is %s\n", id, class)
+		fmt.Fprintf(w, "ID is %s\nClass is %s\n", id, class)
 	}
 
 	//check that user is logged in
@@ -47,7 +47,7 @@ func AssignmentAutoGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Fprintf(w, "Id is %s\nClass is %s\n", id, class)
+		fmt.Fprintf(w, "ID is %s\nClass is %s\n", id, class)
 	}
 
 	//check that user is logged in
@@ -74,7 +74,7 @@ func AssignmentPeerGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Fprintf(w, "Id is %s\nClass is %s\n", id, class)
+		fmt.Fprintf(w, "ID is %s\nClass is %s\n", id, class)
 	}
 
 	//check that user is logged in

@@ -6,7 +6,7 @@ import (
 
 // Post struct is onyl for showcase
 type Post struct {
-	Id      int       `json:"id"`
+	ID      int       `json:"id"`
 	Title   string    `json:"title"`
 	Content string    `json:"content"`
 	Created time.Time `json:"created"`
@@ -28,7 +28,7 @@ func GetPosts() Post {
 		// Declare empty Post
 		var post = Post{}
 		// Get data from rows
-		err := rows.Scan(&post.Id, &post.Title, &post.Content, &post.Created)
+		err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.Created)
 		if err != nil {
 			log.Println(err)
 			return Post{}

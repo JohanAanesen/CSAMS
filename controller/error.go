@@ -19,6 +19,7 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request, status int) {
 	v.Render(w)
 }
 
+// NotFoundHandler ... TODO (Svein) add comment here
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusNotFound)
@@ -31,6 +32,8 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 
 	v.Render(w)
 }
+
+// MethodNotAllowedHandler ... TODO (Svein) add comment here
 func MethodNotAllowedHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusMethodNotAllowed)
