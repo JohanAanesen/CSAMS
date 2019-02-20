@@ -217,7 +217,7 @@ func RegisterUser(name string, email string, password string) (User, bool) {
 		return User{Authenticated: false}, false
 	}
 
-	rows, err := db.GetDB().Query("INSERT INTO users(name, email_student, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
+	_, err = db.GetDB().Exec("INSERT INTO users(name, email_student, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
 
 	if err != nil {
 		//todo log error
@@ -225,7 +225,6 @@ func RegisterUser(name string, email string, password string) (User, bool) {
 		return User{Authenticated: false}, false
 	}
 
-	defer rows.Close()
 
 	return UserAuth(email, password) //fetch user-id through existing method
 }
