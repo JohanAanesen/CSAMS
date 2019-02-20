@@ -75,6 +75,5 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) error {
 		defer rows.Close()
 	}
 
-
 	return nil
 }

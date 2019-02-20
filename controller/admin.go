@@ -37,8 +37,6 @@ func AdminGET(w http.ResponseWriter, r *http.Request) {
 
 	v.Vars["Assignments"] = assignments
 
-	// TODO (Svein): Add data to the page (courses, assignments, etc)
-
 	v.Render(w)
 }
 
@@ -56,8 +54,6 @@ func AdminCourseGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/course/index"
 
-	// TODO (Svein): Add data to the page
-
 	v.Render(w)
 }
 
@@ -74,8 +70,6 @@ func AdminCreateCourseGET(w http.ResponseWriter, r *http.Request) {
 
 	v := view.New(r)
 	v.Name = "admin/course/create"
-
-	// TODO (Svein): Add data to the page (courses, assignments, etc)
 
 	v.Render(w)
 }
@@ -166,8 +160,6 @@ func AdminUpdateCourseGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/course/update"
 
-	// TODO (Svein): Add data to the page (courses, assignments, etc)
-
 	v.Render(w)
 }
 
@@ -193,8 +185,6 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 	v := view.New(r)
 	v.Name = "admin/assignment/index"
-
-	// TODO (Svein): Add data to the page (courses, assignments, etc)
 
 	v.Render(w)
 }
@@ -300,10 +290,9 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/admin/assignment", http.StatusOK)
-
 }
 
-// AdminSubmissionGET TODO (Svein): comment
+// AdminSubmissionGET handles GET-request to /admin/submission
 func AdminSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -324,7 +313,7 @@ func AdminSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 }
 
-// AdminSubmissionCreateGET ...
+// AdminSubmissionCreateGET handles GET-request to /admin/submission/create
 func AdminSubmissionCreateGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -332,12 +321,10 @@ func AdminSubmissionCreateGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/submission/create"
 
-	// TODO (Svein): Add data to the page (courses, assignments, etc)
-
 	v.Render(w)
 }
 
-// AdminSubmissionCreatePOST ...
+// AdminSubmissionCreatePOST handles POST-request to /admin/submission/create
 func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 
@@ -362,10 +349,10 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 // DatetimeLocalToRFC3339 converts a string from datetime-local HTML input-field to time.Time object
 func DatetimeLocalToRFC3339(str string) (time.Time, error) {
+	// TODO (Svein): Move this to a utils.go or something
 	if str == "" {
 		return time.Time{}, errors.New("error: could not parse empty datetime-string")
 	}
-	// TODO (Svein): Move this to a utils.go or something
 	if len(str) < 16 {
 		return time.Time{}, errors.New("cannot convert a string less then 16 characters: DatetimeLocalToRFC3339()")
 	}

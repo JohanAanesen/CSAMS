@@ -14,6 +14,7 @@ func Load() http.Handler {
 	return routes()
 }
 
+// LoadHTTPS ... TODO (Svein): Add TLS settings
 func LoadHTTPS() http.Handler {
 	return routes()
 }
