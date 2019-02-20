@@ -9,10 +9,11 @@ import (
 type Request struct {
 	ID           int `json:"id"`
 	SubmissionID int `json:"submissionid"`
+	Reviewers    int `json:"reviewers"`
 }
 
 type Response struct {
-	Ok bool	`json:"ok"`
+	Ok bool `json:"ok"`
 }
 
 type Submissions struct {
@@ -25,15 +26,14 @@ type Submission struct {
 	SubmissionID int `json:"submissionid"`
 }
 
-type Pairs struct{
+type Pairs struct {
 	Items []SubPair
 }
 
-type SubPair struct{
+type SubPair struct {
 	SubmissionID int `json:"submissionid"`
 	UserID       int `json:"userid"`
-	UserSub1 int `json:"useruub1"`
-	UserSub2 int `json:"usersub2"`
+	ReviewID     int `json:"reviewid"`
 }
 
 func GetSubmissions(SubmissionID int) Submissions {
@@ -51,22 +51,22 @@ func GetSubmissions(SubmissionID int) Submissions {
 	for rows.Next() {
 		var id int
 		var userid int
-		var submissionid int
+		var submissionID int
 
-		rows.Scan(&id, &userid, &submissionid)
+		rows.Scan(&id, &userid, &submissionID)
 
 		// Add course to courses array
 		submissions.Items = append(submissions.Items, Submission{
 			ID:           id,
 			UserID:       userid,
-			SubmissionID: submissionid,
+			SubmissionID: submissionID,
 		})
 	}
 
 	return submissions
 }
 
-func createReviewPair(pairs Pairs)bool{
+func createReviewPair(pairs Pairs) bool {
 
 	tx, err := GetDB().Begin() //start transaction
 	if err != nil {
@@ -75,7 +75,7 @@ func createReviewPair(pairs Pairs)bool{
 	}
 
 	for _, pair := range pairs.Items {
-		_, err := tx.Exec("INSERT INTO reviewpairs(submissionid, userid, usersub1, usersub2) VALUES(?, ?, ?, ?)", pair.SubmissionID, pair.UserID, pair.UserSub1, pair.UserSub2)
+		_, err := tx.Exec("INSERT INTO reviewpairs(submission_id, user_id, review_submission_id) VALUES(?, ?, ?)", pair.SubmissionID, pair.UserID, pair.ReviewID)
 
 		if err != nil {
 			//todo log error
@@ -94,13 +94,13 @@ func createReviewPair(pairs Pairs)bool{
 	return true
 }
 
-func (subs Submissions) shuffle() Submissions{
+func (subs Submissions) shuffle() Submissions {
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 
 	for i := range subs.Items {
 		j := r.Intn(i + 1)
 		subs.Items[i], subs.Items[j] = subs.Items[j], subs.Items[i]
 	}
-	
+
 	return subs
 }
