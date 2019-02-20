@@ -197,7 +197,6 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	content := model.GetDateAndQuestionsFAQ()
-
 	if content.Questions == "-1" {
 		log.Println("Something went wrong with getting the faq (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -207,6 +206,7 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
+	// Convert to html
 	questions := github_flavored_markdown.Markdown([]byte(content.Questions))
 
 	v := view.New(r)
@@ -225,8 +225,8 @@ func AdminFaqEditGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//
 	content := model.GetDateAndQuestionsFAQ()
-
 	if content.Questions == "-1" {
 		log.Println("Something went wrong with getting the faq (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
