@@ -277,7 +277,7 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var repo = model.FormRepository{}
+	var repo = model.SubmissionRepository{}
 
 	err = repo.Insert(form)
 	if err != nil {
