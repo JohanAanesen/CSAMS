@@ -12,6 +12,12 @@ const TYPES = {
 };
 
 /**
+ * Regular expression for replaceAll for the prefix for the form
+ * @type {RegExp}
+ */
+const REGEXP = /\W/;
+
+/**
  *
  * @constructor
  */
@@ -21,6 +27,12 @@ let Form = function() {
      * @type {Object[]}
      */
     this.fields = [];
+
+    /**
+     * Displaying title of the form
+     * @type {string}
+     */
+    this.title = '';
 
     /**
      * Holds the name of the form
@@ -59,12 +71,20 @@ let Form = function() {
     this.request = '';
 
     /**
+     * Request method
+     * @type {string}
+     */
+    this.method = 'POST';
+
+    /**
      * Initialize some event listeners
      */
     this.Initialize = function(options) {
         this.output = document.querySelector(options.output);
+        this.title = options.title;
         this.weighted = options.weighted || false;
         this.request = options.request;
+        this.method = options.method || this.method;
 
         this.renderAll();
     };
@@ -108,13 +128,13 @@ let Form = function() {
      * Clean the output HTML, then render all fields in it.
      */
     this.renderAll = function() {
-        let container, row, col, formGroup, label, input, textarea, hr, button, accordion;
+        let container, row, col, formGroup, label, input, textarea, hr, button, accordion, h1, form, hidden, submit;
 
         this.output.innerHTML = '';
 
-        // <div class="container">...</div>
+        // <div class="container-fluid">...</div>
         container = document.createElement('div');
-        container.classList.add(...['container']);
+        container.classList.add(...['container-fluid']);
 
         // <div class="row">...</div>
         row = document.createElement('div');
@@ -123,6 +143,23 @@ let Form = function() {
         // <div class="col">...</div>
         col = document.createElement('div');
         col.classList.add(...['col']);
+
+        // <h1 class="display-4">...</h1>
+        h1 = document.createElement('h1');
+        h1.classList.add(...['display-4']);
+        h1.innerText = this.title;
+
+        // <hr>
+        hr = document.createElement('hr');
+
+        col.appendChild(h1);
+        col.appendChild(hr);
+
+        form = document.createElement('form');
+        form.setAttribute('method', this.method);
+        form.setAttribute('action', this.request);
+
+        col.appendChild(form);
 
         // <div class="form-group">...</div>
         formGroup = document.createElement('div');
@@ -138,13 +175,14 @@ let Form = function() {
         input.setAttribute('type', 'text');
         input.setAttribute('name', 'form_name');
         input.setAttribute('placeholder', 'Form Name');
+        input.setAttribute('required', '');
         input.classList.add(...['form-control']);
         input.id = 'form_name';
         input.value = this.name;
 
         input.addEventListener('keyup', e => {
             this.name = e.target.value;
-            this.prefix = this.name.replaceAll(' ', '_').toLowerCase();
+            this.prefix = this.name.replaceAll(REGEXP, '_').toLowerCase();
 
             this.fields.forEach((e, i) => {
                 e.name = `${this.prefix}_${e.type}_${i}`;
@@ -154,7 +192,7 @@ let Form = function() {
         formGroup.appendChild(label);
         formGroup.appendChild(input);
 
-        col.appendChild(formGroup);
+        form.appendChild(formGroup);
 
         // <div class="form-group">...</div>
         formGroup = document.createElement('div');
@@ -179,11 +217,11 @@ let Form = function() {
         formGroup.appendChild(label);
         formGroup.appendChild(textarea);
 
-        col.appendChild(formGroup);
+        form.appendChild(formGroup);
 
         // <hr>
         hr = document.createElement('hr');
-        col.appendChild(hr);
+        form.appendChild(hr);
 
         // <button type="button" class="btn btn-dark" id="add_field">Add field</button>
         button = document.createElement('button');
@@ -196,65 +234,54 @@ let Form = function() {
             this.NewField();
         });
 
-        col.appendChild(button);
+        form.appendChild(button);
 
         // <hr>
         hr = document.createElement('hr');
-        col.appendChild(hr);
+        form.appendChild(hr);
 
         // <div class="accordion mb-5" id="accordion">...</div>
         accordion = document.createElement('div');
         accordion.classList.add(...['accordion', 'mb-5']);
         accordion.id = 'accordion';
 
-        col.appendChild(accordion);
+        form.appendChild(accordion);
 
         // <hr>
         hr = document.createElement('hr');
-        col.appendChild(hr);
+        form.appendChild(hr);
 
-        // <button type="button" class="btn btn-primary">Submit</button>
-        button = document.createElement('button');
-        button.setAttribute('type', 'button');
-        button.classList.add(...['btn', 'btn-primary']);
-        button.innerText = 'Submit';
+        // <input type="submit" class="btn btn-primary">
+        submit = document.createElement('input');
+        submit.setAttribute('type', 'submit');
+        submit.classList.add(...['btn', 'btn-primary']);
 
-        button.addEventListener('click', () => {
-            this.prefix = this.name.replaceAll(' ', '_').toLowerCase();
+        submit.addEventListener('click', () => {
+            this.prefix = this.name.replaceAll(REGEXP, '_').toLowerCase();
 
             this.fields.forEach((e, i) => {
                 e.name = `${this.prefix}_${e.type}_${i}`;
             });
 
-            fetch(this.request, {
-                method: 'POST',
-                mode: 'cors',
-                cache: 'no-cache',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                redirect: 'follow',
-                body: this.toJSON()
-            })
-            .then(response => {
-                console.log(response);
-            })
-            .catch(error => {
-                console.error(error);
-            });
+            hidden.value = this.toJSON();
         });
 
-        col.appendChild(button);
+        form.appendChild(submit);
 
         // <hr>
         hr = document.createElement('hr');
-        col.appendChild(hr);
+        form.appendChild(hr);
 
         this.fields.forEach((element, index) => {
             accordion.appendChild(element.createCard(index));
         });
 
+        // <input type="hidden" name="data">
+        hidden = document.createElement('input');
+        hidden.setAttribute('type', 'hidden');
+        hidden.setAttribute('name', 'data');
+
+        form.appendChild(hidden);
 
         row.appendChild(col);
         container.appendChild(row);
@@ -482,6 +509,7 @@ let Field = function(settings) {
         input.setAttribute('type', 'text');
         input.setAttribute('placeholder', 'Label');
         input.setAttribute('name', `label_${id}`);
+        input.setAttribute('required', '');
         input.id = `label_${id}`;
         input.value = this.label;
 
@@ -534,6 +562,7 @@ let Field = function(settings) {
         input.setAttribute('type', 'number');
         input.setAttribute('min', '0');
         input.setAttribute('name', `order_${id}`);
+        input.setAttribute('required', '');
         input.id = `order_${id}`;
         input.value = this.order;
         // EventListener to the input-field, saving the value
@@ -606,7 +635,7 @@ let Field = function(settings) {
 
 /**
  * A replace-function that takes all replacements, not just the first.
- * @param {string} search
+ * @param {string|RegExp} search
  * @param {string} replacement
  * @returns {string}
  */

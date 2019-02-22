@@ -1,7 +1,57 @@
 Svein's log
 ============
+## 22/02/2019
+* Did some QoL on the form submits
+* Fixed some bugs of redirecting and form-validation
+* Researched best practice for Go
+
+#### Research examples
+Simple example with `Courses`
+
+Go-code:
+```go
+package research
+
+type Course struct {
+	ID int
+	Data map[string]string
+}
+
+// Current usage
+type Courses struct {
+	Items []Courses
+}
+
+// Researched usage
+type Courses []Courses
+```
+
+HTML-code:
+```html
+<!-- Current usage -->
+{{range .Courses.Items}}
+    <div class="col">...</div>
+{{end}}
+
+<!-- Researched usage -->
+{{range .Courses}}
+    <div class="col">...</div>
+{{end}}
+```
+
 ## 20/02/2019
-* Cluster fuck of a database, but fixed it
+* Created a working tables for the assignments, submissions, forms and fields.
+* Did pull request on a bigger card, but group found a lot of bugs, got most of them fixed
+* Found a new way of doing the `forms` and `fields` tables:
+#### `forms`
+| id | prefix | name | description | created |
+| --- | --- | --- | --- | --- |
+| PK | prefix for fields (HTML ) | Display name | Description .. | TIMESTAMP |
+
+#### `fields`
+| id | form_id  | type | name | label | description | priority | weight | choices |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| PK | FK | type of field (text, radio, checkbox) | Name of field (HTML) | Label (Display name) | Description | Order number | Weight for grading | Choices (Array, split by ',')
 
 ## 19/02/2019
 * Short day of working. Got the basic framework for the dynamic form together
