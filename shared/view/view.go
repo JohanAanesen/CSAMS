@@ -42,18 +42,18 @@ var (
 	mutex sync.RWMutex
 )
 
-//Configure todo
+// Configure the view
 func Configure(v *View) {
 	cfgView = v
 }
 
-//LoadTemplate todo
+// LoadTemplate loads the templates fro the view
 func LoadTemplate(root string, children []string) {
 	rootTemplate = root
 	childTemplates = children
 }
 
-// LoadAdminTemplate ... TODO (Svein) add comment here
+// LoadAdminTemplate loads the admin templates for the view
 func LoadAdminTemplate(root string, children []string) {
 	adminRootTemplate = root
 	adminChildTemplates = children

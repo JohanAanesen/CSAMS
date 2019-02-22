@@ -123,6 +123,10 @@ as we talked about with the [Project Owner](https://www.ntnu.no/ansatte/christop
 It's nicer this way and more effective to have current classes at the top where they are easy reachable.
 ### ~~Thursday - 21/02/19~~ Ski day!
 ### Friday - 22/02/19
+*Ski day was rough*
+* Looked at pull request
+* \#21 Merged main to branch
+* 
 
 
 
