@@ -282,7 +282,7 @@ create table fields
   name        varchar(64) not null,
   label       varchar(64) null,
   description text        not null,
-  `order`     int         not null,
+  priority     int         not null,
   weight      int         null,
   choices     varchar(64) null,
   constraint fields_forms_id_fk

@@ -1,7 +1,12 @@
 {{define "title"}}Create Submission{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-    <div id="output"></div>
+    {{if .Errors}}
+        {{range .Errors}}
+            <div class="alert alert-warning">{{.}}</div>
+        {{end}}
+    {{end}}
+    <div class="row" id="output"></div>
 {{end}}
 {{define "foot"}}
 <script src="/static/js/form.js"></script>
@@ -9,6 +14,7 @@
     let form = new Form();
     form.Initialize({
         output: '#output',
+        title: 'Create new Submission form',
         request: '/admin/submission/create',
         weighted: false,
     });
