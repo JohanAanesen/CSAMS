@@ -233,32 +233,56 @@ func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminAssignmentCreatePOST handles POST-request from /admin/assigment/create
 func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
-	//check that user is a teacher
-	if !session.IsTeacher(r) { //not a teacher, error 401
+	// Check that user is a teacher
+	if !session.IsTeacher(r) { // Not a teacher, error 401
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
 
-	assignmentRepository := model.AssignmentRepository{}
+	// Declare empty slice of strings
+	var errorMessages []string
 
+	// Get form name from request
+	assignmentName := r.FormValue("name")
+
+	// Check if name is empty
+	if assignmentName == "" {
+		errorMessages = append(errorMessages, "Error: Assignment Name cannot be blank.")
+	}
+
+	// Get the time.Time object from the publish string
 	publish, err := DatetimeLocalToRFC3339(r.FormValue("publish"))
 	if err != nil {
-		log.Println(err)
-		return
+		errorMessages = append(errorMessages, "Error: Something wrong with the publish datetime.")
 	}
 
+	// Get the time.Time object from the deadline string
 	deadline, err := DatetimeLocalToRFC3339(r.FormValue("deadline"))
 	if err != nil {
-		log.Println(err)
-		return
+		errorMessages = append(errorMessages, "Error: Something wrong with the deadline datetime.")
 	}
 
+	// Check if publish datetime is after the deadline
 	if publish.After(deadline) {
-		// TODO (Svein): Give feedback on this. Also add this in the Javascript
-		ErrorHandler(w, r, http.StatusInternalServerError)
+		errorMessages = append(errorMessages, "Error: Deadline cannot be before Publish.")
+	}
+
+	// Check if there are any error messages
+	if len(errorMessages) != 0 {
+		// TODO (Svein): Keep data from the previous submit
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+
+		v := view.New(r)
+		v.Name = "admin/assignment/create"
+
+		v.Vars["Errors"] = errorMessages
+
+		v.Render(w)
 		return
 	}
 
+	assignmentRepository := model.AssignmentRepository{}
 	// Get form values
 	courseIDString := r.FormValue("course_id")
 	submissionIDString := r.FormValue("submission_id")
@@ -290,6 +314,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
 
 	// Put all data into an Assignment-struct
 	assignment := model.Assignment{
@@ -372,7 +397,7 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Check if any error messages has been appended
 	if len(errorMessages) != 0 {
-		// TODO (Svein): Display errors
+		// TODO (Svein): Keep data from the previous submit
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 
@@ -382,19 +407,21 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 		v.Vars["Errors"] = errorMessages
 
 		v.Render(w)
-	} else {
-		// Declare an empty Repository for Submission
-		var repo = model.SubmissionRepository{}
-		// Insert data to database
-		err = repo.Insert(form)
-		if err != nil {
-			log.Println(err)
-			return
-		}
 
-		// Redirect to /admin/submission
-		http.Redirect(w, r, "/admin/submission", http.StatusFound)
+		return
 	}
+
+	// Declare an empty Repository for Submission
+	var repo = model.SubmissionRepository{}
+	// Insert data to database
+	err = repo.Insert(form)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	// Redirect to /admin/submission
+	http.Redirect(w, r, "/admin/submission", http.StatusFound)
 }
 
 // DatetimeLocalToRFC3339 converts a string from datetime-local HTML input-field to time.Time object

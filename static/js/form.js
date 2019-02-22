@@ -12,6 +12,12 @@ const TYPES = {
 };
 
 /**
+ * Regular expression for replaceAll for the prefix for the form
+ * @type {RegExp}
+ */
+const REGEXP = /\W/;
+
+/**
  *
  * @constructor
  */
@@ -176,7 +182,7 @@ let Form = function() {
 
         input.addEventListener('keyup', e => {
             this.name = e.target.value;
-            this.prefix = this.name.replaceAll(' ', '_').toLowerCase();
+            this.prefix = this.name.replaceAll(REGEXP, '_').toLowerCase();
 
             this.fields.forEach((e, i) => {
                 e.name = `${this.prefix}_${e.type}_${i}`;
@@ -251,7 +257,7 @@ let Form = function() {
         submit.classList.add(...['btn', 'btn-primary']);
 
         submit.addEventListener('click', () => {
-            this.prefix = this.name.replaceAll(' ', '_').toLowerCase();
+            this.prefix = this.name.replaceAll(REGEXP, '_').toLowerCase();
 
             this.fields.forEach((e, i) => {
                 e.name = `${this.prefix}_${e.type}_${i}`;
@@ -629,7 +635,7 @@ let Field = function(settings) {
 
 /**
  * A replace-function that takes all replacements, not just the first.
- * @param {string} search
+ * @param {string|RegExp} search
  * @param {string} replacement
  * @returns {string}
  */
