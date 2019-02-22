@@ -3,6 +3,41 @@ Svein's log
 ## 22/02/2019
 * Did some QoL on the form submits
 * Fixed some bugs of redirecting and form-validation
+* Researched best practice for Go
+
+#### Research examples
+Simple example with `Courses`
+
+Go-code:
+```go
+package research
+
+type Course struct {
+	ID int
+	Data map[string]string
+}
+
+// Current usage
+type Courses struct {
+	Items []Courses
+}
+
+// Researched usage
+type Courses []Courses
+```
+
+HTML-code:
+```html
+<!-- Current usage -->
+{{range .Courses.Items}}
+    <div class="col">...</div>
+{{end}}
+
+<!-- Researched usage -->
+{{range .Courses}}
+    <div class="col">...</div>
+{{end}}
+```
 
 ## 20/02/2019
 * Created a working tables for the assignments, submissions, forms and fields.
