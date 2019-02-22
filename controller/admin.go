@@ -339,7 +339,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Redirect client to '/'
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
 }
 
 // AdminSubmissionGET handles GET-request to /admin/submission
