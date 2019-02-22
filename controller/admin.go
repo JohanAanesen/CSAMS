@@ -244,6 +244,8 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Get form name from request
 	assignmentName := r.FormValue("name")
+	// Get form description from request
+	assignmentDescription := r.FormValue("description")
 
 	// Check if name is empty
 	if assignmentName == "" {
@@ -277,6 +279,9 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		v.Name = "admin/assignment/create"
 
 		v.Vars["Errors"] = errorMessages
+		v.Vars["AssignmentName"] = assignmentName
+		v.Vars["AssignmentDescription"] = assignmentDescription
+		v.Vars["Courses"] = model.GetCoursesToUser(session.GetUserFromSession(r).ID)
 
 		v.Render(w)
 		return
@@ -315,11 +320,10 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-
 	// Put all data into an Assignment-struct
 	assignment := model.Assignment{
-		Name:         r.FormValue("name"),
-		Description:  r.FormValue("description"),
+		Name:         assignmentName,
+		Description:  assignmentDescription,
 		Publish:      publish,
 		Deadline:     deadline,
 		CourseID:     courseID,
