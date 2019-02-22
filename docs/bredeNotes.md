@@ -126,7 +126,8 @@ It's nicer this way and more effective to have current classes at the top where 
 *Ski day was rough*
 * Looked at pull request
 * \#21 Merged main to branch
-* 
+* Displaying courses and assignments in dashboard, course and assignment for admin now. I need to make assignments in sorted order by deadline
+and display only active courses and assignments on dashboard, and then I'm done.
 
 
 

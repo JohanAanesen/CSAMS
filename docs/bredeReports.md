@@ -49,3 +49,13 @@ and chose `github.com/rs/xid` because it was the correct length and the least ha
 ### What Went Bad
 * Too few bugs I'm too good now :/
 <!-- TODO Write more here -->
+
+## Week Three
+### What I Have Done
+* This week I have worked on \#23, \#20, \#22 and \#21 in that order.
+
+### Design/Architecture Decisions
+
+### What Went Good
+
+### What Went Bad
