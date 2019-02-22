@@ -347,25 +347,54 @@ func AdminSubmissionCreateGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminSubmissionCreatePOST handles POST-request to /admin/submission/create
 func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-
+	// Get data from the form
+	data := r.FormValue("data")
+	// Declare Form-struct
 	var form = model.Form{}
-
-	err := decoder.Decode(&form)
+	// Unmarshal the JSON-string sent from the form
+	err := json.Unmarshal([]byte(data), &form)
 	if err != nil {
 		log.Println(err)
 		return
 	}
+	// Declare empty slice for error messages
+	var errorMessages []string
 
-	var repo = model.SubmissionRepository{}
-
-	err = repo.Insert(form)
-	if err != nil {
-		log.Println(err)
-		return
+	// Check form name
+	if form.Name == "" {
+		errorMessages = append(errorMessages, "Form name cannot be blank.")
 	}
 
-	http.Redirect(w, r, "/", http.StatusFound)
+	// Check number of fields
+	if len(form.Fields) == 0 {
+		errorMessages = append(errorMessages, "Form needs to have at least 1 field.")
+	}
+
+	// Check if any error messages has been appended
+	if len(errorMessages) != 0 {
+		// TODO (Svein): Display errors
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+
+		v := view.New(r)
+		v.Name = "admin/submission/create"
+
+		v.Vars["Errors"] = errorMessages
+
+		v.Render(w)
+	} else {
+		// Declare an empty Repository for Submission
+		var repo = model.SubmissionRepository{}
+		// Insert data to database
+		err = repo.Insert(form)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		// Redirect to /admin/submission
+		http.Redirect(w, r, "/admin/submission", http.StatusFound)
+	}
 }
 
 // DatetimeLocalToRFC3339 converts a string from datetime-local HTML input-field to time.Time object
