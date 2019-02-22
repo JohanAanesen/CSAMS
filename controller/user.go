@@ -27,7 +27,7 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
 
 	v.Vars["Auth"] = user.Authenticated
 	v.Vars["User"] = user
-	v.Vars["Courses"] = courses // TODO (Svein): Take a look in user/profile.tmpl how this is used, and why noOfClasses is gone (Hint: {{len .Courses.Items}})
+	v.Vars["Courses"] = courses
 
 	v.Render(w)
 }

@@ -39,6 +39,13 @@ func AdminGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	courses := model.GetCoursesToUser(session.GetUserFromSession(r).ID)
+
+	// TODO brede : make this dynamic
+	v.Vars["ThisYear"] = "2019"
+	v.Vars["ThisSemester"] = "spring"
+
+	v.Vars["Courses"] = courses
 	v.Vars["Assignments"] = assignments
 
 	v.Render(w)
@@ -58,10 +65,7 @@ func AdminCourseGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/course/index"
 
-	user := session.GetUserFromSession(r)
-
-	fmt.Println("YET")
-	v.Vars["Courses"] = model.GetCoursesToUser(user.ID)
+	v.Vars["Courses"] = model.GetCoursesToUser(session.GetUserFromSession(r).ID)
 
 	v.Render(w)
 }
