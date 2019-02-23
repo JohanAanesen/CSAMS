@@ -39,23 +39,48 @@ projects design and are more prepared for the next card now.
 ### Design/Architecture Decisions
 * I choose the unique id function for the courses from this site [here](https://blog.kowalczyk.info/article/JyRZ/generating-good-unique-ids-in-go.html), 
 and chose `github.com/rs/xid` because it was the correct length and the least hassle.
-* I had every log in one table with many nulls instead of one table to each type to have it more oversikkelig. 
-<!-- TODO Write more here -->
+* I had every log in one table with many nulls instead of one table to each type to have it more 'oversikkelig'. 
+
 
 ### What Went Good
 * Way less bugs this week, and overall higher productivity for each card!
-<!-- TODO Write more here -->
+* I had more than one card!
 
 ### What Went Bad
 * Too few bugs I'm too good now :/
-<!-- TODO Write more here -->
+* Maybe too few cards I guess
 
 ## Week Three
 ### What I Have Done
-* This week I have worked on \#23, \#20, \#22 and \#21 in that order.
+* This week I have worked on [#23 - Join Class Functionality](https://trello.com/c/lGOGylxO), [#20 - Front Page Dynamic](https://trello.com/c/AxyDWjuP), 
+[#22 - Admin FAQ Page](https://trello.com/c/0trVQS8x) and [#21 - Admin Page Dynamic](https://trello.com/c/J8GQvTCt) in that order.
+* First I had to fix a bug on \#23 and change the primary key to course: courseid back to int + auto_increment and add another column: hash to have in the link.
+* I then started on \#20, but couldn't finish the formerly two tasks because assignments wasn't done yet then.
+* I then started looking at \#22 and was a bit unsure how to solve it, but after talking to the [Project Owner](https://www.ntnu.no/ansatte/christopher.frantz)
+we decided to go with an editable markdown page.
+* After that I started on \#21 and I'm still working on it, I have completed task one which is dynamically list courses sorted by year/semester. So almost done!
 
 ### Design/Architecture Decisions
+* \#23, I changed back to int as ID since it was the same as the other tables, also more consistent this way. It's also usual to have hash and id separate.
+* \#20, was just straight forward, it was just to display courses and I did.
+* \#22, This was not straight forward at all! <!-- ¯\_(ツ)_/¯ --> 
+    * We first talked about having a hardcoded file in the project, like a json file with the questions and answers or something.
+    * Then I talked to the [Project Owner](https://www.ntnu.no/ansatte/christopher.frantz), and he recommended using markdown since we already had that in another place.
+    * And finally we ended up using markdown that every teacher can edit on the front-end, but also tracking the changes in the log table in the db, in case anyone fucks up :)
+        * This was a very simple solution and more consistent all over the page, since we have md in assignment and course page :D
+* \#21 No big design/architecture here, the courses and assignment are displayed in cards to make the more modern and easier see they are separate.
+
 
 ### What Went Good
+* I did more cards this week, I completed three cards and started on one more :D 
+* I work faster now, It's also less bugs
+* We agreed on how to display the FAQ and it was a simple solution but also kinda nice.
+* Had a day off, but could complete at least 30h anyway <3 
 
 ### What Went Bad
+* I couldn't complete \#20 :/
+* I didn't have time to finish my last card (\#21) this week :/
+* Used some time talking about how to solve the faq solution, (but that could also be a good thing since we discussed it before implementing )
+* I wasn't that productive this week (see: hangover after ski day)
+* Used some time with \#22 because of various bugs, found out it was bootstrap that fucked me over at the end thx to Johan <3
+* I din't have birthday this week :/
