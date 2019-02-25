@@ -1,6 +1,5 @@
 package main
 
-
 func main() {
 	// Initialize config
 	var cfg = Initialize()
