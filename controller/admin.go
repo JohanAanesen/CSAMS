@@ -507,7 +507,7 @@ func AdminSettingsGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminSettingsPOST handles POST-request at admin/setting
 func AdminSettingsPOST(w http.ResponseWriter, r *http.Request) {
-
+	// TODO (Svein): Handle incoming data
 	http.Redirect(w, r, "/admin/settings", http.StatusOK)
 }
 
