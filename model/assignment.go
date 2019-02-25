@@ -94,6 +94,48 @@ func (repo *AssignmentRepository) GetAll() ([]Assignment, error) {
 	return result, nil
 }
 
+// GetAllToUserSorted Gets all assignment to user and returns them sorted by deadline
+func (repo *AssignmentRepository) GetAllToUserSorted(UserID int) ([]Assignment, error) {
+
+	// Declare empty slice
+	var result []Assignment
+
+	// Create query string
+	// The tables is connected like this example: users -> usercourse -> course -> assignments
+	query := "SELECT assignments.id, assignments.name, assignments.description, assignments.created, assignments.publish, assignments.deadline, assignments.course_id  " +
+		"FROM `assignments` INNER JOIN course ON assignments.course_id = course.id " +
+		"INNER JOIN usercourse ON usercourse.courseid = course.id WHERE usercourse.userid = ? " +
+		"AND usercourse.courseid = assignments.course_id ORDER BY assignments.deadline;"
+
+	// Prepare and execute query
+	rows, err := db.GetDB().Query(query, UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Close connection
+	defer rows.Close()
+
+	// Loop through results
+	for rows.Next() {
+		// Declare empty struct
+		var assignment Assignment
+		// Scan rows
+		err := rows.Scan(&assignment.ID, &assignment.Name, &assignment.Description,
+			&assignment.Created, &assignment.Publish, &assignment.Deadline,
+			&assignment.CourseID)
+		// Check for error
+		if err != nil {
+			return nil, err
+		}
+
+		// Append retrieved row
+		result = append(result, assignment)
+	}
+
+	return result, nil
+}
+
 // Insert a new assignment to the database
 func (repo *AssignmentRepository) Insert(assignment Assignment) error {
 	// Create query string

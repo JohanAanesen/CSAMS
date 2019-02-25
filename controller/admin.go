@@ -33,17 +33,13 @@ func AdminGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "admin/index"
 
 	assignmentRepo := model.AssignmentRepository{}
-	assignments, err := assignmentRepo.GetAll()
+	assignments, err := assignmentRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
 	courses := model.GetCoursesToUser(session.GetUserFromSession(r).ID)
-
-	// TODO brede : make this dynamic
-	v.Vars["ThisYear"] = "2019"
-	v.Vars["ThisSemester"] = "spring"
 
 	v.Vars["Courses"] = courses
 	v.Vars["Assignments"] = assignments
@@ -195,7 +191,10 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 	assignmentRepo := model.AssignmentRepository{}
 
-	assignments, err := assignmentRepo.GetAll()
+	// Get all assignments to user in sorted order
+	assignments, err := assignmentRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
+	fmt.Println(assignments)
+
 	if err != nil {
 		log.Println(err)
 		return

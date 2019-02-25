@@ -129,5 +129,23 @@ It's nicer this way and more effective to have current classes at the top where 
 * Displaying courses and assignments in dashboard, course and assignment for admin now. I need to make assignments in sorted order by deadline
 and display only active courses and assignments on dashboard, and then I'm done.
 
+## Week Four - One month woo
+### Monday - 25/02/19
+* Continuing the work on \#21
+* \#21 I created a new function in `model/assignment.go` called `GetAllToUserSorted()` which gets all the assignment to the user
+sorted by the deadlines desc. 
+
+
+### Tuesday - 26/02/19
+
+
+### Wednesday - 27/02/19
+
+
+### Thursday - 28/02/19
+
+
+### Friday - 01/03/19
+
 
 
