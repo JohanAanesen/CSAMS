@@ -23,11 +23,18 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
+	courses, err := model.GetCoursesToUser(session.GetUserFromSession(r).ID)
+	if err != nil {
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+
 	// Set values
 	v := view.New(r)
 	v.Name = "index"
 	v.Vars["Auth"] = user.Authenticated
-	v.Vars["Courses"] = model.GetCoursesToUser(user.ID)
+	v.Vars["Courses"] = courses
 	v.Vars["Message"] = joinedCourse
 	v.Render(w)
 }

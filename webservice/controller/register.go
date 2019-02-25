@@ -73,7 +73,6 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		if hash != "" {
 			if id := model.CourseExists(hash).ID; id != -1 {
 				model.AddUserToCourse(user.ID, id)
-				// TODO : maybe redirect to course page ?
 			}
 		}
 	} else {
