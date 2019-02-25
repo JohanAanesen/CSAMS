@@ -2,7 +2,7 @@ package route
 
 import (
 	"fmt"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/controller"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/controller"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"net/http"
