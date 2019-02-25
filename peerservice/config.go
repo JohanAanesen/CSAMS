@@ -43,7 +43,7 @@ func LoadConfig(configFile string) (*Configuration, error) {
 
 func Initialize() *Configuration {
 	var cfg = &Configuration{}
-	cfg, err := LoadConfig("config.json")
+	cfg, err := LoadConfig("peerservice/config.json")
 	if err != nil {
 		panic(err)
 	}

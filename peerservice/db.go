@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql" //database driver
-	"os"
 )
 
 const driverName = "mysql"
@@ -33,10 +32,8 @@ func ConfigureDB(info *MySQLInfo) {
 //OpenDB creates connection with database
 func OpenDB() {
 	var err error
-	//db, err = sql.Open(driverName, dataSourceName)
-	db, err = sql.Open(driverName, "root:root@tcp("+os.Getenv("DATABASE_URL")+")/cs53")
+	db, err = sql.Open(driverName, dataSourceName)
 	if err != nil {
-		fmt.Println("shet")
 		panic(err.Error())
 	}
 
