@@ -4,6 +4,7 @@
     <h2 class="display-4 mb-3">Courses <a href="/admin/course/create" class="btn btn-success btn-sm px-3">New</a></h2>
     <hr>
     <div class="row">
+        <!-- TODO Brede : only show active courses -->
         {{ range .Courses.Items }}
             <div class="col-12 col-md-6 col-xl mb-3">
                 <div class="card shadow-sm">
@@ -18,9 +19,11 @@
         {{ end }}
     </div>
 
-    <h2 class="display-4 mb-3">Assignments <a href="/admin/assignment/create" class="btn btn-success btn-sm px-3">New</a></h2>
+    <h2 class="display-4 mb-3">Assignments <a href="/admin/assignment/create"
+                                              class="btn btn-success btn-sm px-3">New</a></h2>
     <hr>
     <div class="row">
+        <!-- TODO Brede : only show active assignments -->
         {{ range .Assignments }}
             <div class="col-12 col-md-6 col-lg-4 mb-3">
                 <div class="card shadow-sm">
@@ -37,4 +40,5 @@
         {{ end }}
     </div>
 {{end}}
-{{define "foot"}}{{end}}
+{{define "foot"}}
+{{end}}

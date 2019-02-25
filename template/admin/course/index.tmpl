@@ -2,13 +2,17 @@
 {{define "head"}}{{end}}
 {{define "content"}}
     <h2 class="display-4 mb-3">Courses <a href="/admin/course/create" class="btn btn-success btn-sm px-3">New</a></h2>
+
+    <hr>
     <div class="row">
         {{ range .Courses.Items }}
             <div class="col-12 col-md-6 col-xl mb-3">
-                <div class="card">
+                <div class="card shadow-sm">
                     <div class="card-body">
-                        <h2 class="card-title">{{ .Code }}: {{ .Name }}</h2>
-                        <a href="#" class="btn btn-dark">See assignments</a>
+                        <h2 class="display-4">{{ .Code }}</h2>
+                        <h3 class="mb-3">{{ .Name }}</h3>
+                        <hr>
+                        <a href="#" class="btn btn-dark btn-sm">See assignments</a>
                     </div>
                 </div>
             </div>

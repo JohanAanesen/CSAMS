@@ -21,6 +21,7 @@ const (
 	CreatedCourse       activity = "COURSE-CREATED"                         // Course is created
 	CreatAssignment     activity = "ASSIGNMENT-CREATED"                     // Assignment is created
 	UpdateAdminFAQ      activity = "UPDATE-ADMIN-FAQ"                       // The admins faq is updated
+	// TODO Brede : add more activities later :)
 )
 
 // Log struct to hold log-data
@@ -49,6 +50,7 @@ func LogToDB(payload Log) bool {
 	var rows *sql.Rows
 	var err error
 
+	// TODO Brede : switch and new functions :)
 	// User changes name or email
 	if payload.Activity == ChangeEmail || payload.Activity == ChangeName || payload.Activity == UpdateAdminFAQ {
 		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `activity`, `oldvalue`, `newvalue`) "+
@@ -78,7 +80,6 @@ func LogToDB(payload Log) bool {
 	} else {
 		return false
 	}
-	// TODO ends here
 
 	// Handle possible error
 	if err != nil {

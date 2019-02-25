@@ -40,7 +40,6 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 		// If hash was valid, add user isn't in the course, then add user to course
 		if hash != "" && !model.UserExistsInCourse(user.ID, course.ID) {
 			model.AddUserToCourse(user.ID, course.ID)
-			// TODO : maybe redirect to course page ? johan: I think no.
 		}
 
 		http.Redirect(w, r, "/", http.StatusFound) //redirect
@@ -93,7 +92,6 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		if hash != "" {
 			if id := model.CourseExists(hash).ID; id != -1 && !model.UserExistsInCourse(user.ID, id) {
 				model.AddUserToCourse(user.ID, id)
-				// TODO : maybe redirect to course page ?
 			}
 		}
 
