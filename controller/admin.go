@@ -206,7 +206,6 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 	// Get all assignments to user in sorted order
 	assignments, err := assignmentRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
-	fmt.Println(assignments)
 
 	if err != nil {
 		log.Println(err)
