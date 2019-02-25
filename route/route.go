@@ -53,35 +53,35 @@ func routes() http.Handler {
 
 	adminrouter.HandleFunc("/", controller.AdminGET).Methods("GET")
 
-	adminrouter.HandleFunc("/admin/course", controller.AdminCourseGET).Methods("GET")
-	adminrouter.HandleFunc("/admin/course/create", controller.AdminCreateCourseGET).Methods("GET")
-	adminrouter.HandleFunc("/admin/course/create", controller.AdminCreateCoursePOST).Methods("POST")
-	adminrouter.HandleFunc("/admin/course/update/{id}", controller.AdminUpdateCourseGET).Methods("GET")
-	adminrouter.HandleFunc("/admin/course/update/{id}", controller.AdminUpdateCoursePOST).Methods("POST")
+	adminrouter.HandleFunc("/course", controller.AdminCourseGET).Methods("GET")
+	adminrouter.HandleFunc("/course/create", controller.AdminCreateCourseGET).Methods("GET")
+	adminrouter.HandleFunc("/course/create", controller.AdminCreateCoursePOST).Methods("POST")
+	adminrouter.HandleFunc("/course/update/{id}", controller.AdminUpdateCourseGET).Methods("GET")
+	adminrouter.HandleFunc("/course/update/{id}", controller.AdminUpdateCoursePOST).Methods("POST")
 
-	adminrouter.HandleFunc("/admin/assignment", controller.AdminAssignmentGET).Methods("GET")
-	adminrouter.HandleFunc("/admin/assignment/create", controller.AdminAssignmentCreateGET).Methods("GET")
-	adminrouter.HandleFunc("/admin/assignment/create", controller.AdminAssignmentCreatePOST).Methods("POST")
+	adminrouter.HandleFunc("/assignment", controller.AdminAssignmentGET).Methods("GET")
+	adminrouter.HandleFunc("/assignment/create", controller.AdminAssignmentCreateGET).Methods("GET")
+	adminrouter.HandleFunc("/assignment/create", controller.AdminAssignmentCreatePOST).Methods("POST")
 
-	adminrouter.HandleFunc("/admin/submission", controller.AdminSubmissionGET).Methods("GET")
-	adminrouter.HandleFunc("/admin/submission/create", controller.AdminSubmissionCreateGET).Methods("GET")
-	adminrouter.HandleFunc("/admin/submission/create", controller.AdminSubmissionCreatePOST).Methods("POST")
+	adminrouter.HandleFunc("/submission", controller.AdminSubmissionGET).Methods("GET")
+	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreateGET).Methods("GET")
+	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreatePOST).Methods("POST")
 
-	adminrouter.HandleFunc("/admin/faq", controller.AdminFaqGET).Methods("GET")
-	adminrouter.HandleFunc("/admin/faq/edit", controller.AdminFaqEditGET).Methods("GET")
-	adminrouter.HandleFunc("/admin/faq/update", controller.AdminFaqUpdatePOST).Methods("POST")
+	adminrouter.HandleFunc("/faq", controller.AdminFaqGET).Methods("GET")
+	adminrouter.HandleFunc("/faq/edit", controller.AdminFaqEditGET).Methods("GET")
+	adminrouter.HandleFunc("/faq/update", controller.AdminFaqUpdatePOST).Methods("POST")
 
-	adminrouter.HandleFunc("/admin/settings", controller.AdminSettingsGET).Methods("GET")
-	adminrouter.HandleFunc("/admin/settings", controller.AdminSettingsPOST).Methods("POST")
-	adminrouter.HandleFunc("/admin/settings/import", controller.AdminSettingsImportGET).Methods("GET")
-	adminrouter.HandleFunc("/admin/settings/import", controller.AdminSettingsImportPOST).Methods("POST")
+	adminrouter.HandleFunc("/settings", controller.AdminSettingsGET).Methods("GET")
+	adminrouter.HandleFunc("/settings", controller.AdminSettingsPOST).Methods("POST")
+	adminrouter.HandleFunc("/settings/import", controller.AdminSettingsImportGET).Methods("GET")
+	adminrouter.HandleFunc("/settings/import", controller.AdminSettingsImportPOST).Methods("POST")
 
 	// Login/Register Handlers
-	adminrouter.HandleFunc("/login", controller.LoginGET).Methods("GET")
-	adminrouter.HandleFunc("/login", controller.LoginPOST).Methods("POST")
-	adminrouter.HandleFunc("/register", controller.RegisterGET).Methods("GET")
-	adminrouter.HandleFunc("/register", controller.RegisterPOST).Methods("POST")
-	adminrouter.HandleFunc("/logout", controller.LogoutGET).Methods("GET")
+	router.HandleFunc("/login", controller.LoginGET).Methods("GET")
+	router.HandleFunc("/login", controller.LoginPOST).Methods("POST")
+	router.HandleFunc("/register", controller.RegisterGET).Methods("GET")
+	router.HandleFunc("/register", controller.RegisterPOST).Methods("POST")
+	router.HandleFunc("/logout", controller.LogoutGET).Methods("GET")
 
 	// Set path prefix for the static-folder
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
@@ -90,6 +90,7 @@ func routes() http.Handler {
 	router.NotFoundHandler = http.HandlerFunc(controller.NotFoundHandler)
 	// 405 Error Handler
 	router.MethodNotAllowedHandler = http.HandlerFunc(controller.MethodNotAllowedHandler)
+
 
 	return handlers.CombinedLoggingHandler(os.Stdout, router)
 }
