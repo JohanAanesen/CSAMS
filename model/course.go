@@ -25,7 +25,7 @@ type Course struct {
 }
 
 //GetCoursesToUser returns all the courses to the user
-func GetCoursesToUser(userID int) Courses {
+func GetCoursesToUser(userID int) (Courses, error) {
 
 	// Create an empty courses array
 	var courses Courses
@@ -36,7 +36,7 @@ func GetCoursesToUser(userID int) Courses {
 		fmt.Println(err.Error()) // TODO : log error
 
 		// returns empty course array if it fails
-		return courses
+		return courses, err
 	}
 
 	for rows.Next() {
@@ -64,7 +64,7 @@ func GetCoursesToUser(userID int) Courses {
 		})
 	}
 
-	return courses
+	return courses, nil
 }
 
 //GetCourse returns a given course

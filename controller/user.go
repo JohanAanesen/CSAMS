@@ -17,7 +17,12 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	courses := model.GetCoursesToUser(user.ID)
+	courses, err := model.GetCoursesToUser(session.GetUserFromSession(r).ID)
+	if err != nil {
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
