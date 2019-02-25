@@ -1,0 +1,32 @@
+{{define "title"}}Settings{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+    <h1 class="display-4">Settings</h1>
+    <hr>
+
+    <form action="/admin/settings" method="post">
+        <div class="form-group row">
+            <label for="setting_0" class="col-sm-2 col-form-label">Setting 0</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="setting_0">
+            </div>
+        </div>
+
+        <hr>
+        <div class="form-group row">
+            <label for="db_import" class="col-sm-2 col-form-label">Import database</label>
+            <div class="col-sm-10">
+                <a href="/admin/settings/import" class="btn btn-light btn-block" id="db_import">Import</a>
+            </div>
+        </div>
+        <hr>
+
+        <div class="form-group row">
+            <label for="" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10">
+                <input type="submit" class="btn btn-primary">
+            </div>
+        </div>
+    </form>
+{{end}}
+{{define "foot"}}{{end}}

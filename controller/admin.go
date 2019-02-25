@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,6 +13,7 @@ import (
 	"github.com/rs/xid"
 	"github.com/shurcooL/github_flavored_markdown"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -561,4 +563,62 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	AdminFaqGET(w, r)
+}
+
+func AdminSettingsGET(w http.ResponseWriter, r *http.Request) {
+	//check that user is a teacher
+	if !session.IsTeacher(r) { //not a teacher, error 401
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/settings/index"
+
+	v.Render(w)
+}
+
+func AdminSettingsPOST(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func AdminSettingsImportGET(w http.ResponseWriter, r *http.Request) {
+	//check that user is a teacher
+	if !session.IsTeacher(r) { //not a teacher, error 401
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/settings/import"
+
+	v.Render(w)
+}
+
+func AdminSettingsImportPOST(w http.ResponseWriter, r *http.Request) {
+	var buffer bytes.Buffer
+	r.ParseMultipartForm(32 <<  20)
+	file, _, err := r.FormFile("db_import")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	defer file.Close()
+	defer buffer.Reset()
+
+	_, err = io.Copy(&buffer, file)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	content := buffer.String()
+	fmt.Println(content)
 }

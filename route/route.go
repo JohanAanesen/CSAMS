@@ -67,6 +67,11 @@ func routes() http.Handler {
 	router.HandleFunc("/admin/faq/edit", controller.AdminFaqEditGET).Methods("GET")
 	router.HandleFunc("/admin/faq/update", controller.AdminFaqUpdatePOST).Methods("POST")
 
+	router.HandleFunc("/admin/settings", controller.AdminSettingsGET).Methods("GET")
+	router.HandleFunc("/admin/settings", controller.AdminSettingsPOST).Methods("POST")
+	router.HandleFunc("/admin/settings/import", controller.AdminSettingsImportGET).Methods("GET")
+	router.HandleFunc("/admin/settings/import", controller.AdminSettingsImportPOST).Methods("POST")
+
 	// Login/Register Handlers
 	router.HandleFunc("/login", controller.LoginGET).Methods("GET")
 	router.HandleFunc("/login", controller.LoginPOST).Methods("POST")
