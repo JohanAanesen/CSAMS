@@ -47,6 +47,15 @@ func HandlerGET(w http.ResponseWriter, r *http.Request) {
 
 	savePairs(payload.GeneratedPairs)
 
+/*
+	cmd := exec.Command("mysqldump", "-u root --password=root cs53 > backup.sql")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Fatalf("cmd.Run() failed with %s\n", err)
+	}
+	fmt.Fprintf(w, "combined out:\n%s\n", string(out))
+*/
+
 	if err := json.NewEncoder(w).Encode(payload); err != nil {
 		panic(err)
 	}

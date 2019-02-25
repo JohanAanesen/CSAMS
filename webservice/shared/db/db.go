@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"database/sql"
@@ -25,18 +25,27 @@ type MySQLInfo struct {
 }
 
 //ConfigureDB loads database connection string
-func ConfigureDB(info *MySQLInfo) {
+func ConfigureDB(info *MySQLInfo) { // TODO (Svein): Is DB needed at the end? We are in db-package
 	// root:@tcp(127.0.0.1:3306)/cs53
-	dataSourceName = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=%t", info.Username, info.Password, info.Hostname, info.Port, info.Database, info.ParseTime)
+	if os.Getenv("DATABASE_URL") == "" {
+		dataSourceName = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=%t", info.Username, info.Password, info.Hostname, info.Port, info.Database, info.ParseTime)
+	} else {
+		dataSourceName = fmt.Sprintf("%s:%s@tcp()/%s?parseTime=%t",
+			os.Getenv("DATABASE_USER"),
+			os.Getenv("DATABASE_PASSWORD"),
+			os.Getenv("DATABASE_URL"),
+			os.Getenv("DATABASE_DATABASE"),
+			info.ParseTime)
+	}
+
 }
 
 //OpenDB creates connection with database
-func OpenDB() {
+func OpenDB() { // TODO (Svein): Is DB needed at the end? We are in db-package
 	var err error
 	//db, err = sql.Open(driverName, dataSourceName)
 	db, err = sql.Open(driverName, "root:root@tcp("+os.Getenv("DATABASE_URL")+")/cs53")
 	if err != nil {
-		fmt.Println("shet")
 		panic(err.Error())
 	}
 
@@ -46,11 +55,11 @@ func OpenDB() {
 }
 
 //GetDB returns db object
-func GetDB() *sql.DB {
+func GetDB() *sql.DB { // TODO (Svein): Is DB needed at the end? We are in db-package
 	return db
 }
 
 //CloseDB closes db
-func CloseDB() {
+func CloseDB() { // TODO (Svein): Is DB needed at the end? We are in db-package
 	db.Close()
 }
