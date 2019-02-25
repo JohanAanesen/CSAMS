@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"log"
 )
@@ -33,7 +32,7 @@ func GetCoursesToUser(userID int) (Courses, error) {
 	// Query gets all courses to user with userid: userID and sort them by year and semester
 	rows, err := db.GetDB().Query("SELECT course.* FROM course INNER JOIN usercourse ON course.id = usercourse.courseid WHERE usercourse.userid = ? ORDER BY course.year DESC, course.semester DESC", userID)
 	if err != nil {
-		fmt.Println(err.Error()) // TODO : log error
+		log.Println(err.Error())
 
 		// returns empty course array if it fails
 		return courses, err
@@ -74,7 +73,7 @@ func GetCourse(courseID int) Course {
 
 	rows, err := db.GetDB().Query("SELECT course.* FROM course WHERE course.id = ?", courseID)
 	if err != nil {
-		fmt.Println(err.Error()) // TODO : log error
+		log.Println(err.Error())
 
 		// returns empty course array if it fails
 		return Course{}
@@ -112,7 +111,7 @@ func GetCourse(courseID int) Course {
 func CourseExists(hash string) Course {
 	rows, err := db.GetDB().Query("SELECT course.* FROM course WHERE hash = ?", hash)
 	if err != nil {
-		fmt.Println(err.Error()) // TODO : log error
+		log.Println(err.Error())
 
 		// returns empty course if it fails
 		return Course{ID: -1}

@@ -2,7 +2,6 @@ package model
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/db"
 	"golang.org/x/crypto/bcrypt"
 	"log"
@@ -83,8 +82,7 @@ func UpdateUserPassword(userID int, password string) bool {
 func GetUser(userID int) User {
 	rows, err := db.GetDB().Query("SELECT id, name, email_student, email_private, teacher FROM users WHERE id = ?", userID)
 	if err != nil {
-		//todo log error
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return User{Authenticated: false}
 	}
 
@@ -97,8 +95,7 @@ func GetUser(userID int) User {
 
 		err := rows.Scan(&id, &name, &emailStudent, &emailPrivate, &teacher)
 		if err != nil {
-			//todo log error
-			fmt.Println(err.Error())
+			log.Println(err.Error())
 			return User{Authenticated: false}
 		}
 
@@ -121,8 +118,7 @@ func GetUser(userID int) User {
 func GetHash(id int) string {
 	rows, err := db.GetDB().Query("SELECT password FROM users WHERE id = ?", id)
 	if err != nil {
-		// TODO : log error
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return ""
 	}
 
@@ -147,7 +143,7 @@ func GetUsersToCourse(courseID int) Users {
 
 	rows, err := db.GetDB().Query("SELECT users.id, users.name, users.email_student, teacher FROM users INNER JOIN usercourse ON users.id = usercourse.userid WHERE usercourse.courseid = ?", courseID)
 	if err != nil {
-		log.Println(err.Error()) // TODO : log error
+		log.Println(err.Error())
 
 		// returns empty course array if it fails
 		return users
@@ -178,8 +174,7 @@ func UserAuth(email string, password string) (User, bool) {
 	rows, err := db.GetDB().Query("SELECT id, password FROM users WHERE email_student = ?", email)
 
 	if err != nil {
-		//todo log error
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return User{Authenticated: false}, false
 	}
 
@@ -192,8 +187,7 @@ func UserAuth(email string, password string) (User, bool) {
 		rows.Scan(&id, &hash)
 
 		if err != nil {
-			//todo log error
-			fmt.Println(err.Error())
+			log.Println(err.Error())
 			return User{Authenticated: false}, false
 		}
 
@@ -210,7 +204,6 @@ func RegisterUser(name string, email string, password string) (User, bool) {
 	pass, err := hashPassword(password)
 
 	if err != nil {
-		//todo log error
 		log.Fatal(err.Error())
 		return User{Authenticated: false}, false
 	}
@@ -218,7 +211,6 @@ func RegisterUser(name string, email string, password string) (User, bool) {
 	rows, err := db.GetDB().Query("INSERT INTO users(name, email_student, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
 
 	if err != nil {
-		//todo log error
 		log.Fatal(err.Error())
 		return User{Authenticated: false}, false
 	}
