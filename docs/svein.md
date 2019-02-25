@@ -1,5 +1,21 @@
 Svein's log
 ============
+## Week 8 report
+#### Worked on
+* I have been working on the assignment and submission features for the lecturer-side of the software.
+* Making the forms for creating the submission and review-forms dynamic. Doing this with Javascript, 
+making a small reusable library with some configuration.
+* Database for the dynamic form
+#### Decisions
+* The database tables were changed a few times throughout the week, but I think the last version
+will be more suited for the application, as it is scalable.
+#### Good
+* Got the story done, and feel the way it ended up, will be good for the rest of the application,
+making it scalable for other types of submissions, and assignments.
+#### Bad
+* Used to much time on this story
+* Had problems with the database, cause of old relations, making it hard to merge new tables together with old once. 
+
 ## 22/02/2019
 * Did some QoL on the form submits
 * Fixed some bugs of redirecting and form-validation
