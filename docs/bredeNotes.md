@@ -116,8 +116,36 @@ as we talked about with the [Project Owner](https://www.ntnu.no/ansatte/christop
     * I fixed the problem by removing the tabs and having the edit page on it's on page.
     * I also changed the design so it's more consistence to the admin dashboard.
     * Not really sure how to write tests for \#22 yet so I'll leave that for later.
+    * Finished for now
+* Started on [#21 - Admin Page Dynamic](https://trello.com/c/J8GQvTCt)
+* Used some time looking at a pull request
+* Updated the getCoursesToUser to get the courses sorted by the year and then semester in descending order.
+It's nicer this way and more effective to have current classes at the top where they are easy reachable.
 ### ~~Thursday - 21/02/19~~ Ski day!
 ### Friday - 22/02/19
+*Ski day was rough*
+* Looked at pull request
+* \#21 Merged main to branch
+* Displaying courses and assignments in dashboard, course and assignment for admin now. I need to make assignments in sorted order by deadline
+and display only active courses and assignments on dashboard, and then I'm done.
+
+## Week Four - One month woo
+### Monday - 25/02/19
+* Continuing the work on \#21
+* \#21 I created a new function in `model/assignment.go` called `GetAllToUserSorted()` which gets all the assignment to the user
+sorted by the deadlines desc. 
+
+
+### Tuesday - 26/02/19
+
+
+### Wednesday - 27/02/19
+
+
+### Thursday - 28/02/19
+
+
+### Friday - 01/03/19
 
 
 
