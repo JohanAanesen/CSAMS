@@ -22,12 +22,6 @@ import (
 
 // AdminGET handles GET-request at /admin
 func AdminGET(w http.ResponseWriter, r *http.Request) {
-	//check that user is a teacher
-	if !session.IsTeacher(r) { //not a teacher, error 401
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
@@ -48,12 +42,6 @@ func AdminGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminCourseGET handles GET-request at /admin/course
 func AdminCourseGET(w http.ResponseWriter, r *http.Request) {
-	//check that user is a teacher
-	if !session.IsTeacher(r) { //not a teacher, error 401
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
@@ -65,12 +53,6 @@ func AdminCourseGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminCreateCourseGET handles GET-request at /admin/course/create
 func AdminCreateCourseGET(w http.ResponseWriter, r *http.Request) {
-	//check that user is a teacher
-	if !session.IsTeacher(r) { //not a teacher, error 401
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
@@ -83,12 +65,6 @@ func AdminCreateCourseGET(w http.ResponseWriter, r *http.Request) {
 // AdminCreateCoursePOST handles POST-request at /admin/course/create
 // Inserts a new course to the database
 func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
-	//check that user is a teacher
-	if !session.IsTeacher(r) { //not a teacher, error 401
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	//check if user is already logged in
 	user := session.GetUserFromSession(r)
 
@@ -154,12 +130,6 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 // AdminUpdateCourseGET handles GET-request at /admin/course/update/{id}
 func AdminUpdateCourseGET(w http.ResponseWriter, r *http.Request) {
-	//check that user is a teacher
-	if !session.IsTeacher(r) { //not a teacher, error 401
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
@@ -171,21 +141,11 @@ func AdminUpdateCourseGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminUpdateCoursePOST handles POST-request at /admin/course/update/{id}
 func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
-	//check that user is a teacher
-	if !session.IsTeacher(r) { //not a teacher, error 401
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
+
 }
 
 // AdminAssignmentGET handles GET-request at /admin/assignment
 func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
-	//check that user is a teacher
-	if !session.IsTeacher(r) { //not a teacher, error 401
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	assignmentRepo := model.AssignmentRepository{}
 
 	assignments, err := assignmentRepo.GetAll()
@@ -207,12 +167,6 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminAssignmentCreateGET handles GET-request from /admin/assigment/create
 func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
-	//check that user is a teacher
-	if !session.IsTeacher(r) { //not a teacher, error 401
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	var subRepo = model.SubmissionRepository{}
 	submissions, err := subRepo.GetAll()
 	if err != nil {
@@ -235,12 +189,6 @@ func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminAssignmentCreatePOST handles POST-request from /admin/assigment/create
 func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
-	// Check that user is a teacher
-	if !session.IsTeacher(r) { // Not a teacher, error 401
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	// Declare empty slice of strings
 	var errorMessages []string
 
@@ -451,12 +399,6 @@ func DatetimeLocalToRFC3339(str string) (time.Time, error) {
 
 // AdminFaqGET handles GET-request at admin/faq/index
 func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
-	//check that user is a teacher
-	if !session.IsTeacher(r) { //not a teacher, error 401
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	content := model.GetDateAndQuestionsFAQ()
 	if content.Questions == "-1" {
 		log.Println("Something went wrong with getting the faq (admin.go)")
@@ -480,12 +422,6 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminFaqEditGET returns the edit view for the faq
 func AdminFaqEditGET(w http.ResponseWriter, r *http.Request) {
-	//check that user is a teacher
-	if !session.IsTeacher(r) { //not a teacher, error 401
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	//
 	content := model.GetDateAndQuestionsFAQ()
 	if content.Questions == "-1" {
@@ -507,13 +443,6 @@ func AdminFaqEditGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminFaqUpdatePOST handles the edited markdown faq
 func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
-
-	//check that user is a teacher
-	if !session.IsTeacher(r) { //not a teacher, error 401
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	// Check that the questions arrived
 	updatedFAQ := r.FormValue("rawQuestions")
 	if updatedFAQ == "" {
@@ -565,13 +494,8 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	AdminFaqGET(w, r)
 }
 
+// AdminSettingsGET handles GET-request at admin/setting
 func AdminSettingsGET(w http.ResponseWriter, r *http.Request) {
-	//check that user is a teacher
-	if !session.IsTeacher(r) { //not a teacher, error 401
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
@@ -581,17 +505,14 @@ func AdminSettingsGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 }
 
+// AdminSettingsPOST handles POST-request at admin/setting
 func AdminSettingsPOST(w http.ResponseWriter, r *http.Request) {
 
+	http.Redirect(w, r, "/admin/settings", http.StatusOK)
 }
 
+// AdminSettingsImportGET handles GET-request at admin/setting/import
 func AdminSettingsImportGET(w http.ResponseWriter, r *http.Request) {
-	//check that user is a teacher
-	if !session.IsTeacher(r) { //not a teacher, error 401
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
@@ -601,9 +522,10 @@ func AdminSettingsImportGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 }
 
+// AdminSettingsImportPOST handles POST-request at admin/setting/import
 func AdminSettingsImportPOST(w http.ResponseWriter, r *http.Request) {
 	var buffer bytes.Buffer
-	r.ParseMultipartForm(32 <<  20)
+	r.ParseMultipartForm(32 << 20)
 	file, _, err := r.FormFile("db_import")
 	if err != nil {
 		log.Println(err)
@@ -621,4 +543,10 @@ func AdminSettingsImportPOST(w http.ResponseWriter, r *http.Request) {
 
 	content := buffer.String()
 	fmt.Println(content)
+
+	// TODO (Svein): Backup of current DB
+	// TODO (Svein): Query this file
+	// TODO (Svein): Save the world
+
+	http.Redirect(w, r, "/admin/settings", http.StatusOK)
 }
