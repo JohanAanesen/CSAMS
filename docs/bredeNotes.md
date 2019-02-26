@@ -134,6 +134,10 @@ and display only active courses and assignments on dashboard, and then I'm done.
 * Continuing the work on \#21
 * \#21 I created a new function in `model/assignment.go` called `GetAllToUserSorted()` which gets all the assignment to the user
 sorted by the deadlines desc. 
+* Course and assignment is displayed in correct order now
+* Had some meetings, played some Minecraft, back now
+* Made a pull request for [#21 - Admin Page Dynamic](https://trello.com/c/J8GQvTCt)
+* Starting later on [#18 - Assignment Delivery page](https://trello.com/c/zyQpCo4K)
 
 
 ### Tuesday - 26/02/19
