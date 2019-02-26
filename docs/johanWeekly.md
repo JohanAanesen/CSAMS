@@ -55,7 +55,7 @@ I have worked on
 * Refactoring the project
 * '#7 - Course Page'
 
-Design/Architectural descisions
+Decisions
 ---
 I made the Course Page where I decided on a standard container width, with tabbed information pages. One tab for the
 course description, one for assignment links, one for participant list and one for questions. I am waiting on
@@ -77,3 +77,36 @@ Positives:
 Negatives:
 - Didn't get a lot done
 - Refactoring took a lot more time than anticipated
+
+Week 3
+===
+I have worked on
+* '#10 Participant list'
+* '#28 Peer Review Service'
+* Dockerizing the application
+
+Decisions
+---
+In terms of decisions I have been making, then what I have been thinking the most about is whether or not to make this 
+application microservice oriented, because in a lot of different cases, it might not be the best idea to do. Let's
+take the Peer Service as an example, it doesn't really take much computing capacity to do, even if it where doing thousands
+of submissions at once. But again we want to separate functionality that isn't directly included in a webservice from the webservice.
+This is because at any given deadline, that will be the time with the most traffic at the site, and if the webservice also will start
+calculating who is reviewing who at that given deadline, then the service might fail to service users. This is why we want to branch
+the peer service into it's own container/service so it won't affect the webservice in terms of hogging cpu time/resources. 
+
+Another aspect is that the application will have 2 main components to the delivery system, and those are the peer review part, and
+the auto validation part. And the auto validation really need to be its own service because it will be really resource heavy.
+
+The good, the bad, the rest
+---
+
+Positives:
++ Peer Review Service fun to make and very functional
++ List I made looks good
++ Docker is fantastic when it works
++ Learning a lot around the functionality of microservices and how to create services
+
+Negatives:
+- Struggled with learning and understanding Docker, mostly getting it to work properly with out special use case
+- git thought i deleted 177 files and then created 177 files so i got like 7000 lines deleted and added in 2 fast commits ay
