@@ -3,8 +3,8 @@
 {{ define "content" }}
     <main>
         <!-- TODO Brede: make this better -->
-        <h1>{{ .Assignment.Name }} | {{ .Assignment.CourseID}}</h1> <!-- TODO : use course name here -->
-        <p>{{ .Description }}</p>
+        <h1>{{ .Assignment.Name }} | {{ .Assignment.CourseID}} <p id="countDown"></p></h1>
+        <!-- TODO : use course name here -->
         <form method="post" action="/assignment/upload/update">
             {{ range .Fields }}
                 <div class="form-group">
@@ -19,9 +19,50 @@
                     <!-- TODO (Svein) : There are more types, but are not essential for the alpha  -->
                 </div>
             {{ end }}
-            <button type="submit" class="btn btn-success">Upload</button>
+            <button id="uploadBtn" type="submit" class="btn btn-success">Upload</button>
         </form>
+        <p>{{ .Description }}</p>
     </main>
 {{ end }}
 {{define "foot"}}
+    <script>
+        // Source: https://www.w3schools.com/howto/howto_js_countdown.asp
+
+        // Set the date we're counting down to
+        let countDownDate = new Date({{ .Assignment.Deadline }});
+        // let countDownDate = new Date("Jan 5, 2021 15:37:25").getTime();
+
+        // Update the count down every 1 second
+        let x = setInterval(function () {
+
+            // Get todays date and time
+            let now = new Date().getTime() + (1000 * 60 * 60); // Plus one hour (Norwegian time)
+
+            // Find the distance between now and the count down date
+            let distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Output the result in an element with id="demo"
+            document.getElementById("countDown").innerHTML = days + "d " + hours + "h "
+                + minutes + "m " + seconds + "s ";
+
+            // Give warning if it's under 1 hour left
+            if (distance < (1000 * 60 * 60)) {
+                document.getElementById("countDown").className = "text-warning";
+            }
+
+            // If the count down is over, write some text
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("countDown").className = "text-danger";
+                document.getElementById("countDown").innerHTML = "EXPIRED";
+                document.getElementById("uploadBtn").disabled = true;
+            }
+        }, 1000);
+    </script>
 {{end}}

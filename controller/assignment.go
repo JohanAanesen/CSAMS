@@ -130,7 +130,6 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-
 	description := github_flavored_markdown.Markdown([]byte(assignment.Description))
 
 	// Set values
