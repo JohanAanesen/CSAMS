@@ -41,6 +41,8 @@ func routes() http.Handler {
 	router.HandleFunc("/assignment", controller.AssignmentGET).Methods("GET")
 	router.HandleFunc("/assignment/peer", controller.AssignmentPeerGET).Methods("GET")
 	router.HandleFunc("/assignment/auto", controller.AssignmentAutoGET).Methods("GET")
+	router.HandleFunc("/assignment/upload", controller.AssignmentUploadGET).Methods("GET")
+	router.HandleFunc("/assignment/upload/update", controller.AssignmentUploadPOST).Methods("POST")
 
 	// User-page Handlers
 	router.HandleFunc("/user", controller.UserGET).Methods("GET")

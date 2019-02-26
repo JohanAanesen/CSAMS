@@ -2,7 +2,11 @@ package controller
 
 import (
 	"fmt"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
+	"log"
 	"net/http"
+	"strconv"
 )
 
 //AssignmentGET serves assignment page to users
@@ -84,4 +88,67 @@ func AssignmentPeerGET(w http.ResponseWriter, r *http.Request) {
 	//get assignment info from database
 
 	//parse info with template
+}
+
+// AssignmentUploadGET serves the upload page
+func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
+
+	id := r.FormValue("id")
+	if id == "" {
+		log.Println("Error: id can't be empty! (assignment.go)")
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	// Convert id from string to int
+	assignmentID, err := strconv.Atoi(id)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+	assignmentRepo := model.AssignmentRepository{}
+
+	assignment, err := assignmentRepo.GetSingle(assignmentID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println(assignment)
+
+	/*
+		formRepo := model.FormRepository{}
+
+		form, err := formRepo.GetFromAssignmentID(assignment.ID)
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+	*/
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	// Set values
+	v := view.New(r)
+	v.Vars["assignment"] = assignment
+	v.Name = "assignment/upload"
+	v.Render(w)
+
+}
+
+// AssignmentUploadPOST servers the
+func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
+
+	repos := r.FormValue("url")
+	if repos == "" {
+		log.Println("Error: url can't be empty! (assignment.go)")
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	AssignmentAutoGET(w, r)
 }

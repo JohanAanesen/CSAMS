@@ -141,7 +141,12 @@ sorted by the deadlines desc.
 
 
 ### Tuesday - 26/02/19
-
+* Made an instance `BredeVM` on Openstack
+    * Tried to do stuff there but I didn't understand shit
+* Going back to [#18 - Assignment Delivery page](https://trello.com/c/zyQpCo4K) again
+    * Started on front-end draft for delivery page
+    * Stuck on how to get the forms value out of the sql statement \#bug
+    * 
 
 ### Wednesday - 27/02/19
 
