@@ -78,3 +78,52 @@ func (repo *FormRepository) Get(id int) (Form, error) {
 
 	return Form{}, errors.New("form: Could not do rows.Next()")
 }
+
+// GetFromAssignmentID get a single form from the assignment id key
+func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) {
+
+	// Create query-string
+	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices from fields AS f WHERE f.form_id IN (SELECT s.form_id FROM submissions AS s WHERE id IN (SELECT a.submission_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority;"
+
+	// Perform query
+	rows, err := db.GetDB().Query(query, assignmentID)
+
+	// Declare an empty Form
+	var form = Form{}
+
+	// Check for error
+	if err != nil {
+		return form, err
+	}
+
+	// Check if there is any rows
+	if rows.Next() {
+		var formID int
+		var fieldID int
+		var fieldType string
+		var name string
+		var label string
+		var desc string
+		var priority int
+		var weight int
+		var choices string
+
+		// Scan
+		err = rows.Scan(&formID, &fieldID, &fieldType, &name, &label, &desc, &priority, &weight, &choices)
+		// Check for error
+		if err != nil {
+			return form, err
+		}
+
+		/*
+			form.ID
+			append(form.Fields, Fields{
+
+			})
+		*/
+
+		return form, nil
+	}
+
+	return Form{}, errors.New("form: Could not do rows.Next()")
+}
