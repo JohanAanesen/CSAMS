@@ -97,6 +97,5 @@ func routes() http.Handler {
 	// 405 Error Handler
 	router.MethodNotAllowedHandler = http.HandlerFunc(controller.MethodNotAllowedHandler)
 
-
 	return handlers.CombinedLoggingHandler(os.Stdout, router)
 }
