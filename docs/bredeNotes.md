@@ -148,6 +148,7 @@ sorted by the deadlines desc.
     * Stuck on how to get the forms value out of the sql statement \#bug
     * It was just stupid errors that shouldn't happened! >:( Johan helped me see them again <3
     * I'm going to die now, bye! <3
+    * I'm back for 30min - 1h, Made a shitty draft of the assignment delivery page, I think I can be done within two days actually.
 
 ### Wednesday - 27/02/19
 

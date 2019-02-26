@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
+	"github.com/shurcooL/github_flavored_markdown"
+	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -118,7 +120,6 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 
 	formRepo := model.FormRepository{}
 
-	// TODO : brede uncomment this and handle error
 	form, err := formRepo.GetFromAssignmentID(assignment.ID)
 
 	if err != nil {
@@ -126,14 +127,17 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(form)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
+	description := github_flavored_markdown.Markdown([]byte(assignment.Description))
+
 	// Set values
 	v := view.New(r)
-	v.Vars["assignment"] = assignment
+	v.Vars["Assignment"] = assignment
+	v.Vars["Description"] = template.HTML(description)
+	v.Vars["Fields"] = form.Fields
 	v.Name = "assignment/upload"
 	v.Render(w)
 
