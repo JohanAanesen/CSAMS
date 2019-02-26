@@ -1,0 +1,21 @@
+{{define "title"}}Upload Assignment{{end}}
+{{define "head"}}{{end}}
+{{ define "content" }}
+    <main>
+        {{ range .Fields }}
+            <div class="form-group">
+                <label for="{{ .Name }}">{{ .Label }}</label>
+                {{ if .Type "text" }}
+                    <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control">
+                {{ else if .Type "url" }}
+                    <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control">
+                {{ else if .Type "textarea" }}
+                    <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control"></textarea>
+                {{ end }}
+                <!-- TODO (Svein) : There are more types, but are not essential for the alpha  -->
+            </div>
+        {{ end }}
+    </main>
+{{ end }}
+{{define "foot"}}
+{{end}}
