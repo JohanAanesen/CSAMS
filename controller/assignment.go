@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
 	"net/http"
 )
 
@@ -30,6 +31,13 @@ func AssignmentGET(w http.ResponseWriter, r *http.Request) {
 	//get assignment info from database
 
 	//parse info with template
+}
+
+func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
+	v := view.New(r)
+	v.Name = "assignment"
+
+	v.Render(w)
 }
 
 //AssignmentAutoGET serves the auto validation page to user

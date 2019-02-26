@@ -40,6 +40,7 @@ func routes() http.Handler {
 
 	// Assignment-page Handlers
 	router.HandleFunc("/assignment", controller.AssignmentGET).Methods("GET")
+	router.HandleFunc("/assignment/{id:[0-9]+}", controller.AssignmentSingleGET).Methods("GET")
 	router.HandleFunc("/assignment/peer", controller.AssignmentPeerGET).Methods("GET")
 	router.HandleFunc("/assignment/auto", controller.AssignmentAutoGET).Methods("GET")
 
