@@ -242,3 +242,29 @@ func (repo *AssignmentRepository) Update(id int, assignment Assignment) error {
 
 	return err
 }
+
+func (repo *AssignmentRepository) GetAllFromCourse(courseID int) ([]Assignment, error) {
+	result := make([]Assignment, 0)
+	query := "SELECT id, name, description, created, publish, deadline, " +
+		"course_id, submission_id, review_id FROM assignments WHERE course_id=?"
+
+	rows, err := db.GetDB().Query(query, courseID)
+	if err != nil {
+		return result, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		temp := Assignment{}
+
+		err := rows.Scan(&temp.ID, &temp.Name, &temp.Description, &temp.Created,
+			&temp.Publish, &temp.Deadline, &temp.CourseID, &temp.SubmissionID, &temp.ReviewID)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, temp)
+	}
+
+	return result, err
+}

@@ -47,7 +47,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	course = model.GetCourse(courseID)
 
 	assignmentRepo := model.AssignmentRepository{}
-	assignments, err := assignmentRepo.GetAllToUserSorted(user.ID)
+	assignments, err := assignmentRepo.GetAllFromCourse(courseID)
 	if err != nil {
 		log.Println(err)
 	}
