@@ -60,8 +60,14 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/course/update/{id}", controller.AdminUpdateCoursePOST).Methods("POST")
 
 	adminrouter.HandleFunc("/assignment", controller.AdminAssignmentGET).Methods("GET")
+
+	adminrouter.HandleFunc("/assignment/{id:[0-9]+}", controller.AdminSingleAssignmentGET).Methods("GET")
+
 	adminrouter.HandleFunc("/assignment/create", controller.AdminAssignmentCreateGET).Methods("GET")
 	adminrouter.HandleFunc("/assignment/create", controller.AdminAssignmentCreatePOST).Methods("POST")
+
+	adminrouter.HandleFunc("/assignment/update/{id:[0-9]+}", controller.AdminUpdateAssignmentGET).Methods("GET")
+	adminrouter.HandleFunc("/assignment/update", controller.AdminUpdateAssignmentPOST).Methods("POST")
 
 	adminrouter.HandleFunc("/submission", controller.AdminSubmissionGET).Methods("GET")
 	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreateGET).Methods("GET")

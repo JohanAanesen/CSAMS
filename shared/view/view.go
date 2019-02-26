@@ -70,13 +70,6 @@ func New(r *http.Request) *View {
 
 	v.request = r
 
-	/* TODO (Svein): Do session auth check here
-	sess := session.Instance(v.request)
-	if sess.Values["id"] != nil {
-		v.Vars["AuthLevel"] = "user/admin"
-	}
-	*/
-
 	return v
 }
 

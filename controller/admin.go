@@ -16,7 +16,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -160,171 +159,6 @@ func AdminUpdateCourseGET(w http.ResponseWriter, r *http.Request) {
 // AdminUpdateCoursePOST handles POST-request at /admin/course/update/{id}
 func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
 
-}
-
-// AdminAssignmentGET handles GET-request at /admin/assignment
-func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
-	assignmentRepo := model.AssignmentRepository{}
-
-	// Get all assignments to user in sorted order
-	assignments, err := assignmentRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
-
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-
-	v := view.New(r)
-	v.Name = "admin/assignment/index"
-
-	v.Vars["Assignments"] = assignments
-
-	v.Render(w)
-}
-
-// AdminAssignmentCreateGET handles GET-request from /admin/assigment/create
-func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
-	var subRepo = model.SubmissionRepository{}
-	submissions, err := subRepo.GetAll()
-	if err != nil {
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		log.Println(err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-
-	v := view.New(r)
-	v.Name = "admin/assignment/create"
-
-	courses, err := model.GetCoursesToUser(session.GetUserFromSession(r).ID)
-	if err != nil {
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		log.Println(err)
-		return
-	}
-
-	v.Vars["Courses"] = courses
-
-	v.Vars["Submissions"] = submissions
-
-	v.Render(w)
-}
-
-// AdminAssignmentCreatePOST handles POST-request from /admin/assigment/create
-func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
-	// Declare empty slice of strings
-	var errorMessages []string
-
-	// Get form name from request
-	assignmentName := r.FormValue("name")
-	// Get form description from request
-	assignmentDescription := r.FormValue("description")
-
-	// Check if name is empty
-	if assignmentName == "" {
-		errorMessages = append(errorMessages, "Error: Assignment Name cannot be blank.")
-	}
-
-	// Get the time.Time object from the publish string
-	publish, err := DatetimeLocalToRFC3339(r.FormValue("publish"))
-	if err != nil {
-		errorMessages = append(errorMessages, "Error: Something wrong with the publish datetime.")
-	}
-
-	// Get the time.Time object from the deadline string
-	deadline, err := DatetimeLocalToRFC3339(r.FormValue("deadline"))
-	if err != nil {
-		errorMessages = append(errorMessages, "Error: Something wrong with the deadline datetime.")
-	}
-
-	// Check if publish datetime is after the deadline
-	if publish.After(deadline) {
-		errorMessages = append(errorMessages, "Error: Deadline cannot be before Publish.")
-	}
-
-	// Check if there are any error messages
-	if len(errorMessages) != 0 {
-		// TODO (Svein): Keep data from the previous submit
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
-
-		v := view.New(r)
-		v.Name = "admin/assignment/create"
-
-		courses, err := model.GetCoursesToUser(session.GetUserFromSession(r).ID)
-		if err != nil {
-			ErrorHandler(w, r, http.StatusInternalServerError)
-			log.Println(err)
-			return
-		}
-
-		v.Vars["Errors"] = errorMessages
-		v.Vars["AssignmentName"] = assignmentName
-		v.Vars["AssignmentDescription"] = assignmentDescription
-		v.Vars["Courses"] = courses
-
-		v.Render(w)
-		return
-	}
-
-	assignmentRepository := model.AssignmentRepository{}
-	// Get form values
-	courseIDString := r.FormValue("course_id")
-	submissionIDString := r.FormValue("submission_id")
-	reviewIDString := r.FormValue("review_id")
-
-	// String converted into integer
-	courseID, err := strconv.Atoi(courseIDString)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	var submissionID int
-	// String converted into integer
-	if submissionIDString != "" {
-		submissionID, err = strconv.Atoi(submissionIDString)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-	}
-
-	var reviewID int
-	// String converted into integer
-	if reviewIDString != "" {
-		reviewID, err = strconv.Atoi(reviewIDString)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-	}
-
-	// Put all data into an Assignment-struct
-	assignment := model.Assignment{
-		Name:         assignmentName,
-		Description:  assignmentDescription,
-		Publish:      publish,
-		Deadline:     deadline,
-		CourseID:     courseID,
-		SubmissionID: submissionID,
-		ReviewID:     reviewID,
-	}
-
-	// Insert data to database
-	err = assignmentRepository.Insert(assignment)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	// Redirect client to '/'
-	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
 }
 
 // AdminSubmissionGET handles GET-request to /admin/submission
@@ -584,4 +418,31 @@ func AdminSettingsImportPOST(w http.ResponseWriter, r *http.Request) {
 	// TODO (Svein): Save the world
 
 	http.Redirect(w, r, "/admin/settings", http.StatusOK)
+}
+
+// GoToHTMLDatetimeLocal converts time.Time object to 'datetime-local' in HTML
+func GoToHTMLDatetimeLocal(t time.Time) string {
+	day := fmt.Sprintf("%d", t.Day())
+	month := fmt.Sprintf("%d", t.Month())
+	year := fmt.Sprintf("%d", t.Year())
+	hour := fmt.Sprintf("%d", t.Hour())
+	minute := fmt.Sprintf("%d", t.Minute())
+
+	if t.Day() < 10 {
+		day = "0" + day
+	}
+
+	if t.Month() < 10 {
+		month = "0" + month
+	}
+
+	if t.Hour() < 10 {
+		hour = "0" + hour
+	}
+
+	if t.Minute() < 10 {
+		minute = "0" + minute
+	}
+
+	return fmt.Sprintf("%s-%s-%sT%s:%s", year, month, day, hour, minute)
 }

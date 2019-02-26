@@ -63,7 +63,7 @@ func (repo *SubmissionRepository) GetAll() ([]Submission, error) {
 	// Declare return slice
 	var result []Submission
 	// Create query-string
-	query := "SELECT * FROM submissions"
+	query := "SELECT id, form_id FROM submissions"
 	// Perform query
 	rows, err := db.GetDB().Query(query)
 	// Check for error
