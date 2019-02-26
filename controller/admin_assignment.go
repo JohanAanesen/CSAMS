@@ -352,6 +352,5 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO (Svein): This does not redirect for some reason
 	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
 }
