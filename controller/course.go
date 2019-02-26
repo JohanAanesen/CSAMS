@@ -46,6 +46,12 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	//get info from db
 	course = model.GetCourse(courseID)
 
+	assignmentRepo := model.AssignmentRepository{}
+	assignments, err := assignmentRepo.GetAllToUserSorted(user.ID)
+	if err != nil {
+		log.Println(err)
+	}
+
 	//check if user is an participant of said class or a teacher
 	participant := model.UserExistsInCourse(user.ID, courseID) || user.ID == course.Teacher
 	if !participant {
@@ -65,10 +71,13 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 
 	v := view.New(r)
 	v.Name = "course"
+
 	v.Vars["Course"] = course
 	v.Vars["User"] = user
 	v.Vars["Classmates"] = classmates
 	v.Vars["Description"] = template.HTML(description)
+	v.Vars["Assignments"] = assignments
+
 	v.Render(w)
 }
 
