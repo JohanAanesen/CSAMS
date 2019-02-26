@@ -146,7 +146,8 @@ sorted by the deadlines desc.
 * Going back to [#18 - Assignment Delivery page](https://trello.com/c/zyQpCo4K) again
     * Started on front-end draft for delivery page
     * Stuck on how to get the forms value out of the sql statement \#bug
-    * 
+    * It was just stupid errors that shouldn't happened! >:( Johan helped me see them again <3
+    * I'm going to die now, bye! <3
 
 ### Wednesday - 27/02/19
 

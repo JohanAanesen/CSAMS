@@ -116,18 +116,17 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(assignment)
+	formRepo := model.FormRepository{}
 
-	/*
-		formRepo := model.FormRepository{}
+	// TODO : brede uncomment this and handle error
+	form, err := formRepo.GetFromAssignmentID(assignment.ID)
 
-		form, err := formRepo.GetFromAssignmentID(assignment.ID)
-		if err != nil {
-			log.Println(err.Error())
-			ErrorHandler(w, r, http.StatusInternalServerError)
-			return
-		}
-	*/
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(form)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)

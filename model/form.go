@@ -13,17 +13,19 @@ type Form struct {
 	Name        string    `json:"name" db:"name"`
 	Description string    `json:"description" db:"description"`
 	Created     time.Time `json:"created" db:"created"`
+	Fields      []Field   `json:"fields"`
+}
 
-	Fields []struct {
-		ID          int      `json:"id" db:"id"`
-		Type        string   `json:"type" db:"type"`
-		Name        string   `json:"name" db:"name"`
-		Label       string   `json:"label" db:"label"`
-		Description string   `json:"description" db:"description"`
-		Order       int      `json:"order" db:"priority"`
-		Weight      int      `json:"weight" db:"weight"`
-		Choices     []string `json:"choices" db:"choices"`
-	} `json:"fields"`
+// Field TODO (Svein): comment
+type Field struct {
+	ID          int      `json:"id" db:"id"`
+	Type        string   `json:"type" db:"type"`
+	Name        string   `json:"name" db:"name"`
+	Label       string   `json:"label" db:"label"`
+	Description string   `json:"description" db:"description"`
+	Order       int      `json:"order" db:"priority"`
+	Weight      int      `json:"weight" db:"weight"`
+	Choices     []string `json:"choices" db:"choices"`
 }
 
 // FormRepository ... TODO (Svein): comment
@@ -79,25 +81,25 @@ func (repo *FormRepository) Get(id int) (Form, error) {
 	return Form{}, errors.New("form: Could not do rows.Next()")
 }
 
-// GetFromAssignmentID get a single form from the assignment id key
+// GetFromAssignmentID get form from the assignment id key
 func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) {
 
 	// Create query-string
-	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices from fields AS f WHERE f.form_id IN (SELECT s.form_id FROM submissions AS s WHERE id IN (SELECT a.submission_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority;"
+	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight from fields AS f WHERE f.form_id IN (SELECT s.form_id FROM submissions AS s WHERE id IN (SELECT a.submission_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
 
 	// Perform query
 	rows, err := db.GetDB().Query(query, assignmentID)
 
 	// Declare an empty Form
-	var form = Form{}
+	form := Form{}
 
 	// Check for error
 	if err != nil {
 		return form, err
 	}
 
-	// Check if there is any rows
-	if rows.Next() {
+	// NOT 'if rows.Next()'!! THAT IS NOT THE SAME FUCK!
+	for rows.Next() {
 		var formID int
 		var fieldID int
 		var fieldType string
@@ -106,24 +108,30 @@ func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) 
 		var desc string
 		var priority int
 		var weight int
-		var choices string
 
 		// Scan
-		err = rows.Scan(&formID, &fieldID, &fieldType, &name, &label, &desc, &priority, &weight, &choices)
+		err = rows.Scan(&formID, &fieldID, &fieldType, &name, &label, &desc, &priority, &weight) //, &choices)
 		// Check for error
 		if err != nil {
 			return form, err
 		}
 
-		/*
-			form.ID
-			append(form.Fields, Fields{
+		// This only needs to be set one time really :/
+		//form.ID = formID
 
-			})
-		*/
-
-		return form, nil
+		form.Fields = append(form.Fields, Field{
+			ID:          formID,
+			Type:        fieldType,
+			Name:        name,
+			Label:       label,
+			Description: desc,
+			Order:       priority,
+			Weight:      weight,
+			//Choices:     choices, // TODO : uncomment this
+		})
 	}
 
-	return Form{}, errors.New("form: Could not do rows.Next()")
+	// TODO brede use sql.null<type>
+
+	return form, nil
 }
