@@ -6,19 +6,8 @@ import (
 	"time"
 )
 
-type Request struct {
-	ID           int `json:"id"`
-	SubmissionID int `json:"submissionid"`
-	Reviewers    int `json:"reviewers"`
-}
+type Submissions []Submission
 
-type Response struct {
-	Ok bool `json:"ok"`
-}
-
-type Submissions struct {
-	Items []Submission `json:"items"`
-}
 
 type Submission struct {
 	ID           int `json:"id"`
@@ -26,9 +15,8 @@ type Submission struct {
 	SubmissionID int `json:"submissionid"`
 }
 
-type Pairs struct {
-	Items []SubPair
-}
+type Pairs []SubPair
+
 
 type SubPair struct {
 	SubmissionID int `json:"submissionid"`
@@ -56,7 +44,7 @@ func GetSubmissions(SubmissionID int) Submissions {
 		rows.Scan(&id, &userid, &submissionID)
 
 		// Add course to courses array
-		submissions.Items = append(submissions.Items, Submission{
+		submissions = append(submissions, Submission{
 			ID:           id,
 			UserID:       userid,
 			SubmissionID: submissionID,
@@ -74,7 +62,7 @@ func savePairs(pairs Pairs) bool {
 		return false
 	}
 
-	for _, pair := range pairs.Items {
+	for _, pair := range pairs {
 		_, err := tx.Exec("INSERT INTO peer_reviews(submission_id, user_id, review_submission_id) VALUES(?, ?, ?)", pair.SubmissionID, pair.UserID, pair.ReviewID)
 
 		if err != nil {
@@ -97,9 +85,9 @@ func savePairs(pairs Pairs) bool {
 func (subs Submissions) shuffle() Submissions {
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 
-	for i := range subs.Items {
+	for i := range subs {
 		j := r.Intn(i + 1)
-		subs.Items[i], subs.Items[j] = subs.Items[j], subs.Items[i]
+		subs[i], subs[j] = subs[j], subs[i]
 	}
 
 	return subs
