@@ -155,8 +155,8 @@ sorted by the deadlines desc.
 *I overslept 1h today*
 * Continuing on [#18 - Assignment Delivery page](https://trello.com/c/zyQpCo4K)
     * Made a function for getting name and code from course
-    *
-    *
+    * I used 2h one one pull request beacuse I don't like Openstack...
+    * And now I'm going to merge with master -_-'
     *
     *
 
