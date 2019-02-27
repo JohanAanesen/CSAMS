@@ -1,5 +1,15 @@
 Svein's log
 ============
+## 27/02/2019
+#### Worked on
+* QoT (Navbar)
+#### Good
+* 
+#### Bad
+* 
+#### Decisions
+* None
+
 ## 26/02/2019
 #### Worked on
 * Assignment update/view
