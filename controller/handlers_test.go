@@ -10,18 +10,17 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"os"
 	"strings"
 	"testing"
 )
 
 func init() {
-	if err := os.Chdir("../"); err != nil { //go out of /handlers folder
+	/*if err := os.Chdir("../"); err != nil { //go out of /handlers folder
 		panic(err)
-	}
+	}*/
 
 	var cfg = &config.Configuration{}
-	cfg, _ = config.Load("config/config.json")
+	cfg, _ = config.Load("../config/config.json")
 
 	// Configure Session
 	session.Configure(cfg.Session)
@@ -34,7 +33,7 @@ func init() {
 }
 
 func TestHandlers(t *testing.T) {
-	config.Initialize()
+	config.Initialize("../config/config.json")
 
 	tests := []struct {
 		name    string
@@ -118,7 +117,7 @@ func TestHandlers(t *testing.T) {
 }
 
 func TestLoginHandler(t *testing.T) {
-	config.Initialize()
+	config.Initialize("../config/config.json")
 
 	req, err := http.NewRequest("GET", "/login", nil)
 	if err != nil {
@@ -143,7 +142,7 @@ func TestLoginHandler(t *testing.T) {
 }
 
 func TestLoggingIn(t *testing.T) {
-	config.Initialize()
+	config.Initialize("../config/config.json")
 
 	form := url.Values{}
 	form.Add("email", "hei@gmail.com")
@@ -169,7 +168,7 @@ func TestLoggingIn(t *testing.T) {
 }
 
 func TestRegisterGET(t *testing.T) {
-	config.Initialize()
+	config.Initialize("../config/config.json")
 
 	req, err := http.NewRequest("GET", "/register", nil)
 	if err != nil {
@@ -196,7 +195,7 @@ func TestRegisterGET(t *testing.T) {
 
 func TestRegisterPOST(t *testing.T) {
 	/*
-		config.Initialize()
+		config.Initialize("../config/config.json")
 
 		form := url.Values{}
 		form.Add("name", "Swag Meister")
