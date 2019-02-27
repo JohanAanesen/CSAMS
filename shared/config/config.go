@@ -7,6 +7,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/server"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view/plugin"
 	"io/ioutil"
 	"log"
 	"os"
@@ -75,6 +76,9 @@ func Initialize() *Configuration {
 	view.Configure(cfg.View)
 	view.LoadTemplate(cfg.Template.Root, cfg.Template.Children)
 	view.LoadAdminTemplate(cfg.TemplateAdmin.Root, cfg.TemplateAdmin.Children)
+	view.LoadPlugins(
+		plugin.PrettyTime(),
+	)
 
 	return cfg
 }

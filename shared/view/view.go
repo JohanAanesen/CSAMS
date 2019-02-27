@@ -42,6 +42,7 @@ var (
 	cfgView *View
 
 	mutex sync.RWMutex
+	pluginMutex sync.RWMutex
 )
 
 // Configure the view
@@ -85,6 +86,10 @@ func (v *View) Render(w http.ResponseWriter) {
 	tc, ok := templateCollection[v.Name]
 	mutex.RUnlock()
 
+	pluginMutex.RLock()
+	pc := pluginCollection
+	pluginMutex.RUnlock()
+
 	// If the template collection is not cached or caching is disabled
 	if !ok || !cfgView.Caching {
 		// Check if there was a request to render an admin-page
@@ -120,7 +125,7 @@ func (v *View) Render(w http.ResponseWriter) {
 		}
 
 		// Determine if there is an error in the template syntax
-		templates, err := template.New(v.Name).ParseFiles(templateList...)
+		templates, err := template.New(v.Name).Funcs(pc).ParseFiles(templateList...)
 
 		if err != nil {
 			http.Error(w, "template parse error: "+err.Error(), http.StatusInternalServerError)
@@ -137,7 +142,7 @@ func (v *View) Render(w http.ResponseWriter) {
 	}
 
 	// Display the content to the screen
-	err := tc.ExecuteTemplate(w, rootTemplate+"."+v.Extension, v.Vars)
+	err := tc.Funcs(pc).ExecuteTemplate(w, rootTemplate+"."+v.Extension, v.Vars)
 
 	if err != nil {
 		http.Error(w, "template file error: "+err.Error(), http.StatusInternalServerError)

@@ -3,7 +3,7 @@
 {{define "content"}}
     <div class="container">
         <h1 class="display-4">{{.Assignment.Name}}</h1>
-        <p class="lead">Deadline: {{.Assignment.Deadline}}</p>
+        <p class="lead">Deadline: {{PRETTYTIME .Assignment.Deadline}}</p>
         <div class="jumbotron">
             {{.Description}}
         </div>
