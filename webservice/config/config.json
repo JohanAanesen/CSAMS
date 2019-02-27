@@ -1,15 +1,15 @@
 {
   "database": {
-    "hostname": "localhost",
+    "hostname": "0.0.0.0",
     "port": 3306,
     "username": "root",
-    "password": "",
+    "password": "root",
     "database": "cs53",
     "parseTime": true
   },
 
   "server": {
-    "hostname": "localhost",
+    "hostname": "0.0.0.0",
     "useHTTP": true,
     "useHTTPS": false,
     "HTTPPort": 8088,
