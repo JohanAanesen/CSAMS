@@ -7,7 +7,7 @@ services:
     depends_on:
       - database
     ports:
-      - 80:80
+      - 80:8088
     links:
       - database
       - peerservice
