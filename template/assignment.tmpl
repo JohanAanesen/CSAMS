@@ -1,8 +1,13 @@
 {{define "title"}}Blank Template{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-    <h1 class="display-4">
-        Assignment Template
-    </h1>
+    <div class="container">
+        <h1 class="display-4">{{.Assignment.Name}}</h1>
+        <p class="lead">Deadline: {{.Assignment.Deadline}}</p>
+        <div class="jumbotron">
+            {{.Description}}
+        </div>
+        <a href="/assignment/delivery" class="btn btn-primary btn-lg">Deliver assignment</a>
+    </div>
 {{end}}
 {{define "foot"}}{{end}}
