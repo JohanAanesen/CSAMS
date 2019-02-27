@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
 	"net/http"
 )
@@ -13,6 +14,8 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request, status int) {
 	v := view.New(r)
 	v.Name = "error"
 
+	v.Vars["Auth"] = session.IsLoggedIn(r)
+	v.Vars["IsTeacher"] = session.IsTeacher(r)
 	v.Vars["ErrorCode"] = status
 	v.Vars["ErrorMessage"] = http.StatusText(status)
 

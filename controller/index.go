@@ -34,6 +34,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "index"
 	v.Vars["Auth"] = user.Authenticated
+	v.Vars["IsTeacher"] = session.IsTeacher(r)
 	v.Vars["Courses"] = courses
 	v.Vars["Message"] = joinedCourse
 	v.Render(w)

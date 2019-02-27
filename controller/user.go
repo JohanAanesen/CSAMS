@@ -31,6 +31,7 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "user/profile"
 
 	v.Vars["Auth"] = user.Authenticated
+	v.Vars["IsTeacher"] = session.IsTeacher(r)
 	v.Vars["User"] = user
 	v.Vars["Courses"] = courses
 

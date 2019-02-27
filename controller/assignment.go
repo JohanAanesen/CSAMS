@@ -67,6 +67,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 
 	v.Vars["Assignment"] = assignment
 	v.Vars["Description"] = template.HTML(description)
+
 	v.Vars["Auth"] = session.IsLoggedIn(r)
 	v.Vars["IsTeacher"] = session.IsTeacher(r)
 
