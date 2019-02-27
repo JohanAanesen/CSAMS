@@ -72,9 +72,6 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "course"
 
-	v.Vars["Auth"] = session.IsLoggedIn(r)
-	v.Vars["IsTeacher"] = session.IsTeacher(r)
-
 	v.Vars["Course"] = course
 	v.Vars["User"] = user
 	v.Vars["Classmates"] = classmates

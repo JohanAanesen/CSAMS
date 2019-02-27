@@ -1,6 +1,7 @@
 package view
 
 import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"html/template"
 	"net/http"
 	"os"
@@ -36,6 +37,7 @@ var (
 	adminChildTemplates []string
 
 	templateCollection = make(map[string]*template.Template)
+	pluginCollection = make(template.FuncMap)
 
 	cfgView *View
 
@@ -69,6 +71,9 @@ func New(r *http.Request) *View {
 	v.Name = cfgView.Name
 
 	v.request = r
+
+	v.Vars["Auth"] = session.IsLoggedIn(r)
+	v.Vars["IsTeacher"] = session.IsTeacher(r)
 
 	return v
 }
@@ -138,4 +143,17 @@ func (v *View) Render(w http.ResponseWriter) {
 		http.Error(w, "template file error: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func LoadPlugins(funcMaps ...template.FuncMap) {
+	funcMap := make(template.FuncMap)
+
+	for _, m := range funcMaps {
+		for key, value := range m {
+			funcMap[key] = value
+		}
+	}
+
+	// mutex?
+	pluginCollection = funcMap
 }
