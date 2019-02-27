@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
 	"github.com/gorilla/mux"
 	"github.com/shurcooL/github_flavored_markdown"
@@ -66,6 +67,8 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 
 	v.Vars["Assignment"] = assignment
 	v.Vars["Description"] = template.HTML(description)
+	v.Vars["Auth"] = session.IsLoggedIn(r)
+	v.Vars["IsTeacher"] = session.IsTeacher(r)
 
 	v.Render(w)
 }
