@@ -25,11 +25,16 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 
 	var ShuffledSubmissions Submissions //slice with submissions
 	var GeneratedReviewers Pairs        //slice with generated peer reviewers
+	var payload Payload                 //payload struct
+
+	//check that request body is not empty
+	if r.Body == nil {
+		http.Error(w, "Please send a request body", http.StatusBadRequest)
+		return
+	}
 
 	//decode json request into struct
-	decoder := json.NewDecoder(r.Body)
-	var payload Payload
-	err := decoder.Decode(&payload)
+	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
 		http.Error(w, "Something went wrong", http.StatusBadRequest)
 		return

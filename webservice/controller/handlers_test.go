@@ -69,7 +69,7 @@ func TestHandlers(t *testing.T) {
 
 			// Check status code
 			if w.Code != test.expectedCode {
-				t.Logf("expected: %v, got: %v\n", http.StatusOK, w.Code)
+				t.Logf("expected: %v, got: %v\n", test.expectedCode, w.Code)
 				t.Fail()
 			}
 		})
