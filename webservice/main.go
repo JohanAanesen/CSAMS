@@ -10,7 +10,7 @@ import (
 func main() {
 	// Initialize config
 	var cfg = config.Initialize()
-	
+
 	defer db.CloseDB()
 
 	// Run Server
