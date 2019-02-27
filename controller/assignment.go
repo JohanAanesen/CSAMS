@@ -95,6 +95,7 @@ func AssignmentPeerGET(w http.ResponseWriter, r *http.Request) {
 // AssignmentUploadGET serves the upload page
 func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 
+	// Check for ID in url and give error if not
 	id := r.FormValue("id")
 	if id == "" {
 		log.Println("Error: id can't be empty! (assignment.go)")
@@ -109,8 +110,9 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
-	assignmentRepo := model.AssignmentRepository{}
 
+	// Get assignment and log possible error
+	assignmentRepo := model.AssignmentRepository{}
 	assignment, err := assignmentRepo.GetSingle(assignmentID)
 	if err != nil {
 		log.Println(err.Error())
@@ -118,15 +120,26 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get form and log possible error
 	formRepo := model.FormRepository{}
-
 	form, err := formRepo.GetFromAssignmentID(assignment.ID)
-
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
+
+	// Get course and log possible error
+	course, err := model.GetCourseCodeAndName(assignment.CourseID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// TODO display answer if already uploaded
+
+
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -134,6 +147,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 
 	// Set values
 	v := view.New(r)
+	v.Vars["Course"] = course
 	v.Vars["Assignment"] = assignment
 	v.Vars["Description"] = template.HTML(description)
 	v.Vars["Fields"] = form.Fields
@@ -145,12 +159,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 // AssignmentUploadPOST servers the
 func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 
-	repos := r.FormValue("url")
-	if repos == "" {
-		log.Println("Error: url can't be empty! (assignment.go)")
-		ErrorHandler(w, r, http.StatusBadRequest)
-		return
-	}
 
-	AssignmentAutoGET(w, r)
+
+	AssignmentUploadGET(w, r)
 }

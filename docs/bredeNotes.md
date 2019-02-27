@@ -148,10 +148,17 @@ sorted by the deadlines desc.
     * Stuck on how to get the forms value out of the sql statement \#bug
     * It was just stupid errors that shouldn't happened! >:( Johan helped me see them again <3
     * I'm going to die now, bye! <3
-    * I'm back for 30min - 1h, Made a shitty draft of the assignment delivery page, I think I can be done within two days actually.
+    * I'm back for another 1h, Made a shitty draft of the assignment delivery page, I think I can be done within two days actually.
     * Added countdown on delivery page, inspiration from https://www.w3schools.com/howto/howto_js_countdown.asp 
 
 ### Wednesday - 27/02/19
+*I overslept 1h today*
+* Continuing on [#18 - Assignment Delivery page](https://trello.com/c/zyQpCo4K)
+    * Made a function for getting name and code from course
+    *
+    *
+    *
+    *
 
 
 ### Thursday - 28/02/19

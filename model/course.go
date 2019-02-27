@@ -23,6 +23,37 @@ type Course struct {
 	Assignments []Assignment `json:"assignments"`
 }
 
+func GetCourseCodeAndName(courseID int) (Course, error) {
+	//Create an empty courses array
+	var course Course
+
+	rows, err := db.GetDB().Query("SELECT course.coursecode, course.coursename FROM course WHERE course.id = ?", courseID)
+	if err != nil {
+		log.Println(err.Error())
+
+		// returns empty course array if it fails
+		return course, err
+	}
+
+	for rows.Next() {
+		var courseCode string
+		var courseName string
+
+		err := rows.Scan(&courseCode, &courseName)
+		if err != nil {
+			return course, err
+		}
+
+		// Add course to courses array
+		course = Course{
+			Code: courseCode,
+			Name: courseName,
+		}
+	}
+
+	return course, nil
+}
+
 //GetCoursesToUser returns all the courses to the user
 func GetCoursesToUser(userID int) (Courses, error) {
 

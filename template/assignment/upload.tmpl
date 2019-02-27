@@ -3,9 +3,9 @@
 {{ define "content" }}
     <main>
         <!-- TODO Brede: make this better -->
-        <h1>{{ .Assignment.Name }} | {{ .Assignment.CourseID}} <p id="countDown"></p></h1>
-        <!-- TODO : use course name here -->
-        <form method="post" action="/assignment/upload/update">
+
+        <h1>{{ .Assignment.Name }} | {{ .Course.Code }} {{ .Course.Name }} <p id="countDown"></p></h1>
+        <form method="post" action="/assignment/upload/update?id={{ .Assignment.ID }}">
             {{ range .Fields }}
                 <div class="form-group">
                     <label for="{{ .Name }}">{{ .Label }}</label>
@@ -62,6 +62,10 @@
                 document.getElementById("countDown").className = "text-danger";
                 document.getElementById("countDown").innerHTML = "EXPIRED";
                 document.getElementById("uploadBtn").disabled = true;
+
+                {{ range .Fields }}
+                document.getElementById({{ .Name }}).disabled = true;
+                {{ end }}
             }
         }, 1000);
     </script>
