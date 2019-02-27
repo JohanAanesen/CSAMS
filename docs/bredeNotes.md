@@ -157,8 +157,8 @@ sorted by the deadlines desc.
     * Made a function for getting name and code from course
     * I used 2h one one pull request beacuse I don't like Openstack...
     * And now I'm going to merge with master -_-'
-    *
-    *
+    * I'm just trying to run the project now... shit day
+    * Almost all day has gone to Openstack and trying to run the project local
 
 
 ### Thursday - 28/02/19
