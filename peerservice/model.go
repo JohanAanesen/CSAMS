@@ -6,25 +6,28 @@ import (
 	"time"
 )
 
+//Submissions type submission slice
 type Submissions []Submission
 
-
+//Submission struct
 type Submission struct {
 	ID           int `json:"id"`
 	UserID       int `json:"userid"`
 	SubmissionID int `json:"submissionid"`
 }
 
+//Pairs type subpair slice
 type Pairs []SubPair
 
-
+//SubPair struct
 type SubPair struct {
 	SubmissionID int `json:"submissionid"`
 	UserID       int `json:"userid"`
 	ReviewID     int `json:"reviewid"`
 }
 
-func GetSubmissions(SubmissionID int) Submissions {
+//getSubmissions fetches user_submissions from database with submissionID
+func getSubmissions(SubmissionID int) Submissions {
 
 	//Create an empty courses array
 	var submissions Submissions
@@ -54,6 +57,7 @@ func GetSubmissions(SubmissionID int) Submissions {
 	return submissions
 }
 
+//savePairs saves the peer_reviews to database
 func savePairs(pairs Pairs) bool {
 
 	tx, err := GetDB().Begin() //start transaction
@@ -82,6 +86,7 @@ func savePairs(pairs Pairs) bool {
 	return true
 }
 
+//shuffle randomly scrambles a slice
 func (subs Submissions) shuffle() Submissions {
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 

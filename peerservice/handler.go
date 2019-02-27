@@ -6,13 +6,7 @@ import (
 	"os"
 )
 
-/*
-type Payload struct {
-	ShuffledSubmissions Submissions
-	GeneratedPairs      Pairs
-	Reviewers           int
-}*/
-
+//Payload struct
 type Payload struct {
 	Authentication string `json:"authentication"`
 	SubmissionID   int    `json:"submissionid"`
@@ -20,17 +14,17 @@ type Payload struct {
 	//todo Add date here and then register to schedule service, or directly to schedule service
 }
 
-// HandlerGET
+// HandlerGET handles GET requests
 func HandlerGET(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "This API only accepts POST-requests", http.StatusBadRequest)
 	return
 }
 
-// HandlerPOST
+// HandlerPOST handles POST requests
 func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 
 	var ShuffledSubmissions Submissions //slice with submissions
-	var GeneratedReviewers Pairs			//slice with generated peer reviewers
+	var GeneratedReviewers Pairs        //slice with generated peer reviewers
 
 	//decode json request into struct
 	decoder := json.NewDecoder(r.Body)
@@ -43,16 +37,16 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	//authenticate
-	if payload.Authentication != os.Getenv("PEER_AUTH"){ //don't accept requests from places we don't know
+	if payload.Authentication != os.Getenv("PEER_AUTH") { //don't accept requests from places we don't know
 		http.Error(w, "Unauthorized request", http.StatusUnauthorized)
 		return
 	}
 
 	//get submissions from database
-	ShuffledSubmissions = GetSubmissions(payload.SubmissionID).shuffle() //shuffle part important!
+	ShuffledSubmissions = getSubmissions(payload.SubmissionID).shuffle() //shuffle part important!
 
 	//make sure the nr of reviewers is greater than the number of submissions
-	if payload.Reviewers >= len(ShuffledSubmissions){
+	if payload.Reviewers >= len(ShuffledSubmissions) {
 		http.Error(w, "Submissions is less than the number of submissions everyone should review.", http.StatusBadRequest)
 		return
 	}
@@ -78,11 +72,10 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//store peer reviewers in database
-	if !savePairs(GeneratedReviewers){
+	if !savePairs(GeneratedReviewers) {
 		http.Error(w, "Something went wrong storing peer_reviews to database. Try again.", http.StatusInternalServerError)
 		return
 	}
-
 
 	if err := json.NewEncoder(w).Encode(payload); err != nil {
 		panic(err)

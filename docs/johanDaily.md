@@ -165,3 +165,10 @@ Monday 25/2
 * PO wanted the database to be persistent, implemented this through a Dockerfile for the dbservice which will add the 
 database.sql file to the initialization folder in the container, but now it will only generate the db if it doesn't exist.
 Then in the docker-compose file I set the persistent volume, works like a charm.
+
+Tuesday 26/2
+---------
+* Setup OpenStack
+* Deployed application with docker, a lot easier than expected
+* Added Auth, POST and more functionality to the peer service
+* Need a Scheduler Service to run tasks at a given time

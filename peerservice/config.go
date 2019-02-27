@@ -7,11 +7,13 @@ import (
 	"os"
 )
 
+//Configuration struct
 type Configuration struct {
-	Database *MySQLInfo  `json:"database"`
-	Server   *Server `json:"server"`
+	Database *MySQLInfo `json:"database"`
+	Server   *Server    `json:"server"`
 }
 
+//LoadConfig loads configuration from config.json
 func LoadConfig(configFile string) (*Configuration, error) {
 	// Open file
 	file, err := os.Open(configFile)
@@ -41,6 +43,7 @@ func LoadConfig(configFile string) (*Configuration, error) {
 	return &cfg, nil
 }
 
+//Initialize loads the config.json file and sets up database
 func Initialize() *Configuration {
 	var cfg = &Configuration{}
 	cfg, err := LoadConfig("config.json")
