@@ -5,6 +5,7 @@
 *.so
 *.dylib
 
+
 # Test binary, built with `go test -c`
 *.test
 
@@ -18,3 +19,5 @@ out/*
 
 # Application folders
 tls/
+/dbservice/data/*
+*/vendor/*
