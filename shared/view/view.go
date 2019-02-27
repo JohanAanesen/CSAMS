@@ -38,11 +38,11 @@ var (
 	adminChildTemplates []string
 
 	templateCollection = make(map[string]*template.Template)
-	pluginCollection = make(template.FuncMap)
+	pluginCollection   = make(template.FuncMap)
 
 	cfgView *View
 
-	mutex sync.RWMutex
+	mutex       sync.RWMutex
 	pluginMutex sync.RWMutex
 )
 
@@ -121,7 +121,7 @@ func (v *View) Render(w http.ResponseWriter) {
 			path, err := filepath.Abs(filePath)
 			if err != nil {
 				log.Println("filePath: ", filePath)
-				http.Error(w, "template path error: " + err.Error(), http.StatusInternalServerError)
+				http.Error(w, "template path error: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
 			templateList[i] = path

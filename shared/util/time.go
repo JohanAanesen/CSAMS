@@ -55,4 +55,3 @@ func GoToHTMLDatetimeLocal(t time.Time) string {
 
 	return fmt.Sprintf("%s-%s-%sT%s:%s", year, month, day, hour, minute)
 }
-
