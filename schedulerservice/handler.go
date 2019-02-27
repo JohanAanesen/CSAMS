@@ -13,6 +13,7 @@ type response struct {
 
 // IndexGET handles GET requests
 func IndexGET(w http.ResponseWriter, r *http.Request) {
+	stopTimer()
 	//todo
 	http.Header.Add(w.Header(), "content-type", "application/json")
 	_ = json.NewEncoder(w).Encode(response{Success:true})

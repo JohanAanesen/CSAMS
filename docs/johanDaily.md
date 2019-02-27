@@ -179,3 +179,8 @@ Wednesday 27/2
 * Helped Brede setup the project on both openstack and on his computer with docker installed <3
 * There is a lot of duplicate files across the services, tried to move this out of the services and into a /internal folder
 * No luck in making the services use those files tho
+* Creating the SchedulerService
+* Making it so it doesn't neccessarily only take peer scheduling request
+* First bit of the request has to be the same, but from there I can add different execution
+methods and functionality :)
+* Using Goroutines to keep track of when to execute what services
