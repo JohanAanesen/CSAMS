@@ -1,6 +1,6 @@
 {
   "database": {
-    "hostname": "0.0.0.0",
+    "hostname": "localhost",
     "port": 3306,
     "username": "root",
     "password": "",
@@ -9,7 +9,7 @@
   },
 
   "server": {
-    "hostname": "0.0.0.0",
+    "hostname": "localhost",
     "useHTTP": true,
     "useHTTPS": false,
     "HTTPPort": 8088,

@@ -56,6 +56,7 @@ func Load(configFile string) (*Configuration, error) {
 // Initialize the configuration
 func Initialize(configFile string) *Configuration {
 	var cfg = &Configuration{}
+
 	cfg, err := Load(configFile)
 	if err != nil {
 		log.Printf("could not load config file: %v", err.Error())

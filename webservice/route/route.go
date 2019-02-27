@@ -10,12 +10,12 @@ import (
 	"os"
 )
 
-// Load ... TODO (Svein) add comment here
+// Load http handler
 func Load() http.Handler {
 	return routes()
 }
 
-// LoadHTTPS ... TODO (Svein): Add TLS settings
+// LoadHTTPS http handler
 func LoadHTTPS() http.Handler {
 	return routes()
 }

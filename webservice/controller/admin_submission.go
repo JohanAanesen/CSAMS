@@ -2,8 +2,8 @@ package controller
 
 import (
 	"encoding/json"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"log"
 	"net/http"
 )
