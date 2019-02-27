@@ -32,25 +32,21 @@ func Load(configFile string) (*Configuration, error) {
 	// Open file
 	file, err := os.Open(configFile)
 	if err != nil {
-		log.Fatalf("could not open config file: %v\n", err)
+		log.Printf("could not open config file: %v\n", err)
 		return &Configuration{}, err
 	}
 
 	// Close file
 	defer file.Close()
 	// Read file
-	bytes, err := ioutil.ReadAll(file)
-	if err != nil {
-		log.Fatalf("could not read all from file: %v\n", err)
-		return &Configuration{}, err
-	}
+	bytes, _ := ioutil.ReadAll(file)
 
 	// Declare Configuration
 	cfg := Configuration{}
 	// Unmarshal JSON to Configuration-object
 	err = json.Unmarshal(bytes, &cfg)
 	if err != nil {
-		log.Fatalf("could not unmarshal json: %v\n", err)
+		log.Printf("could not unmarshal json: %v\n", err)
 		return &Configuration{}, err
 	}
 
@@ -58,11 +54,12 @@ func Load(configFile string) (*Configuration, error) {
 }
 
 // Initialize the configuration
-func Initialize() *Configuration {
+func Initialize(configFile string) *Configuration {
 	var cfg = &Configuration{}
-	cfg, err := Load("config/config.json")
+	cfg, err := Load(configFile)
 	if err != nil {
-		panic(err)
+		log.Printf(err.Error())
+		return nil
 	}
 
 	// Configure Session
