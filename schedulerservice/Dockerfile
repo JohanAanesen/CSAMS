@@ -21,6 +21,6 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 COPY --from=builder /SchedulerService .
 
-EXPOSE 8087
+EXPOSE 8086
 
 CMD ["./SchedulerService"]

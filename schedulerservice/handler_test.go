@@ -31,7 +31,7 @@ func TestHandlers(t *testing.T) {
 			method:       "GET",
 			url:          "/",
 			body:         nil,
-			handler:      HandlerGET,
+			handler:      IndexGET,
 			expectedCode: http.StatusOK,
 		},
 		{
@@ -39,7 +39,7 @@ func TestHandlers(t *testing.T) {
 			method: "POST",
 			url:    "/",
 			body: nil,
-			handler:      HandlerPOST,
+			handler:      IndexPOST,
 			expectedCode: http.StatusOK,
 		},
 	}

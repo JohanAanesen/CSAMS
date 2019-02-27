@@ -32,10 +32,10 @@ func routes() http.Handler {
 	router := mux.NewRouter().StrictSlash(true)
 
 	// Peer schedule handlers
-	router.HandleFunc("/peer", PeerGET).Methods("GET")
-	router.HandleFunc("/peer", PeerPOST).Methods("POST")
-	router.HandleFunc("/peer", PeerPUT).Methods("PUT")
-	router.HandleFunc("/peer", PeerDELETE).Methods("DELETE")
+	router.HandleFunc("/", IndexGET).Methods("GET")
+	router.HandleFunc("/", IndexPOST).Methods("POST")
+	router.HandleFunc("/", IndexPUT).Methods("PUT")
+	router.HandleFunc("/", IndexDELETE).Methods("DELETE")
 
 	return handlers.CombinedLoggingHandler(os.Stdout, router)
 }

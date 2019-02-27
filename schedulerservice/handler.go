@@ -1,32 +1,59 @@
 package main
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 )
 
-//Payload struct
-type Payload struct {
-	Authentication string `json:"authentication"`
-	SubmissionID   int    `json:"submissionid"`
-	Reviewers      int    `json:"reviewers"`
+
+type response struct {
+	Success bool `json:"success"`
 }
 
-// PeerGET handles GET requests
-func PeerGET(w http.ResponseWriter, r *http.Request) {
-
+// IndexGET handles GET requests
+func IndexGET(w http.ResponseWriter, r *http.Request) {
+	//todo
+	http.Header.Add(w.Header(), "content-type", "application/json")
+	_ = json.NewEncoder(w).Encode(response{Success:true})
 }
 
-// PeerPOST handles POST requests
-func PeerPOST(w http.ResponseWriter, r *http.Request) {
+// IndexPOST handles POST requests
+func IndexPOST(w http.ResponseWriter, r *http.Request) {
 
+	var payload Payload
+
+	//decode json request into struct
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		log.Println("Something went wrong decoding request" + err.Error()) //todo real logger
+		http.Error(w, "Something went wrong decoding request", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	//schedule Task based on type of task
+	switch payload.Task {
+	case "peer":
+		schedulePeerTask(payload)
+	default:
+		log.Println("Something went wrong decoding request") //todo real logger
+		http.Error(w, "Something went wrong decoding request", http.StatusBadRequest)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(response{Success:true}); err != nil {
+		log.Println("Something went wrong encoding response") //todo real logger
+		http.Error(w, "Something went wrong encoding response", http.StatusInternalServerError)
+	}
 }
 
-// PeerPUT handles PUT requests
-func PeerPUT(w http.ResponseWriter, r *http.Request) {
-
+// IndexPUT handles PUT requests
+func IndexPUT(w http.ResponseWriter, r *http.Request) {
+	//todo
 }
 
-// PeerDELETE handles DELETE requests
-func PeerDELETE(w http.ResponseWriter, r *http.Request) {
-
+// IndexDELETE handles DELETE requests
+func IndexDELETE(w http.ResponseWriter, r *http.Request) {
+	//todo
 }

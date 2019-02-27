@@ -24,9 +24,10 @@ services:
     depends_on:
       - database
     ports:
-      - 8086:8086
+      - 8087:8087
     links:
       - database
+      - schedulerservice
     environment:
       DATABASE_URL: database:3306
       DATABASE_USER: root
@@ -40,11 +41,9 @@ services:
     depends_on:
       - database
     ports:
-      - 8087:8087
+      - 8086:8086
     links:
       - database
-      - peerservice
-      - webservice
     environment:
       DATABASE_URL: database:3306
       DATABASE_USER: root
