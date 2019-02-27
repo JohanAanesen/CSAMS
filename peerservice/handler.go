@@ -12,7 +12,6 @@ type Payload struct {
 	Authentication string `json:"authentication"`
 	SubmissionID   int    `json:"submissionid"`
 	Reviewers      int    `json:"reviewers"`
-	//todo Add date here and then register to schedule service, or directly to schedule service
 }
 
 // HandlerGET handles GET requests
