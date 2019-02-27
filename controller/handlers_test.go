@@ -53,6 +53,22 @@ func TestHandlers(t *testing.T) {
 			handler:      controller.IndexGET,
 			expectedCode: http.StatusOK,
 		},
+		{
+			name:         "adminIndex",
+			method:       "GET",
+			url:          "/admin",
+			body:         nil,
+			handler:      controller.AdminGET,
+			expectedCode: http.StatusOK,
+		},
+		{
+			name:         "adminIndex",
+			method:       "GET",
+			url:          "/admin",
+			body:         nil,
+			handler:      controller.AdminGET,
+			expectedCode: http.StatusOK,
+		},
 	}
 
 	for _, test := range tests {
