@@ -184,3 +184,8 @@ Wednesday 27/2
 * First bit of the request has to be the same, but from there I can add different execution
 methods and functionality :)
 * Using Goroutines to keep track of when to execute what services
+* Switched to use the AfterFunc(duration, func) which triggers func after duration has passed.
+* Perfect for this usecase
+
+Thursday 28/2
+----------
