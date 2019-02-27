@@ -3,6 +3,7 @@ package view
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
 	"html/template"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -116,9 +117,11 @@ func (v *View) Render(w http.ResponseWriter) {
 		// Loop through each template and test the full path
 		for i, name := range templateList {
 			// Get the absolute path of the root template
-			path, err := filepath.Abs(v.Folder + string(os.PathSeparator) + name + "." + v.Extension)
+			filePath := v.Folder + string(os.PathSeparator) + name + "." + v.Extension
+			path, err := filepath.Abs(filePath)
 			if err != nil {
-				http.Error(w, "template path error: "+err.Error(), http.StatusInternalServerError)
+				log.Println("filePath: ", filePath)
+				http.Error(w, "template path error: " + err.Error(), http.StatusInternalServerError)
 				return
 			}
 			templateList[i] = path
@@ -128,6 +131,7 @@ func (v *View) Render(w http.ResponseWriter) {
 		templates, err := template.New(v.Name).Funcs(pc).ParseFiles(templateList...)
 
 		if err != nil {
+			log.Printf("view.go error: %v", err)
 			http.Error(w, "template parse error: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
