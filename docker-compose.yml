@@ -1,0 +1,54 @@
+version: "3"
+
+services:
+
+  webservice:
+    build: webservice
+    depends_on:
+      - database
+    ports:
+      - 80:8088
+    links:
+      - database
+      - peerservice
+    environment:
+      DATABASE_URL: database:3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root
+      DATABASE_DATABASE: cs53
+    restart: always
+
+  peerservice:
+    build: peerservice
+    depends_on:
+      - database
+    ports:
+      - 8087:8087
+    links:
+      - database
+    environment:
+      DATABASE_URL: database:3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root
+      DATABASE_DATABASE: cs53
+      PEER_AUTH: "5243980712315079823517089"
+    restart: always
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    links:
+      - database
+
+  database:
+    build: dbservice
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: cs53
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./dbservice/data:/var/lib/mysql
