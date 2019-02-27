@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/model"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -13,7 +14,7 @@ type response struct {
 
 // IndexGET handles GET requests
 func IndexGET(w http.ResponseWriter, r *http.Request) {
-	stopTimer()
+	model.StopTimer(1) //todo remove this
 	//todo
 	http.Header.Add(w.Header(), "content-type", "application/json")
 	_ = json.NewEncoder(w).Encode(response{Success:true})
@@ -22,7 +23,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 // IndexPOST handles POST requests
 func IndexPOST(w http.ResponseWriter, r *http.Request) {
 
-	var payload Payload
+	var payload model.Payload
 
 	//decode json request into struct
 	err := json.NewDecoder(r.Body).Decode(&payload)
@@ -36,7 +37,11 @@ func IndexPOST(w http.ResponseWriter, r *http.Request) {
 	//schedule Task based on type of task
 	switch payload.Task {
 	case "peer":
-		schedulePeerTask(payload)
+		if !model.SchedulePeerTask(payload){
+			log.Println("Something went wrong decoding request") //todo real logger
+			http.Error(w, "Something went wrong decoding request", http.StatusBadRequest)
+			return
+		}
 	default:
 		log.Println("Something went wrong decoding request") //todo real logger
 		http.Error(w, "Something went wrong decoding request", http.StatusBadRequest)
