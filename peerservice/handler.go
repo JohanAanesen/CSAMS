@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 )
@@ -29,6 +30,7 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 
 	//check that request body is not empty
 	if r.Body == nil {
+		log.Println("Please send a request body")
 		http.Error(w, "Please send a request body", http.StatusBadRequest)
 		return
 	}
@@ -36,13 +38,15 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 	//decode json request into struct
 	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
-		http.Error(w, "Something went wrong", http.StatusBadRequest)
+		log.Println("Something went wrong decoding request")
+		http.Error(w, "Something went wrong decoding request", http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
 
 	//authenticate
 	if payload.Authentication != os.Getenv("PEER_AUTH") { //don't accept requests from places we don't know
+		log.Println("Unauthorized request")
 		http.Error(w, "Unauthorized request", http.StatusUnauthorized)
 		return
 	}
@@ -52,6 +56,7 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 
 	//make sure the nr of reviewers is greater than the number of submissions
 	if payload.Reviewers >= len(ShuffledSubmissions) {
+		log.Println("Submissions is less than the number of submissions everyone should review.")
 		http.Error(w, "Submissions is less than the number of submissions everyone should review.", http.StatusBadRequest)
 		return
 	}
@@ -78,6 +83,7 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 
 	//store peer reviewers in database
 	if !savePairs(GeneratedReviewers) {
+		log.Println("Something went wrong storing peer_reviews to database. Try again.")
 		http.Error(w, "Something went wrong storing peer_reviews to database. Try again.", http.StatusInternalServerError)
 		return
 	}
