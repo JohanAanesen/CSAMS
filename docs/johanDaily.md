@@ -172,3 +172,10 @@ Tuesday 26/2
 * Deployed application with docker, a lot easier than expected
 * Added Auth, POST and more functionality to the peer service
 * Need a Scheduler Service to run tasks at a given time
+
+Wednesday 27/2
+---------
+* Finished off the peer review service, although lacking of a duplicate request failure
+* Helped Brede setup the project on both openstack and on his computer with docker installed <3
+* There is a lot of duplicate files across the services, tried to move this out of the services and into a /internal folder
+* No luck in making the services use those files tho
