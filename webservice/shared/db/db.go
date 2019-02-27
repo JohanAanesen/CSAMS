@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql" //database driver
+	"log"
 	"os"
 )
 
@@ -44,10 +45,12 @@ func OpenDB() { // TODO (Svein): Is DB needed at the end? We are in db-package
 	var err error
 	db, err = sql.Open(driverName, dataSourceName)
 	if err != nil {
+		log.Println("could not open sql connection, error:", err)
 		panic(err.Error())
 	}
 
 	if err = db.Ping(); err != nil {
+		log.Println("could not ping database, error:", err)
 		panic(err.Error())
 	}
 }

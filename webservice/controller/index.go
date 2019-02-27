@@ -26,7 +26,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 	courses, err := model.GetCoursesToUser(session.GetUserFromSession(r).ID)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
-		log.Println(err)
+		log.Println("get courses to user, error:", err)
 		return
 	}
 
