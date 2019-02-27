@@ -114,3 +114,61 @@ Friday 15/2
 ----------
 * Wrapping up #7
 * Added comment tab
+
+Monday 18/2
+----------
+* Wrapped up the coursepage
+* Meetings n stuff <3
+* Started on participant list
+
+Tuesday 19/2
+----------
+* Wrapped up the participant list thing, wasn't very hard to do
+* Started doing research on docker containers and docker-compose kind of setups to "knit" together the different
+services we are creating
+
+Wednesday 20/2
+----------
+* Started writing the peer review service
+* The peer review service is supposed to retrieve a request whenever, the request should include some sort of
+authentication, haven't decided what yet. And what submission is supposed to be reviewed as well as how many
+submissions every person is supposed to review.
+* I distribute the who-reviews-what by fetching every submission and their user from database
+* Randomly shuffle the array
+* If everyone is reviewing 2 tasks, then every person get's the 2 next in the array.
+
+Thursday 21/2
+----------
+* skiday!
+
+Friday 22/2
+----------
+* Hungover day, no work was done except reviewing a pull request.
+
+Saturday 23/2
+----------
+* 28 cont.
+* Trying to setup Docker on my pc, had to enable hypervisor in powershell to make it work :(
+```powershell
+bcdedit /set hypervisorlaunchtype auto
+```
+* Sitting for 8 hours now trying to make the docker thingies work, but without luck. Will try again tomorrow.
+* https://www.melvinvivas.com/my-first-go-microservice/
+* Multi staged docker builds learned through: https://levelup.gitconnected.com/multi-stage-docker-builds-with-go-modules-df23b7f91a67
+* Shows how to make small docker images for GO applications
+
+Monday 25/2
+----------
+* Dockerizing cont
+* IT WORKS
+* I can finally say I'm starting to understand Docker, and to this useage I mean no specific article helped out a lot
+* PO wanted the database to be persistent, implemented this through a Dockerfile for the dbservice which will add the 
+database.sql file to the initialization folder in the container, but now it will only generate the db if it doesn't exist.
+Then in the docker-compose file I set the persistent volume, works like a charm.
+
+Tuesday 26/2
+---------
+* Setup OpenStack
+* Deployed application with docker, a lot easier than expected
+* Added Auth, POST and more functionality to the peer service
+* Need a Scheduler Service to run tasks at a given time
