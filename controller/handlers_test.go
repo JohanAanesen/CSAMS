@@ -53,6 +53,7 @@ func TestHandlers(t *testing.T) {
 			handler:      controller.IndexGET,
 			expectedCode: http.StatusOK,
 		},
+
 		{
 			name:         "adminIndex",
 			method:       "GET",
@@ -62,11 +63,35 @@ func TestHandlers(t *testing.T) {
 			expectedCode: http.StatusOK,
 		},
 		{
-			name:         "adminIndex",
+			name:         "adminAssignmentIndex",
 			method:       "GET",
-			url:          "/admin",
+			url:          "/admin/assignment",
 			body:         nil,
-			handler:      controller.AdminGET,
+			handler:      controller.AdminAssignmentGET,
+			expectedCode: http.StatusOK,
+		},
+		{
+			name:         "adminAssignmentCreateIndex",
+			method:       "GET",
+			url:          "/admin/assignment/create",
+			body:         nil,
+			handler:      controller.AdminAssignmentCreateGET,
+			expectedCode: http.StatusOK,
+		},
+		{
+			name:         "adminSubmissionIndex",
+			method:       "GET",
+			url:          "/admin/submission",
+			body:         nil,
+			handler:      controller.AdminSubmissionGET,
+			expectedCode: http.StatusOK,
+		},
+		{
+			name:         "adminSubmissionCreateIndex",
+			method:       "GET",
+			url:          "/admin/submission/create",
+			body:         nil,
+			handler:      controller.AdminSubmissionCreateGET,
 			expectedCode: http.StatusOK,
 		},
 	}

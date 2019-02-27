@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/session"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
 	"github.com/gorilla/mux"
 	"log"
@@ -81,13 +82,13 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the time.Time object from the publish string
-	publish, err := DatetimeLocalToRFC3339(r.FormValue("publish"))
+	publish, err := util.DatetimeLocalToRFC3339(r.FormValue("publish"))
 	if err != nil {
 		errorMessages = append(errorMessages, "Error: Something wrong with the publish datetime.")
 	}
 
 	// Get the time.Time object from the deadline string
-	deadline, err := DatetimeLocalToRFC3339(r.FormValue("deadline"))
+	deadline, err := util.DatetimeLocalToRFC3339(r.FormValue("deadline"))
 	if err != nil {
 		errorMessages = append(errorMessages, "Error: Something wrong with the deadline datetime.")
 	}
@@ -255,8 +256,8 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	// TODO (Svein): Create plugins for views (FuncMap's)
 
 	v.Vars["Assignment"] = assignment
-	v.Vars["Publish"] = GoToHTMLDatetimeLocal(assignment.Publish)
-	v.Vars["Deadline"] = GoToHTMLDatetimeLocal(assignment.Deadline)
+	v.Vars["Publish"] = util.GoToHTMLDatetimeLocal(assignment.Publish)
+	v.Vars["Deadline"] = util.GoToHTMLDatetimeLocal(assignment.Deadline)
 	v.Vars["Courses"] = courses
 	v.Vars["Submissions"] = submissions
 
@@ -273,7 +274,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the time.Time object from the publish string
-	publish, err := DatetimeLocalToRFC3339(r.FormValue("publish"))
+	publish, err := util.DatetimeLocalToRFC3339(r.FormValue("publish"))
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -281,7 +282,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the time.Time object from the deadline string
-	deadline, err := DatetimeLocalToRFC3339(r.FormValue("deadline"))
+	deadline, err := util.DatetimeLocalToRFC3339(r.FormValue("deadline"))
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
