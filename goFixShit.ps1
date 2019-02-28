@@ -11,51 +11,26 @@ $start = Get-Location
 Set-Location $env:GOPATH\src\github.com\JohanAanesen\NTNU-Bachelor-Management-System-For-CS-Assignments
 
 Write-Output "`nGo Vet`n========"
-$result = go vet ./...
-If (-not$result)
-{
-    Write-Output "Pass 100%"
-}
-Else
-{
-    Write-Output $result
-}
+go vet ./webservice/...
+go vet ./peerservice/...
+
 
 Write-Output "`nGo fmt`n========"
-$result = go fmt ./...
-If (-not$result)
-{
-    Write-Output "Pass 100%"
-}
-Else
-{
-    Write-Output $result
-}
+go fmt ./webservice/...
+go fmt ./peerservice/...
 
 Write-Output "`nGo Lint`n========"
-$result = golint ./...
-If (-not$result)
-{
-    Write-Output "Pass 100%"
-}
-Else
-{
-    Write-Output $result
-}
+golint ./...
+
 
 Write-Output "`nGo Cyclo`n========"
-$result = gocyclo ./...
-If (-not$result)
-{
-    Write-Output "Pass 100%"
-}
-Else
-{
-    Write-Output $result
-}
+gocyclo ./webservice/...
+gocyclo ./peerservice/...
+
 
 Write-Output "`nGo test`n========"
-go test -cover ./controller/
+go test ./webservice/... -cover
+go test ./peerservice/... -cover
 
 Write-Output ""
 

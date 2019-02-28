@@ -23,6 +23,7 @@ type Course struct {
 	Assignments []Assignment `json:"assignments"`
 }
 
+// GetCourseCodeAndName gets the course code and name to the course
 func GetCourseCodeAndName(courseID int) (Course, error) {
 	//Create an empty courses array
 	var course Course

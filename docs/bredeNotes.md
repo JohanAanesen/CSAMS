@@ -163,6 +163,7 @@ sorted by the deadlines desc.
     * Environment is up-ish again and I'm gone
 
 ### Thursday - 28/02/19
+* After 1h, I can finally start coding again, since the env is completely up!
 
 
 ### Friday - 01/03/19

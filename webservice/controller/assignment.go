@@ -2,8 +2,8 @@ package controller
 
 import (
 	"fmt"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/shared/view"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/shurcooL/github_flavored_markdown"
 	"html/template"
 	"log"
@@ -122,7 +122,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 
 	// Get form and log possible error
 	formRepo := model.FormRepository{}
-	form, err := formRepo.GetFromAssignmentID(assignment.ID)
+	form, err := formRepo.GetFromAssignmentID(assignment.ID)// hva er tom?
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
