@@ -41,8 +41,8 @@ func IndexPOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	default:
-		log.Println("Something went wrong decoding request") //todo real logger
-		http.Error(w, "Something went wrong decoding request", http.StatusBadRequest)
+		//log.Println("Something went wrong decoding request") //todo real logger
+		//http.Error(w, "Something went wrong decoding request", http.StatusBadRequest)
 		return
 	}
 

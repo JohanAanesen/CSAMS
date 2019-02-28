@@ -11,7 +11,7 @@ import (
 type Task interface {
 	Schedule()
 	Trigger()
-	Delete()bool
+	Delete() bool
 }
 
 //PeerTask struct
@@ -26,25 +26,25 @@ func (peer PeerTask) Trigger() {
 	fmt.Printf("DING: %v", peer.SubmissionID) //todo remove this
 
 	//remove task from database
-	if peer.DeleteTask(){
+	if peer.DeleteTask() {
 		fmt.Printf("Successfully deleted task with subID: %v\n", peer.SubmissionID)
 	}
 }
 
-func (peer PeerTask) Schedule(scheduledTime time.Time)bool {
+func (peer PeerTask) Schedule(scheduledTime time.Time) bool {
 
 	loc, err := time.LoadLocation("Europe/Oslo")
-	if err != nil{
+	if err != nil {
 		log.Println("Something wrong with time location")
 		return false
 	}
 
-	timeNow := time.Now().In(loc) //time now
+	timeNow := time.Now().In(loc)          //time now
 	Duration := scheduledTime.Sub(timeNow) //subtract now's time from target time to get time until trigger
 
 	fmt.Printf("Duration registered: %v\n", Duration) //todo remove this
 
-	if Duration < 0{ //scheduled time has to be in the future
+	if Duration < 0 { //scheduled time has to be in the future
 		log.Printf("Could not schedule timer for submissionID: %v", peer.SubmissionID)
 		peer.DeleteTask() //todo trigger tasks that hasn't been triggered
 		return false
@@ -56,7 +56,7 @@ func (peer PeerTask) Schedule(scheduledTime time.Time)bool {
 	return true
 }
 
-func (peer PeerTask) DeleteTask()bool{
+func (peer PeerTask) DeleteTask() bool {
 	tx, err := db.GetDB().Begin() //start transaction
 	if err != nil {
 		log.Println(err.Error())
@@ -67,7 +67,7 @@ func (peer PeerTask) DeleteTask()bool{
 	if err != nil {
 		//todo log error
 		log.Println(err.Error())
-		if err = tx.Rollback(); err != nil{//quit transaction if error
+		if err = tx.Rollback(); err != nil { //quit transaction if error
 			log.Fatal(err.Error()) //die
 		}
 		return false
@@ -82,39 +82,47 @@ func (peer PeerTask) DeleteTask()bool{
 	return true
 }
 
-func NewTask(payload Payload)bool{
-	SubID := ScheduleTask(payload) //schedule task
-	if SubID == 0{
+func NewTask(payload Payload) bool {
+	//Make sure a timer does not exist for this submission //todo something about this (Johan)
+	if GetTimer(payload.SubmissionID) != nil{
+		log.Println("Timer for this submissions already exists.")
+		return false
+	}
+
+	//Save the task to database for redundancy
+	if !payload.Save() {
+		log.Println("Something went wrong saving task")
+		return false
+	}
+
+	//schedule task
+	if !ScheduleTask(payload) {
 		log.Println("Something went wrong scheduling task")
 		return false
 	}
 
-	//Save the scheduled task to database for redundancy
-	return SubID != 0 && payload.Save(SubID)
+	//success
+	return true
 }
 
-func ScheduleTask(payload Payload)int{
-
-	var subID = 0
-
-	switch payload.Task{
+func ScheduleTask(payload Payload) bool {
+	//switch based on type of task
+	switch payload.Task {
 	case "peer":
 		peerTask, err := payload.GetPeerTask()
-		if err != nil{
+		if err != nil {
 			log.Println("Something went wrong getting peerTask from payload")
-			return 0
+			return false
 		}
 
 		//Schedule task
-		if !peerTask.Schedule(payload.ScheduledTime){
+		if !peerTask.Schedule(payload.ScheduledTime) {
 			log.Printf("Could not schedule task for submissionID: %v", peerTask.SubmissionID)
-			return 0
+			return false
 		}
-
-		subID = peerTask.SubmissionID
 	default:
-		return 0
+		return false
 	}
 
-	return subID //success
+	return true //success
 }

@@ -10,6 +10,9 @@ import (
 //Timers slice hold all current timers
 var Timers  = make(map[int]*time.Timer)
 
+func GetTimer(timerID int)*time.Timer{
+	return Timers[timerID]
+}
 
 func StopTimer(timerID int){
 	stop := Timers[timerID].Stop()
@@ -62,10 +65,11 @@ func InitializeTimers(){
 		payload = Payload{
 			ScheduledTime:scheduledTime,
 			Task:task,
+			SubmissionID:submissionID,
 			Data:data,
 		}
 
-		if payload.ScheduledTime.Sub(time.Now()) < 0{
+		if payload.ScheduledTime.Sub(time.Now()) < 0{ //trigger tasks that has dinged when service was down
 			task, err := payload.GetPeerTask()
 			if err != nil{
 				log.Printf("asdla") //todo
@@ -73,7 +77,7 @@ func InitializeTimers(){
 
 			task.Trigger()
 			return
-		} else if ScheduleTask(payload) == 0{ //
+		} else if !ScheduleTask(payload){ //schedule task
 			log.Printf("Could not initialize timer for submission ID: %v", submissionID)
 		}
 	}

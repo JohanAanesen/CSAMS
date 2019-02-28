@@ -12,6 +12,7 @@ import (
 type Payload struct {
 	ScheduledTime time.Time `json:"scheduled_time"`
 	Task          string    `json:"task"`
+	SubmissionID  int       `json:"submission_id"`
 	Data          json.RawMessage
 }
 
@@ -24,7 +25,7 @@ func (payload Payload) GetPeerTask() (PeerTask, error) {
 	return peerTask, nil
 }
 
-func (payload Payload) Save(submissionID int) bool {
+func (payload Payload) Save() bool {
 	tx, err := db.GetDB().Begin() //start transaction
 	if err != nil {
 		log.Println(err.Error())
@@ -32,7 +33,7 @@ func (payload Payload) Save(submissionID int) bool {
 	}
 
 	_, err = tx.Exec("INSERT INTO schedule_tasks(submission_id, scheduled_time, task, data) VALUES(?, ?, ?, ?)",
-		submissionID,
+		payload.SubmissionID,
 		payload.ScheduledTime,
 		payload.Task,
 		payload.Data)
@@ -40,7 +41,7 @@ func (payload Payload) Save(submissionID int) bool {
 	if err != nil {
 		//todo log error
 		log.Println(err.Error())
-		if err = tx.Rollback(); err != nil{//quit transaction if error
+		if err = tx.Rollback(); err != nil { //quit transaction if error
 			log.Fatal(err.Error()) //die
 		}
 		return false
