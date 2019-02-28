@@ -30,7 +30,7 @@ func UpdateTimer(timerID int, newTime time.Time, task PeerTask) bool{
 		return false
 	}
 
-	Timers[task.SubmissionID] = time.AfterFunc(Duration, task.TriggerTask)
+	Timers[task.SubmissionID] = time.AfterFunc(Duration, task.Trigger)
 
 	return true
 }
@@ -65,7 +65,15 @@ func InitializeTimers(){
 			Data:data,
 		}
 
-		if ScheduleTask(payload) == 0{ //
+		if payload.ScheduledTime.Sub(time.Now()) < 0{
+			task, err := payload.GetPeerTask()
+			if err != nil{
+				log.Printf("asdla") //todo
+			}
+
+			task.Trigger()
+			return
+		} else if ScheduleTask(payload) == 0{ //
 			log.Printf("Could not initialize timer for submission ID: %v", submissionID)
 		}
 	}

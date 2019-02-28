@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/db"
 	"log"
 	"time"
 )
@@ -9,7 +10,8 @@ import (
 //Task interface
 type Task interface {
 	Schedule()
-	TriggerTask()
+	Trigger()
+	Delete()bool
 }
 
 //PeerTask struct
@@ -19,9 +21,14 @@ type PeerTask struct {
 	Reviewers      int    `json:"reviewers"`
 }
 
-func (peer PeerTask) TriggerTask() {
+func (peer PeerTask) Trigger() {
 	//todo send request to peerservice
 	fmt.Printf("DING: %v", peer.SubmissionID) //todo remove this
+
+	//remove task from database
+	if peer.DeleteTask(){
+		fmt.Printf("Successfully deleted task with subID: %v\n", peer.SubmissionID)
+	}
 }
 
 func (peer PeerTask) Schedule(scheduledTime time.Time)bool {
@@ -39,11 +46,38 @@ func (peer PeerTask) Schedule(scheduledTime time.Time)bool {
 
 	if Duration < 0{ //scheduled time has to be in the future
 		log.Printf("Could not schedule timer for submissionID: %v", peer.SubmissionID)
+		peer.DeleteTask() //todo trigger tasks that hasn't been triggered
 		return false
 	}
 
 	//afterFunc will run the function after the duration has passed
-	Timers[peer.SubmissionID] = time.AfterFunc(Duration, peer.TriggerTask)
+	Timers[peer.SubmissionID] = time.AfterFunc(Duration, peer.Trigger)
+
+	return true
+}
+
+func (peer PeerTask) DeleteTask()bool{
+	tx, err := db.GetDB().Begin() //start transaction
+	if err != nil {
+		log.Println(err.Error())
+		return false
+	}
+
+	_, err = tx.Exec("DELETE FROM schedule_tasks WHERE submission_id LIKE ?", peer.SubmissionID)
+	if err != nil {
+		//todo log error
+		log.Println(err.Error())
+		if err = tx.Rollback(); err != nil{//quit transaction if error
+			log.Fatal(err.Error()) //die
+		}
+		return false
+	}
+
+	err = tx.Commit() //finish transaction
+	if err != nil {
+		log.Fatal(err.Error())
+		return false
+	}
 
 	return true
 }
