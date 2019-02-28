@@ -5,9 +5,11 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
+	"github.com/gorilla/mux"
 	"github.com/rs/xid"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -122,4 +124,36 @@ func AdminUpdateCourseGET(w http.ResponseWriter, r *http.Request) {
 // AdminUpdateCoursePOST handles POST-request at /admin/course/update/{id}
 func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
 
+}
+
+// AdminCourseAllAssignments handles GET-request @ /course/{id:[0-9]+}/assignments
+func AdminCourseAllAssignments(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	assignmentRepo := model.AssignmentRepository{}
+	assignments, err := assignmentRepo.GetAllFromCourse(id)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	course := model.GetCourse(id)
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/course/assignments"
+
+	v.Vars["Course"] = course
+	v.Vars["Assignments"] = assignments
+
+	v.Render(w)
 }

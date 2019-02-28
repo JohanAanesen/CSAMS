@@ -1,0 +1,27 @@
+{{define "title"}}Dashboard - {{.Course.Name}}: Assignments{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+    <h2 class="display-4 mb-3">
+        {{.Course.Code}}: Assignments
+        <a href="/admin/assignment/create" class="btn btn-success btn-sm px-3">New</a>
+    </h2>
+    <hr>
+    <div class="row">
+        {{$C := .Course}}
+        {{range .Assignments}}
+            <div class="col-12 col-md-6 col-lg-4 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="display-5">{{ .Name }}</h2>
+                        <h5>{{$C.Code}}</h5>
+                        <p><strong>Deadline: </strong> {{PRETTYTIME .Deadline}}</p>
+                        <p class="card-text">{{ .Description }}</p>
+                        <hr>
+                        <a href="/admin/assignment/{{.ID}}" class="btn btn-outline-dark btn-sm">See details</a>
+                    </div>
+                </div>
+            </div>
+        {{end}}
+    </div>
+{{end}}
+{{define "foot"}}{{end}}
