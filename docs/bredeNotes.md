@@ -166,6 +166,8 @@ sorted by the deadlines desc.
 * After 1h, I can finally start coding again, since the env is completely up!
 * Added functionality to get form values in an array
 * Added functions for inserting and getting answers from db
+* Merging with master
+* Added test values in db, but it took some while since I didn't get errors about what was wrong :/
 
 
 ### Friday - 01/03/19
