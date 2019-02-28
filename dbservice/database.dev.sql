@@ -317,6 +317,7 @@ create table assignments
   course_id     int                                 not null,
   submission_id int                                 null,
   review_id     int                                 null,
+  validation_id int null,
   constraint assignments_courses_id_fk
   foreign key (course_id) references course (id),
   constraint assignments_reviews_id_fk
