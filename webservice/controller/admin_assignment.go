@@ -7,6 +7,8 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/gorilla/mux"
+	"github.com/shurcooL/github_flavored_markdown"
+	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -205,10 +207,14 @@ func AdminSingleAssignmentGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	descriptionMD := []byte(assignment.Description)
+	description := github_flavored_markdown.Markdown(descriptionMD)
+
 	v := view.New(r)
 	v.Name = "admin/assignment/single"
 
 	v.Vars["Assignment"] = assignment
+	v.Vars["Description"] = template.HTML(description)
 
 	v.Render(w)
 }
