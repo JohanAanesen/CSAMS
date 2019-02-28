@@ -243,6 +243,7 @@ func (repo *AssignmentRepository) Update(id int, assignment Assignment) error {
 	return err
 }
 
+// GetAllFromCourse returns all assignments in a course
 func (repo *AssignmentRepository) GetAllFromCourse(courseID int) ([]Assignment, error) {
 	result := make([]Assignment, 0)
 	query := "SELECT id, name, description, created, publish, deadline, " +
@@ -316,6 +317,7 @@ func (repo *AssignmentRepository) HasUserSubmitted(assignmentID, userID int) (bo
 	return true, err
 }
 
+// HasReview checks if the assignments has a review form
 func (repo *AssignmentRepository) HasReview(id int) (bool, error) {
 	var result sql.NullInt64
 
@@ -333,6 +335,7 @@ func (repo *AssignmentRepository) HasReview(id int) (bool, error) {
 	return result.Valid, err
 }
 
+// HasAutoValidation checks if the assignment has auto validation
 func (repo *AssignmentRepository) HasAutoValidation(id int) (bool, error) {
 	var result sql.NullInt64
 

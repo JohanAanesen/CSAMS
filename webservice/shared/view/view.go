@@ -154,6 +154,7 @@ func (v *View) Render(w http.ResponseWriter) {
 	}
 }
 
+// LoadPlugins for templating
 func LoadPlugins(funcMaps ...template.FuncMap) {
 	funcMap := make(template.FuncMap)
 

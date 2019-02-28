@@ -26,6 +26,7 @@ type Form struct {
 	} `json:"fields"`
 }
 
+// Answer struct used for storing answers from users in forms
 type Answer struct {
 	Type  string
 	Value string

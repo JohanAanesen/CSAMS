@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+// PrettyTime formats time.Time formats to a prettier format for displaying in HTML
+// Usage: {{PRETTYTIME .Deadline}}
 func PrettyTime() template.FuncMap {
 	f := make(template.FuncMap)
 

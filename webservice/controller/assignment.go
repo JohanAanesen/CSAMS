@@ -41,6 +41,7 @@ func AssignmentGET(w http.ResponseWriter, r *http.Request) {
 	//parse info with template
 }
 
+// AssignmentSingleGET handles GET-request @ /assignment/{id:[0-9]+}
 func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
