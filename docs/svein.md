@@ -1,5 +1,38 @@
 Svein's log
 ============
+## 27/02/2019
+#### Worked on
+* QoT (Navbar)
+#### Good
+* 
+#### Bad
+* 
+#### Decisions
+* None
+
+## 26/02/2019
+#### Worked on
+* Assignment update/view
+* Setup OpenStack VM
+#### Good
+* Parsing `time.Time` to `datetime-local` from Go to HTML
+* OpenStack: first configuration worked as a charm
+#### Bad
+* 
+#### Decisions
+* None
+
+## 25/02/2019
+#### Worked on
+* Settings page
+* Assignment update/view
+#### Good
+* Group talked about the next weeks need-to-be-done stuff
+#### Bad
+* Wasted some time on the settings-stuff
+#### Decisions
+* None
+
 ## Week 8 report
 #### Worked on
 * I have been working on the assignment and submission features for the lecturer-side of the software.

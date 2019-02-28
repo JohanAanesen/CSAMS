@@ -6,7 +6,6 @@
 -- Generation Time: 29. Jan, 2019 17:17 PM
 -- Server-versjon: 10.1.28-MariaDB
 -- PHP Version: 7.1.10
-DROP DATABASE IF EXISTS cs53;
 
 CREATE DATABASE IF NOT EXISTS cs53 COLLATE = utf8_general_ci;
 
@@ -317,7 +316,6 @@ create table assignments
   course_id     int                                 not null,
   submission_id int                                 null,
   review_id     int                                 null,
-  validation_id int null,
   constraint assignments_courses_id_fk
   foreign key (course_id) references course (id),
   constraint assignments_reviews_id_fk
@@ -344,16 +342,13 @@ create table user_submissions
   id            int auto_increment
     primary key,
   user_id       int        not null,
-  assignment_id int not null,
   submission_id int        not null,
-  type    varchar(64)   not null,
+  field_name    tinytext   not null,
   answer        mediumtext null,
   constraint user_submissions_submissions_id_fk
   foreign key (submission_id) references submissions (id),
   constraint user_submissions_users_id_fk
-  foreign key (user_id) references users (id),
-  constraint user_submission_assignment_id_fk
-  foreign key (assignment_id) references assignments (id)
+  foreign key (user_id) references users (id)
 );
 
 create table peer_reviews

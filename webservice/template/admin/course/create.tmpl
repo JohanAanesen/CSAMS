@@ -76,6 +76,9 @@
 {{end}}
 {{define "foot"}}
     <script>
-        let simplemde = new SimpleMDE({ element: document.getElementById("description") });
+        let simplemde = new SimpleMDE({
+            element: document.getElementById('description'),
+            hideIcons: ["side-by-side", "fullscreen"],
+        });
     </script>
 {{end}}

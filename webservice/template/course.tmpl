@@ -38,36 +38,19 @@
                     </div>
                     <div class="tab-pane fade" id="assignments" role="tabpanel" aria-labelledby="assignment-tab">
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="card my-1 border-dark text-dark bg-light">
-                                    <div class="card-header">Assignment 1</div>
-                                    <div class="card-body">
-                                        <h5 class="card-title">Light card title</h5>
-                                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                        <a href="#" class="btn btn-outline-dark">Go somewhere</a>
+
+                            {{range .Assignments}}
+                                <div class="col-md-6">
+                                    <div class="card my-1 border-dark text-dark bg-light">
+                                        <div class="card-header">Assignment?</div>
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{.Name}}</h5>
+                                            <p class="card-text">{{.Description}}</p>
+                                            <a href="/assignment/{{.ID}}" class="btn btn-outline-dark">See details</a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card my-1 border-dark text-dark bg-light">
-                                    <div class="card-header">Assignment 2</div>
-                                    <div class="card-body">
-                                        <h5 class="card-title">Light card title</h5>
-                                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.Some quick example text to build on the card title and make up the bulk of the card's content.Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                        <a href="admin" class="btn btn-outline-dark">Go somewhere</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card my-1 border-dark text-dark bg-light">
-                                    <div class="card-header">Assignment 3</div>
-                                    <div class="card-body">
-                                        <h5 class="card-title">Light card title</h5>
-                                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                        <a href="user" class="btn btn-outline-dark">Go somewhere</a>
-                                    </div>
-                                </div>
-                            </div>
+                            {{end}}
                         </div>
                     </div>
                     <div class="tab-pane fade" id="participants" role="tabpanel" aria-labelledby="participant-tab">

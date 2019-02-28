@@ -1,7 +1,9 @@
 package view
 
 import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"html/template"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -36,10 +38,12 @@ var (
 	adminChildTemplates []string
 
 	templateCollection = make(map[string]*template.Template)
+	pluginCollection   = make(template.FuncMap)
 
 	cfgView *View
 
-	mutex sync.RWMutex
+	mutex       sync.RWMutex
+	pluginMutex sync.RWMutex
 )
 
 // Configure the view
@@ -70,12 +74,8 @@ func New(r *http.Request) *View {
 
 	v.request = r
 
-	/* TODO (Svein): Do session auth check here
-	sess := session.Instance(v.request)
-	if sess.Values["id"] != nil {
-		v.Vars["AuthLevel"] = "user/admin"
-	}
-	*/
+	v.Vars["Auth"] = session.IsLoggedIn(r)
+	v.Vars["IsTeacher"] = session.IsTeacher(r)
 
 	return v
 }
@@ -86,6 +86,10 @@ func (v *View) Render(w http.ResponseWriter) {
 	mutex.RLock()
 	tc, ok := templateCollection[v.Name]
 	mutex.RUnlock()
+
+	pluginMutex.RLock()
+	pc := pluginCollection
+	pluginMutex.RUnlock()
 
 	// If the template collection is not cached or caching is disabled
 	if !ok || !cfgView.Caching {
@@ -113,8 +117,10 @@ func (v *View) Render(w http.ResponseWriter) {
 		// Loop through each template and test the full path
 		for i, name := range templateList {
 			// Get the absolute path of the root template
-			path, err := filepath.Abs(v.Folder + string(os.PathSeparator) + name + "." + v.Extension)
+			filePath := v.Folder + string(os.PathSeparator) + name + "." + v.Extension
+			path, err := filepath.Abs(filePath)
 			if err != nil {
+				log.Println("filePath: ", filePath)
 				http.Error(w, "template path error: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
@@ -122,9 +128,10 @@ func (v *View) Render(w http.ResponseWriter) {
 		}
 
 		// Determine if there is an error in the template syntax
-		templates, err := template.New(v.Name).ParseFiles(templateList...)
+		templates, err := template.New(v.Name).Funcs(pc).ParseFiles(templateList...)
 
 		if err != nil {
+			log.Printf("view.go error: %v", err)
 			http.Error(w, "template parse error: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -139,10 +146,24 @@ func (v *View) Render(w http.ResponseWriter) {
 	}
 
 	// Display the content to the screen
-	err := tc.ExecuteTemplate(w, rootTemplate+"."+v.Extension, v.Vars)
+	err := tc.Funcs(pc).ExecuteTemplate(w, rootTemplate+"."+v.Extension, v.Vars)
 
 	if err != nil {
 		http.Error(w, "template file error: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+// LoadPlugins for templating
+func LoadPlugins(funcMaps ...template.FuncMap) {
+	funcMap := make(template.FuncMap)
+
+	for _, m := range funcMaps {
+		for key, value := range m {
+			funcMap[key] = value
+		}
+	}
+
+	// mutex?
+	pluginCollection = funcMap
 }

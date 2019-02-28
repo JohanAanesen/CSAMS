@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// Initialize config
-	var cfg = config.Initialize()
+	var cfg = config.Initialize("config/config.json")
 
 	defer db.CloseDB()
 
