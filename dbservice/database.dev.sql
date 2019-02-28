@@ -345,7 +345,7 @@ create table user_submissions
   user_id       int        not null,
   assignment_id int not null,
   submission_id int        not null,
-  field_name    tinytext   not null,
+  type    varchar(64)   not null,
   answer        mediumtext null,
   constraint user_submissions_submissions_id_fk
   foreign key (submission_id) references submissions (id),
@@ -368,6 +368,12 @@ create table peer_reviews
   constraint peer_reviews_review_submission_id_fk
   foreign key (review_submission_id) references user_submissions (id)
 );
+
+
+INSERT INTO course (hash, coursecode, coursename, teacher, description, year, semester)
+VALUES ('81ge718get78321', 'IMT1001', 'Basic Programming', 1, 'No description', 2019, 'fall');
+INSERT INTO usercourse (userid, courseid)
+VALUES (1, (SELECT DISTINCT LAST_INSERT_ID() FROM course));
 
 /*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
