@@ -1,9 +1,14 @@
 package model
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/db"
+	"io/ioutil"
 	"log"
+	"net/http"
+	"os"
 	"time"
 )
 
@@ -22,12 +27,22 @@ type PeerTask struct {
 }
 
 func (peer PeerTask) Trigger() {
-	//todo send request to peerservice
-	fmt.Printf("DING: %v", peer.SubmissionID) //todo remove this
+	fmt.Printf("Triggering task: %v\n", peer.SubmissionID) //todo remove this
+
+
+	//Send request to peer service
+	jsonValue, _ := json.Marshal(peer) //json encode the request
+	response, err := http.Post(os.Getenv("PEER_SERVICE"), "application/json", bytes.NewBuffer(jsonValue))
+	if err != nil {
+		fmt.Printf("The HTTP request to peerservice failed with error %s\n", err)
+	} else {
+		data, _ := ioutil.ReadAll(response.Body)
+		fmt.Println(string(data))
+	}
 
 	//remove task from database
-	if peer.DeleteTask() {
-		fmt.Printf("Successfully deleted task with subID: %v\n", peer.SubmissionID)
+	if peer.Delete() {
+		fmt.Printf("Successfully deleted task with SubmissionID: %v\n", peer.SubmissionID)
 	}
 }
 
@@ -46,7 +61,7 @@ func (peer PeerTask) Schedule(scheduledTime time.Time) bool {
 
 	if Duration < 0 { //scheduled time has to be in the future
 		log.Printf("Could not schedule timer for submissionID: %v", peer.SubmissionID)
-		peer.DeleteTask() //todo trigger tasks that hasn't been triggered
+		peer.Delete() //todo trigger tasks that hasn't been triggered
 		return false
 	}
 
@@ -56,7 +71,7 @@ func (peer PeerTask) Schedule(scheduledTime time.Time) bool {
 	return true
 }
 
-func (peer PeerTask) DeleteTask() bool {
+func (peer PeerTask) Delete() bool {
 	tx, err := db.GetDB().Begin() //start transaction
 	if err != nil {
 		log.Println(err.Error())
@@ -78,6 +93,8 @@ func (peer PeerTask) DeleteTask() bool {
 		log.Fatal(err.Error())
 		return false
 	}
+
+	delete(Timers, peer.SubmissionID)
 
 	return true
 }

@@ -17,14 +17,14 @@ func GetTimer(timerID int)*time.Timer{
 func StopTimer(timerID int){
 	stop := Timers[timerID].Stop()
 	if stop {
-		fmt.Printf("Timer %v stopped", timerID)
+		fmt.Printf("Timer %v stopped\n", timerID)
 	}
 }
 
 func UpdateTimer(timerID int, newTime time.Time, task PeerTask) bool{
 	stop := Timers[timerID].Stop()
 	if stop {
-		fmt.Printf("Timer %v stopped", timerID)
+		fmt.Printf("Timer %v stopped\n", timerID)
 	}
 	timeNow := time.Now() //time now
 	Duration := newTime.Sub(timeNow) //subtract now's time from target time to get time until trigger
@@ -34,6 +34,8 @@ func UpdateTimer(timerID int, newTime time.Time, task PeerTask) bool{
 	}
 
 	Timers[task.SubmissionID] = time.AfterFunc(Duration, task.Trigger)
+
+	//todo update db
 
 	return true
 }
@@ -78,7 +80,7 @@ func InitializeTimers(){
 			task.Trigger()
 			return
 		} else if !ScheduleTask(payload){ //schedule task
-			log.Printf("Could not initialize timer for submission ID: %v", submissionID)
+			log.Printf("Could not initialize timer for submission ID: %v\n", submissionID)
 		}
 	}
 }

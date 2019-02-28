@@ -10,7 +10,7 @@ import (
 //Payload struct
 type Payload struct {
 	Authentication string `json:"authentication"`
-	SubmissionID   int    `json:"submissionid"`
+	SubmissionID   int    `json:"submission_id"`
 	Reviewers      int    `json:"reviewers"`
 }
 
