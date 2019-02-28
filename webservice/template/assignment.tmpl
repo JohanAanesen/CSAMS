@@ -3,7 +3,12 @@
 {{define "content"}}
     <div class="container pt-3">
         {{if .Delivered}}
-            <div class="alert alert-success"><strong>Notice!</strong> You have already delivered this assignment!</div>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Notice!</strong> You have already delivered this assignment!
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
         {{end}}
         <h1 class="display-4">{{.Assignment.Name}}</h1>
 
