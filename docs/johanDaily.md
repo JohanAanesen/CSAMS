@@ -189,3 +189,9 @@ methods and functionality :)
 
 Thursday 28/2
 ----------
+* Scheduler service is now working wonderfully, both registering through a http post request
+and it actually triggering the peerservice correctly works.
+* Still missing RUD out of CRUD, but that should be pretty easy to do tomorrow.
+* Scheduler will not accept requests with the same submission id as a current timers submission id
+* The peer service and Scheduler service both needs some polishing, but are functional for the alpha
+planned on monday
