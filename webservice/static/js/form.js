@@ -183,6 +183,9 @@ let Form = function() {
         input.addEventListener('keyup', e => {
             this.name = e.target.value;
             this.prefix = this.name.replaceAll(REGEXP, '_').toLowerCase();
+            while (this.prefix.includes('__')) {
+                this.prefix = this.prefix.replaceAll('__', '_');
+            }
 
             this.fields.forEach((e, i) => {
                 e.name = `${this.prefix}_${e.type}_${i}`;
@@ -258,6 +261,9 @@ let Form = function() {
 
         submit.addEventListener('click', () => {
             this.prefix = this.name.replaceAll(REGEXP, '_').toLowerCase();
+            while (this.prefix.includes('__')) {
+                this.prefix = this.prefix.replaceAll('__', '_');
+            }
 
             this.fields.forEach((e, i) => {
                 e.name = `${this.prefix}_${e.type}_${i}`;

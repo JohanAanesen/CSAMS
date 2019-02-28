@@ -28,6 +28,12 @@ type Field struct {
 	Choices     []string `json:"choices" db:"choices"`
 }
 
+// Answer2 struct used for storing answers from users in forms
+type Answer struct {
+	Type  string
+	Value string
+}
+
 // FormRepository ... TODO (Svein): comment
 type FormRepository struct {
 }

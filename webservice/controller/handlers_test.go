@@ -34,7 +34,7 @@ func init() {
 }
 
 func TestHandlers(t *testing.T) {
-	config.Initialize()
+	config.Initialize("config/config.json")
 
 	tests := []struct {
 		name    string
@@ -51,6 +51,47 @@ func TestHandlers(t *testing.T) {
 			url:          "/",
 			body:         nil,
 			handler:      controller.IndexGET,
+			expectedCode: http.StatusOK,
+		},
+
+		{
+			name:         "adminIndex",
+			method:       "GET",
+			url:          "/admin",
+			body:         nil,
+			handler:      controller.AdminGET,
+			expectedCode: http.StatusOK,
+		},
+		{
+			name:         "adminAssignmentIndex",
+			method:       "GET",
+			url:          "/admin/assignment",
+			body:         nil,
+			handler:      controller.AdminAssignmentGET,
+			expectedCode: http.StatusOK,
+		},
+		{
+			name:         "adminAssignmentCreateIndex",
+			method:       "GET",
+			url:          "/admin/assignment/create",
+			body:         nil,
+			handler:      controller.AdminAssignmentCreateGET,
+			expectedCode: http.StatusOK,
+		},
+		{
+			name:         "adminSubmissionIndex",
+			method:       "GET",
+			url:          "/admin/submission",
+			body:         nil,
+			handler:      controller.AdminSubmissionGET,
+			expectedCode: http.StatusOK,
+		},
+		{
+			name:         "adminSubmissionCreateIndex",
+			method:       "GET",
+			url:          "/admin/submission/create",
+			body:         nil,
+			handler:      controller.AdminSubmissionCreateGET,
 			expectedCode: http.StatusOK,
 		},
 	}
@@ -77,7 +118,7 @@ func TestHandlers(t *testing.T) {
 }
 
 func TestLoginHandler(t *testing.T) {
-	config.Initialize()
+	config.Initialize("config/config.json")
 
 	req, err := http.NewRequest("GET", "/login", nil)
 	if err != nil {
@@ -102,7 +143,7 @@ func TestLoginHandler(t *testing.T) {
 }
 
 func TestLoggingIn(t *testing.T) {
-	config.Initialize()
+	config.Initialize("config/config.json")
 
 	form := url.Values{}
 	form.Add("email", "hei@gmail.com")
@@ -128,7 +169,7 @@ func TestLoggingIn(t *testing.T) {
 }
 
 func TestRegisterGET(t *testing.T) {
-	config.Initialize()
+	config.Initialize("config/config.json")
 
 	req, err := http.NewRequest("GET", "/register", nil)
 	if err != nil {
@@ -155,7 +196,7 @@ func TestRegisterGET(t *testing.T) {
 
 func TestRegisterPOST(t *testing.T) {
 	/*
-		config.Initialize()
+		config.Initialize("config/config.json")
 
 		form := url.Values{}
 		form.Add("name", "Swag Meister")

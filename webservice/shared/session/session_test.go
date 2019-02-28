@@ -7,16 +7,11 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 )
 
 func TestSession(t *testing.T) {
-	if err := os.Chdir("../../"); err != nil { //go out of /handlers folder
-		panic(err)
-	}
-
-	config.Initialize()
+	config.Initialize("../../config/config.json")
 
 	tests := []struct {
 		name string

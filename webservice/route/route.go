@@ -3,18 +3,19 @@ package route
 import (
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/controller"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/route/middleware"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"net/http"
 	"os"
 )
 
-// Load ... TODO (Svein) add comment here
+// Load http handler
 func Load() http.Handler {
 	return routes()
 }
 
-// LoadHTTPS ... TODO (Svein): Add TLS settings
+// LoadHTTPS http handler
 func LoadHTTPS() http.Handler {
 	return routes()
 }
@@ -39,6 +40,7 @@ func routes() http.Handler {
 
 	// Assignment-page Handlers
 	router.HandleFunc("/assignment", controller.AssignmentGET).Methods("GET")
+	router.HandleFunc("/assignment/{id:[0-9]+}", controller.AssignmentSingleGET).Methods("GET")
 	router.HandleFunc("/assignment/peer", controller.AssignmentPeerGET).Methods("GET")
 	router.HandleFunc("/assignment/auto", controller.AssignmentAutoGET).Methods("GET")
 	router.HandleFunc("/assignment/upload", controller.AssignmentUploadGET).Methods("GET")
@@ -49,25 +51,41 @@ func routes() http.Handler {
 	router.HandleFunc("/user/update", controller.UserUpdatePOST).Methods("POST")
 
 	// Admin-page Handlers
-	router.HandleFunc("/admin", controller.AdminGET).Methods("GET")
+	adminrouter := router.PathPrefix("/admin").Subrouter()
+	adminrouter.Use(middleware.TeacherAuth)
 
-	router.HandleFunc("/admin/course", controller.AdminCourseGET).Methods("GET")
-	router.HandleFunc("/admin/course/create", controller.AdminCreateCourseGET).Methods("GET")
-	router.HandleFunc("/admin/course/create", controller.AdminCreateCoursePOST).Methods("POST")
-	router.HandleFunc("/admin/course/update/{id}", controller.AdminUpdateCourseGET).Methods("GET")
-	router.HandleFunc("/admin/course/update/{id}", controller.AdminUpdateCoursePOST).Methods("POST")
+	adminrouter.HandleFunc("/", controller.AdminGET).Methods("GET")
 
-	router.HandleFunc("/admin/assignment", controller.AdminAssignmentGET).Methods("GET")
-	router.HandleFunc("/admin/assignment/create", controller.AdminAssignmentCreateGET).Methods("GET")
-	router.HandleFunc("/admin/assignment/create", controller.AdminAssignmentCreatePOST).Methods("POST")
+	adminrouter.HandleFunc("/course", controller.AdminCourseGET).Methods("GET")
+	adminrouter.HandleFunc("/course/create", controller.AdminCreateCourseGET).Methods("GET")
+	adminrouter.HandleFunc("/course/create", controller.AdminCreateCoursePOST).Methods("POST")
+	adminrouter.HandleFunc("/course/update/{id}", controller.AdminUpdateCourseGET).Methods("GET")
+	adminrouter.HandleFunc("/course/update/{id}", controller.AdminUpdateCoursePOST).Methods("POST")
 
-	router.HandleFunc("/admin/submission", controller.AdminSubmissionGET).Methods("GET")
-	router.HandleFunc("/admin/submission/create", controller.AdminSubmissionCreateGET).Methods("GET")
-	router.HandleFunc("/admin/submission/create", controller.AdminSubmissionCreatePOST).Methods("POST")
+	adminrouter.HandleFunc("/course/{id:[0-9]+}/assignments", controller.AdminCourseAllAssignments).Methods("GET")
 
-	router.HandleFunc("/admin/faq", controller.AdminFaqGET).Methods("GET")
-	router.HandleFunc("/admin/faq/edit", controller.AdminFaqEditGET).Methods("GET")
-	router.HandleFunc("/admin/faq/update", controller.AdminFaqUpdatePOST).Methods("POST")
+	adminrouter.HandleFunc("/assignment", controller.AdminAssignmentGET).Methods("GET")
+
+	adminrouter.HandleFunc("/assignment/{id:[0-9]+}", controller.AdminSingleAssignmentGET).Methods("GET")
+
+	adminrouter.HandleFunc("/assignment/create", controller.AdminAssignmentCreateGET).Methods("GET")
+	adminrouter.HandleFunc("/assignment/create", controller.AdminAssignmentCreatePOST).Methods("POST")
+
+	adminrouter.HandleFunc("/assignment/update/{id:[0-9]+}", controller.AdminUpdateAssignmentGET).Methods("GET")
+	adminrouter.HandleFunc("/assignment/update", controller.AdminUpdateAssignmentPOST).Methods("POST")
+
+	adminrouter.HandleFunc("/submission", controller.AdminSubmissionGET).Methods("GET")
+	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreateGET).Methods("GET")
+	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreatePOST).Methods("POST")
+
+	adminrouter.HandleFunc("/faq", controller.AdminFaqGET).Methods("GET")
+	adminrouter.HandleFunc("/faq/edit", controller.AdminFaqEditGET).Methods("GET")
+	adminrouter.HandleFunc("/faq/update", controller.AdminFaqUpdatePOST).Methods("POST")
+
+	adminrouter.HandleFunc("/settings", controller.AdminSettingsGET).Methods("GET")
+	adminrouter.HandleFunc("/settings", controller.AdminSettingsPOST).Methods("POST")
+	adminrouter.HandleFunc("/settings/import", controller.AdminSettingsImportGET).Methods("GET")
+	adminrouter.HandleFunc("/settings/import", controller.AdminSettingsImportPOST).Methods("POST")
 
 	// Login/Register Handlers
 	router.HandleFunc("/login", controller.LoginGET).Methods("GET")

@@ -57,12 +57,7 @@ func IsLoggedIn(r *http.Request) bool {
 	//get user from session
 	user := GetUserFromSession(r)
 
-	//check that user is a teacher
-	if !user.Authenticated { //not logged in
-		return false
-	}
-
-	return true
+	return user.Authenticated
 }
 
 //GetUserFromSession returns user object stored in session
@@ -70,7 +65,7 @@ func GetUserFromSession(r *http.Request) model.User {
 	session, err := Instance(r) //get session
 
 	if err != nil {
-		log.Println(err)
+		log.Printf("ocould not get instance of session: %v", err)
 		return model.User{Authenticated: false}
 	}
 
@@ -88,7 +83,7 @@ func SaveUserToSession(user model.User, w http.ResponseWriter, r *http.Request) 
 	session, err := Instance(r) //get session
 
 	if err != nil {
-		log.Println(err)
+		log.Printf("ocould not get instance of session: %v", err)
 		return false
 	}
 
@@ -98,8 +93,7 @@ func SaveUserToSession(user model.User, w http.ResponseWriter, r *http.Request) 
 
 	if err != nil {
 		//todo log this event
-		log.Fatal(err)
-
+		log.Printf("ocould save session: %v", err)
 		//redirect somewhere
 		return false
 	}

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	_ "github.com/go-sql-driver/mysql" //database driver
 	"time"
@@ -8,22 +9,17 @@ import (
 
 // Assignment hold the data for a single assignment
 type Assignment struct {
-	ID int `json:"id" db:"id"`
-
-	Name        string `json:"name" db:"name"`
-	Description string `json:"description" db:"description"`
-
-	Created time.Time `json:"created" db:"created"`
-
-	Publish  time.Time `json:"publish" db:"publish"`
-	Deadline time.Time `json:"deadline" db:"deadline"`
-
-	CourseID     int `json:"course_id" db:"course_id"`
-	SubmissionID int `json:"-" db:"submission_id"`
-	ReviewID     int `json:"-" db:"review_id"`
-
-	Submission Submission `json:"submission"`
-	Review     Review     `json:"review"`
+	ID           int           `json:"id" db:"id"`
+	Name         string        `json:"name" db:"name"`
+	Description  string        `json:"description" db:"description"`
+	Created      time.Time     `json:"created" db:"created"`
+	Publish      time.Time     `json:"publish" db:"publish"`
+	Deadline     time.Time     `json:"deadline" db:"deadline"`
+	CourseID     int           `json:"course_id" db:"course_id"`
+	SubmissionID sql.NullInt64 `json:"-" db:"submission_id"`
+	ReviewID     sql.NullInt64 `json:"-" db:"review_id"`
+	Submission   Submission    `json:"submission"`
+	Review       Review        `json:"review"`
 }
 
 // AssignmentRepository holds all assignments, and DB-functions
@@ -35,7 +31,7 @@ func (repo *AssignmentRepository) GetSingle(id int) (Assignment, error) {
 	var result Assignment
 
 	// Create query string
-	query := "SELECT id, name, description, created, publish, deadline, course_id FROM assignments WHERE id = ?"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id FROM assignments WHERE id = ?"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query, id)
 	// Check for error
@@ -48,7 +44,8 @@ func (repo *AssignmentRepository) GetSingle(id int) (Assignment, error) {
 	for rows.Next() {
 		// Scan row for data
 		err = rows.Scan(&result.ID, &result.Name, &result.Description,
-			&result.Created, &result.Publish, &result.Deadline, &result.CourseID)
+			&result.Created, &result.Publish, &result.Deadline, &result.CourseID,
+			&result.SubmissionID, &result.ReviewID)
 		// Check for error
 		if err != nil {
 			return Assignment{}, err
@@ -64,7 +61,7 @@ func (repo *AssignmentRepository) GetAll() ([]Assignment, error) {
 	var result []Assignment
 
 	// Create query string
-	query := "SELECT id, name, description, created, publish, deadline, course_id FROM assignments;"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id FROM assignments;"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query)
 	if err != nil {
@@ -81,7 +78,7 @@ func (repo *AssignmentRepository) GetAll() ([]Assignment, error) {
 		// Scan rows
 		err := rows.Scan(&assignment.ID, &assignment.Name, &assignment.Description,
 			&assignment.Created, &assignment.Publish, &assignment.Deadline,
-			&assignment.CourseID)
+			&assignment.CourseID, &assignment.SubmissionID, &assignment.ReviewID)
 		// Check for error
 		if err != nil {
 			return nil, err
@@ -155,7 +152,7 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) error {
 	}
 
 	// Check if we have set a submission_id
-	if assignment.SubmissionID != 0 {
+	if assignment.SubmissionID.Valid {
 		// Create query string
 		query := "UPDATE assignments SET submission_id = ? WHERE id = ?;"
 		// Prepare and execute query
@@ -169,7 +166,7 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) error {
 	}
 
 	// Check if we have set a review_id
-	if assignment.ReviewID != 0 {
+	if assignment.ReviewID.Valid {
 		// Create query string
 		query := "UPDATE assignments SET review_id = ? WHERE id = ?;"
 		// Prepare and execute query
@@ -183,4 +180,175 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) error {
 	}
 
 	return nil
+}
+
+// Update an assignment based on the ID and the data inside an Assignment-object
+func (repo *AssignmentRepository) Update(id int, assignment Assignment) error {
+	query := "UPDATE assignments SET name=?, description=?, course_id=?, publish=?, deadline=? WHERE id=?"
+
+	tx, err := db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, assignment.Name, assignment.Description, assignment.CourseID, assignment.Publish, assignment.Deadline, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	if assignment.SubmissionID.Valid {
+		query = "UPDATE assignments SET submission_id=? WHERE id=?"
+		tx, err = db.GetDB().Begin()
+		if err != nil {
+			return err
+		}
+
+		_, err = tx.Exec(query, assignment.SubmissionID, id)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		err = tx.Commit()
+		if err != nil {
+			return err
+		}
+	}
+
+	if assignment.ReviewID.Valid {
+		query = "UPDATE assignments SET review_id=? WHERE id=?"
+		tx, err = db.GetDB().Begin()
+		if err != nil {
+			return err
+		}
+
+		_, err = tx.Exec(query, assignment.ReviewID, id)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		err = tx.Commit()
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+// GetAllFromCourse returns all assignments in a course
+func (repo *AssignmentRepository) GetAllFromCourse(courseID int) ([]Assignment, error) {
+	result := make([]Assignment, 0)
+	query := "SELECT id, name, description, created, publish, deadline, " +
+		"course_id, submission_id, review_id FROM assignments WHERE course_id=?"
+
+	rows, err := db.GetDB().Query(query, courseID)
+	if err != nil {
+		return result, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		temp := Assignment{}
+
+		err := rows.Scan(&temp.ID, &temp.Name, &temp.Description, &temp.Created,
+			&temp.Publish, &temp.Deadline, &temp.CourseID, &temp.SubmissionID, &temp.ReviewID)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, temp)
+	}
+
+	return result, err
+}
+
+// GetAnswersFromUser retrieves all answers and their type from an user on a specific assignment
+func (repo *AssignmentRepository) GetAnswersFromUser(assignmentID, userID int) ([]Answer, error) {
+	result := make([]Answer, 0)
+	query := "SELECT type, answer FROM user_submissions WHERE user_id=? AND assignment_id=?"
+	rows, err := db.GetDB().Query(query, userID, assignmentID)
+	if err != nil {
+		return result, err
+	}
+
+	for rows.Next() {
+		var temp Answer
+
+		err := rows.Scan(&temp.Type, &temp.Value)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, temp)
+	}
+
+	return result, err
+}
+
+// HasUserSubmitted checks if a user have submitted a submission to an assignment
+func (repo *AssignmentRepository) HasUserSubmitted(assignmentID, userID int) (bool, error) {
+	query := "SELECT COUNT(id) FROM user_submissions WHERE user_id=? AND assignment_id=?"
+	rows, err := db.GetDB().Query(query, userID, assignmentID)
+	if err != nil {
+		return false, err
+	}
+
+	for rows.Next() {
+		var temp int
+
+		err := rows.Scan(&temp)
+		if err != nil {
+			return false, err
+		}
+
+		if temp == 0 {
+			return false, err
+		}
+	}
+
+	return true, err
+}
+
+// HasReview checks if the assignments has a review form
+func (repo *AssignmentRepository) HasReview(id int) (bool, error) {
+	var result sql.NullInt64
+
+	query := "SELECT review_id FROM assignments WHERE id=?"
+	rows, err := db.GetDB().Query(query, id)
+	if err != nil {
+		return result.Valid, err
+	}
+
+	for rows.Next() {
+		err := rows.Scan(&result)
+		return result.Valid, err
+	}
+
+	return result.Valid, err
+}
+
+// HasAutoValidation checks if the assignment has auto validation
+func (repo *AssignmentRepository) HasAutoValidation(id int) (bool, error) {
+	var result sql.NullInt64
+
+	query := "SELECT validation_id FROM assignments WHERE id=?"
+	rows, err := db.GetDB().Query(query, id)
+	if err != nil {
+		return result.Valid, err
+	}
+
+	for rows.Next() {
+		err := rows.Scan(&result)
+		return result.Valid, err
+	}
+
+	return result.Valid, err
 }
