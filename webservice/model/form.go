@@ -26,6 +26,11 @@ type Form struct {
 	} `json:"fields"`
 }
 
+type Answer struct {
+	Type  string
+	Value string
+}
+
 // FormRepository ... TODO (Svein): comment
 type FormRepository struct {
 }

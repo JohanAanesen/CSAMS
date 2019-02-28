@@ -268,3 +268,50 @@ func (repo *AssignmentRepository) GetAllFromCourse(courseID int) ([]Assignment, 
 
 	return result, err
 }
+
+// GetAnswersFromUser retrieves all answers and their type from an user on a specific assignment
+func (repo *AssignmentRepository) GetAnswersFromUser(assignmentID, userID int) ([]Answer, error) {
+	result := make([]Answer, 0)
+	query := "SELECT type, answer FROM user_submissions WHERE user_id=? AND assignment_id=?"
+	rows, err := db.GetDB().Query(query, userID, assignmentID)
+	if err != nil {
+		return result, err
+	}
+
+	for rows.Next() {
+		var temp Answer
+
+		err := rows.Scan(&temp.Type, &temp.Value)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, temp)
+	}
+
+	return result, err
+}
+
+// HasUserSubmitted checks if a user have submitted a submission to an assignment
+func (repo *AssignmentRepository) HasUserSubmitted(assignmentID, userID int) (bool, error) {
+	query := "SELECT COUNT(id) FROM user_submissions WHERE user_id=? AND assignment_id=?"
+	rows, err := db.GetDB().Query(query, userID, assignmentID)
+	if err != nil {
+		return false, err
+	}
+
+	for rows.Next() {
+		var temp int
+
+		err := rows.Scan(&temp)
+		if err != nil {
+			return false, err
+		}
+
+		if temp == 0 {
+			return false, err
+		}
+	}
+
+	return true, err
+}
