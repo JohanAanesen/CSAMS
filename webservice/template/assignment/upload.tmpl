@@ -3,6 +3,7 @@
 {{ define "content" }}
     <main>
         <!-- TODO Brede: make this better -->
+        <div class="alert alert-info"><strong>Info:</strong> The front-end is still under development</div>
 
         <h1>{{ .Assignment.Name }} | {{ .Course.Code }} {{ .Course.Name }} <p id="countDown"></p></h1>
         <form method="post" action="/assignment/upload/update?id={{ .Assignment.ID }}">

@@ -222,11 +222,25 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		formValues = append(formValues, r.FormValue(field.Name))
 	}
 
-	userID := session.GetUserFromSession(r).ID
-	fmt.Println("UserID: " + strconv.Itoa(userID))
+	// Start to fill out user Submission struct
+	userSub := model.UserSubmission{
+		UserID: session.GetUserFromSession(r).ID,
+		//SubmissionID: assignment.SubmissionID,	// TODO Brede : actually get submissionID
+		SubmissionID: 1,
+	}
 
-	for index, value := range formValues {
-		fmt.Println(strconv.Itoa(index) + ": " + value)
+	for _, value := range formValues {
+		userSub.Answers = append(userSub.Answers, model.Answer{
+			Type:  "temp", // TODO brede : actually get type
+			Value: value,
+		})
+	}
+
+	err = model.InsertUserSubmission(userSub)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	// Serve front-end again
