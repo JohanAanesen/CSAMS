@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 //AssignmentGET serves assignment page to users
@@ -59,11 +60,26 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	descriptionMD := []byte(assignment.Description)
 	description := github_flavored_markdown.Markdown(descriptionMD)
 
-	delivered, err := assignmentRepo.HasUserSubmitted(assignment.ID, session.GetUserFromSession(r).ID)
+	delivered, err := assignmentRepo.HasUserSubmitted(assignmentID, session.GetUserFromSession(r).ID)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 	}
+
+	hasReview, err := assignmentRepo.HasReview(assignmentID)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+	}
+
+	hasAutoValidation, err := assignmentRepo.HasAutoValidation(assignmentID)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+	}
+
+	var isDeadlineOver = assignment.Deadline.After(time.Now())
+	var hasBeenValidated = true
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -74,6 +90,10 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Assignment"] = assignment
 	v.Vars["Description"] = template.HTML(description)
 	v.Vars["Delivered"] = delivered
+	v.Vars["HasReview"] = hasReview
+	v.Vars["HasAutoValidation"] = hasAutoValidation
+	v.Vars["IsDeadlineOver"] = isDeadlineOver
+	v.Vars["HasBeenValidated"] = hasBeenValidated
 
 	v.Render(w)
 }

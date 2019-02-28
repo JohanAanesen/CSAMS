@@ -315,3 +315,37 @@ func (repo *AssignmentRepository) HasUserSubmitted(assignmentID, userID int) (bo
 
 	return true, err
 }
+
+func (repo *AssignmentRepository) HasReview(id int) (bool, error) {
+	var result sql.NullInt64
+
+	query := "SELECT review_id FROM assignments WHERE id=?"
+	rows, err := db.GetDB().Query(query, id)
+	if err != nil {
+		return result.Valid, err
+	}
+
+	for rows.Next() {
+		err := rows.Scan(&result)
+		return result.Valid, err
+	}
+
+	return result.Valid, err
+}
+
+func (repo *AssignmentRepository) HasAutoValidation(id int) (bool, error) {
+	var result sql.NullInt64
+
+	query := "SELECT validation_id FROM assignments WHERE id=?"
+	rows, err := db.GetDB().Query(query, id)
+	if err != nil {
+		return result.Valid, err
+	}
+
+	for rows.Next() {
+		err := rows.Scan(&result)
+		return result.Valid, err
+	}
+
+	return result.Valid, err
+}
