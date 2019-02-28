@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+// DeadlineDue returns a boolean if the time given is passed current time
+// Usage: {{if DEADLINEDUE .SomeTime}}...{{end}}
 func DeadlineDue() template.FuncMap {
 	f := make(template.FuncMap)
 
