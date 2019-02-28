@@ -57,12 +57,7 @@ func IsLoggedIn(r *http.Request) bool {
 	//get user from session
 	user := GetUserFromSession(r)
 
-	//check that user is a teacher
-	if !user.Authenticated { //not logged in
-		return false
-	}
-
-	return true
+	return user.Authenticated
 }
 
 //GetUserFromSession returns user object stored in session
