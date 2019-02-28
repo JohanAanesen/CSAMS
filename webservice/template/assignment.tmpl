@@ -1,13 +1,21 @@
 {{define "title"}}Assignment: {{.Assignment.Name}}{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-    <div class="container">
+    <div class="container pt-3">
+        {{if .Delivered}}
+            <div class="alert alert-success"><strong>Notice!</strong> You have already delivered this assignment!</div>
+        {{end}}
         <h1 class="display-4">{{.Assignment.Name}}</h1>
+
         <p class="lead">Deadline: {{PRETTYTIME .Assignment.Deadline}}</p>
         <div class="jumbotron">
             {{.Description}}
         </div>
-        <a href="/assignment/delivery" class="btn btn-primary btn-lg">Deliver assignment</a>
+        {{if not .Delivered}}
+            <a href="/assignment/delivery" class="btn btn-primary btn-lg">Deliver assignment</a>
+        {{else}}
+            <a href="/assignment/delivery" class="btn btn-success btn-lg">Re-Deliver assignment</a>
+        {{end}}
     </div>
 {{end}}
 {{define "foot"}}{{end}}

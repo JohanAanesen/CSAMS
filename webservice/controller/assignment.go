@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/gorilla/mux"
 	"github.com/shurcooL/github_flavored_markdown"
@@ -58,6 +59,12 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	descriptionMD := []byte(assignment.Description)
 	description := github_flavored_markdown.Markdown(descriptionMD)
 
+	delivered, err := assignmentRepo.HasUserSubmitted(assignment.ID, session.GetUserFromSession(r).ID)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
@@ -66,6 +73,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 
 	v.Vars["Assignment"] = assignment
 	v.Vars["Description"] = template.HTML(description)
+	v.Vars["Delivered"] = delivered
 
 	v.Render(w)
 }
