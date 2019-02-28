@@ -234,29 +234,29 @@ ALTER TABLE `adminfaq`
 --
 ALTER TABLE `course`
   ADD CONSTRAINT `course_ibfk_1` FOREIGN KEY (`teacher`) REFERENCES `users` (`id`)
-  ON UPDATE CASCADE;
+    ON UPDATE CASCADE;
 
 --
 -- Begrensninger for tabell `logs`
 --
 ALTER TABLE `logs`
   ADD CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE,
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE,
   ADD CONSTRAINT `logs_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE;
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE;
 
 --
 -- Begrensninger for tabell `usercourse`
 --
 ALTER TABLE `usercourse`
   ADD CONSTRAINT `usercourse_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`)
-  ON DELETE CASCADE
-  ON UPDATE CASCADE,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   ADD CONSTRAINT `usercourse_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`)
-  ON DELETE CASCADE
-  ON UPDATE CASCADE;
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
 COMMIT;
 
 
@@ -279,11 +279,11 @@ create table fields
   name        varchar(64) not null,
   label       varchar(64) null,
   description text        not null,
-  priority     int         not null,
+  priority    int         not null,
   weight      int         null,
   choices     varchar(64) null,
   constraint fields_forms_id_fk
-  foreign key (form_id) references forms (id)
+    foreign key (form_id) references forms (id)
 );
 
 create table reviews
@@ -292,7 +292,7 @@ create table reviews
     primary key,
   form_id int not null,
   constraint reviews_forms_id_fk
-  foreign key (form_id) references forms (id)
+    foreign key (form_id) references forms (id)
 );
 
 create table submissions
@@ -301,7 +301,7 @@ create table submissions
     primary key,
   form_id int not null,
   constraint submissions_forms_id_fk
-  foreign key (form_id) references forms (id)
+    foreign key (form_id) references forms (id)
 );
 
 create table assignments
@@ -317,11 +317,11 @@ create table assignments
   submission_id int                                 null,
   review_id     int                                 null,
   constraint assignments_courses_id_fk
-  foreign key (course_id) references course (id),
+    foreign key (course_id) references course (id),
   constraint assignments_reviews_id_fk
-  foreign key (review_id) references reviews (id),
+    foreign key (review_id) references reviews (id),
   constraint assignments_submissions_id_fk
-  foreign key (submission_id) references submissions (id)
+    foreign key (submission_id) references submissions (id)
 );
 
 create table user_reviews
@@ -332,9 +332,9 @@ create table user_reviews
   review_id int      not null,
   data      longtext not null,
   constraint user_reviews_reviews_id_fk
-  foreign key (review_id) references reviews (id),
+    foreign key (review_id) references reviews (id),
   constraint user_reviews_users_id_fk
-  foreign key (user_id) references users (id)
+    foreign key (user_id) references users (id)
 );
 
 create table user_submissions
@@ -346,9 +346,9 @@ create table user_submissions
   field_name    tinytext   not null,
   answer        mediumtext null,
   constraint user_submissions_submissions_id_fk
-  foreign key (submission_id) references submissions (id),
+    foreign key (submission_id) references submissions (id),
   constraint user_submissions_users_id_fk
-  foreign key (user_id) references users (id)
+    foreign key (user_id) references users (id)
 );
 
 create table peer_reviews
@@ -358,11 +358,21 @@ create table peer_reviews
   user_id              int not null,
   review_submission_id int not null,
   constraint peer_reviews_submissions_id_fk
-  foreign key (submission_id) references submissions (id),
+    foreign key (submission_id) references submissions (id),
   constraint peer_reviews_user_id_fk
-  foreign key (user_id) references users (id),
+    foreign key (user_id) references users (id),
   constraint peer_reviews_review_submission_id_fk
-  foreign key (review_submission_id) references user_submissions (id)
+    foreign key (review_submission_id) references user_submissions (id)
+);
+
+create table schedule_tasks
+(
+  submission_id  int         not null,
+  scheduled_time datetime    not null,
+  task           varchar(32) not null,
+  data           blob        not null,
+  constraint schedule_tasks_submission_id_fk
+    foreign key (submission_id) references submissions (id)
 );
 
 /*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;

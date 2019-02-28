@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/db"
 	"io/ioutil"
 	"log"
 	"os"
@@ -9,7 +10,7 @@ import (
 
 //Configuration struct
 type Configuration struct {
-	Database *MySQLInfo `json:"database"`
+	Database *db.MySQLInfo `json:"database"`
 	Server   *Server    `json:"server"`
 }
 
@@ -52,8 +53,8 @@ func Initialize() *Configuration {
 	}
 
 	// Configure Database
-	ConfigureDB(cfg.Database)
-	OpenDB()
+	db.ConfigureDB(cfg.Database)
+	db.OpenDB()
 
 	return cfg
 }

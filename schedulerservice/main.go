@@ -1,10 +1,18 @@
 package main
 
+import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/model"
+)
+
 func main() {
 	// Initialize config
 	var cfg = Initialize()
 
-	defer CloseDB()
+	// Initialize timers
+	model.InitializeTimers()
+
+	defer db.CloseDB()
 
 	// Run Server
 	Run(LoadHTTP(), LoadHTTPS(), cfg.Server)

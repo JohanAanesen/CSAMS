@@ -7,7 +7,8 @@ import (
 
 //Task interface
 type Task interface {
-	triggerTask()
+	Schedule()
+	TriggerTask()
 }
 
 //PeerTask struct
@@ -21,22 +22,36 @@ func (peer PeerTask) TriggerTask() {
 	//todo send request to peerservice
 }
 
+func (peer PeerTask) Schedule(scheduledTime time.Time)bool {
+	timeNow := time.Now() //time now
+	Duration := scheduledTime.Sub(timeNow) //subtract now's time from target time to get time until trigger
+
+	if Duration < 0{ //scheduled time has to be in the future
+		log.Printf("Could not schedule timer for submissionID: %v", peer.SubmissionID)
+		return false
+	}
+
+	//afterFunc will run the function after the duration has passed
+	Timers[peer.SubmissionID] = time.AfterFunc(Duration, peer.TriggerTask)
+
+	return true
+}
+
 func SchedulePeerTask(payload Payload)bool{
-	peerTask, err := payload.getPeerTask()
+	peerTask, err := payload.GetPeerTask()
 	if err != nil{
 		log.Println("Something went wrong getting peerTask from payload")
 		return false
 	}
 
-	timeNow := time.Now() //time now
-	Duration := payload.ScheduledTime.Sub(timeNow) //subtract now's time from target time to get time until trigger
-
-	if Duration < 0{ //scheduled time has to be in the future
+	//Schedule task
+	if !peerTask.Schedule(payload.ScheduledTime){
+		log.Printf("Could not schedule task for submissionID: %v", peerTask.SubmissionID)
 		return false
 	}
 
-	//afterFunc will run the function after the duration has passed
-	Timers[peerTask.SubmissionID] = time.AfterFunc(Duration, peerTask.TriggerTask)
+	//Since timer is setup nicely we want to store a reference to it and the peerTask in database for redundancy
+	payload.Save(peerTask.SubmissionID)
 
 	/*
 		Timers[peerTask.SubmissionID] = time.AfterFunc(time.Second*10, func() {

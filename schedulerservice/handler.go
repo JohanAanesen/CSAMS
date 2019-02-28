@@ -1,12 +1,11 @@
 package main
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/model"
 	"encoding/json"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/model"
 	"log"
 	"net/http"
 )
-
 
 type response struct {
 	Success bool `json:"success"`
@@ -14,10 +13,9 @@ type response struct {
 
 // IndexGET handles GET requests
 func IndexGET(w http.ResponseWriter, r *http.Request) {
-	model.StopTimer(1) //todo remove this
 	//todo
 	http.Header.Add(w.Header(), "content-type", "application/json")
-	_ = json.NewEncoder(w).Encode(response{Success:true})
+	_ = json.NewEncoder(w).Encode(response{Success: true})
 }
 
 // IndexPOST handles POST requests
@@ -37,7 +35,7 @@ func IndexPOST(w http.ResponseWriter, r *http.Request) {
 	//schedule Task based on type of task
 	switch payload.Task {
 	case "peer":
-		if !model.SchedulePeerTask(payload){
+		if !model.SchedulePeerTask(payload) {
 			log.Println("Something went wrong decoding request") //todo real logger
 			http.Error(w, "Something went wrong decoding request", http.StatusBadRequest)
 			return
@@ -48,7 +46,7 @@ func IndexPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := json.NewEncoder(w).Encode(response{Success:true}); err != nil {
+	if err := json.NewEncoder(w).Encode(response{Success: true}); err != nil {
 		log.Println("Something went wrong encoding response") //todo real logger
 		http.Error(w, "Something went wrong encoding response", http.StatusInternalServerError)
 	}
