@@ -1,5 +1,6 @@
 github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments v0.0.0-20190225143407-d4a2c5d1bce5 h1:n7vZS6e0DHGGPxvseoKkMAi7LYtbk9yHQPG/YiduWk8=
 github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments v0.0.0-20190225143407-d4a2c5d1bce5/go.mod h1:AcdxsbKtk4vgqetPDmGMGaT6tjxG5oRerF/DC28DbIA=
+github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments v0.0.0-20190227122654-f3748a4e9b21 h1:LyEakUUJ9ff9BU+0oW/MxDD9oAZHpTGYuGkL9KUrIhc=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-sql-driver/mysql v1.4.1 h1:g24URVg0OFbNUTx9qqY1IRZ9D9z3iPyi5zKhQZpNwpA=

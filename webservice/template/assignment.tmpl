@@ -1,0 +1,39 @@
+{{define "title"}}Assignment: {{.Assignment.Name}}{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+    <div class="container pt-3">
+        {{if .Delivered}}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Notice!</strong> You have already delivered this assignment!
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {{end}}
+        <h1 class="display-4">
+            {{.Assignment.Name}}
+        </h1>
+        {{if .HasReview}}<span class="badge badge-info">Peer Review</span>{{end}}
+        {{if .HasAutoValidation}}<span class="badge badge-warning">Auto Validated</span>{{end}}
+
+        <p class="lead"><strong>Deadline:</strong> {{PRETTYTIME .Assignment.Deadline}}</p>
+        <div class="jumbotron">
+            {{.Description}}
+        </div>
+        {{if .IsDeadlineOver}}
+            {{if .HasReview}}
+                <a href="#" class="btn btn-info btn-lg">Peer-Review</a>
+            {{end}}
+        {{else}}
+            {{if not .Delivered}}
+                <a href="/assignment/delivery" class="btn btn-primary btn-lg">Deliver assignment</a>
+            {{else}}
+                <a href="/assignment/delivery" class="btn btn-success btn-lg">Re-Deliver assignment</a>
+            {{end}}
+        {{end}}
+        {{if .HasBeenValidated}}
+            <a href="#" class="btn btn-warning btn-lg">See auto validation</a>
+        {{end}}
+    </div>
+{{end}}
+{{define "foot"}}{{end}}

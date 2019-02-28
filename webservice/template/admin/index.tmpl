@@ -12,7 +12,7 @@
                         <h2 class="display-4">{{ .Code }}</h2>
                         <h3 class="mb-3">{{ .Name }}</h3>
                         <hr>
-                        <a href="#" class="btn btn-dark btn-sm">See assignments</a>
+                        <a href="/admin/course/{{.ID}}/assignments" class="btn btn-dark btn-sm">See assignments</a>
                     </div>
                 </div>
             </div>
@@ -24,7 +24,7 @@
     <hr>
     <div class="row">
         <!-- TODO Brede : only show active assignments -->
-        {{ range .Assignments }}
+        {{range .Assignments}}
             <div class="col-12 col-md-6 col-lg-4 mb-3">
                 <div class="card shadow-sm">
                     <div class="card-body">
@@ -33,11 +33,11 @@
                         <p><strong>Deadline: </strong> {{ .Deadline }}</p>
                         <p class="card-text">{{ .Description }}</p>
                         <hr>
-                        <a href="#" class="btn btn-outline-dark btn-sm">See details</a>
+                        <a href="/admin/assignment/{{.ID}}" class="btn btn-outline-dark btn-sm">See details</a>
                     </div>
                 </div>
             </div>
-        {{ end }}
+        {{end}}
     </div>
 {{end}}
 {{define "foot"}}
