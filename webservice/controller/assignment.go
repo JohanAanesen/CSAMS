@@ -49,6 +49,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	assignmentRepo := model.AssignmentRepository{}
@@ -56,6 +57,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	descriptionMD := []byte(assignment.Description)
@@ -65,18 +67,21 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	hasReview, err := assignmentRepo.HasReview(assignmentID)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	hasAutoValidation, err := assignmentRepo.HasAutoValidation(assignmentID)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	var isDeadlineOver = assignment.Deadline.After(time.Now())
