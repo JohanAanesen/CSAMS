@@ -76,6 +76,7 @@ func Initialize(configFile string) *Configuration {
 	view.LoadAdminTemplate(cfg.TemplateAdmin.Root, cfg.TemplateAdmin.Children)
 	view.LoadPlugins(
 		plugin.PrettyTime(),
+		plugin.DeadlineDue(),
 	)
 
 	return cfg
