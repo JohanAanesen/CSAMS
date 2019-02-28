@@ -10,22 +10,28 @@ import (
 //Timers slice hold all current timers
 var Timers  = make(map[int]*time.Timer)
 
+//GetTimer returns timer at timerID
 func GetTimer(timerID int)*time.Timer{
 	return Timers[timerID]
 }
 
+//StopTimer stops a timer and removes it from map
 func StopTimer(timerID int){
 	stop := Timers[timerID].Stop()
 	if stop {
 		fmt.Printf("Timer %v stopped\n", timerID)
 	}
+	delete(Timers, timerID) //deletes timer from map so id may be re-assigned
 }
 
+//UpdateTimer should update the time of an existing timer (delete and create new timer)
 func UpdateTimer(timerID int, newTime time.Time, task PeerTask) bool{
 	stop := Timers[timerID].Stop()
 	if stop {
 		fmt.Printf("Timer %v stopped\n", timerID)
 	}
+	delete(Timers, timerID) //delete from map
+
 	timeNow := time.Now() //time now
 	Duration := newTime.Sub(timeNow) //subtract now's time from target time to get time until trigger
 
@@ -40,6 +46,7 @@ func UpdateTimer(timerID int, newTime time.Time, task PeerTask) bool{
 	return true
 }
 
+//InitializeTimers fetches timers from database on startup
 func InitializeTimers(){
 	rows, err := db.GetDB().Query("SELECT submission_id, scheduled_time, task, data FROM schedule_tasks")
 	if err != nil {

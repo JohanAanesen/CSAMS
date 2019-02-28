@@ -16,6 +16,7 @@ type Payload struct {
 	Data          json.RawMessage
 }
 
+//GetPeerTask withdraws a PeerTask object from the data column of a payload object
 func (payload Payload) GetPeerTask() (PeerTask, error) {
 	var peerTask PeerTask
 	if err := json.Unmarshal([]byte(payload.Data), &peerTask); err != nil { //read the unread json into peerTask
@@ -25,6 +26,7 @@ func (payload Payload) GetPeerTask() (PeerTask, error) {
 	return peerTask, nil
 }
 
+//Save stores the payload object to the database for redundancy
 func (payload Payload) Save() bool {
 	tx, err := db.GetDB().Begin() //start transaction
 	if err != nil {

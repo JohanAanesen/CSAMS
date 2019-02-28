@@ -26,6 +26,7 @@ type PeerTask struct {
 	Reviewers      int    `json:"reviewers"`
 }
 
+//Trigger runs tasks when their scheduled time expires
 func (peer PeerTask) Trigger() {
 	fmt.Printf("Triggering task: %v\n", peer.SubmissionID) //todo remove this
 
@@ -46,6 +47,7 @@ func (peer PeerTask) Trigger() {
 	}
 }
 
+//Schedule schedules a PeerTask for being triggered in the future
 func (peer PeerTask) Schedule(scheduledTime time.Time) bool {
 
 	loc, err := time.LoadLocation("Europe/Oslo")
@@ -61,7 +63,7 @@ func (peer PeerTask) Schedule(scheduledTime time.Time) bool {
 
 	if Duration < 0 { //scheduled time has to be in the future
 		log.Printf("Could not schedule timer for submissionID: %v", peer.SubmissionID)
-		peer.Delete() //todo trigger tasks that hasn't been triggered
+		peer.Delete() //todo trigger tasks that hasn't been triggered?
 		return false
 	}
 
@@ -71,6 +73,7 @@ func (peer PeerTask) Schedule(scheduledTime time.Time) bool {
 	return true
 }
 
+//Delete deletes a PeerTask from database
 func (peer PeerTask) Delete() bool {
 	tx, err := db.GetDB().Begin() //start transaction
 	if err != nil {
@@ -94,13 +97,14 @@ func (peer PeerTask) Delete() bool {
 		return false
 	}
 
-	delete(Timers, peer.SubmissionID)
+	delete(Timers, peer.SubmissionID) //delete id from map so it may be re-assigned
 
 	return true
 }
 
+//NewTask registers a new Task in database and ships it off for scheduling
 func NewTask(payload Payload) bool {
-	//Make sure a timer does not exist for this submission //todo something about this (Johan)
+	//Make sure a timer does not exist for this submission
 	if GetTimer(payload.SubmissionID) != nil{
 		log.Println("Timer for this submissions already exists.")
 		return false
@@ -122,6 +126,7 @@ func NewTask(payload Payload) bool {
 	return true
 }
 
+//ScheduleTask schedules a task based on its type
 func ScheduleTask(payload Payload) bool {
 	//switch based on type of task
 	switch payload.Task {
