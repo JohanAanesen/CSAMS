@@ -65,7 +65,7 @@ func InitializeTimers(){
 			Data:data,
 		}
 
-		if !SchedulePeerTask(payload){ //
+		if ScheduleTask(payload) == 0{ //
 			log.Printf("Could not initialize timer for submission ID: %v", submissionID)
 		}
 	}

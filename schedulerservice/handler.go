@@ -5,17 +5,25 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/model"
 	"log"
 	"net/http"
+	"time"
 )
 
 type response struct {
 	Success bool `json:"success"`
+	Time time.Time `json:"time"`
 }
 
 // IndexGET handles GET requests
 func IndexGET(w http.ResponseWriter, r *http.Request) {
 	//todo
+	loc, err := time.LoadLocation("Europe/Oslo")
+	if err != nil{
+		log.Println("Something wrong with time location")
+		return
+	}
+
 	http.Header.Add(w.Header(), "content-type", "application/json")
-	_ = json.NewEncoder(w).Encode(response{Success: true})
+	_ = json.NewEncoder(w).Encode(response{Success: true, Time:time.Now().In(loc)})
 }
 
 // IndexPOST handles POST requests
@@ -35,7 +43,7 @@ func IndexPOST(w http.ResponseWriter, r *http.Request) {
 	//schedule Task based on type of task
 	switch payload.Task {
 	case "peer":
-		if !model.SchedulePeerTask(payload) {
+		if !model.NewTask(payload) {
 			log.Println("Something went wrong decoding request") //todo real logger
 			http.Error(w, "Something went wrong decoding request", http.StatusBadRequest)
 			return
