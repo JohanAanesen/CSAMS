@@ -29,13 +29,13 @@ This project is in the norwegian timezone! At least the:
 * [`template/assignment/upload.tmpl`](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/18-Assignment-Delivery-Page/template/assignment/upload.tmpl) <!-- TODO change link when in master --> file at line `39`: `let now = new Date().getTime() + (1000 * 60 * 60);`
 
 ## Commit messages guideline
-Start with the numger `#42` where the number is the number to the `card` you're working on Trello followed by:
-* update	- updated dunction/file
+Start with the number `#42` where the number is the number to the `card` you're working on Trello followed by:
+* update	- updated function/file
 * add	- added function/file
 * fix	- fixed a bug
 * remove	- removed a function/file
 * test	- added a test for a function
-* refactor - refactored the codestructure, moved a file or changed the visual representation of code.
+* refactor - refactored the code-structure, moved a file or changed the visual representation of code.
 
 Aka #CARDNR ACTION BRIEF_EXPLANATION
 

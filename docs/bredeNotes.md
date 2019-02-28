@@ -164,6 +164,7 @@ sorted by the deadlines desc.
 
 ### Thursday - 28/02/19
 * After 1h, I can finally start coding again, since the env is completely up!
+* Added functionality to get form values in an array
 
 
 ### Friday - 01/03/19

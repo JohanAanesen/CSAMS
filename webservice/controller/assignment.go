@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/shurcooL/github_flavored_markdown"
 	"html/template"
@@ -120,9 +121,16 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Give error if assignment doesn't exists
+	if assignment.Name == "" {
+		log.Println("Error: assignment with id '" + id + "' doesn't exist! (assignment.go)")
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
 	// Get form and log possible error
 	formRepo := model.FormRepository{}
-	form, err := formRepo.GetFromAssignmentID(assignment.ID)// hva er tom?
+	form, err := formRepo.GetFromAssignmentID(assignment.ID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -138,8 +146,6 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO display answer if already uploaded
-
-
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -159,7 +165,70 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 // AssignmentUploadPOST servers the
 func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 
+	// Check for ID in url and give error if not
+	id := r.FormValue("id")
+	if id == "" {
+		log.Println("Error: id can't be empty! (assignment.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
 
+	// Convert id from string to int
+	assignmentID, err := strconv.Atoi(id)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
 
+	// Get assignment and log possible error
+	assignmentRepo := model.AssignmentRepository{}
+	assignment, err := assignmentRepo.GetSingle(assignmentID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Give error if assignment doesn't exists
+	if assignment.Name == "" {
+		log.Println("Error: assignment with id '" + id + "' doesn't exist! (assignment.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get form and log possible error
+	formRepo := model.FormRepository{}
+	form, err := formRepo.GetFromAssignmentID(assignment.ID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// List of form values
+	var formValues []string
+
+	// Check that every form is filled an give error if not
+	for _, field := range form.Fields {
+
+		// Check if they are empty and give error if they are
+		if r.FormValue(field.Name) == "" {
+			log.Println("Error: assignment with form name '" + field.Name + "' can not be empty! (assignment.go)")
+			ErrorHandler(w, r, http.StatusBadRequest)
+			return
+		}
+		// Add form values to the string array formValues
+		formValues = append(formValues, r.FormValue(field.Name))
+	}
+
+	userID := session.GetUserFromSession(r).ID
+	fmt.Println("UserID: " + strconv.Itoa(userID))
+
+	for index, value := range formValues {
+		fmt.Println(strconv.Itoa(index) + ": " + value)
+	}
+
+	// Serve front-end again
 	AssignmentUploadGET(w, r)
 }
