@@ -342,13 +342,16 @@ create table user_submissions
   id            int auto_increment
     primary key,
   user_id       int        not null,
+  assignment_id int not null,
   submission_id int        not null,
-  field_name    tinytext   not null,
+  type    varchar(64)   not null,
   answer        mediumtext null,
   constraint user_submissions_submissions_id_fk
   foreign key (submission_id) references submissions (id),
   constraint user_submissions_users_id_fk
-  foreign key (user_id) references users (id)
+  foreign key (user_id) references users (id),
+  constraint user_submission_assignment_id_fk
+  foreign key (assignment_id) references assignments (id)
 );
 
 create table peer_reviews

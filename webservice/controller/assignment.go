@@ -146,6 +146,12 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO display answer if already uploaded
+	answers, err := model.GetUserAnswers(session.GetUserFromSession(r).ID, assignmentID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -157,6 +163,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Assignment"] = assignment
 	v.Vars["Description"] = template.HTML(description)
 	v.Vars["Fields"] = form.Fields
+	v.Vars["Answers"] = answers
 	v.Name = "assignment/upload"
 	v.Render(w)
 
@@ -206,8 +213,14 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// List of form values
-	var formValues []string
+	assignment.SubmissionID = 1 // TODO Brede : actually get submissionID
+
+	// Start to fill out user Submission struct
+	userSub := model.UserSubmission{
+		UserID:       session.GetUserFromSession(r).ID,
+		SubmissionID: assignment.SubmissionID,
+		AssignmentID: assignment.ID,
+	}
 
 	// Check that every form is filled an give error if not
 	for _, field := range form.Fields {
@@ -218,21 +231,11 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 			ErrorHandler(w, r, http.StatusBadRequest)
 			return
 		}
-		// Add form values to the string array formValues
-		formValues = append(formValues, r.FormValue(field.Name))
-	}
 
-	// Start to fill out user Submission struct
-	userSub := model.UserSubmission{
-		UserID: session.GetUserFromSession(r).ID,
-		//SubmissionID: assignment.SubmissionID,	// TODO Brede : actually get submissionID
-		SubmissionID: 1,
-	}
-
-	for _, value := range formValues {
+		// Add form values to the struct for user submissions
 		userSub.Answers = append(userSub.Answers, model.Answer{
-			Type:  "temp", // TODO brede : actually get type
-			Value: value,
+			Type:  field.Type,
+			Value: r.FormValue(field.Name),
 		})
 	}
 

@@ -7,6 +7,7 @@ import (
 // UserSubmission is an struct for user submissions
 type UserSubmission struct {
 	UserID       int
+	AssignmentID int
 	SubmissionID int
 	Answers      []Answer
 }
@@ -17,19 +18,20 @@ type Answer struct {
 	Value string
 }
 
-/*
-// GetUserSubmission returns userSubmission if it exists
-func GetUserSubmission(userID int, assignmentID int) (UserSubmission, error) {
+// GetUserAnswers returns answers if it exists, empty if not
+func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
 
-	// Declare empty slice
-	var result []Assignment
+	// Create an empty answers array
+	var answers []Answer
 
 	// Create query string
-	query := "SELECT id, name, description, created, publish, deadline, course_id FROM assignments;"
+	query := "SELECT user_submissions.type, user_submissions.answer FROM user_submissions WHERE user_id =? AND assignment_id=?;"
 	// Prepare and execute query
-	rows, err := db.GetDB().Query(query)
+	rows, err := db.GetDB().Query(query, userID, assignmentID)
 	if err != nil {
-		return nil, err
+
+		// Returns empty if it fails
+		return answers, err
 	}
 
 	// Close connection
@@ -37,24 +39,26 @@ func GetUserSubmission(userID int, assignmentID int) (UserSubmission, error) {
 
 	// Loop through results
 	for rows.Next() {
-		// Declare empty struct
-		var assignment Assignment
+		var aType string
+		var aValue string
+
 		// Scan rows
-		err := rows.Scan(&assignment.ID, &assignment.Name, &assignment.Description,
-			&assignment.Created, &assignment.Publish, &assignment.Deadline,
-			&assignment.CourseID)
+		err := rows.Scan(&aType, &aValue)
+
 		// Check for error
 		if err != nil {
-			return nil, err
+			return answers, err
 		}
 
-		// Append retrieved row
-		result = append(result, assignment)
+		answers = append(answers, Answer{
+			Type:  aType,
+			Value: aValue,
+		})
 	}
 
-	return result, nil
+	return answers, nil
 }
-*/
+
 // InsertUserSubmission inserts user submission to the db
 func InsertUserSubmission(userSub UserSubmission) error {
 
@@ -62,8 +66,8 @@ func InsertUserSubmission(userSub UserSubmission) error {
 	for _, answer := range userSub.Answers {
 
 		// Sql query
-		query := "INSERT INTO user_submissions (user_id, submission_id, field_name, answer) VALUES (?, ?, ?, ?)"
-		_, err := db.GetDB().Exec(query, userSub.UserID, userSub.SubmissionID, answer.Type, answer.Value)
+		query := "INSERT INTO user_submissions (user_id, submission_id, assignment_id, type, answer) VALUES (?, ?, ?, ?, ?)"
+		_, err := db.GetDB().Exec(query, userSub.UserID, userSub.SubmissionID, userSub.AssignmentID, answer.Type, answer.Value)
 
 		// Check if there was an error
 		if err != nil {
