@@ -107,7 +107,7 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//IndexGET(w, r) //success redirect to homepage
-	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
+	http.Redirect(w, r, "/admin/course", http.StatusFound) //success redirect to homepage
 }
 
 // AdminUpdateCourseGET handles GET-request at /admin/course/update/{id}
