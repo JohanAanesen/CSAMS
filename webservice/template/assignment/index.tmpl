@@ -26,10 +26,10 @@
             {{end}}
         {{else}}
             {{if not .Delivered}}
-                <a href="/assignment/upload?id={{ .Assignment.ID }}" class="btn btn-primary btn-lg">Deliver
+                <a href="/assignment/submission?id={{ .Assignment.ID }}" class="btn btn-primary btn-lg">Deliver
                     assignment</a>
             {{else}}
-                <a href="/assignment/upload?id={{ .Assignment.ID }}" class="btn btn-success btn-lg">Re-Deliver
+                <a href="/assignment/submission?id={{ .Assignment.ID }}" class="btn btn-success btn-lg">Re-Deliver
                     assignment</a>
             {{end}}
         {{end}}

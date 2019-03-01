@@ -310,8 +310,17 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check that submission id is valid
 	if !assignment.SubmissionID.Valid {
 		log.Println("Error: Something went wrong with submissionID, its nil (assignment.go))")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Check if user has uploaded already or not
+	delivered, err := assignmentRepo.HasUserSubmitted(assignmentID, session.GetUserFromSession(r).ID)
+	if err != nil {
+		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -323,8 +332,18 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		AssignmentID: assignment.ID,
 	}
 
+	// Get answers WITH answerID if the user has delivered
+	if delivered {
+		userSub.Answers, err = model.GetUserAnswers(session.GetUserFromSession(r).ID, assignmentID)
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+	}
+
 	// Check that every form is filled an give error if not
-	for _, field := range form.Fields {
+	for index, field := range form.Fields {
 
 		// Check if they are empty and give error if they are
 		if r.FormValue(field.Name) == "" {
@@ -333,14 +352,30 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Add form values to the struct for user submissions
-		userSub.Answers = append(userSub.Answers, model.Answer2{
-			Type:  field.Type,
-			Value: r.FormValue(field.Name),
-		})
+		// If delivered, only change the value
+		if delivered {
+			userSub.Answers[index].Value = r.FormValue(field.Name)
+		} else {
+			// Else, create new answers array
+			userSub.Answers = append(userSub.Answers, model.Answer2{
+				Type:  field.Type,
+				Value: r.FormValue(field.Name),
+			})
+		}
+
 	}
 
-	err = model.InsertUserSubmission(userSub)
+	// Initiate error
+	err = nil
+
+	// Upload or update answers
+	if !delivered {
+		err = model.UploadUserSubmission(userSub)
+	} else {
+		err = model.UpdateUserSubmission(userSub)
+	}
+
+	// Check for error
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
