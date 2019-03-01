@@ -283,8 +283,13 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	assignment.SubmissionID.Int64 = 1 // TODO Brede : actually get submissionID
-	// TODO brede, check submissionID is valid
+	if !assignment.SubmissionID.Valid {
+		log.Println("Error: Something went wrong with submissionID, its nil (assignment.go))")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println(assignment.SubmissionID.Int64)
 
 	// Start to fill out user Submission struct
 	userSub := model.UserSubmission{
