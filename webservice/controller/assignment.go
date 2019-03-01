@@ -96,7 +96,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
-	v.Name = "assignment"
+	v.Name = "assignment/index"
 
 	v.Vars["Assignment"] = assignment
 	v.Vars["Description"] = template.HTML(description)

@@ -6,9 +6,10 @@
             <div class="container pt-3 jumbotron">
                 <h1 class="display-4">{{ .Course.Code }} {{ .Course.Name }}</h1>
                 <h2 class="display-5">{{ .Assignment.Name }}</h2>
-
                 <p class="lead" id="countDown"></p>
                 <form method="post" action="/assignment/upload/update?id={{ .Assignment.ID }}">
+
+                    <!-- TODO (Svein) : There are more types, but are not essential for the alpha  -->
                     {{ range .Fields }}
                         <div class="form-group">
                             <label for="{{ .Name }}">{{ .Label }}</label>
@@ -19,9 +20,12 @@
                             {{ else if eq .Type "textarea" }}
                                 <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control" required></textarea>
                             {{ end }}
-                            <!-- TODO (Svein) : There are more types, but are not essential for the alpha  -->
+
                         </div>
                     {{ end }}
+
+
+
                     <button id="uploadBtn" type="submit" class="btn btn-success">Upload</button>
                 </form>
             </div>
