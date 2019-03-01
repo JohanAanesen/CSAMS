@@ -6,13 +6,14 @@
     <hr>
     <div class="row">
         {{ range .Courses.Items }}
-            <div class="col-12 col-md-6 col-xl mb-3">
+           <div class="col-12 col-md-6 col-xl mb-3">
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h2 class="display-4">{{ .Code }}</h2>
                         <h3 class="mb-3">{{ .Name }}</h3>
                         <hr>
-                        <a href="/admin/course/{{.ID}}/assignments" class="btn btn-dark btn-sm">See assignments</a>
+                        <a href="/course/?id={{ .ID }}" class="btn btn-outline-dark">See Course</a>
+                        <a href="/admin/course/{{.ID}}/assignments" class="btn btn-outline-dark">See Assignments</a>
                     </div>
                 </div>
             </div>

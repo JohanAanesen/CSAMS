@@ -177,6 +177,8 @@ sorted by the deadlines desc.
 * I made the design much better
 * Fixed a bug with deadline
 * Added real link to `see assignment` button
+* Done with [#18 - Assignment Delivery page](https://trello.com/c/zyQpCo4K), thought I would use 21h, actually used 24h 17min,
+this was mostly because I use ca. 7h all together to get the project starting.
 
 
 

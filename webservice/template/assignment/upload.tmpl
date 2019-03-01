@@ -2,8 +2,11 @@
 {{define "head"}}{{end}}
 {{ define "content" }}
     <main role="main" class="container">
-        <div class="col my-3">
-            <div class="container pt-3 jumbotron">
+        <div class="col my-2">
+            <a href="/assignment/{{ .Assignment.ID }}" class="btn btn-outline-dark">Go Back</a>
+            <div class="col my-1 container pt-3 jumbotron">
+
+
                 <h1 class="display-4">{{ .Course.Code }} {{ .Course.Name }}</h1>
                 <h2 class="display-5">{{ .Assignment.Name }}</h2>
                 <p class="lead" id="countDown"></p>
