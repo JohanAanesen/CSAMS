@@ -14,6 +14,15 @@ import (
 	"time"
 )
 
+type Combined struct {
+	Answer model.Answer2
+	Field  model.Field
+}
+
+type MergedAnswerField struct {
+	Items []Combined
+}
+
 //AssignmentGET serves assignment page to users
 func AssignmentGET(w http.ResponseWriter, r *http.Request) {
 
@@ -88,9 +97,6 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 
 	// TODO : make this dynamic
 	var hasBeenValidated = true
-
-	fmt.Println("isDeadlineOver: ")
-	fmt.Println(isDeadlineOver)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -215,12 +221,32 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO display answer if already uploaded
+	// Get answers to user if he has delivered
 	answers, err := model.GetUserAnswers(session.GetUserFromSession(r).ID, assignmentID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
+	}
+
+	com := MergedAnswerField{}
+	// Only merge if user has delivered
+	if len(answers) > 0 {
+
+		// Make sure answers and fields are same length before merging
+		if len(answers) != len(form.Fields) {
+			log.Println("Error: answers(" + strconv.Itoa(len(answers)) + ") is not equal length as fields(" + strconv.Itoa(len(form.Fields)) + ")! (assignment.go)")
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+		// Merge field and answer if assignment is delivered
+
+		for i := 0; i < len(form.Fields); i++ {
+			com.Items = append(com.Items, Combined{
+				Answer: answers[i],
+				Field:  form.Fields[i],
+			})
+		}
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -233,7 +259,8 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Assignment"] = assignment
 	v.Vars["Description"] = template.HTML(description)
 	v.Vars["Fields"] = form.Fields
-	v.Vars["Answers"] = answers
+	v.Vars["Delivered"] = len(answers)
+	v.Vars["AnswersAndFields"] = com.Items
 	v.Name = "assignment/upload"
 	v.Render(w)
 
@@ -288,8 +315,6 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Println(assignment.SubmissionID.Int64)
 
 	// Start to fill out user Submission struct
 	userSub := model.UserSubmission{

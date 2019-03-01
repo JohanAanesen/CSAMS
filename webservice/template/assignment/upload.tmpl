@@ -9,21 +9,45 @@
                 <p class="lead" id="countDown"></p>
                 <form method="post" action="/assignment/upload/update?id={{ .Assignment.ID }}">
 
+                    <!-- TODO (Brede) : This could be one for each loop with only .AnswersAndFields -->
                     <!-- TODO (Svein) : There are more types, but are not essential for the alpha  -->
-                    {{ range .Fields }}
-                        <div class="form-group">
-                            <label for="{{ .Name }}">{{ .Label }}</label>
-                            {{ if eq .Type "text" }}
-                                <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
-                            {{ else if eq .Type "url" }}
-                                <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
-                            {{ else if eq .Type "textarea" }}
-                                <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control" required></textarea>
-                            {{ end }}
+                    {{ if .Delivered }}
+                        <h1>Delivered</h1>
+                        {{ range .AnswersAndFields }}
+                            <div class="form-group">
+                                <label for="{{ .Field.Name }}">{{ .Field.Label }}</label>
+                                {{ if eq .Field.Type "text" }}
+                                    <input type="text" name="{{ .Field.Name }}" id="{{ .Field.Name }}"
+                                           class="form-control"
+                                           required value="{{ .Answer.Value}}">
+                                {{ else if eq .Field.Type "url" }}
+                                    <input type="url" name="{{ .Field.Name }}" id="{{ .Field.Name }}"
+                                           class="form-control" required value="{{ .Answer.Value}}">
+                                {{ else if eq .Field.Type "textarea" }}
+                                    <textarea name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control"
+                                              required>{{ .Answer.Value}}</textarea>
+                                {{ end }}
 
-                        </div>
+                            </div>
+                        {{ end }}
+                    {{ else }}
+                        <h1>Not Delivered</h1>
+                        {{ range .Fields }}
+                            <div class="form-group">
+                                <label for="{{ .Name }}">{{ .Label }}</label>
+                                {{ if eq .Type "text" }}
+                                    <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control"
+                                           required>
+                                {{ else if eq .Type "url" }}
+                                    <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
+                                {{ else if eq .Type "textarea" }}
+                                    <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control"
+                                              required></textarea>
+                                {{ end }}
+
+                            </div>
+                        {{ end }}
                     {{ end }}
-
 
 
                     <button id="uploadBtn" type="submit" class="btn btn-success">Upload</button>
@@ -65,7 +89,7 @@
                 document.getElementById("countDown").className = "text-warning";
             }
 
-            // If the count down is over, write some text
+            // If the count down is over, output 'EXPIRED' and disable everything
             if (distance < 0) {
                 clearInterval(x);
                 document.getElementById("countDown").className = "text-danger";
