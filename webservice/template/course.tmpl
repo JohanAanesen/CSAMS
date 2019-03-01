@@ -1,93 +1,100 @@
 {{define "title"}}Course{{end}}
 {{define "head"}}
-<style>
-    a{
-        color: #888888;
-    }
-    a:hover{
-        color: #888888;
-    }
-    pre{
-        color: #888888;
-    }
-</style>
+    <style>
+        a {
+            color: #888888;
+        }
+
+        a:hover {
+            color: #888888;
+        }
+
+        pre {
+            color: #888888;
+        }
+    </style>
 {{end}}
 {{define "content"}}
-<main role="main" class="container">
-    <div class="col my-3">
-        <div class="card text-white bg-dark mb-3">
-            <div class="card-header">
+    <main role="main" class="container">
+        <div class="col my-3">
+            <div class="card text-white bg-dark mb-3">
+                <div class="card-header">
                     <h4 style="float:left;">{{.Course.Code}} | {{.Course.Name}}</h4>
                     <p class="text-right"> {{.Course.Semester}} | {{.Course.Year}}</p>
-                <ul class="nav nav-tabs card-header-tabs pull-right"  id="myTab" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="assignment-tab" data-toggle="tab" href="#assignments" role="tab" aria-controls="assignments" aria-selected="false">Assignments</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="participant-tab" data-toggle="tab" href="#participants" role="tab" aria-controls="participants" aria-selected="false">Participants</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="card-body">
-                <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                        {{.Description}}
-                    </div>
-                    <div class="tab-pane fade" id="assignments" role="tabpanel" aria-labelledby="assignment-tab">
-                        <div class="row">
+                    <ul class="nav nav-tabs card-header-tabs pull-right" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                               aria-controls="home" aria-selected="true">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="assignment-tab" data-toggle="tab" href="#assignments" role="tab"
+                               aria-controls="assignments" aria-selected="false">Assignments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="participant-tab" data-toggle="tab" href="#participants" role="tab"
+                               aria-controls="participants" aria-selected="false">Participants</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                            {{.Description}}
+                        </div>
+                        <div class="tab-pane fade" id="assignments" role="tabpanel" aria-labelledby="assignment-tab">
+                            <div class="row">
 
-                            {{range .Assignments}}
-                                <div class="col-md-6">
-                                    <div class="card my-1 border-dark text-dark bg-light">
-                                        <div class="card-header">Assignment?</div>
-                                        <div class="card-body">
-                                            <h5 class="card-title">{{.Name}}</h5>
-                                            <p class="card-text">{{.Description}}</p>
-                                            <a href="/assignment/{{.ID}}" class="btn btn-outline-dark">See details</a>
+                                {{range .Assignments}}
+                                    <div class="col-md-6">
+                                        <div class="card shadow-sm{{if DEADLINEDUE .Deadline}} bg-light{{end}}">
+                                            <div class="card-body">
+                                                <h2 class="display-5 text-dark">{{ .Name }}</h2>
+                                                <h5><span class="badge badge-secondary">COURSE_CODE</span>
+                                                </h5>
+                                                <p{{if DEADLINEDUE .Deadline}} class="text-danger" {{ else }} class="text-dark"{{end}}>
+                                                    <strong>Deadline: </strong> {{PRETTYTIME .Deadline}}
+                                                </p>
+                                                <hr class="bg-light">
+                                                <a href="/assignment/{{.ID}}"
+                                                   class="btn btn-outline-{{if DEADLINEDUE .Deadline}}light{{else}}dark{{end}} btn-sm">See
+                                                    details</a>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            {{end}}
+                                {{end}}
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="participants" role="tabpanel" aria-labelledby="participant-tab">
+
+                            <table class="table table-borderless table-sm">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Type</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{ range .Classmates.Items }}
+                                    <tr {{if .Teacher}} class="bg-primary" {{end}}>
+                                        <th scope="row">{{.ID}}</th>
+                                        <td>{{.Name}}</td>
+                                        <td><a href="mailto:{{.EmailStudent}}">{{.EmailStudent}}</a></td>
+                                        <td>{{if .Teacher}} Teacher {{else}} Student {{end}}</td>
+                                    </tr>
+                                {{ end }}
+                                </tbody>
+                            </table>
+
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="participants" role="tabpanel" aria-labelledby="participant-tab">
 
-                        <table class="table table-borderless table-sm">
-                            <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Type</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {{ range .Classmates.Items }}
-                            <tr {{if .Teacher}} class="bg-primary" {{end}}>
-                                <th scope="row">{{.ID}}</th>
-                                <td>{{.Name}}</td>
-                                <td><a href="mailto:{{.EmailStudent}}">{{.EmailStudent}}</a></td>
-                                <td>{{if .Teacher}} Teacher {{else}} Student {{end}}</td>
-                            </tr>
-                            {{ end }}
-                            </tbody>
-                        </table>
-
-                    </div>
                 </div>
-
             </div>
         </div>
-    </div>
 
 
-
-
-
-
-</main>
+    </main>
 {{end}}
 {{define "foot"}}{{end}}

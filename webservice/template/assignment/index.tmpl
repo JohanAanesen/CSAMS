@@ -2,6 +2,8 @@
 {{define "head"}}{{end}}
 {{define "content"}}
     <div class="container pt-3">
+
+        <a href="/course?id={{ .CourseID }}" class="btn btn-outline-dark">Go Back</a>
         {{if .Delivered}}
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <strong>Notice!</strong> You have already delivered this assignment!
