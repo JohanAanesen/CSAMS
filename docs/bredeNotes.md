@@ -171,6 +171,11 @@ sorted by the deadlines desc.
 
 
 ### Friday - 01/03/19
+* Users that has delivered can see what they have delivered.
+* Users can update what they have delivered
+* I made the design much better
+* Fixed a bug with deadline
+* Added real link to `see assignment` button
 
 
 
