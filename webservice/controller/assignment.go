@@ -16,7 +16,7 @@ import (
 
 // Combined holds answer and field
 type Combined struct {
-	Answer model.Answer2
+	Answer model.Answer
 	Field  model.Field
 }
 
@@ -311,6 +311,15 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if the deadline is reached
+	var isDeadlineOver = assignment.Deadline.Before(time.Now().UTC().Add(time.Hour))
+	if isDeadlineOver {
+		log.Println("Error: Deadline is reached! (assignment.go)")
+		fmt.Println("hei")
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
 	// Get form and log possible error
 	formRepo := model.FormRepository{}
 	form, err := formRepo.GetFromAssignmentID(assignment.ID)
@@ -367,7 +376,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 			userSub.Answers[index].Value = r.FormValue(field.Name)
 		} else {
 			// Else, create new answers array
-			userSub.Answers = append(userSub.Answers, model.Answer2{
+			userSub.Answers = append(userSub.Answers, model.Answer{
 				Type:  field.Type,
 				Value: r.FormValue(field.Name),
 			})

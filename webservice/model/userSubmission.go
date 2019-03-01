@@ -9,21 +9,14 @@ type UserSubmission struct {
 	UserID       int
 	AssignmentID int
 	SubmissionID int64
-	Answers      []Answer2
-}
-
-// Answer2 is an struct for one answer
-type Answer2 struct {
-	ID    int
-	Type  string
-	Value string
+	Answers      []Answer
 }
 
 // GetUserAnswers returns answers if it exists, empty if not
-func GetUserAnswers(userID int, assignmentID int) ([]Answer2, error) {
+func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
 
 	// Create an empty answers array
-	var answers []Answer2
+	var answers []Answer
 
 	// Create query string
 	query := "SELECT id, user_submissions.type, user_submissions.answer FROM user_submissions WHERE user_id =? AND assignment_id=?;"
@@ -52,7 +45,7 @@ func GetUserAnswers(userID int, assignmentID int) ([]Answer2, error) {
 			return answers, err
 		}
 
-		answers = append(answers, Answer2{
+		answers = append(answers, Answer{
 			ID:    aID,
 			Type:  aType,
 			Value: aValue,

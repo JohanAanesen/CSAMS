@@ -44,23 +44,27 @@
                         <div class="tab-pane fade" id="assignments" role="tabpanel" aria-labelledby="assignment-tab">
                             <div class="row">
 
+                                <!-- TODO : theese should be longer -->
+                                {{$C := .Course}}
                                 {{range .Assignments}}
-                                    <div class="col-md-6">
-                                        <div class="card shadow-sm{{if DEADLINEDUE .Deadline}} bg-light{{end}}">
+                                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                                        <div class="card shadow-sm{{if DEADLINEDUE .Deadline}} bg-secondary text-light{{ else }} text-dark {{end}}">
                                             <div class="card-body">
-                                                <h2 class="display-5 text-dark">{{ .Name }}</h2>
-                                                <h5><span class="badge badge-secondary">COURSE_CODE</span>
+                                                <h2 class="display-5">{{.Name}}</h2>
+                                                <h5>
+                                                    <span class="badge {{if DEADLINEDUE .Deadline}}badge-dark{{ else}} badge-secondary{{end}}">{{$C.Code}}</span>
                                                 </h5>
-                                                <p{{if DEADLINEDUE .Deadline}} class="text-danger" {{ else }} class="text-dark"{{end}}>
-                                                    <strong>Deadline: </strong> {{PRETTYTIME .Deadline}}
-                                                </p>
+                                                <p{{if DEADLINEDUE .Deadline}} class="text-danger"{{end}}>
+                                                    <strong>Deadline: </strong> {{PRETTYTIME .Deadline}}</p>
                                                 <hr class="bg-light">
-                                                <a href="/assignment/{{ .ID }}" class="btn btn-outline-dark">See
-                                                    Details</a>
+                                                <a href="/assignment/{{.ID}}"
+                                                   class="btn btn-outline-{{if DEADLINEDUE .Deadline}}light{{else}}dark{{end}} btn-sm">See
+                                                    details</a>
                                             </div>
                                         </div>
                                     </div>
                                 {{end}}
+
                             </div>
                         </div>
                         <div class="tab-pane fade" id="participants" role="tabpanel" aria-labelledby="participant-tab">

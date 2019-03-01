@@ -30,6 +30,7 @@ type Field struct {
 
 // Answer struct used for storing answers from users in forms
 type Answer struct {
+	ID    int
 	Type  string
 	Value string
 }

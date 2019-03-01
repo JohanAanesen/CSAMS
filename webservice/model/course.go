@@ -23,6 +23,8 @@ type Course struct {
 	Assignments []Assignment `json:"assignments"`
 }
 
+// TODO Brede : Change ex `var courseCOde string` to only use `course.Code`
+
 // GetCourseCodeAndName gets the course code and name to the course
 func GetCourseCodeAndName(courseID int) (Course, error) {
 	//Create an empty courses array
