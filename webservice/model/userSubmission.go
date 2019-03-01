@@ -40,12 +40,12 @@ func GetUserAnswers(userID int, assignmentID int) ([]Answer2, error) {
 
 	// Loop through results
 	for rows.Next() {
-		var aId int
+		var aID int
 		var aType string
 		var aValue string
 
 		// Scan rows
-		err := rows.Scan(&aId, &aType, &aValue)
+		err := rows.Scan(&aID, &aType, &aValue)
 
 		// Check for error
 		if err != nil {
@@ -53,7 +53,7 @@ func GetUserAnswers(userID int, assignmentID int) ([]Answer2, error) {
 		}
 
 		answers = append(answers, Answer2{
-			ID:    aId,
+			ID:    aID,
 			Type:  aType,
 			Value: aValue,
 		})
@@ -62,7 +62,7 @@ func GetUserAnswers(userID int, assignmentID int) ([]Answer2, error) {
 	return answers, nil
 }
 
-// UploadUserSubmission inserts user submission to the db
+// UploadUserSubmission uploads user submission to the db
 func UploadUserSubmission(userSub UserSubmission) error {
 
 	// Go through all answers
@@ -82,7 +82,7 @@ func UploadUserSubmission(userSub UserSubmission) error {
 	return nil
 }
 
-// UploadUserSubmission inserts user submission to the db
+// UpdateUserSubmission updates user submission to the db
 func UpdateUserSubmission(userSub UserSubmission) error {
 
 	// Go through all answers

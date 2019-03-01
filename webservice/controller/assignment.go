@@ -14,11 +14,13 @@ import (
 	"time"
 )
 
+// Combined holds answer and field
 type Combined struct {
 	Answer model.Answer2
 	Field  model.Field
 }
 
+// MergedAnswerField is a struct for merging the answer and field array
 type MergedAnswerField struct {
 	Items []Combined
 }

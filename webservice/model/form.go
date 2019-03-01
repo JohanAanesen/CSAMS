@@ -28,7 +28,7 @@ type Field struct {
 	Choices     []string `json:"choices" db:"choices"`
 }
 
-// Answer2 struct used for storing answers from users in forms
+// Answer struct used for storing answers from users in forms
 type Answer struct {
 	Type  string
 	Value string

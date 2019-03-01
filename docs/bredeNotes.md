@@ -171,6 +171,7 @@ sorted by the deadlines desc.
 
 
 ### Friday - 01/03/19
+* Added test data to .sql file
 * Users that has delivered can see what they have delivered.
 * Users can update what they have delivered
 * I made the design much better
