@@ -6,7 +6,6 @@
 -- Generation Time: 29. Jan, 2019 17:17 PM
 -- Server-versjon: 10.1.28-MariaDB
 -- PHP Version: 7.1.10
-DROP DATABASE IF EXISTS cs53;
 
 CREATE DATABASE IF NOT EXISTS cs53 COLLATE = utf8_general_ci;
 

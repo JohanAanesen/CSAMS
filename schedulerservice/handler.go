@@ -15,7 +15,7 @@ type response struct {
 func IndexGET(w http.ResponseWriter, r *http.Request) {
 	//todo
 	http.Header.Add(w.Header(), "content-type", "application/json")
-	_ = json.NewEncoder(w).Encode(response{Success: true})
+	_ = json.NewEncoder(w).Encode(model.GetTimers())
 }
 
 // IndexPOST handles POST requests

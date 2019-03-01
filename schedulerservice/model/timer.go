@@ -48,11 +48,34 @@ func UpdateTimer(timerID int, newTime time.Time, task PeerTask) bool{
 
 //InitializeTimers fetches timers from database on startup
 func InitializeTimers(){
+
+	payloads := GetTimers()
+
+	for _, payload := range payloads{
+		if payload.ScheduledTime.Sub(time.Now()) < 0{ //trigger tasks that has dinged when service was down
+			task, err := payload.GetPeerTask()
+			if err != nil{
+				log.Printf("asdla") //todo
+			}
+
+			task.Trigger()
+			return
+		} else if !ScheduleTask(payload){ //schedule task
+			log.Printf("Could not initialize timer for submission ID: %v\n", payload.SubmissionID)
+		}
+	}
+}
+
+//GetTimers from db
+func GetTimers()[]Payload{
+
+	var payloads []Payload
+
 	rows, err := db.GetDB().Query("SELECT submission_id, scheduled_time, task, data FROM schedule_tasks")
 	if err != nil {
 		log.Fatal(err.Error()) // TODO : log error
 		// returns empty course array if it fails
-		return
+		return []Payload{}
 	}
 
 	for rows.Next() {
@@ -65,29 +88,22 @@ func InitializeTimers(){
 		if err != nil {
 			log.Println(err.Error()) // TODO : log error
 			// returns empty course array if it fails
-			return
+			return []Payload{}
 		}
 
 		// Add course to courses array
 		var payload Payload
 
 		payload = Payload{
-			ScheduledTime:scheduledTime,
-			Task:task,
-			SubmissionID:submissionID,
-			Data:data,
+			ScheduledTime: scheduledTime,
+			Task:          task,
+			SubmissionID:  submissionID,
+			Data:          data,
 		}
 
-		if payload.ScheduledTime.Sub(time.Now()) < 0{ //trigger tasks that has dinged when service was down
-			task, err := payload.GetPeerTask()
-			if err != nil{
-				log.Printf("asdla") //todo
-			}
+		payloads = append(payloads, payload)
 
-			task.Trigger()
-			return
-		} else if !ScheduleTask(payload){ //schedule task
-			log.Printf("Could not initialize timer for submission ID: %v\n", submissionID)
-		}
 	}
+
+	return payloads
 }
