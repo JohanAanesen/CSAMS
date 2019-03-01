@@ -2,7 +2,6 @@ package model
 
 import (
 	"fmt"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/db"
 	"log"
 	"time"
 )
@@ -25,7 +24,11 @@ func StopTimer(timerID int){
 }
 
 //UpdateTimer should update the time of an existing timer (delete and create new timer)
-func UpdateTimer(timerID int, newTime time.Time, task PeerTask) bool{
+func UpdateTimer(timerID int, newTime time.Time, payload Payload) bool{
+
+	//update time in payload object
+	payload.ScheduledTime = newTime
+
 	stop := Timers[timerID].Stop()
 	if stop {
 		fmt.Printf("Timer %v stopped\n", timerID)
@@ -39,9 +42,22 @@ func UpdateTimer(timerID int, newTime time.Time, task PeerTask) bool{
 		return false
 	}
 
-	Timers[task.SubmissionID] = time.AfterFunc(Duration, task.Trigger)
+	switch payload.Task {
+	case "peer":
+		task, err := payload.GetPeerTask()
+		if err != nil{
+			log.Println("Something went wrong fetching peertask from payload")
+			return false
+		}
+
+		Timers[task.SubmissionID] = time.AfterFunc(Duration, task.Trigger)
+
+	default:
+		return false
+	}
 
 	//todo update db
+
 
 	return true
 }
@@ -49,61 +65,22 @@ func UpdateTimer(timerID int, newTime time.Time, task PeerTask) bool{
 //InitializeTimers fetches timers from database on startup
 func InitializeTimers(){
 
-	payloads := GetTimers()
+	payloads := GetPayloads()
 
 	for _, payload := range payloads{
 		if payload.ScheduledTime.Sub(time.Now()) < 0{ //trigger tasks that has dinged when service was down
 			task, err := payload.GetPeerTask()
 			if err != nil{
 				log.Printf("asdla") //todo
+				return
 			}
 
 			task.Trigger()
 			return
 		} else if !ScheduleTask(payload){ //schedule task
 			log.Printf("Could not initialize timer for submission ID: %v\n", payload.SubmissionID)
+			return
 		}
 	}
 }
 
-//GetTimers from db
-func GetTimers()[]Payload{
-
-	var payloads []Payload
-
-	rows, err := db.GetDB().Query("SELECT submission_id, scheduled_time, task, data FROM schedule_tasks")
-	if err != nil {
-		log.Fatal(err.Error()) // TODO : log error
-		// returns empty course array if it fails
-		return []Payload{}
-	}
-
-	for rows.Next() {
-		var submissionID int
-		var scheduledTime time.Time
-		var task string
-		var data []byte
-
-		err := rows.Scan(&submissionID, &scheduledTime, &task, &data)
-		if err != nil {
-			log.Println(err.Error()) // TODO : log error
-			// returns empty course array if it fails
-			return []Payload{}
-		}
-
-		// Add course to courses array
-		var payload Payload
-
-		payload = Payload{
-			ScheduledTime: scheduledTime,
-			Task:          task,
-			SubmissionID:  submissionID,
-			Data:          data,
-		}
-
-		payloads = append(payloads, payload)
-
-	}
-
-	return payloads
-}

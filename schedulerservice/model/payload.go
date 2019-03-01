@@ -10,10 +10,11 @@ import (
 //Payload struct
 //https://stackoverflow.com/questions/28254102/how-to-unmarshal-json-into-interface-in-go
 type Payload struct {
-	ScheduledTime time.Time `json:"scheduled_time"`
-	Task          string    `json:"task"`
-	SubmissionID  int       `json:"submission_id"`
-	Data          json.RawMessage
+	Authentication string    `json:"authentication"`
+	ScheduledTime  time.Time `json:"scheduled_time"`
+	Task           string    `json:"task"`
+	SubmissionID   int       `json:"submission_id"`
+	Data           json.RawMessage
 }
 
 //GetPeerTask withdraws a PeerTask object from the data column of a payload object
@@ -56,4 +57,150 @@ func (payload Payload) Save() bool {
 	}
 
 	return true
+}
+
+//GetPayloads from db
+func GetPayloads() []Payload {
+
+	var payloads []Payload
+
+	rows, err := db.GetDB().Query("SELECT submission_id, scheduled_time, task, data FROM schedule_tasks")
+	if err != nil {
+		log.Fatal(err.Error()) // TODO : log error
+		// returns empty course array if it fails
+		return []Payload{}
+	}
+
+	for rows.Next() {
+		var submissionID int
+		var scheduledTime time.Time
+		var task string
+		var data []byte
+
+		err := rows.Scan(&submissionID, &scheduledTime, &task, &data)
+		if err != nil {
+			log.Println(err.Error()) // TODO : log error
+			// returns empty course array if it fails
+			return []Payload{}
+		}
+
+		// Add course to courses array
+		var payload Payload
+
+		payload = Payload{
+			ScheduledTime: scheduledTime,
+			Task:          task,
+			SubmissionID:  submissionID,
+			Data:          data,
+		}
+
+		payloads = append(payloads, payload) //add payload to slice
+
+	}
+
+	return payloads
+}
+
+//GetPayload from db
+func GetPayload(subID int) Payload {
+
+	rows, err := db.GetDB().Query("SELECT submission_id, scheduled_time, task, data FROM schedule_tasks WHERE submission_id = ?", subID)
+	if err != nil {
+		log.Fatal(err.Error()) // TODO : log error
+		// returns empty course array if it fails
+		return Payload{}
+	}
+
+	for rows.Next() {
+		var submissionID int
+		var scheduledTime time.Time
+		var task string
+		var data []byte
+
+		err := rows.Scan(&submissionID, &scheduledTime, &task, &data)
+		if err != nil {
+			log.Println(err.Error()) // TODO : log error
+			// returns empty course array if it fails
+			return Payload{}
+		}
+
+		// Add course to courses array
+		var payload Payload
+
+		payload = Payload{
+			ScheduledTime: scheduledTime,
+			Task:          task,
+			SubmissionID:  submissionID,
+			Data:          data,
+		}
+
+		return payload //return first and best
+
+	}
+
+	return Payload{}
+}
+
+//DeletePayload removes payload from db
+func DeletePayload(subID int) bool {
+
+	tx, err := db.GetDB().Begin() //start transaction
+	if err != nil {
+		log.Println(err.Error())
+		return false
+	}
+
+	_, err = tx.Exec("DELETE FROM schedule_tasks WHERE submission_id = ?", subID)
+
+	if err != nil {
+		//todo log error
+		log.Fatal(err.Error())
+		if err = tx.Rollback(); err != nil { //quit transaction if error
+			log.Fatal(err.Error()) //die
+		}
+		return false
+	}
+
+	err = tx.Commit() //finish transaction
+	if err != nil {
+		log.Fatal(err.Error())
+		return false
+	}
+
+	StopTimer(subID) //stops ongoing timer
+
+	return true
+}
+
+func (payload Payload)UpdatePayload()bool{
+
+	tx, err := db.GetDB().Begin() //start transaction
+	if err != nil {
+		log.Println(err.Error())
+		return false
+	}
+
+	_, err = tx.Exec("UPDATE schedule_tasks SET scheduled_time = ?, task = ?, data = ? WHERE submission_id = ?",
+		payload.ScheduledTime,
+		payload.Task,
+		payload.Data,
+		payload.SubmissionID)
+
+	if err != nil {
+		//todo log error
+		log.Println(err.Error())
+		if err = tx.Rollback(); err != nil { //quit transaction if error
+			log.Fatal(err.Error()) //die
+		}
+		return false
+	}
+
+	err = tx.Commit() //finish transaction
+	if err != nil {
+		log.Fatal(err.Error())
+		return false
+	}
+
+	return true
+
 }
