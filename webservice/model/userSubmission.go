@@ -8,7 +8,7 @@ import (
 type UserSubmission struct {
 	UserID       int
 	AssignmentID int
-	SubmissionID int
+	SubmissionID int64
 	Answers      []Answer2
 }
 

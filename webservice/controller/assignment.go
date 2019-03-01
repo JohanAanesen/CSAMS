@@ -84,8 +84,13 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var isDeadlineOver = assignment.Deadline.After(time.Now())
+	var isDeadlineOver = assignment.Deadline.Before(time.Now().UTC().Add(time.Hour))
+
+	// TODO : make this dynamic
 	var hasBeenValidated = true
+
+	fmt.Println("isDeadlineOver: ")
+	fmt.Println(isDeadlineOver)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -278,16 +283,15 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/*
-	assignment.SubmissionID = 1 // TODO Brede : actually get submissionID
+	assignment.SubmissionID.Int64 = 1 // TODO Brede : actually get submissionID
+	// TODO brede, check submissionID is valid
 
 	// Start to fill out user Submission struct
 	userSub := model.UserSubmission{
 		UserID:       session.GetUserFromSession(r).ID,
-		SubmissionID: assignment.SubmissionID,
+		SubmissionID: assignment.SubmissionID.Int64,
 		AssignmentID: assignment.ID,
 	}
-	*/
 
 	// Check that every form is filled an give error if not
 	for _, field := range form.Fields {
@@ -299,23 +303,19 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		/*
 		// Add form values to the struct for user submissions
-		userSub.Answers = append(userSub.Answers, model.Answer{
+		userSub.Answers = append(userSub.Answers, model.Answer2{
 			Type:  field.Type,
 			Value: r.FormValue(field.Name),
 		})
-		*/
 	}
 
-	/*
 	err = model.InsertUserSubmission(userSub)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-	*/
 
 	// Serve front-end again
 	AssignmentUploadGET(w, r)
