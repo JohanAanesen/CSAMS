@@ -259,8 +259,6 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/assignment/update"
 
-	// TODO (Svein): Create plugins for views (FuncMap's)
-
 	v.Vars["Assignment"] = assignment
 	v.Vars["Publish"] = util.GoToHTMLDatetimeLocal(assignment.Publish)
 	v.Vars["Deadline"] = util.GoToHTMLDatetimeLocal(assignment.Deadline)
