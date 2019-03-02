@@ -71,7 +71,13 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Check if any error messages has been appended
 	if len(errorMessages) != 0 {
-		// TODO (Svein): Keep data from the previous submit
+		formBytes, err := json.Marshal(&form)
+		if err != nil {
+			log.Println(err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 
@@ -79,6 +85,7 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 		v.Name = "admin/submission/create"
 
 		v.Vars["Errors"] = errorMessages
+		v.Vars["formJSON"] = string(formBytes)
 
 		v.Render(w)
 
@@ -143,6 +150,42 @@ func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	err := json.Unmarshal([]byte(data), &form)
 	if err != nil {
 		log.Println(err)
+		return
+	}
+
+	// Declare empty slice for error messages
+	var errorMessages []string
+
+	// Check form name
+	if form.Name == "" {
+		errorMessages = append(errorMessages, "Form name cannot be blank.")
+	}
+
+	// Check number of fields
+	if len(form.Fields) == 0 {
+		errorMessages = append(errorMessages, "Form needs to have at least 1 field.")
+	}
+
+	// Check if any error messages has been appended
+	if len(errorMessages) != 0 {
+		formBytes, err := json.Marshal(&form)
+		if err != nil {
+			log.Println(err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+
+		v := view.New(r)
+		v.Name = "admin/submission/update"
+
+		v.Vars["Errors"] = errorMessages
+		v.Vars["formJSON"] = string(formBytes)
+
+		v.Render(w)
+
 		return
 	}
 
