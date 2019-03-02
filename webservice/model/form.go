@@ -1,7 +1,6 @@
 package model
 
 import (
-	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"time"
 )
@@ -25,7 +24,7 @@ type Field struct {
 	Description string         `json:"description" db:"description"`
 	Order       int            `json:"order" db:"priority"`
 	Weight      int            `json:"weight" db:"weight"`
-	Choices     sql.NullString `json:"choices" db:"choices"`
+	Choices     string `json:"choices,omitempty" db:"choices"`
 }
 
 // Answer struct used for storing answers from users in forms
@@ -134,7 +133,7 @@ func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) 
 		var desc string
 		var priority int
 		var weight int
-		var choices sql.NullString
+		var choices string
 
 		// Scan
 		err = rows.Scan(&formID, &fieldID, &fieldType, &name, &label, &desc, &priority, &weight, &choices)

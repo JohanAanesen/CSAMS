@@ -634,7 +634,7 @@ let Field = function(settings) {
             description:    this.description,
             order:          this.order,
             weight:         this.weight,
-            choices:        this.choices,
+            choices:        this.choices.join(','),
         }
     };
 };
