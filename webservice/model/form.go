@@ -2,7 +2,6 @@ package model
 
 import (
 	"database/sql"
-	"errors"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"time"
 )
@@ -63,13 +62,15 @@ func (repo *FormRepository) Insert(form Form) (int64, error) {
 
 // Get a single form based on the Primary Key, 'id'
 func (repo *FormRepository) Get(id int) (Form, error) {
+	var result = Form{}
+
 	// Create query-string
 	query := "SELECT id, prefix, name, description, created FROM forms WHERE id = ?"
 	// Perform query
 	rows, err := db.GetDB().Query(query, id)
 	// Check for error
 	if err != nil {
-		return Form{}, err
+		return result, err
 	}
 
 	// Check if there is any rows
@@ -80,13 +81,31 @@ func (repo *FormRepository) Get(id int) (Form, error) {
 		err = rows.Scan(&form.ID, &form.Prefix, &form.Name, &form.Description, &form.Created)
 		// Check for error
 		if err != nil {
-			return Form{}, err
+			return result, err
 		}
-
-		return form, nil
 	}
 
-	return Form{}, errors.New("form: Could not do rows.Next()")
+	// Create new query for getting all the fields
+	query = "SELECT id, type, name, label, description, priority, weight, choices FROM fields WHERE form_id = ?"
+	// Execute query
+	rows, err = db.GetDB().Query(query, id)
+	if err != nil {
+		return result, err
+	}
+
+	// Loop through all rows
+	for rows.Next() {
+		var temp Field
+		// Get values
+		err = rows.Scan(&temp.ID, &temp.Type, &temp.Name, &temp.Label, &temp.Description, &temp.Order, &temp.Weight, &temp.Choices)
+		if err != nil {
+			return result, err
+		}
+		// Append field to slice in the result
+		result.Fields = append(result.Fields, temp)
+	}
+
+	return result, err
 }
 
 // GetFromAssignmentID get form from the assignment id key
@@ -124,9 +143,6 @@ func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) 
 			return form, err
 		}
 
-		// This only needs to be set one time really :/
-		//form.ID = formID
-
 		form.Fields = append(form.Fields, Field{
 			ID:          formID,
 			Type:        fieldType,
@@ -143,4 +159,3 @@ func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) 
 
 	return form, nil
 }
-
