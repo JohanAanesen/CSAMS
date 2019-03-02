@@ -16,10 +16,10 @@ var dummyPayload = model.Payload{
 	Authentication: os.Getenv("PEER_AUTH"),
 	ScheduledTime:  time.Now().Add(time.Hour * 24 * 31),
 	Task:           "peer",
-	SubmissionID:   1337,
+	SubmissionID:   1,
 	Data: peerTasktoRawJSON(model.PeerTask{
 		Authentication: os.Getenv("PEER_AUTH"),
-		SubmissionID:   1337,
+		SubmissionID:   1,
 		Reviewers:      20000000,
 	}),
 }
@@ -30,7 +30,7 @@ var dummyUpdate = struct {
 	ScheduledTime  time.Time `json:"scheduled_time"`
 }{
 	Authentication: os.Getenv("PEER_AUTH"),
-	SubmissionID:   1337,
+	SubmissionID:   1,
 	ScheduledTime:  time.Now().Add(time.Hour * 2351467),
 }
 
@@ -39,7 +39,7 @@ var dummyDelete = struct {
 	SubmissionID   int    `json:"submission_id"`
 }{
 	Authentication: os.Getenv("PEER_AUTH"),
-	SubmissionID:   1337,
+	SubmissionID:   1,
 }
 
 func getReaderFromPayload(payload model.Payload) io.Reader {
