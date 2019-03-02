@@ -172,6 +172,7 @@ func DeletePayload(subID int) bool {
 	return true
 }
 
+//UpdatePayload updates payload in db
 func (payload Payload)UpdatePayload()bool{
 
 	tx, err := db.GetDB().Begin() //start transaction

@@ -3,15 +3,71 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/model"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
+	"time"
 )
 
-func getReaderFromPayload(payload Payload) io.Reader {
+var dummyPayload = model.Payload{
+	Authentication: os.Getenv("PEER_AUTH"),
+	ScheduledTime:  time.Now().Add(time.Hour * 24 * 31),
+	Task:           "peer",
+	SubmissionID:   1337,
+	Data: peerTasktoRawJSON(model.PeerTask{
+		Authentication: os.Getenv("PEER_AUTH"),
+		SubmissionID:   1337,
+		Reviewers:      20000000,
+	}),
+}
+
+var dummyUpdate = struct {
+	Authentication string    `json:"authentication"`
+	SubmissionID   int       `json:"submission_id"`
+	ScheduledTime  time.Time `json:"scheduled_time"`
+}{
+	Authentication: os.Getenv("PEER_AUTH"),
+	SubmissionID:   1337,
+	ScheduledTime:  time.Now().Add(time.Hour * 2351467),
+}
+
+var dummyDelete = struct {
+	Authentication string `json:"authentication"`
+	SubmissionID   int    `json:"submission_id"`
+}{
+	Authentication: os.Getenv("PEER_AUTH"),
+	SubmissionID:   1337,
+}
+
+func getReaderFromPayload(payload model.Payload) io.Reader {
 	body, _ := json.Marshal(payload)
 	return bytes.NewReader(body)
+}
+
+func getReaderFromUpdate(payload struct {
+	Authentication string    `json:"authentication"`
+	SubmissionID   int       `json:"submission_id"`
+	ScheduledTime  time.Time `json:"scheduled_time"`
+}) io.Reader {
+	body, _ := json.Marshal(payload)
+	return bytes.NewReader(body)
+}
+
+func getReaderFromDelete(payload struct{
+	Authentication string `json:"authentication"`
+	SubmissionID   int    `json:"submission_id"`
+}) io.Reader {
+	body, _ := json.Marshal(payload)
+	return bytes.NewReader(body)
+}
+
+func peerTasktoRawJSON(peerTask model.PeerTask) json.RawMessage {
+	byte, _ := json.Marshal(peerTask)
+
+	return byte
 }
 
 func TestHandlers(t *testing.T) {
@@ -35,11 +91,35 @@ func TestHandlers(t *testing.T) {
 			expectedCode: http.StatusOK,
 		},
 		{
-			name:   "indexPOST",
-			method: "POST",
-			url:    "/",
-			body: nil,
+			name:         "indexPOST_empty_body",
+			method:       "POST",
+			url:          "/",
+			body:         nil,
 			handler:      IndexPOST,
+			expectedCode: http.StatusBadRequest,
+		},
+		{
+			name:         "indexPOST",
+			method:       "POST",
+			url:          "/",
+			body:         getReaderFromPayload(dummyPayload),
+			handler:      IndexPOST,
+			expectedCode: http.StatusOK,
+		},
+		{
+			name:         "indexPUT",
+			method:       "PUT",
+			url:          "/",
+			body:         getReaderFromUpdate(dummyUpdate),
+			handler:      IndexPUT,
+			expectedCode: http.StatusOK,
+		},
+		{
+			name:         "indexDELETE",
+			method:       "DELETE",
+			url:          "/",
+			body:         getReaderFromDelete(dummyDelete),
+			handler:      IndexDELETE,
 			expectedCode: http.StatusOK,
 		},
 	}

@@ -25,6 +25,12 @@ func IndexPOST(w http.ResponseWriter, r *http.Request) {
 
 	var payload model.Payload
 
+	if r.Body == nil{
+		log.Println("No Body in request") //todo real logger
+		http.Error(w, "No Body in request", http.StatusBadRequest)
+		return
+	}
+
 	//decode json request into struct
 	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
@@ -88,6 +94,10 @@ func IndexPUT(w http.ResponseWriter, r *http.Request) {
 
 	model.UpdateTimer(update.SubmissionID, update.ScheduledTime, model.GetPayload(update.SubmissionID))
 
+	if err := json.NewEncoder(w).Encode(response{Success: true}); err != nil {
+		log.Println("Something went wrong encoding response") //todo real logger
+		http.Error(w, "Something went wrong encoding response", http.StatusInternalServerError)
+	}
 }
 
 // IndexDELETE handles DELETE requests
@@ -117,5 +127,10 @@ func IndexDELETE(w http.ResponseWriter, r *http.Request) {
 		log.Println("Something wrong deleting timer") //todo real logger
 		http.Error(w, "Something wrong deleting timer", http.StatusInternalServerError)
 		return
+	}
+
+	if err := json.NewEncoder(w).Encode(response{Success: true}); err != nil {
+		log.Println("Something went wrong encoding response") //todo real logger
+		http.Error(w, "Something went wrong encoding response", http.StatusInternalServerError)
 	}
 }

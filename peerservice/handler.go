@@ -29,8 +29,8 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 
 	//check that request body is not empty
 	if r.Body == nil {
-		log.Println("Please send a request body") //todo real logger
-		http.Error(w, "Please send a request body", http.StatusBadRequest)
+		log.Println("No Body in request") //todo real logger
+		http.Error(w, "No Body in request", http.StatusBadRequest)
 		return
 	}
 

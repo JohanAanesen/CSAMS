@@ -17,6 +17,11 @@ echo -e "\n\n-------------------GOCYCLO-------------------"
 gocyclo ./webservice/...
 gocyclo ./peerservice/...
 
-echo -e "\n\n-------------------GO TEST-------------------"
+echo -e "\n\n-------------------GO TEST WEBSERVICE-------------------"
 go test ./webservice/... -cover
+
+echo -e "\n\n-------------------GO TEST PEERSERVICE-------------------"
 go test ./peerservice/... -cover
+
+echo -e "\n\n-------------------GO TEST SCHEDULERSERVICE-------------------"
+go test ./schedulerservice/... -cover
