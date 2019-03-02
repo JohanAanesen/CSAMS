@@ -1,5 +1,37 @@
 Svein's log
 ============
+## 02/03/2019
+#### Worked on
+* Updating submissions
+* Creating reviews
+#### Good
+* Javascript framework for dynamic forms is working great, and easily changeable
+#### Bad
+* 
+#### Decisions
+* None
+
+## 01/03/2019
+#### Worked on
+* Nothing, was sick
+#### Good
+* 
+#### Bad
+* Sick
+#### Decisions
+* None
+
+## 28/02/2019
+#### Worked on
+* Assignment page
+* View plugins
+#### Good
+* View plugins works great
+#### Bad
+* 
+#### Decisions
+* None
+
 ## 27/02/2019
 #### Worked on
 * QoT (Navbar)
