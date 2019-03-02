@@ -1,0 +1,110 @@
+{{define "title"}}Upload Assignment{{end}}
+{{define "head"}}{{end}}
+{{ define "content" }}
+    <main role="main" class="container">
+        <div class="col my-2">
+            <a href="/assignment/{{ .Assignment.ID }}" class="btn btn-outline-dark">Go Back</a>
+            <div class="col my-1 container pt-3 jumbotron">
+
+
+                <h1 class="display-4">{{ .Course.Code }} {{ .Course.Name }}</h1>
+                <h2 class="display-5">{{ .Assignment.Name }}</h2>
+                <p class="lead" id="countDown"></p>
+                <form method="post" action="/assignment/submission/update?id={{ .Assignment.ID }}">
+
+                    <!-- TODO (Brede) : This could be one for each loop with only .AnswersAndFields -->
+                    <!-- TODO (Svein) : There are more types, but are not essential for the alpha  -->
+                    {{ if .Delivered }}
+                        {{ range .AnswersAndFields }}
+                            <div class="form-group">
+                                <label for="{{ .Field.Name }}">{{ .Field.Label }}</label>
+                                {{ if eq .Field.Type "text" }}
+                                    <input type="text" name="{{ .Field.Name }}" id="{{ .Field.Name }}"
+                                           class="form-control"
+                                           required value="{{ .Answer.Value}}">
+                                {{ else if eq .Field.Type "url" }}
+                                    <input type="url" name="{{ .Field.Name }}" id="{{ .Field.Name }}"
+                                           class="form-control" required value="{{ .Answer.Value}}">
+                                {{ else if eq .Field.Type "textarea" }}
+                                    <textarea name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control"
+                                              required>{{ .Answer.Value}}</textarea>
+                                {{ end }}
+
+                            </div>
+                        {{ end }}
+                    {{ else }}
+                        {{ range .Fields }}
+                            <div class="form-group">
+                                <label for="{{ .Name }}">{{ .Label }}</label>
+                                {{ if eq .Type "text" }}
+                                    <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control"
+                                           required>
+                                {{ else if eq .Type "url" }}
+                                    <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
+                                {{ else if eq .Type "textarea" }}
+                                    <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control"
+                                              required></textarea>
+                                {{ end }}
+
+                            </div>
+                        {{ end }}
+                    {{ end }}
+
+
+                    {{ if .Delivered }}
+                        <button id="uploadBtn" type="submit" class="btn btn-success">Update</button>
+                    {{ else }}
+                        <button id="uploadBtn" type="submit" class="btn btn-primary">Upload</button>
+                    {{ end }}
+                </form>
+            </div>
+        </div>
+    </main>
+
+{{ end }}
+{{define "foot"}}
+    <script>
+        // Source: https://www.w3schools.com/howto/howto_js_countdown.asp
+
+        // Set the date we're counting down to
+        let countDownDate = new Date({{ .Assignment.Deadline }});
+        // let countDownDate = new Date("Jan 5, 2021 15:37:25").getTime();
+
+        // Update the count down every 1 second
+        let x = setInterval(function () {
+
+            // Get todays date and time
+            let now = new Date().getTime() + (1000 * 60 * 60); // Plus one hour (Norwegian time)
+
+            // Find the distance between now and the count down date
+            let distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Output the result in an element with id="demo"
+            document.getElementById("countDown").innerHTML = "<strong>Time left: </strong>" + days + "d " + hours + "h "
+                + minutes + "m " + seconds + "s ";
+
+            // Give warning if it's under 1 hour left
+            if (distance < (1000 * 60 * 60)) {
+                document.getElementById("countDown").className = "text-warning";
+            }
+
+            // If the count down is over, output 'EXPIRED' and disable everything
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("countDown").className = "text-danger";
+                document.getElementById("countDown").innerHTML = "EXPIRED";
+                document.getElementById("uploadBtn").disabled = true;
+
+                {{ range .Fields }}
+                document.getElementById({{ .Name }}).disabled = true;
+                {{ end }}
+            }
+        }, 1000);
+    </script>
+{{end}}

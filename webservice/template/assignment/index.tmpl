@@ -2,6 +2,8 @@
 {{define "head"}}{{end}}
 {{define "content"}}
     <div class="container pt-3">
+
+        <a href="/course?id={{ .CourseID }}" class="btn btn-outline-dark">Go Back</a>
         {{if .Delivered}}
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <strong>Notice!</strong> You have already delivered this assignment!
@@ -20,15 +22,17 @@
         <div class="jumbotron">
             {{.Description}}
         </div>
-        {{if .IsDeadlineOver}}
+        {{  if .IsDeadlineOver }}
             {{if .HasReview}}
                 <a href="#" class="btn btn-info btn-lg">Peer-Review</a>
             {{end}}
         {{else}}
             {{if not .Delivered}}
-                <a href="/assignment/delivery" class="btn btn-primary btn-lg">Deliver assignment</a>
+                <a href="/assignment/submission?id={{ .Assignment.ID }}" class="btn btn-primary btn-lg">Deliver
+                    assignment</a>
             {{else}}
-                <a href="/assignment/delivery" class="btn btn-success btn-lg">Re-Deliver assignment</a>
+                <a href="/assignment/submission?id={{ .Assignment.ID }}" class="btn btn-success btn-lg">Re-Deliver
+                    assignment</a>
             {{end}}
         {{end}}
         {{if .HasBeenValidated}}

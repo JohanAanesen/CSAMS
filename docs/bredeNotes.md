@@ -21,7 +21,7 @@
 * We were a bit unsure how to update user user information. Since you can choose to only change one thing or all the information, should we request a change to the db for each change or all together every time?
     * Solution: Different queries to different changes
 * Another bug with getting the password-hash from the DB, it only works when the secondary-email is not NULL (*I think*).
-    * Solution: Ask Johan for help.
+    * Solution: Ask [Johan](https://github.com/JohanAanesen) for help.
     * He kinda fixed it with `sql.Nullstring`, it still doesn't work right :/
 * Today was just bug after bug, not a fun day, I also worked an hour longer so I can leave earlier on Friday.
 
@@ -36,15 +36,15 @@
 
 ### Friday - 08/02/19
 *I'm going home today to celebrate my birthday, so I'm leaving 2hours earlier*
-* Fixed the hash bug, Johan saw that i 'fixed' it on the wrong variable so now the hash appeared too!
+* Fixed the hash bug, [Johan](https://github.com/JohanAanesen) saw that i 'fixed' it on the wrong variable so now the hash appeared too!
 * Fixed the input validation bug, I had to switch from `onclick` to `onsubmit` that started the javascript script in the button-save. 
-* Merged with master and got some problems, but Johan helped me fix it.
+* Merged with master and got some problems, but [Johan](https://github.com/JohanAanesen) helped me fix it.
 * Almost done with #8 now, only need some refactoring and I have to fix one test.
 
 ### Sunday - 10/02/19
 *I'm 5h too short for this week, so I have to work some today too*
 * Started up with setting up the environment on my laptop since I'm home and not in Gjøvik.
-* I'm going to fix one test today and Johan is refactoring the code, so after that, I can make a pull request.
+* I'm going to fix one test today and [Johan](https://github.com/JohanAanesen) is refactoring the code, so after that, I can make a pull request.
 * Merged my branch to master
 
 ## Week Two
@@ -88,13 +88,13 @@ I chose `github.com/rs/xid` because it was the length i wanted and quick and eas
 * Added functionality for adding user to course through link when the user is logged in and when the user logs in.
 * Added functionality for adding a new user to course through link.
 * Added a test for RegisterGET handler :)
-* Short day I quess, I'm going to write the report today, also -> no bugs today woo.
+* Short day I guess, I'm going to write the report today, also -> no bugs today woo.
 
 ## Week Three
 ### Monday - 18/02/19
 * \#23 Changed courseID back to int and auto increment so it's similar to the other tables. But i added a column for hash instead.
 * \#20 Started on home page, but could only finish one of two tasks since assignments isn't done yet.
-* We almost didn't have anything to talk about today with the supervisor.
+* We almost didn't have anything to talk about today with the [supervisor](https://www.ntnu.no/ansatte/ivar.farup).
 * I'm going to start on [#22 - Admin FAQ Page](https://trello.com/c/0trVQS8x) now :D
 * \#22 Looked at [this page](https://www.codeply.com/go/syFXJL6m5p/bootstrap-4-faq-accordion) for inspiration to the faq page, I liked the animations and stuff, but... If I use markdown instead
 it would be way easier to just add a new faq in frontend and is over all less code and easier to implement. Agreed with [Project Owner](https://www.ntnu.no/ansatte/christopher.frantz)
@@ -103,7 +103,7 @@ to use md, it's also more consistence with this solution.
 
 ### Tuesday - 19/02/19
 * \#22 Decided on storing the md in db and let any teacher edit it, but also log every update.
-* I chose to copy some of the design Johan used for course page to keep it more constance all over <3 
+* I chose to copy some of the design [Johan](https://github.com/JohanAanesen) used for course page to keep it more constance all over <3 
 * I have some bugs on the faq site, but the main functionality is all done soon.
 * I also moved db functions from shared/db to model and gave a temp fix to the extremely annoying go lint errors...
 * All functions for faq is now done, each time a teacher updates the faq, the time is added **IN NORWEGIAN TIME**, this has to be written somewhere
@@ -134,18 +134,52 @@ and display only active courses and assignments on dashboard, and then I'm done.
 * Continuing the work on \#21
 * \#21 I created a new function in `model/assignment.go` called `GetAllToUserSorted()` which gets all the assignment to the user
 sorted by the deadlines desc. 
+* Course and assignment is displayed in correct order now
+* Had some meetings, played some Minecraft, back now
+* Made a pull request for [#21 - Admin Page Dynamic](https://trello.com/c/J8GQvTCt)
+* Starting later on [#18 - Assignment Delivery page](https://trello.com/c/zyQpCo4K)
 
 
 ### Tuesday - 26/02/19
-
+* Made an instance `BredeVM` on Openstack
+    * Tried to do stuff there but I didn't understand shit
+* Going back to [#18 - Assignment Delivery page](https://trello.com/c/zyQpCo4K) again
+    * Started on front-end draft for delivery page
+    * Stuck on how to get the forms value out of the sql statement \#bug
+    * It was just stupid errors that shouldn't happened! >:( [Johan](https://github.com/JohanAanesen) helped me see them again <3
+    * I'm going to die now, bye! <3
+    * I'm back for another 1h, Made a shitty draft of the assignment delivery page, I think I can be done within two days actually.
+    * Added countdown on delivery page, inspiration from https://www.w3schools.com/howto/howto_js_countdown.asp 
 
 ### Wednesday - 27/02/19
-
+*I overslept 1h today*
+* Continuing on [#18 - Assignment Delivery page](https://trello.com/c/zyQpCo4K)
+    * Made a function for getting name and code from course
+    * I used 2h one one pull request because I don't like Openstack...
+    * And now I'm going to merge with master -_-'
+    * I'm just trying to run the project now... shit day
+    * Almost all day has gone to Openstack and trying to run the project local
+    * [Johan](https://github.com/JohanAanesen) fixed docker in Intellij <3 can now run it local from intellij
+    * Environment is up-ish again and I'm gone
 
 ### Thursday - 28/02/19
+* After 1h, I can finally start coding again, since the env is completely up!
+* Added functionality to get form values in an array
+* Added functions for inserting and getting answers from db
+* Merging with master
+* Added test values in db, but it took some while since I didn't get errors about what was wrong :/
 
 
 ### Friday - 01/03/19
+* Added test data to .sql file
+* Users that has delivered can see what they have delivered.
+* Users can update what they have delivered
+* I made the design much better
+* Fixed a bug with deadline
+* Added real link to `see assignment` button
+* Done with [#18 - Assignment Delivery page](https://trello.com/c/zyQpCo4K), thought I would use 21h, actually used 24h 17min,
+this was mostly because I use ca. 7h all together to get the project starting.
+* worked more on 18 do improve consistency and slicker design
 
 
 

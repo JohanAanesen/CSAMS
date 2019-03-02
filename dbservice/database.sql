@@ -6,7 +6,6 @@
 -- Generation Time: 29. Jan, 2019 17:17 PM
 -- Server-versjon: 10.1.28-MariaDB
 -- PHP Version: 7.1.10
-DROP DATABASE IF EXISTS cs53;
 
 CREATE DATABASE IF NOT EXISTS cs53 COLLATE = utf8_general_ci;
 
@@ -30,23 +29,138 @@ SET time_zone = "+01:00"; -- Norwegian time zone! --
 -- --------------------------------------------------------
 
 --
+-- Tabellstruktur for tabell `adminfaq`
+--
+
+CREATE TABLE `adminfaq`
+(
+  `id`        int(11)                     NOT NULL,
+  `timestamp` datetime                    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `questions` text COLLATE utf8_danish_ci NOT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_danish_ci;
+
+--
+-- Dataark for tabell `adminfaq`
+--
+
+INSERT INTO `adminfaq` (`id`, `timestamp`, `questions`)
+VALUES (1, '1997-02-13 13:37:00',
+        'Q: How do I make a course + link?\r\n--------------------------------\r\n**A:** Dashboard -> Courses -> new. And create the course there\r\n\r\nQ: How do I make an assignment?\r\n--------------------------------\r\n**A:** Dashboard -> Assignments-> new. And create the assignment there\r\n\r\nQ: How do I invite students to the course?\r\n--------------------------------\r\n**A:** Create a link for the course and email the students the link\r\n\r\nQ: How do I import database?\r\n--------------------------------\r\n**A:** Start xampp and go to import in phpmyadmin\r\n\r\nQ: How do I export database?\r\n--------------------------------\r\n**A:** Start xampp and go to export in phpmyadmin\r\n\r\nQ: How do I sign up?\r\n--------------------------------\r\n**A:** You go to `/register` and register a user there\n\n![Reddit](https://external-preview.redd.it/lzcL5WbUuBr7pI9zIM9ZbUSrETZR1UNb-g6C5DehYss.jpg?width=960&crop=smart&auto=webp&s=4b483a024ac9103bfe6df2e98599043bbed29146)');
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur for tabell `assignments`
+--
+
+CREATE TABLE `assignments`
+(
+  `id`            int(11)     NOT NULL,
+  `name`          varchar(64) NOT NULL,
+  `description`   text,
+  `created`       timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `publish`       datetime    NOT NULL,
+  `deadline`      datetime    NOT NULL,
+  `course_id`     int(11)     NOT NULL,
+  `submission_id` int(11)              DEFAULT NULL,
+  `review_id`     int(11)              DEFAULT NULL,
+  `validation_id` int(11)     NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+--
+-- Dataark for tabell `assignments`
+--
+
+INSERT INTO `assignments` (`id`, `name`, `description`, `created`, `publish`, `deadline`, `course_id`, `submission_id`,
+                           `review_id`)
+VALUES (1, 'Assignment 1', '# this is an assignment\r\n* sub\r\n* 2\r\n* pew', '2019-02-28 15:25:10',
+        '2019-02-28 16:24:00', '2019-03-29 11:11:00', 3, 1, NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Tabellstruktur for tabell `course`
 --
 
 CREATE TABLE `course`
 (
-  `id`          int(11)                                        NOT NULL,
-  `hash`        varchar(64)                                    NOT NULL,
-  `coursecode`  varchar(10) COLLATE utf8_danish_ci             NOT NULL,
-  `coursename`  varchar(64) COLLATE utf8_danish_ci             NOT NULL,
-  `teacher`     int(11)                                        NOT NULL,
+  `id`          int(11)                                       NOT NULL,
+  `hash`        varchar(64) COLLATE utf8_danish_ci            NOT NULL,
+  `coursecode`  varchar(10) COLLATE utf8_danish_ci            NOT NULL,
+  `coursename`  varchar(64) COLLATE utf8_danish_ci            NOT NULL,
+  `teacher`     int(11)                                       NOT NULL,
   `description` text COLLATE utf8_danish_ci,
-  `year`        int(11) COLLATE utf8_danish_ci                 NOT NULL,
-  `semester`    ENUM ('fall', 'spring') COLLATE utf8_danish_ci NOT NULL
-)
-  ENGINE = InnoDB
+  `year`        int(11)                                       NOT NULL,
+  `semester`    enum ('fall','spring') COLLATE utf8_danish_ci NOT NULL
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_danish_ci;
+
+--
+-- Dataark for tabell `course`
+--
+
+INSERT INTO `course` (`id`, `hash`, `coursecode`, `coursename`, `teacher`, `description`, `year`, `semester`)
+VALUES (1, '3876438629b786', 'IMT1031', 'Grunnleggende Programmering', 2, 'Write hello, world in C++', 2019, 'fall'),
+       (2, '12387teg817eg18', 'IMT1082', 'Objekt-orientert programmering', 2, 'Write Wazz up world in Python', 2019,
+        'fall'),
+       (3, '12e612eg1e17ge1', 'IMT2021', 'Algoritmiske metoder', 2, 'Object orientation and algorithmic methods in C#',
+        2019, 'spring');
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur for tabell `fields`
+--
+
+CREATE TABLE `fields`
+(
+  `id`          int(11)     NOT NULL,
+  `form_id`     int(11)     NOT NULL,
+  `type`        varchar(64) NOT NULL,
+  `name`        varchar(64) NOT NULL,
+  `label`       varchar(64) DEFAULT NULL,
+  `description` text        NOT NULL,
+  `priority`    int(11)     NOT NULL,
+  `weight`      int(11)     DEFAULT NULL,
+  `choices`     varchar(64) DEFAULT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+--
+-- Dataark for tabell `fields`
+--
+
+INSERT INTO `fields` (`id`, `form_id`, `type`, `name`, `label`, `description`, `priority`, `weight`, `choices`)
+VALUES (1, 1, 'text', 'github_form_text_0', 'Github handle', 'Username on github', 0, 0, ''),
+       (2, 1, 'url', 'github_form_url_1', 'Github url', 'url to github', 1, 0, ''),
+       (3, 1, 'textarea', 'github_form_textarea_2', 'Comments', 'Comments about your work', 2, 0, '');
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur for tabell `forms`
+--
+
+CREATE TABLE `forms`
+(
+  `id`          int(11)     NOT NULL,
+  `prefix`      varchar(64) NOT NULL,
+  `name`        varchar(64)      DEFAULT NULL,
+  `description` text,
+  `created`     timestamp   NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+--
+-- Dataark for tabell `forms`
+--
+
+INSERT INTO `forms` (`id`, `prefix`, `name`, `description`, `created`)
+VALUES (1, 'github_form', 'Github form', 'Form to Github', '2019-02-28 15:23:23');
 
 -- --------------------------------------------------------
 
@@ -62,12 +176,60 @@ CREATE TABLE `logs`
   `assignmentid` int(11)                                     DEFAULT NULL,
   `courseid`     int(11)                                     DEFAULT NULL,
   `submissionid` int(11)                                     DEFAULT NULL,
-  `oldvalue`     text COLLATE utf8_danish_ci                 DEFAULT NULL,
-  `newValue`     text COLLATE utf8_danish_ci                 DEFAULT NULL
-)
-  ENGINE = InnoDB
+  `oldvalue`     text COLLATE utf8_danish_ci,
+  `newValue`     text COLLATE utf8_danish_ci
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_danish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur for tabell `peer_reviews`
+--
+
+CREATE TABLE `peer_reviews`
+(
+  `id`                   int(11) NOT NULL,
+  `submission_id`        int(11) NOT NULL,
+  `user_id`              int(11) NOT NULL,
+  `review_submission_id` int(11) NOT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur for tabell `reviews`
+--
+
+CREATE TABLE `reviews`
+(
+  `id`      int(11) NOT NULL,
+  `form_id` int(11) NOT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur for tabell `submissions`
+--
+
+CREATE TABLE `submissions`
+(
+  `id`      int(11) NOT NULL,
+  `form_id` int(11) NOT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+--
+-- Dataark for tabell `submissions`
+--
+
+INSERT INTO `submissions` (`id`, `form_id`)
+VALUES (1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -78,10 +240,27 @@ CREATE TABLE `usercourse`
 (
   `userid`   int(11) NOT NULL,
   `courseid` int(11) NOT NULL
-)
-  ENGINE = InnoDB
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_danish_ci;
+
+--
+-- Dataark for tabell `usercourse`
+--
+
+INSERT INTO `usercourse` (`userid`, `courseid`)
+VALUES (1, 3),
+       (2, 3),
+       (3, 1),
+       (3, 3),
+       (4, 2),
+       (4, 3),
+       (5, 3),
+       (6, 3),
+       (7, 3),
+       (8, 3),
+       (9, 3),
+       (10, 3);
 
 -- --------------------------------------------------------
 
@@ -97,80 +276,95 @@ CREATE TABLE `users`
   `teacher`       tinyint(1)                         NOT NULL,
   `email_private` varchar(64) COLLATE utf8_danish_ci DEFAULT NULL,
   `password`      varchar(64) COLLATE utf8_danish_ci NOT NULL
-)
-  ENGINE = InnoDB
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_danish_ci;
 
+--
+-- Dataark for tabell `users`
+--
 
-CREATE TABLE `adminfaq`
+INSERT INTO `users` (`id`, `name`, `email_student`, `teacher`, `email_private`, `password`)
+VALUES (1, 'Test User', 'hei@gmail.com', 1, 'test@yahoo.com',
+        '$2a$14$MZj24p41j2NNGn6JDsQi0OsDb56.0LcfrIdgjE6WmZzp58O6V/VhK'),
+       (2, 'Frode Haug', 'frodehg@teach.ntnu.no', 1, NULL,
+        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
+       (3, 'Ola Nordmann', 'olanor@stud.ntnu.no', 1, 'swag-meister69@ggmail.com',
+        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
+       (4, 'Johan Klausen', 'johkl@stu.ntnu.no', 0, NULL,
+        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
+       (5, 'Stian Fjerdingstad', 'stianfj@stu.ntnu.no', 0, NULL,
+        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
+       (6, 'Svein Nilsen', 'sveini@stu.ntnu.no', 0, NULL,
+        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
+       (7, 'Kjell Are-Kjelterud', 'kjellak@stu.ntnu.no', 0, NULL,
+        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
+       (8, 'Marius Lillevik', 'mariuslil@stu.ntnu.no', 0, NULL,
+        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
+       (9, 'Jorun Skaalnes', 'jorunska@stu.ntnu.no', 0, NULL,
+        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
+       (10, 'Klaus Aanesen', 'klausaa@stu.ntnu.no', 0, NULL,
+        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur for tabell `user_reviews`
+--
+
+CREATE TABLE `user_reviews`
 (
   `id`        int(11)  NOT NULL,
-  `timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `questions` text     NOT NULL
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_danish_ci;
+  `user_id`   int(11)  NOT NULL,
+  `review_id` int(11)  NOT NULL,
+  `data`      longtext NOT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur for tabell `user_submissions`
+--
+
+CREATE TABLE `user_submissions`
+(
+  `id`            int(11)     NOT NULL,
+  `user_id`       int(11)     NOT NULL,
+  `assignment_id` int(11)     NOT NULL,
+  `submission_id` int(11)     NOT NULL,
+  `type`          varchar(64) NOT NULL,
+  `answer`        mediumtext
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+--
+-- Dataark for tabell `user_submissions`
+--
+
+INSERT INTO `user_submissions` (`id`, `user_id`, `assignment_id`, `submission_id`, `type`, `answer`)
+VALUES (1, 3, 1, 1, 'text', 'BredeFK'),
+       (2, 3, 1, 1, 'url', 'https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments'),
+       (3, 3, 1, 1, 'textarea', 'I did good!');
 
 --
 -- Indexes for dumped tables
 --
+
 --
--- Indexes for dumped tables
+-- Indexes for table `adminfaq`
 --
+ALTER TABLE `adminfaq`
+  ADD PRIMARY KEY (`id`);
 
-
--- Insert Test info --
-INSERT INTO `users` (`id`, `name`, `email_student`, `teacher`, `email_private`, `password`)
-VALUES (1,
-        'Test User',
-        'hei@gmail.com',
-        1,
-        'test@yahoo.com',
-        '$2a$14$MZj24p41j2NNGn6JDsQi0OsDb56.0LcfrIdgjE6WmZzp58O6V/VhK'),
-       (2,
-        'Frode Haug',
-        'frodehg@teach.ntnu.no',
-        1,
-        NULL,
-        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'), -- Password is 123abc --
-       (3,
-        'Ola Nordmann',
-        'olanor@stud.ntnu.no',
-        1,
-        'swag-meister69@ggmail.com',
-        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'), -- Password is 123abc --
-       (4,
-        'Johan Klausen',
-        'johkl@stu.ntnu.no',
-        0,
-        NULL,
-        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'); -- Password is 123abc --
-
-
-INSERT INTO `course` (`id`, `hash`, `coursecode`, `coursename`, `teacher`, `year`, `semester`, `description`)
-VALUES (1, '3876438629b786', 'IMT1031', 'Grunnleggende Programmering', 2, 2019, 'fall', 'Write hello, world in C++'),
-       (2,
-        '12387teg817eg18',
-        'IMT1082',
-        'Objekt-orientert programmering',
-        2,
-        2019,
-        'fall',
-        'Write Wazz up world in Python'),
-       (3, '12e612eg1e17ge1', 'IMT2021', 'Algoritmiske metoder', 2, 2019, 'spring', 'Write an AI in C#');
-
-INSERT INTO `usercourse` (`userid`, `courseid`)
-VALUES (3, 1),
-       (3, 2),
-       (4, 2);
-
-INSERT INTO `adminfaq` (`id`, `timestamp`, `questions`)
-VALUES ('1',
-        '1997-02-13 13:37:00',
-        'Q: How do I make a course + link?\r\n--------------------------------\r\n**A:** Dashboard -> Courses -> new. And create the course there\r\n\r\nQ: How do I make an assignment?\r\n--------------------------------\r\n**A:** Dashboard -> Assignments-> new. And create the assignment there\r\n\r\nQ: How do I invite students to the course?\r\n--------------------------------\r\n**A:** Create a link for the course and email the students the link\r\n\r\nQ: How do I import database?\r\n--------------------------------\r\n**A:** Start xampp and go to import in phpmyadmin\r\n\r\nQ: How do I export database?\r\n--------------------------------\r\n**A:** Start xampp and go to export in phpmyadmin\r\n\r\nQ: How do I sign up?\r\n--------------------------------\r\n**A:** You go to `/register` and register a user there\n\n![Reddit](https://external-preview.redd.it/lzcL5WbUuBr7pI9zIM9ZbUSrETZR1UNb-g6C5DehYss.jpg?width=960&crop=smart&auto=webp&s=4b483a024ac9103bfe6df2e98599043bbed29146)');
--- end --
+--
+-- Indexes for table `assignments`
+--
+ALTER TABLE `assignments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `assignments_courses_id_fk` (`course_id`),
+  ADD KEY `assignments_reviews_id_fk` (`review_id`),
+  ADD KEY `assignments_submissions_id_fk` (`submission_id`);
 
 --
 -- Indexes for table `course`
@@ -180,6 +374,19 @@ ALTER TABLE `course`
   ADD KEY `teacher` (`teacher`);
 
 --
+-- Indexes for table `fields`
+--
+ALTER TABLE `fields`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fields_forms_id_fk` (`form_id`);
+
+--
+-- Indexes for table `forms`
+--
+ALTER TABLE `forms`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `logs`
 --
 ALTER TABLE `logs`
@@ -187,6 +394,29 @@ ALTER TABLE `logs`
   ADD KEY `courseid` (`courseid`),
   ADD KEY `assignmentid` (`assignmentid`),
   ADD KEY `submissionid` (`submissionid`);
+
+--
+-- Indexes for table `peer_reviews`
+--
+ALTER TABLE `peer_reviews`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `peer_reviews_submissions_id_fk` (`submission_id`),
+  ADD KEY `peer_reviews_user_id_fk` (`user_id`),
+  ADD KEY `peer_reviews_review_submission_id_fk` (`review_submission_id`);
+
+--
+-- Indexes for table `reviews`
+--
+ALTER TABLE `reviews`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `reviews_forms_id_fk` (`form_id`);
+
+--
+-- Indexes for table `submissions`
+--
+ALTER TABLE `submissions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `submissions_forms_id_fk` (`form_id`);
 
 --
 -- Indexes for table `usercourse`
@@ -203,172 +433,163 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email_student` (`email_student`),
   ADD UNIQUE KEY `email_private` (`email_private`);
 
-ALTER TABLE `adminfaq`
-  ADD PRIMARY KEY (`id`);
+--
+-- Indexes for table `user_reviews`
+--
+ALTER TABLE `user_reviews`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_reviews_reviews_id_fk` (`review_id`),
+  ADD KEY `user_reviews_users_id_fk` (`user_id`);
+
+--
+-- Indexes for table `user_submissions`
+--
+ALTER TABLE `user_submissions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_submissions_submissions_id_fk` (`submission_id`),
+  ADD KEY `user_submissions_users_id_fk` (`user_id`),
+  ADD KEY `user_submission_assignment_id_fk` (`assignment_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
 
 --
+-- AUTO_INCREMENT for table `adminfaq`
+--
+ALTER TABLE `adminfaq`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 2;
+--
+-- AUTO_INCREMENT for table `assignments`
+--
+ALTER TABLE `assignments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 2;
+--
 -- AUTO_INCREMENT for table `course`
 --
 ALTER TABLE `course`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 4;
+--
+-- AUTO_INCREMENT for table `fields`
+--
+ALTER TABLE `fields`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 4;
+--
+-- AUTO_INCREMENT for table `forms`
+--
+ALTER TABLE `forms`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 2;
+--
+-- AUTO_INCREMENT for table `peer_reviews`
+--
+ALTER TABLE `peer_reviews`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
+--
+-- AUTO_INCREMENT for table `reviews`
+--
+ALTER TABLE `reviews`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `submissions`
+--
+ALTER TABLE `submissions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 2;
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 11;
+--
+-- AUTO_INCREMENT for table `user_reviews`
+--
+ALTER TABLE `user_reviews`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
-
-ALTER TABLE `adminfaq`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
+--
+-- AUTO_INCREMENT for table `user_submissions`
+--
+ALTER TABLE `user_submissions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 4;
 --
 -- Begrensninger for dumpede tabeller
 --
 
 --
+-- Begrensninger for tabell `assignments`
+--
+ALTER TABLE `assignments`
+  ADD CONSTRAINT `assignments_courses_id_fk` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`),
+  ADD CONSTRAINT `assignments_reviews_id_fk` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`),
+  ADD CONSTRAINT `assignments_submissions_id_fk` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`);
+
+--
 -- Begrensninger for tabell `course`
 --
 ALTER TABLE `course`
-  ADD CONSTRAINT `course_ibfk_1` FOREIGN KEY (`teacher`) REFERENCES `users` (`id`)
-  ON UPDATE CASCADE;
+  ADD CONSTRAINT `course_ibfk_1` FOREIGN KEY (`teacher`) REFERENCES `users` (`id`) ON UPDATE CASCADE;
+
+--
+-- Begrensninger for tabell `fields`
+--
+ALTER TABLE `fields`
+  ADD CONSTRAINT `fields_forms_id_fk` FOREIGN KEY (`form_id`) REFERENCES `forms` (`id`);
 
 --
 -- Begrensninger for tabell `logs`
 --
 ALTER TABLE `logs`
-  ADD CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE,
-  ADD CONSTRAINT `logs_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE;
+  ADD CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `logs_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+--
+-- Begrensninger for tabell `peer_reviews`
+--
+ALTER TABLE `peer_reviews`
+  ADD CONSTRAINT `peer_reviews_review_submission_id_fk` FOREIGN KEY (`review_submission_id`) REFERENCES `user_submissions` (`id`),
+  ADD CONSTRAINT `peer_reviews_submissions_id_fk` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`),
+  ADD CONSTRAINT `peer_reviews_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Begrensninger for tabell `reviews`
+--
+ALTER TABLE `reviews`
+  ADD CONSTRAINT `reviews_forms_id_fk` FOREIGN KEY (`form_id`) REFERENCES `forms` (`id`);
+
+--
+-- Begrensninger for tabell `submissions`
+--
+ALTER TABLE `submissions`
+  ADD CONSTRAINT `submissions_forms_id_fk` FOREIGN KEY (`form_id`) REFERENCES `forms` (`id`);
 
 --
 -- Begrensninger for tabell `usercourse`
 --
 ALTER TABLE `usercourse`
-  ADD CONSTRAINT `usercourse_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`)
-  ON DELETE CASCADE
-  ON UPDATE CASCADE,
-  ADD CONSTRAINT `usercourse_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`)
-  ON DELETE CASCADE
-  ON UPDATE CASCADE;
+  ADD CONSTRAINT `usercourse_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `usercourse_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Begrensninger for tabell `user_reviews`
+--
+ALTER TABLE `user_reviews`
+  ADD CONSTRAINT `user_reviews_reviews_id_fk` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`),
+  ADD CONSTRAINT `user_reviews_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Begrensninger for tabell `user_submissions`
+--
+ALTER TABLE `user_submissions`
+  ADD CONSTRAINT `user_submission_assignment_id_fk` FOREIGN KEY (`assignment_id`) REFERENCES `assignments` (`id`),
+  ADD CONSTRAINT `user_submissions_submissions_id_fk` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`),
+  ADD CONSTRAINT `user_submissions_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 COMMIT;
-
-
-create table forms
-(
-  id          int auto_increment
-    primary key,
-  prefix      varchar(64)                         not null,
-  name        varchar(64)                         null,
-  description text                                null,
-  created     timestamp default CURRENT_TIMESTAMP null
-);
-
-create table fields
-(
-  id          int auto_increment
-    primary key,
-  form_id     int         not null,
-  type        varchar(64) not null,
-  name        varchar(64) not null,
-  label       varchar(64) null,
-  description text        not null,
-  priority     int         not null,
-  weight      int         null,
-  choices     varchar(64) null,
-  constraint fields_forms_id_fk
-  foreign key (form_id) references forms (id)
-);
-
-create table reviews
-(
-  id      int auto_increment
-    primary key,
-  form_id int not null,
-  constraint reviews_forms_id_fk
-  foreign key (form_id) references forms (id)
-);
-
-create table submissions
-(
-  id      int auto_increment
-    primary key,
-  form_id int not null,
-  constraint submissions_forms_id_fk
-  foreign key (form_id) references forms (id)
-);
-
-create table assignments
-(
-  id            int auto_increment
-    primary key,
-  name          varchar(64)                         not null,
-  description   text                                null,
-  created       timestamp default CURRENT_TIMESTAMP not null,
-  publish       datetime                            not null,
-  deadline      datetime                            not null,
-  course_id     int                                 not null,
-  submission_id int                                 null,
-  review_id     int                                 null,
-  validation_id int null,
-  constraint assignments_courses_id_fk
-  foreign key (course_id) references course (id),
-  constraint assignments_reviews_id_fk
-  foreign key (review_id) references reviews (id),
-  constraint assignments_submissions_id_fk
-  foreign key (submission_id) references submissions (id)
-);
-
-create table user_reviews
-(
-  id        int auto_increment
-    primary key,
-  user_id   int      not null,
-  review_id int      not null,
-  data      longtext not null,
-  constraint user_reviews_reviews_id_fk
-  foreign key (review_id) references reviews (id),
-  constraint user_reviews_users_id_fk
-  foreign key (user_id) references users (id)
-);
-
-create table user_submissions
-(
-  id            int auto_increment
-    primary key,
-  user_id       int        not null,
-  assignment_id int not null,
-  submission_id int        not null,
-  type    varchar(64)   not null,
-  answer        mediumtext null,
-  constraint user_submissions_submissions_id_fk
-  foreign key (submission_id) references submissions (id),
-  constraint user_submissions_users_id_fk
-  foreign key (user_id) references users (id),
-  constraint user_submission_assignment_id_fk
-  foreign key (assignment_id) references assignments (id)
-);
-
-create table peer_reviews
-(
-  id                   int auto_increment primary key,
-  submission_id        int not null,
-  user_id              int not null,
-  review_submission_id int not null,
-  constraint peer_reviews_submissions_id_fk
-  foreign key (submission_id) references submissions (id),
-  constraint peer_reviews_user_id_fk
-  foreign key (user_id) references users (id),
-  constraint peer_reviews_review_submission_id_fk
-  foreign key (review_submission_id) references user_submissions (id)
-);
 
 /*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;

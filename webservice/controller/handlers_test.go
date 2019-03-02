@@ -693,3 +693,11 @@ func TestLogoutHandler(t *testing.T) {
 		t.Errorf("Handler returned wrong status code, expected %v, got %v", http.StatusFound, status)
 	}
 }
+
+func TestAssignmentUploadGET(t *testing.T) {
+	// TODO brede : write test here
+}
+
+func TestAssignmentUploadPOST(t *testing.T) {
+	// TODO brede : write test here
+}
