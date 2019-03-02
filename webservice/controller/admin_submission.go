@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 // AdminSubmissionGET handles GET-request to /admin/submission
@@ -92,4 +94,24 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect to /admin/submission
 	http.Redirect(w, r, "/admin/submission", http.StatusFound)
+}
+
+func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/submission/create"
+
+	v.Render(w)
 }
