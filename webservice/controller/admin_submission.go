@@ -134,5 +134,27 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 }
 
 func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
+	// Get data from the form
+	data := r.FormValue("data")
+	fmt.Println(data)
+	// Declare Form-struct
+	var form = model.Form{}
+	// Unmarshal the JSON-string sent from the form
+	err := json.Unmarshal([]byte(data), &form)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
+	// Declare an empty Repository for Submission
+	var repo = model.SubmissionRepository{}
+	// Insert data to database
+	err = repo.Update(form)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	// Redirect to /admin/submission
+	http.Redirect(w, r, "/admin/submission", http.StatusFound)
 }

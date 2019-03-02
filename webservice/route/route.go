@@ -78,7 +78,7 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreateGET).Methods("GET")
 	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreatePOST).Methods("POST")
 	adminrouter.HandleFunc("/submission/update/{id:[0-9]+}", controller.AdminSubmissionUpdateGET).Methods("GET")
-	adminrouter.HandleFunc("/submission/update}", controller.AdminSubmissionUpdatePOST).Methods("POST")
+	adminrouter.HandleFunc("/submission/update", controller.AdminSubmissionUpdatePOST).Methods("POST")
 
 	adminrouter.HandleFunc("/faq", controller.AdminFaqGET).Methods("GET")
 	adminrouter.HandleFunc("/faq/edit", controller.AdminFaqEditGET).Methods("GET")

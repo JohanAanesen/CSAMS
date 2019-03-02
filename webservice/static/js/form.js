@@ -22,6 +22,8 @@ const REGEXP = /\W/;
  * @constructor
  */
 let Form = function() {
+    this.id = 0;
+
     /**
      * Holds the fields of the form
      * @type {Object[]}
@@ -307,6 +309,7 @@ let Form = function() {
         });
 
         return JSON.stringify({
+            id:             this.id,
             prefix:         this.prefix,
             name:           this.name,
             description:    this.description,
@@ -317,6 +320,7 @@ let Form = function() {
     this.fromJSON = function(data) {
         let json = JSON.parse(data);
 
+        this.id = json.id;
         this.name = json.name;
         this.description = json.description;
         this.prefix = json.prefix;

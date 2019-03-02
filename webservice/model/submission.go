@@ -104,3 +104,45 @@ func (repo *SubmissionRepository) GetAll() ([]Submission, error) {
 	return result, nil
 }
 
+func (repo *SubmissionRepository) Update(form Form) error {
+	query := "UPDATE forms SET prefix=?, name=?, description=? WHERE id=?"
+	tx, err := db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = db.GetDB().Exec(query, form.Prefix, form.Name, form.Description, form.ID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	query = "DELETE FROM fields WHERE form_id=?"
+	rows, err := db.GetDB().Query(query, form.ID)
+	if err != nil {
+		return err
+	}
+	rows.Close()
+
+	// Loop trough fields in the forms
+	for _, field := range form.Fields {
+		// Insertion query
+		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+		// Execute the query
+		rows, err := db.GetDB().Query(query, form.ID, field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
+		// Check for error
+		if err != nil {
+			return err
+		}
+		// Close the connection
+		rows.Close()
+	}
+
+	// Return no error
+	return nil
+}
