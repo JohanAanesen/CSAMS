@@ -5,10 +5,6 @@ import (
 	"log"
 )
 
-// Courses hold the data for a slice of Course-struct
-type Courses struct {
-	Items []Course `json:"courses"`
-}
 
 // Course holds the data for courses
 type Course struct {
@@ -22,6 +18,119 @@ type Course struct {
 	Semester    string       `json:"semester"`
 	Assignments []Assignment `json:"assignments"`
 }
+
+// CourseRepository holds all assignments, and DB-functions
+type CourseRepository struct{}
+
+// GetSingle retrieves a single Assignment based on Primary Key (id)
+func (repo *CourseRepository) GetSingle(id int) (Course, error) {
+	// Declare empty struct
+	var result Course
+
+	// Create query string
+	query := "SELECT id, hash, coursecode, coursename, description, teacher, year, semester FROM course WHERE id = ?"
+	// Prepare and execute query
+	rows, err := db.GetDB().Query(query, id)
+	// Check for error
+	if err != nil {
+		return Course{}, err
+	}
+	// Close connection
+	defer rows.Close()
+
+	for rows.Next() {
+		// Scan row for data
+		err = rows.Scan(&result.ID, &result.Hash, &result.Code,
+			&result.Name, &result.Description, &result.Teacher, &result.Year,
+			&result.Semester)
+		// Check for error
+		if err != nil {
+			return Course{}, err
+		}
+	}
+
+	return result, nil
+}
+
+// GetAll returns all Courses in the database
+func (repo *CourseRepository) GetAll() ([]Course, error) {
+	// Declare empty slice
+	var result []Course
+
+	// Create query string
+	query := "SELECT id, hash, coursecode, coursename, description, teacher, year, semester FROM course;"
+	// Prepare and execute query
+	rows, err := db.GetDB().Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	// Close connection
+	defer rows.Close()
+
+	// Loop through results
+	for rows.Next() {
+		// Declare empty struct
+		var course Course
+		// Scan rows
+		err := rows.Scan(&course.ID, &course.Hash, &course.Code,
+			&course.Name, &course.Description, &course.Teacher, &course.Year,
+			&course.Semester)
+		// Check for error
+		if err != nil {
+			return nil, err
+		}
+
+		// Append retrieved row
+		result = append(result, course)
+	}
+
+	return result, nil
+}
+
+// GetAllToUserSorted Gets all courses to user and returns them sorted by year
+func (repo *CourseRepository) GetAllToUserSorted(UserID int) ([]Course, error) {
+
+	// Declare empty slice
+	var result []Course
+
+	// Create query string
+	// The tables is connected like this example: users -> usercourse -> course -> assignments
+	query := "SELECT course.id, course.hash, course.coursecode, course.coursename, course.description, course.teacher, course.year, course.semester  " +
+		"FROM `course` INNER JOIN usercourse ON course.id = usercourse.courseid " +
+		"INNER JOIN users ON users.id = usercourse.userid WHERE user.id = ? " +
+		"ORDER BY course.year DESC;"
+
+	// Prepare and execute query
+	rows, err := db.GetDB().Query(query, UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Close connection
+	defer rows.Close()
+
+	// Loop through results
+	for rows.Next() {
+		// Declare empty struct
+		var course Course
+		// Scan rows
+		err := rows.Scan(&course.ID, &course.Hash, &course.Code,
+			&course.Name, &course.Description, &course.Teacher, &course.Year,
+			&course.Semester)
+		// Check for error
+		if err != nil {
+			return nil, err
+		}
+
+		// Append retrieved row
+		result = append(result, course)
+	}
+
+	return result, nil
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // TODO Brede : Change ex `var courseCOde string` to only use `course.Code`
 
@@ -58,10 +167,10 @@ func GetCourseCodeAndName(courseID int) (Course, error) {
 }
 
 //GetCoursesToUser returns all the courses to the user
-func GetCoursesToUser(userID int) (Courses, error) {
+func GetCoursesToUser(userID int) ([]Course, error) {
 
 	// Create an empty courses array
-	var courses Courses
+	var courses []Course
 
 	// Query gets all courses to user with userid: userID and sort them by year and semester
 	rows, err := db.GetDB().Query("SELECT course.* FROM course INNER JOIN usercourse ON course.id = usercourse.courseid WHERE usercourse.userid = ? ORDER BY course.year DESC, course.semester DESC", userID)
@@ -85,7 +194,7 @@ func GetCoursesToUser(userID int) (Courses, error) {
 		rows.Scan(&id, &hash, &courseCode, &courseName, &teacher, &description, &year, &semester)
 
 		// Add course to courses array
-		courses.Items = append(courses.Items, Course{
+		courses = append(courses, Course{
 			ID:          id,
 			Hash:        hash,
 			Code:        courseCode,

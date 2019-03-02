@@ -112,8 +112,25 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 // AdminUpdateCourseGET handles GET-request at /admin/course/update/{id}
 func AdminUpdateCourseGET(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Printf("id: %v", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
+
+
+	courseRepo := &model.CourseRepository{}
+
+
+
+
+
+
 
 	v := view.New(r)
 	v.Name = "admin/course/update"

@@ -59,8 +59,8 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/course", controller.AdminCourseGET).Methods("GET")
 	adminrouter.HandleFunc("/course/create", controller.AdminCreateCourseGET).Methods("GET")
 	adminrouter.HandleFunc("/course/create", controller.AdminCreateCoursePOST).Methods("POST")
-	adminrouter.HandleFunc("/course/update/{id}", controller.AdminUpdateCourseGET).Methods("GET")
-	adminrouter.HandleFunc("/course/update/{id}", controller.AdminUpdateCoursePOST).Methods("POST")
+	adminrouter.HandleFunc("/course/update/{id:[0-9]+}", controller.AdminUpdateCourseGET).Methods("GET")
+	adminrouter.HandleFunc("/course/update/{id:[0-9]+}", controller.AdminUpdateCoursePOST).Methods("POST")
 
 	adminrouter.HandleFunc("/course/{id:[0-9]+}/assignments", controller.AdminCourseAllAssignments).Methods("GET")
 
