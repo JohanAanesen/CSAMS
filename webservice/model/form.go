@@ -17,13 +17,13 @@ type Form struct {
 
 // Field TODO (Svein): comment
 type Field struct {
-	ID          int            `json:"id" db:"id"`
-	Type        string         `json:"type" db:"type"`
-	Name        string         `json:"name" db:"name"`
-	Label       string         `json:"label" db:"label"`
-	Description string         `json:"description" db:"description"`
-	Order       int            `json:"order" db:"priority"`
-	Weight      int            `json:"weight" db:"weight"`
+	ID          int    `json:"id" db:"id"`
+	Type        string `json:"type" db:"type"`
+	Name        string `json:"name" db:"name"`
+	Label       string `json:"label" db:"label"`
+	Description string `json:"description" db:"description"`
+	Order       int    `json:"order" db:"priority"`
+	Weight      int    `json:"weight" db:"weight"`
 	Choices     string `json:"choices,omitempty" db:"choices"`
 }
 
@@ -74,16 +74,13 @@ func (repo *FormRepository) Get(id int) (Form, error) {
 
 	// Check if there is any rows
 	if rows.Next() {
-		// Declare an empty Form
-		var form = Form{}
 		// Scan
-		err = rows.Scan(&form.ID, &form.Prefix, &form.Name, &form.Description, &form.Created)
+		err = rows.Scan(&result.ID, &result.Prefix, &result.Name, &result.Description, &result.Created)
 		// Check for error
 		if err != nil {
 			return result, err
 		}
 	}
-
 	// Create new query for getting all the fields
 	query = "SELECT id, type, name, label, description, priority, weight, choices FROM fields WHERE form_id = ?"
 	// Execute query
