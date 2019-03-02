@@ -139,7 +139,7 @@ func (repo *CourseRepository) Update(id int, course Course) error {
 		return err
 	}
 
-	_, err = tx.Exec(query, course.Code, course.Name, course.Teacher, course.Description, course.Year, course.Semester, id)
+	_, err = tx.Exec(query, course.Code, course.Name, course.Description, course.Semester, id)
 	if err != nil {
 		tx.Rollback()
 		return err
