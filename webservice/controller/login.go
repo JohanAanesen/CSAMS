@@ -19,11 +19,14 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 
 	course := model.Course{}
 
+	//course repo
+	courseRepo := &model.CourseRepository{}
+
 	// Check if request has an courseID and it's not empty
 	hash := r.FormValue("courseid")
 	if hash != "" {
 
-		course = model.CourseExists(hash)
+		course = courseRepo.CourseExists(hash)
 
 		// Check if the hash is a valid hash
 		if course.ID == -1 {
@@ -38,8 +41,8 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 	if user.Authenticated { //already logged in, redirect to homepage
 
 		// If hash was valid, add user isn't in the course, then add user to course
-		if hash != "" && !model.UserExistsInCourse(user.ID, course.ID) {
-			model.AddUserToCourse(user.ID, course.ID)
+		if hash != "" && !courseRepo.UserExistsInCourse(user.ID, course.ID) {
+			courseRepo.AddUserToCourse(user.ID, course.ID)
 		}
 
 		http.Redirect(w, r, "/", http.StatusFound) //redirect
@@ -83,6 +86,9 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 	user, ok := model.UserAuth(email, password) //authenticate user
 
+	//course repo
+	courseRepo := &model.CourseRepository{}
+
 	if ok {
 		//save user to session values
 		user.Authenticated = true
@@ -90,8 +96,8 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 		// Add new user to course, if he's not in the course
 		if hash != "" {
-			if id := model.CourseExists(hash).ID; id != -1 && !model.UserExistsInCourse(user.ID, id) {
-				model.AddUserToCourse(user.ID, id)
+			if id := courseRepo.CourseExists(hash).ID; id != -1 && !courseRepo.UserExistsInCourse(user.ID, id) {
+				courseRepo.AddUserToCourse(user.ID, id)
 			}
 		}
 

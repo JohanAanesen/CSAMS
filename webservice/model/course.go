@@ -97,9 +97,8 @@ func (repo *CourseRepository) GetAllToUserSorted(UserID int) ([]Course, error) {
 	// Create query string
 	// The tables is connected like this example: users -> usercourse -> course -> assignments
 	query := "SELECT course.id, course.hash, course.coursecode, course.coursename, course.description, course.teacher, course.year, course.semester  " +
-		"FROM `course` INNER JOIN usercourse ON course.id = usercourse.courseid " +
-		"INNER JOIN users ON users.id = usercourse.userid WHERE user.id = ? " +
-		"ORDER BY course.year DESC;"
+		"FROM `course` INNER JOIN usercourse ON course.id = usercourse.courseid WHERE usercourse.userid = ? " +
+		"ORDER BY course.year DESC, course.coursename ASC;"
 
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query, UserID)
@@ -157,6 +156,7 @@ func (repo *CourseRepository) Update(id int, course Course) error {
 
 // TODO Brede : Change ex `var courseCOde string` to only use `course.Code`
 
+/*
 // GetCourseCodeAndName gets the course code and name to the course
 func GetCourseCodeAndName(courseID int) (Course, error) {
 	//Create an empty courses array
@@ -273,8 +273,10 @@ func GetCourse(courseID int) Course {
 	return course
 }
 
+*/
+
 // CourseExists checks if the course exists in the database
-func CourseExists(hash string) Course {
+func (repo *CourseRepository) CourseExists(hash string) Course {
 	rows, err := db.GetDB().Query("SELECT course.* FROM course WHERE hash = ?", hash)
 	if err != nil {
 		log.Println(err.Error())
@@ -312,7 +314,7 @@ func CourseExists(hash string) Course {
 }
 
 // UserExistsInCourse checks if user exists in course
-func UserExistsInCourse(userID int, courseID int) bool {
+func (repo *CourseRepository) UserExistsInCourse(userID int, courseID int) bool {
 
 	// Checks if user exists in course
 	rows, err := db.GetDB().Query("SELECT * FROM usercourse WHERE userid = ? AND courseid = ?", userID, courseID)
@@ -339,7 +341,7 @@ func UserExistsInCourse(userID int, courseID int) bool {
 }
 
 // AddUserToCourse adds the user to a course
-func AddUserToCourse(userID int, courseID int) bool {
+func (repo *CourseRepository) AddUserToCourse(userID int, courseID int) bool {
 
 	// Sql query
 	rows, err := db.GetDB().Query("INSERT INTO `usercourse` (`userid`, `courseid`) VALUES (?, ?)", userID, courseID)

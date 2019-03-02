@@ -25,7 +25,10 @@ func AdminGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	courses, err := model.GetCoursesToUser(session.GetUserFromSession(r).ID)
+	//course repo
+	courseRepo := &model.CourseRepository{}
+
+	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println(err)

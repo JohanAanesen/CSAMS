@@ -21,7 +21,10 @@ func AdminCourseGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/course/index"
 
-	courses, err := model.GetCoursesToUser(session.GetUserFromSession(r).ID)
+	//course repo
+	courseRepo := &model.CourseRepository{}
+
+	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println(err)
@@ -91,8 +94,11 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//course repo
+	courseRepo := &model.CourseRepository{}
+
 	// Add user to course
-	if !model.AddUserToCourse(user.ID, course.ID) {
+	if !courseRepo.AddUserToCourse(user.ID, course.ID) {
 		log.Println("Could not add user to course! (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
@@ -123,9 +129,10 @@ func AdminUpdateCourseGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
-
+	//course repo
 	courseRepo := &model.CourseRepository{}
 
+	//get course from database
 	course, err := courseRepo.GetSingle(id)
 	if err != nil {
 		log.Println(err)
@@ -133,13 +140,10 @@ func AdminUpdateCourseGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
-
-
 	v := view.New(r)
 	v.Name = "admin/course/update"
 
-	v.Vars["Course"] = course
+	v.Vars["Course"] = course //attach course to template
 
 	v.Render(w)
 }
@@ -153,19 +157,23 @@ func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//get new variables from request
 	newName := r.FormValue("name")
 	newCode := r.FormValue("code")
 	newDescription := r.FormValue("description")
 	newSemester := r.FormValue("semester")
 
+	//make sure they are not empty
 	if newName == "" || newCode == "" || newDescription == "" || newSemester == ""{
 		log.Printf("id: %v", err)
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
 
+	//course repo
 	courseRepo := model.CourseRepository{}
 
+	//get course from database
 	course, err := courseRepo.GetSingle(id)
 	if err != nil {
 		log.Println(err)
@@ -173,11 +181,13 @@ func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//update variables
 	course.Name = newName
 	course.Code = newCode
 	course.Description = newDescription
 	course.Semester = newSemester
 
+	//save to database
 	err = courseRepo.Update(id, course)
 	if err != nil {
 		log.Println(err)
@@ -206,7 +216,16 @@ func AdminCourseAllAssignments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	course := model.GetCourse(id)
+	//course repo
+	courseRepo := model.CourseRepository{}
+
+	//get course from database
+	course, err := courseRepo.GetSingle(id)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
