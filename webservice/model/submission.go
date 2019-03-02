@@ -12,8 +12,7 @@ type Submission struct {
 }
 
 // SubmissionRepository ... TODO (Svein): comment
-type SubmissionRepository struct {
-}
+type SubmissionRepository struct {}
 
 // Insert form and fields to database
 func (repo *SubmissionRepository) Insert(form Form) error {
@@ -42,7 +41,7 @@ func (repo *SubmissionRepository) Insert(form Form) error {
 		// Insertion query
 		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
 		// Execute the query
-		rows, err := db.GetDB().Query(query, int(formID), field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
+		rows, err := db.GetDB().Query(query, formID, field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
 		// Check for error
 		if err != nil {
 			return err

@@ -39,7 +39,7 @@ type FormRepository struct {
 }
 
 // Insert form to database
-func (repo *FormRepository) Insert(form Form) (int64, error) {
+func (repo *FormRepository) Insert(form Form) (int, error) {
 	// Insertions Query
 	query := "INSERT INTO forms (prefix, name, description) VALUES (?, ?, ?);"
 	// Execute query with parameters
@@ -56,7 +56,7 @@ func (repo *FormRepository) Insert(form Form) (int64, error) {
 		return -1, err
 	}
 
-	return id, nil
+	return int(id), nil
 }
 
 // Get a single form based on the Primary Key, 'id'

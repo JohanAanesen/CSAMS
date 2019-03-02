@@ -326,7 +326,7 @@ let Form = function() {
         this.prefix = json.prefix;
 
         for (let i = 0; i < json.fields.length; i++) {
-            let f = new Field(json.fields[i].weight !== 0);
+            let f = new Field(this.weighted);
             f.name = json.fields[i].name;
             f.description = json.fields[i].description;
             f.label = json.fields[i].label;
