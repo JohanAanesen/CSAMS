@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/gorilla/mux"
 	"github.com/rs/xid"
@@ -146,7 +148,66 @@ func AdminUpdateCourseGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminUpdateCoursePOST handles POST-request at /admin/course/update/{id}
 func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.FormValue("id"))
+	if err != nil {
+		log.Printf("id: %v", err)
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
 
+
+	// Get form values
+	courseIDString := r.FormValue("course_id")
+	var val int
+
+	if r.FormValue("submission_id") != "" {
+		val, err = strconv.Atoi(r.FormValue("submission_id"))
+		if err != nil {
+			log.Println("submission_id")
+			log.Println(err)
+			return
+		}
+	}
+	submissionID := sql.NullInt64{
+		Int64: int64(val),
+		Valid: val != 0,
+	}
+
+	val = 0
+
+	if r.FormValue("review_id") != "" {
+		val, err = strconv.Atoi(r.FormValue("review_id"))
+		if err != nil {
+			log.Println("review_id")
+			log.Println(err)
+			return
+		}
+	}
+	reviewID := sql.NullInt64{
+		Int64: int64(val),
+		Valid: val != 0,
+	}
+
+	assignmentRepo := model.AssignmentRepository{}
+
+	assignment := model.Assignment{
+		Name:         r.FormValue("name"),
+		Description:  r.FormValue("description"),
+		Publish:      publish,
+		Deadline:     deadline,
+		CourseID:     courseID,
+		SubmissionID: submissionID,
+		ReviewID:     reviewID,
+	}
+
+	err = assignmentRepo.Update(id, assignment)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
 }
 
 // AdminCourseAllAssignments handles GET-request @ /course/{id:[0-9]+}/assignments

@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-6">
             <h2 class="display-4 mb-3">New course</h2>
-            <form action="/admin/course/update/{{.Course.ID}}" method="post">
+            <form action="/admin/course/update" method="post">
                 <div class="form-group">
                     <label for="code">Course code</label>
                     <input type="text" id="code" name="code" class="form-control" value="{{.Course.Code}}" required>
@@ -34,10 +34,11 @@
 
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <textarea name="description" id="description" class="form-control">{{.Course.Description}}</textarea>
+                    <textarea name="description" id="description" class="form-control" required>{{.Course.Description}}</textarea>
                 </div>
 
 
+                <input type="hidden" name="id" value="{{.Course.ID}}">
                 <input type="submit" class="btn btn-success">
                 <br><br>
             </form>

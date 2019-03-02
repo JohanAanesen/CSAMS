@@ -132,7 +132,7 @@ func (repo *CourseRepository) GetAllToUserSorted(UserID int) ([]Course, error) {
 
 // Update an course based on the ID and the data inside an Course-object
 func (repo *CourseRepository) Update(id int, course Course) error {
-	query := "UPDATE course SET coursecode=?, coursename=?, teacher=?, description=?, year=?, semester=? WHERE id=?"
+	query := "UPDATE course SET coursecode=?, coursename=?, description=?, semester=? WHERE id=?"
 
 	tx, err := db.GetDB().Begin()
 	if err != nil {
