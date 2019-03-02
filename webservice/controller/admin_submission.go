@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/gorilla/mux"
@@ -46,6 +47,7 @@ func AdminSubmissionCreateGET(w http.ResponseWriter, r *http.Request) {
 func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 	// Get data from the form
 	data := r.FormValue("data")
+	fmt.Println(data)
 	// Declare Form-struct
 	var form = model.Form{}
 	// Unmarshal the JSON-string sent from the form
@@ -105,13 +107,25 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	formRepo := model.FormRepository{}
+	form, err := formRepo.Get(id)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
 
+	fmt.Println(form)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
-	v.Name = "admin/submission/create"
+	v.Name = "admin/submission/update"
 
 	v.Render(w)
+}
+
+func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
+
 }
