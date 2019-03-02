@@ -313,6 +313,29 @@ let Form = function() {
             fields:         result,
         });
     };
+
+    this.fromJSON = function(data) {
+        let json = JSON.parse(data);
+
+        this.name = json.name;
+        this.description = json.description;
+        this.prefix = json.prefix;
+
+        for (let i = 0; i < json.fields.length; i++) {
+            let f = new Field(json.fields[i].weight !== 0);
+            f.name = json.fields[i].name;
+            f.description = json.fields[i].description;
+            f.label = json.fields[i].label;
+            f.type = json.fields[i].type;
+            f.order = json.fields[i].order;
+            f.choices = json.fields[i].choices.split(',');
+
+            this.fields.push(f);
+        }
+
+
+        this.renderAll();
+    };
 };
 
 /**
@@ -472,7 +495,10 @@ let Field = function(settings) {
 
         // == CHOICES START ==
         formGroup = document.createElement('div');
-        formGroup.classList.add(...['form-group', 'sr-only']);
+        formGroup.classList.add(...['form-group']);
+        if (this.type !== TYPES.RADIO) {
+            formGroup.classList.add(...['sr-only']);
+        }
         formGroup.id = `choices_form-group_${id}`;
 
         label = document.createElement('label');
@@ -483,6 +509,7 @@ let Field = function(settings) {
         textarea.classList.add(...['form-control']);
         textarea.setAttribute('name', `choices_${id}`);
         textarea.id = `choices_${id}`;
+        textarea.value = this.choices.join('\n');
 
         textarea.addEventListener('keyup', e => {
             this.choices = e.target.value.split('\n');
