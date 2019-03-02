@@ -130,6 +130,29 @@ func (repo *CourseRepository) GetAllToUserSorted(UserID int) ([]Course, error) {
 	return result, nil
 }
 
+// Update an course based on the ID and the data inside an Course-object
+func (repo *CourseRepository) Update(id int, course Course) error {
+	query := "UPDATE course SET coursecode=?, coursename=?, teacher=?, description=?, year=?, semester=? WHERE id=?"
+
+	tx, err := db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, course.Code, course.Name, course.Teacher, course.Description, course.Year, course.Semester, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // TODO Brede : Change ex `var courseCOde string` to only use `course.Code`

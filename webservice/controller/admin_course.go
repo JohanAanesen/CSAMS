@@ -126,14 +126,20 @@ func AdminUpdateCourseGET(w http.ResponseWriter, r *http.Request) {
 
 	courseRepo := &model.CourseRepository{}
 
-
-
+	course, err := courseRepo.GetSingle(id)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
 
 
 
 
 	v := view.New(r)
 	v.Name = "admin/course/update"
+
+	v.Vars["Course"] = course
 
 	v.Render(w)
 }
