@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"errors"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"time"
@@ -18,14 +19,14 @@ type Form struct {
 
 // Field TODO (Svein): comment
 type Field struct {
-	ID          int      `json:"id" db:"id"`
-	Type        string   `json:"type" db:"type"`
-	Name        string   `json:"name" db:"name"`
-	Label       string   `json:"label" db:"label"`
-	Description string   `json:"description" db:"description"`
-	Order       int      `json:"order" db:"priority"`
-	Weight      int      `json:"weight" db:"weight"`
-	Choices     []string `json:"choices" db:"choices"`
+	ID          int            `json:"id" db:"id"`
+	Type        string         `json:"type" db:"type"`
+	Name        string         `json:"name" db:"name"`
+	Label       string         `json:"label" db:"label"`
+	Description string         `json:"description" db:"description"`
+	Order       int            `json:"order" db:"priority"`
+	Weight      int            `json:"weight" db:"weight"`
+	Choices     sql.NullString `json:"choices" db:"choices"`
 }
 
 // Answer struct used for storing answers from users in forms
@@ -105,7 +106,6 @@ func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) 
 		return form, err
 	}
 
-	// NOT 'if rows.Next()'!! THAT IS NOT THE SAME FUCK!
 	for rows.Next() {
 		var formID int
 		var fieldID int
@@ -115,9 +115,10 @@ func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) 
 		var desc string
 		var priority int
 		var weight int
+		var choices sql.NullString
 
 		// Scan
-		err = rows.Scan(&formID, &fieldID, &fieldType, &name, &label, &desc, &priority, &weight) //, &choices)
+		err = rows.Scan(&formID, &fieldID, &fieldType, &name, &label, &desc, &priority, &weight, &choices)
 		// Check for error
 		if err != nil {
 			return form, err
@@ -134,7 +135,7 @@ func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) 
 			Description: desc,
 			Order:       priority,
 			Weight:      weight,
-			//Choices:     choices, // TODO : uncomment this
+			Choices:     choices,
 		})
 	}
 
@@ -142,3 +143,4 @@ func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) 
 
 	return form, nil
 }
+
