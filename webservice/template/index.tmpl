@@ -20,16 +20,18 @@
             </div><!-- /.row -->
 
             <div class="row">
-
                 {{ range .Courses.Items }}
-                    <div class="col-md-6 mb-3">
-                        <div class="card">
+                    <div class="col-md-6 col-sm-12 mb-3">
+                        <div class="card shadow-sm">
                             <div class="card-body">
-                                <h2 class="card-title">{{ .Code}} - {{ .Name }}</h2>
-                                <a href="course?id={{ .ID }}" class="btn btn-dark">See Course</a>
+                                <h2 class="display-4">{{ .Code }}</h2>
+                                <h3 class="mb-3">{{ .Name }}</h3>
+                                <hr>
+                                <a href="/course/?id={{ .ID }}" class="btn btn-outline-dark">See Course</a>
                             </div>
                         </div>
                     </div>
+
                 {{ end }}
 
             </div> <!-- /.row -->

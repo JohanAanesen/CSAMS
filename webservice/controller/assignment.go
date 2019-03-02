@@ -14,6 +14,17 @@ import (
 	"time"
 )
 
+// Combined holds answer and field
+type Combined struct {
+	Answer model.Answer
+	Field  model.Field
+}
+
+// MergedAnswerField is a struct for merging the answer and field array
+type MergedAnswerField struct {
+	Items []Combined
+}
+
 //AssignmentGET serves assignment page to users
 func AssignmentGET(w http.ResponseWriter, r *http.Request) {
 
@@ -84,14 +95,23 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var isDeadlineOver = assignment.Deadline.After(time.Now())
+	course := model.GetCourse(assignment.CourseID)
+	if course.Name == "" {
+		log.Println("Something went wrong with getting course (assignment.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	var isDeadlineOver = assignment.Deadline.Before(time.Now().UTC().Add(time.Hour))
+
+	// TODO : make this dynamic
 	var hasBeenValidated = true
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
-	v.Name = "assignment"
+	v.Name = "assignment/index"
 
 	v.Vars["Assignment"] = assignment
 	v.Vars["Description"] = template.HTML(description)
@@ -99,6 +119,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["HasReview"] = hasReview
 	v.Vars["HasAutoValidation"] = hasAutoValidation
 	v.Vars["IsDeadlineOver"] = isDeadlineOver
+	v.Vars["CourseID"] = course.ID
 	v.Vars["HasBeenValidated"] = hasBeenValidated
 
 	v.Render(w)
@@ -156,4 +177,230 @@ func AssignmentPeerGET(w http.ResponseWriter, r *http.Request) {
 	//get assignment info from database
 
 	//parse info with template
+}
+
+// AssignmentUploadGET serves the upload page
+func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
+
+	// Check for ID in url and give error if not
+	id := r.FormValue("id")
+	if id == "" {
+		log.Println("Error: id can't be empty! (assignment.go)")
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	// Convert id from string to int
+	assignmentID, err := strconv.Atoi(id)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	// Get assignment and log possible error
+	assignmentRepo := model.AssignmentRepository{}
+	assignment, err := assignmentRepo.GetSingle(assignmentID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	// Give error if assignment doesn't exists
+	if assignment.Name == "" {
+		log.Println("Error: assignment with id '" + id + "' doesn't exist! (assignment.go)")
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	// Get form and log possible error
+	formRepo := model.FormRepository{}
+	form, err := formRepo.GetFromAssignmentID(assignment.ID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get course and log possible error
+	course, err := model.GetCourseCodeAndName(assignment.CourseID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get answers to user if he has delivered
+	answers, err := model.GetUserAnswers(session.GetUserFromSession(r).ID, assignmentID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	com := MergedAnswerField{}
+	// Only merge if user has delivered
+	if len(answers) > 0 {
+
+		// Make sure answers and fields are same length before merging
+		if len(answers) != len(form.Fields) {
+			log.Println("Error: answers(" + strconv.Itoa(len(answers)) + ") is not equal length as fields(" + strconv.Itoa(len(form.Fields)) + ")! (assignment.go)")
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+		// Merge field and answer if assignment is delivered
+
+		for i := 0; i < len(form.Fields); i++ {
+			com.Items = append(com.Items, Combined{
+				Answer: answers[i],
+				Field:  form.Fields[i],
+			})
+		}
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	description := github_flavored_markdown.Markdown([]byte(assignment.Description))
+
+	// Set values
+	v := view.New(r)
+	v.Vars["Course"] = course
+	v.Vars["Assignment"] = assignment
+	v.Vars["Description"] = template.HTML(description)
+	v.Vars["Fields"] = form.Fields
+	v.Vars["Delivered"] = len(answers)
+	v.Vars["AnswersAndFields"] = com.Items
+	v.Name = "assignment/upload"
+	v.Render(w)
+
+}
+
+// AssignmentUploadPOST servers the
+func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
+
+	// Check for ID in url and give error if not
+	id := r.FormValue("id")
+	if id == "" {
+		log.Println("Error: id can't be empty! (assignment.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Convert id from string to int
+	assignmentID, err := strconv.Atoi(id)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get assignment and log possible error
+	assignmentRepo := model.AssignmentRepository{}
+	assignment, err := assignmentRepo.GetSingle(assignmentID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Give error if assignment doesn't exists
+	if assignment.Name == "" {
+		log.Println("Error: assignment with id '" + id + "' doesn't exist! (assignment.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Check if the deadline is reached
+	var isDeadlineOver = assignment.Deadline.Before(time.Now().UTC().Add(time.Hour))
+	if isDeadlineOver {
+		log.Println("Error: Deadline is reached! (assignment.go)")
+		fmt.Println("hei")
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	// Get form and log possible error
+	formRepo := model.FormRepository{}
+	form, err := formRepo.GetFromAssignmentID(assignment.ID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Check that submission id is valid
+	if !assignment.SubmissionID.Valid {
+		log.Println("Error: Something went wrong with submissionID, its nil (assignment.go))")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Check if user has uploaded already or not
+	delivered, err := assignmentRepo.HasUserSubmitted(assignmentID, session.GetUserFromSession(r).ID)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Start to fill out user Submission struct
+	userSub := model.UserSubmission{
+		UserID:       session.GetUserFromSession(r).ID,
+		SubmissionID: assignment.SubmissionID.Int64,
+		AssignmentID: assignment.ID,
+	}
+
+	// Get answers WITH answerID if the user has delivered
+	if delivered {
+		userSub.Answers, err = model.GetUserAnswers(session.GetUserFromSession(r).ID, assignmentID)
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+	}
+
+	// Check that every form is filled an give error if not
+	for index, field := range form.Fields {
+
+		// Check if they are empty and give error if they are
+		if r.FormValue(field.Name) == "" {
+			log.Println("Error: assignment with form name '" + field.Name + "' can not be empty! (assignment.go)")
+			ErrorHandler(w, r, http.StatusBadRequest)
+			return
+		}
+
+		// If delivered, only change the value
+		if delivered {
+			userSub.Answers[index].Value = r.FormValue(field.Name)
+		} else {
+			// Else, create new answers array
+			userSub.Answers = append(userSub.Answers, model.Answer{
+				Type:  field.Type,
+				Value: r.FormValue(field.Name),
+			})
+		}
+
+	}
+
+	// Initiate error
+	err = nil
+
+	// Upload or update answers
+	if !delivered {
+		err = model.UploadUserSubmission(userSub)
+	} else {
+		err = model.UpdateUserSubmission(userSub)
+	}
+
+	// Check for error
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Serve front-end again
+	AssignmentUploadGET(w, r)
 }

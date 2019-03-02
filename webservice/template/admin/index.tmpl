@@ -12,7 +12,8 @@
                         <h2 class="display-4">{{ .Code }}</h2>
                         <h3 class="mb-3">{{ .Name }}</h3>
                         <hr>
-                        <a href="/admin/course/{{.ID}}/assignments" class="btn btn-dark btn-sm">See assignments</a>
+                        <a href="/course/?id={{ .ID }}" class="btn btn-outline-dark">See Course</a>
+                        <a href="/admin/course/{{.ID}}/assignments" class="btn btn-outline-dark">See Assignments</a>
                     </div>
                 </div>
             </div>
@@ -26,14 +27,17 @@
         <!-- TODO Brede : only show active assignments -->
         {{range .Assignments}}
             <div class="col-12 col-md-6 col-lg-4 mb-3">
-                <div class="card shadow-sm">
+                <div class="card shadow-sm{{if DEADLINEDUE .Deadline}} bg-secondary text-light{{end}}">
                     <div class="card-body">
-                        <h2 class="display-5">{{ .Name }}</h2>
-                        <h5><code>COURSE_CODE</code></h5>
-                        <p><strong>Deadline: </strong> {{ .Deadline }}</p>
-                        <p class="card-text">{{ .Description }}</p>
-                        <hr>
-                        <a href="/admin/assignment/{{.ID}}" class="btn btn-outline-dark btn-sm">See details</a>
+                        <h2 class="display-5">{{.Name}}</h2>
+                        <h5><span class="badge {{if DEADLINEDUE .Deadline}}badge-dark{{ else}} badge-secondary{{end}}">COURSE_CODE</span>
+                        </h5>
+                        <p{{if DEADLINEDUE .Deadline}} class="text-danger"{{end}}>
+                            <strong>Deadline: </strong> {{PRETTYTIME .Deadline}}</p>
+                        <hr class="bg-light">
+                        <a href="/admin/assignment/{{.ID}}"
+                           class="btn btn-outline-{{if DEADLINEDUE .Deadline}}light{{else}}dark{{end}} btn-sm">See
+                            details</a>
                     </div>
                 </div>
             </div>
