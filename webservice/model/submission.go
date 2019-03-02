@@ -106,3 +106,4 @@ func (repo *SubmissionRepository) GetAll() ([]Submission, error) {
 
 	return result, nil
 }
+
