@@ -115,13 +115,20 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(form)
+	formBytes, err := json.Marshal(&form)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
 	v.Name = "admin/submission/update"
+
+	v.Vars["formJSON"] = string(formBytes)
 
 	v.Render(w)
 }
