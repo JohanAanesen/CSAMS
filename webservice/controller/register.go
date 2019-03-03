@@ -10,12 +10,15 @@ import (
 //RegisterGET serves register page to users
 func RegisterGET(w http.ResponseWriter, r *http.Request) {
 
+	//course repo
+	courseRepo := &model.CourseRepository{}
+
 	// Check if request has an courseID and it's not empty
 	hash := r.FormValue("courseid")
 	if hash != "" {
 
 		// Check if the hash is a valid hash
-		if course := model.CourseExists(hash); course.ID == -1 {
+		if course := courseRepo.CourseExists(hash); course.ID == -1 {
 			ErrorHandler(w, r, http.StatusBadRequest)
 			hash = ""
 			return
@@ -64,6 +67,9 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 
 	user, ok := model.RegisterUser(name, email, password) //register user in database
 
+	//course repo
+	courseRepo := &model.CourseRepository{}
+
 	if ok {
 		//save user to session values
 		user.Authenticated = true
@@ -71,8 +77,8 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		// Add new user to course
 
 		if hash != "" {
-			if id := model.CourseExists(hash).ID; id != -1 {
-				model.AddUserToCourse(user.ID, id)
+			if id := courseRepo.CourseExists(hash).ID; id != -1 {
+				courseRepo.AddUserToCourse(user.ID, id)
 			}
 		}
 	} else {

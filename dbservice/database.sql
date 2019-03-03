@@ -77,7 +77,7 @@ CREATE TABLE `course`
   `coursecode`  varchar(10) COLLATE utf8_danish_ci            NOT NULL,
   `coursename`  varchar(64) COLLATE utf8_danish_ci            NOT NULL,
   `teacher`     int(11)                                       NOT NULL,
-  `description` text COLLATE utf8_danish_ci,
+  `description` text                                          NOT NULL,
   `year`        int(11)                                       NOT NULL,
   `semester`    enum ('fall','spring') COLLATE utf8_danish_ci NOT NULL
 ) ENGINE = InnoDB

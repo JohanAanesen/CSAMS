@@ -23,10 +23,14 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
-	courses, err := model.GetCoursesToUser(session.GetUserFromSession(r).ID)
+	//course repo
+	courseRepo := &model.CourseRepository{}
+
+	//get courses to user
+	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 	if err != nil {
+		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
-		log.Println("get courses to user, error:", err)
 		return
 	}
 
@@ -44,8 +48,11 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	joinedCourse = ""
 
+	//course repo
+	courseRepo := &model.CourseRepository{}
+
 	// Check if course exists
-	course := model.CourseExists(r.FormValue("courseID"))
+	course := courseRepo.CourseExists(r.FormValue("courseID"))
 
 	// If course ID == "", it doesn't exist
 	if course.ID == -1 {
@@ -57,14 +64,14 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	user := session.GetUserFromSession(r)
 
 	// Check that user isn't in this class
-	if model.UserExistsInCourse(user.ID, course.ID) {
+	if courseRepo.UserExistsInCourse(user.ID, course.ID) {
 		//joinedCourse = ""
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
 
 	// Add user to course if possible
-	if !model.AddUserToCourse(user.ID, course.ID) {
+	if !courseRepo.AddUserToCourse(user.ID, course.ID) {
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}

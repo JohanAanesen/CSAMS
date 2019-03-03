@@ -21,7 +21,10 @@ func AdminCourseGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/course/index"
 
-	courses, err := model.GetCoursesToUser(session.GetUserFromSession(r).ID)
+	//course repo
+	courseRepo := &model.CourseRepository{}
+
+	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println(err)
@@ -91,8 +94,11 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//course repo
+	courseRepo := &model.CourseRepository{}
+
 	// Add user to course
-	if !model.AddUserToCourse(user.ID, course.ID) {
+	if !courseRepo.AddUserToCourse(user.ID, course.ID) {
 		log.Println("Could not add user to course! (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
@@ -112,18 +118,84 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 // AdminUpdateCourseGET handles GET-request at /admin/course/update/{id}
 func AdminUpdateCourseGET(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Printf("id: %v", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
+
+	//course repo
+	courseRepo := &model.CourseRepository{}
+
+	//get course from database
+	course, err := courseRepo.GetSingle(id)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
 
 	v := view.New(r)
 	v.Name = "admin/course/update"
 
+	v.Vars["Course"] = course //attach course to template
+
 	v.Render(w)
 }
 
-// AdminUpdateCoursePOST handles POST-request at /admin/course/update/{id}
+// AdminUpdateCoursePOST handles POST-request at /admin/course/update
 func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.FormValue("id"))
+	if err != nil {
+		log.Printf("id: %v", err)
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
 
+	//get new variables from request
+	newName := r.FormValue("name")
+	newCode := r.FormValue("code")
+	newDescription := r.FormValue("description")
+	newSemester := r.FormValue("semester")
+
+	//make sure they are not empty
+	if newName == "" || newCode == "" || newDescription == "" || newSemester == ""{
+		log.Printf("id: %v", err)
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	//course repo
+	courseRepo := model.CourseRepository{}
+
+	//get course from database
+	course, err := courseRepo.GetSingle(id)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	//update variables
+	course.Name = newName
+	course.Code = newCode
+	course.Description = newDescription
+	course.Semester = newSemester
+
+	//save to database
+	err = courseRepo.Update(id, course)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/admin/course", http.StatusFound)
 }
 
 // AdminCourseAllAssignments handles GET-request @ /course/{id:[0-9]+}/assignments
@@ -144,7 +216,16 @@ func AdminCourseAllAssignments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	course := model.GetCourse(id)
+	//course repo
+	courseRepo := model.CourseRepository{}
+
+	//get course from database
+	course, err := courseRepo.GetSingle(id)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
