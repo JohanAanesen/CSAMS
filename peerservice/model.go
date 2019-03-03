@@ -35,7 +35,7 @@ func getSubmissions(SubmissionID int, AssignmentID int) Submissions {
 	//Create an empty courses array
 	var submissions Submissions
 
-	rows, err := GetDB().Query("SELECT id, user_id, submission_id, assignment_id FROM user_submissions WHERE submission_id = ? AND assignment_id = ?", SubmissionID, AssignmentID)
+	rows, err := GetDB().Query("SELECT user_id FROM user_submissions WHERE submission_id = ? AND assignment_id = ? GROUP BY user_id", SubmissionID, AssignmentID)
 	if err != nil {
 		log.Println(err.Error()) // TODO : log error
 		// returns empty course array if it fails
@@ -43,19 +43,15 @@ func getSubmissions(SubmissionID int, AssignmentID int) Submissions {
 	}
 
 	for rows.Next() {
-		var id int
 		var userid int
-		var submissionID int
-		var assignmentID int
 
-		rows.Scan(&id, &userid, &submissionID, &assignmentID)
+		rows.Scan(&userid)
 
 		// Add course to courses array
 		submissions = append(submissions, Submission{
-			ID:           id,
 			UserID:       userid,
-			SubmissionID: submissionID,
-			AssignmentID: assignmentID,
+			SubmissionID: SubmissionID,
+			AssignmentID: AssignmentID,
 		})
 	}
 

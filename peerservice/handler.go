@@ -76,7 +76,7 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 				counter -= len(ShuffledSubmissions)
 			}
 
-			subpair.ReviewUserID = ShuffledSubmissions[counter].ID
+			subpair.ReviewUserID = ShuffledSubmissions[counter].UserID
 
 			GeneratedReviewers = append(GeneratedReviewers, subpair) //save to generated pairs
 		}
