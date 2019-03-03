@@ -1,15 +1,15 @@
-{{define "title"}}Create Submission{{end}}
+{{define "title"}}Dashboard: Review{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
 <div class="row">
     <div class="col-12">
-        <h1 class="display-4">Submission Forms <a href="/admin/submission/create" class="btn btn-success btn-sm">New</a></h1>
+        <h1 class="display-4">Review Forms <a href="/admin/review/create" class="btn btn-success btn-sm">New</a></h1>
         <hr>
     </div>
 </div>
 
 <div class="row">
-    {{range .Submissions}}
+    {{range .Reviews}}
     <div class="col-4">
         <div class="card shadow-sm mb-3">
             <div class="card-body">
@@ -17,7 +17,7 @@
                 <h6 class="card-subtitle mb-2 text-muted">{{PRETTYTIME .Form.Created}}</h6>
                 <p class="card-text">{{.Form.Description}}</p>
                 <p>
-                    <a href="/admin/submission/update/{{.FormID}}" class="btn btn-outline-dark">Edit</a>
+                    <a href="/admin/review/update/{{.FormID}}" class="btn btn-outline-dark">Edit</a>
                 </p>
             </div>
         </div>

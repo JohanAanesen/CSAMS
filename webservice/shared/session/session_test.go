@@ -5,6 +5,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/config"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -37,10 +38,34 @@ func TestSession(t *testing.T) {
 			name: "TestSaveUserToSession",
 			f:    TestSaveUserToSession,
 		},
+		{
+			name: "TestEmpty",
+			f:    TestEmpty,
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, test.f)
+	}
+}
+
+func TestEmpty(t *testing.T) {
+	r, err := http.NewRequest("GET", "/", nil)
+	if err != nil {
+		log.Fatalf("new request: %s", err)
+	}
+
+	sess, err := session.Instance(r)
+	if err != nil {
+		log.Fatalf("session instance: %s", err)
+	}
+
+	sess.Values["foo"] = "bar"
+
+	session.Empty(sess)
+
+	if sess.Values["foo"] == "bar" {
+		t.Fail()
 	}
 }
 

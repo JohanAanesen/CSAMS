@@ -1,5 +1,60 @@
 Svein's log
 ============
+# Week 9 report
+#### Worked on
+* 
+#### Decisions
+* 
+#### Good
+* 
+#### Bad
+*  
+
+## 03/03/2019
+#### Worked on
+* Updating reviews
+* Creating reviews
+#### Good
+* Found bug in Javascript-framework, but was easily fixed 
+#### Bad
+* 
+#### Decisions
+* None
+
+## 02/03/2019
+#### Worked on
+* Updating submissions
+* Creating reviews
+* Tests for the view-plugins
+* Parsing JSON to Javascript Form
+#### Good
+* Javascript framework for dynamic forms is working great, and easily changeable
+#### Bad
+* 
+#### Decisions
+* None
+
+## 01/03/2019
+#### Worked on
+* Nothing, was sick
+#### Good
+* 
+#### Bad
+* Sick
+#### Decisions
+* None
+
+## 28/02/2019
+#### Worked on
+* Assignment page
+* View plugins
+#### Good
+* View plugins works great
+#### Bad
+* 
+#### Decisions
+* None
+
 ## 27/02/2019
 #### Worked on
 * QoT (Navbar)

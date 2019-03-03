@@ -91,6 +91,9 @@
                             <label for="review_id">Select Form</label>
                             <select name="review_id" id="review_id" class="form-control">
                                 <option value="">None</option>
+                                {{range .Reviews}}
+                                    <option value="{{.ID}}">{{.Form.Name}}</option>
+                                {{end}}
                             </select>
                         </div>
 
