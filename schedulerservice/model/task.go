@@ -23,13 +23,13 @@ type Task interface {
 type PeerTask struct {
 	Authentication string `json:"authentication"`
 	SubmissionID   int    `json:"submission_id"`
+	AssignmentID   int    `json:"assignment_id"`
 	Reviewers      int    `json:"reviewers"`
 }
 
 //Trigger runs tasks when their scheduled time expires
 func (peer PeerTask) Trigger() {
 	fmt.Printf("Triggering task: %v\n", peer.SubmissionID) //todo remove this
-
 
 	//Send request to peer service
 	jsonValue, _ := json.Marshal(peer) //json encode the request
@@ -81,7 +81,7 @@ func (peer PeerTask) Delete() bool {
 		return false
 	}
 
-	_, err = tx.Exec("DELETE FROM schedule_tasks WHERE submission_id LIKE ?", peer.SubmissionID)
+	_, err = tx.Exec("DELETE FROM schedule_tasks WHERE submission_id = ? AND assignment_id = ?", peer.SubmissionID, peer.AssignmentID)
 	if err != nil {
 		//todo log error
 		log.Println(err.Error())
@@ -97,7 +97,7 @@ func (peer PeerTask) Delete() bool {
 		return false
 	}
 
-	delete(Timers, peer.SubmissionID) //delete id from map so it may be re-assigned
+	delete(Timers, peer.AssignmentID) //delete id from map so it may be re-assigned
 
 	return true
 }
@@ -105,7 +105,7 @@ func (peer PeerTask) Delete() bool {
 //NewTask registers a new Task in database and ships it off for scheduling
 func NewTask(payload Payload) bool {
 	//Make sure a timer does not exist for this submission
-	if GetTimer(payload.SubmissionID) != nil{
+	if GetTimer(payload.AssignmentID) != nil {
 		log.Println("Timer for this submissions already exists.")
 		return false
 	}
@@ -139,7 +139,7 @@ func ScheduleTask(payload Payload) bool {
 
 		//Schedule task
 		if !peerTask.Schedule(payload.ScheduledTime) {
-			log.Printf("Could not schedule task for submissionID: %v", peerTask.SubmissionID)
+			log.Printf("Could not schedule task for submissionID: %v and assignmentID: %v\n", peerTask.SubmissionID, peerTask.AssignmentID)
 			return false
 		}
 	default:

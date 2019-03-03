@@ -267,13 +267,11 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	description := github_flavored_markdown.Markdown([]byte(assignment.Description))
 
 	// Set values
 	v := view.New(r)
 	v.Vars["Course"] = course
 	v.Vars["Assignment"] = assignment
-	v.Vars["Description"] = template.HTML(description)
 	v.Vars["Fields"] = form.Fields
 	v.Vars["Delivered"] = len(answers)
 	v.Vars["AnswersAndFields"] = com.Items
@@ -321,7 +319,6 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	var isDeadlineOver = assignment.Deadline.Before(time.Now().UTC().Add(time.Hour))
 	if isDeadlineOver {
 		log.Println("Error: Deadline is reached! (assignment.go)")
-		fmt.Println("hei")
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
@@ -409,4 +406,108 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 
 	// Serve front-end again
 	AssignmentUploadGET(w, r)
+}
+
+// AssignmentUserSubmissionGET serves one suser submission to admin and the peer reviews
+func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	assignmentID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Printf("id: %v", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	userID, err := strconv.Atoi(vars["userid"])
+	if err != nil {
+		log.Printf("id: %v", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get relevant user
+	user := model.GetUser(userID)
+	if user.Authenticated != true {
+		log.Printf("Error: Could not get user (assignment.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get relevant assignment
+	assignmentRepo := &model.AssignmentRepository{}
+	assignment, err := assignmentRepo.GetSingle(assignmentID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Give error if user isn't teacher or reviewer for this user
+	if !session.GetUserFromSession(r).Teacher && !model.UserIsRreviewer(session.GetUserFromSession(r).ID, assignment.ID, assignment.SubmissionID.Int64, userID) {
+		log.Println("Error: Unauthorized access!")
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
+
+	// Get course and log possible error
+	courseRepo := &model.CourseRepository{}
+	course, err := courseRepo.GetSingle(assignment.CourseID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get form and log possible error
+	formRepo := model.FormRepository{}
+	form, err := formRepo.GetFromAssignmentID(assignment.ID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get answers to user if he has delivered
+	answers, err := model.GetUserAnswers(userID, assignmentID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	com := MergedAnswerField{}
+	// Only merge if user has delivered
+	if len(answers) > 0 {
+
+		// Make sure answers and fields are same length before merging
+		if len(answers) != len(form.Fields) {
+			log.Println("Error: answers(" + strconv.Itoa(len(answers)) + ") is not equal length as fields(" + strconv.Itoa(len(form.Fields)) + ")! (assignment.go)")
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+		// Merge field and answer if assignment is delivered
+
+		for i := 0; i < len(form.Fields); i++ {
+			com.Items = append(com.Items, Combined{
+				Answer: answers[i],
+				Field:  form.Fields[i],
+			})
+		}
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	// Set values
+	v := view.New(r)
+	v.Name = "assignment/submission"
+	v.Vars["Assignment"] = assignment
+	v.Vars["User"] = user
+	v.Vars["Course"] = course
+	v.Vars["Fields"] = form.Fields
+	v.Vars["Delivered"] = len(answers)
+	v.Vars["AnswersAndFields"] = com.Items
+	v.Vars["IsTeacher"] = session.GetUserFromSession(r).Teacher
+	v.Render(w)
 }

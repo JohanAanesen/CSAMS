@@ -25,7 +25,7 @@ func IndexPOST(w http.ResponseWriter, r *http.Request) {
 
 	var payload model.Payload
 
-	if r.Body == nil{
+	if r.Body == nil {
 		log.Println("No Body in request") //todo real logger
 		http.Error(w, "No Body in request", http.StatusBadRequest)
 		return
@@ -72,6 +72,7 @@ func IndexPUT(w http.ResponseWriter, r *http.Request) {
 	var update struct {
 		Authentication string    `json:"authentication"`
 		SubmissionID   int       `json:"submission_id"`
+		AssignmentID   int       `json:"assignment_id"`
 		ScheduledTime  time.Time `json:"scheduled_time"`
 	}
 
@@ -91,8 +92,7 @@ func IndexPUT(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
-	model.UpdateTimer(update.SubmissionID, update.ScheduledTime, model.GetPayload(update.SubmissionID))
+	model.UpdateTimer(update.ScheduledTime, model.GetPayload(update.SubmissionID, update.AssignmentID))
 
 	if err := json.NewEncoder(w).Encode(response{Success: true}); err != nil {
 		log.Println("Something went wrong encoding response") //todo real logger
@@ -105,6 +105,7 @@ func IndexDELETE(w http.ResponseWriter, r *http.Request) {
 	var delete struct {
 		Authentication string `json:"authentication"`
 		SubmissionID   int    `json:"submission_id"`
+		AssignmentID   int    `json:"assignment_id"`
 	}
 
 	//decode json request into struct
@@ -123,7 +124,7 @@ func IndexDELETE(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !model.DeletePayload(delete.SubmissionID){ //delete the thing
+	if !model.DeletePayload(delete.SubmissionID, delete.AssignmentID) { //delete the thing
 		log.Println("Something wrong deleting timer") //todo real logger
 		http.Error(w, "Something wrong deleting timer", http.StatusInternalServerError)
 		return

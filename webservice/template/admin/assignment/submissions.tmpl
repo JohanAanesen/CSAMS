@@ -1,0 +1,30 @@
+{{define "title"}}User Submissions{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+
+    <h2 class="display-4 mb-3">{{ .Assignment.Name }} submissions</h2>
+    <table class="table table-borderless table-sm">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Submission</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{$A := .Assignment}}
+        {{ range .Students.Items }}
+            {{ if not .Teacher }}
+                <tr class="clickable-row">
+                    <th scope="row">{{ .ID }}</th>
+                    <td>{{ .Name }}</td>
+                    <td><a href="mailto:{{ .EmailStudent }}">{{ .EmailStudent }}</a></td>
+                    <td><a href="/assignment/{{ $A.ID }}/submission/{{ .ID }}">See submission</a></td>
+                </tr>
+            {{ end }}
+        {{ end }}
+        </tbody>
+    </table>
+{{end}}
+{{define "foot"}}{{end}}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"time"
@@ -12,8 +13,9 @@ type Submissions []Submission
 //Submission struct
 type Submission struct {
 	ID           int `json:"id"`
-	UserID       int `json:"userid"`
-	SubmissionID int `json:"submissionid"`
+	UserID       int `json:"user_id"`
+	SubmissionID int `json:"submission_id"`
+	AssignmentID int `json:"assignment_id"`
 }
 
 //Pairs type subpair slice
@@ -21,18 +23,19 @@ type Pairs []SubPair
 
 //SubPair struct
 type SubPair struct {
-	SubmissionID int `json:"submissionid"`
-	UserID       int `json:"userid"`
-	ReviewID     int `json:"reviewid"`
+	SubmissionID int `json:"submission_id"`
+	AssignmentID int `json:"assignment_id"`
+	UserID       int `json:"user_id"`
+	ReviewUserID int `json:"review_user_id"`
 }
 
 //getSubmissions fetches user_submissions from database with submissionID
-func getSubmissions(SubmissionID int) Submissions {
+func getSubmissions(SubmissionID int, AssignmentID int) Submissions {
 
 	//Create an empty courses array
 	var submissions Submissions
 
-	rows, err := GetDB().Query("SELECT id, user_id, submission_id FROM user_submissions WHERE submission_id = ?", SubmissionID)
+	rows, err := GetDB().Query("SELECT user_id FROM user_submissions WHERE submission_id = ? AND assignment_id = ? GROUP BY user_id", SubmissionID, AssignmentID)
 	if err != nil {
 		log.Println(err.Error()) // TODO : log error
 		// returns empty course array if it fails
@@ -40,17 +43,15 @@ func getSubmissions(SubmissionID int) Submissions {
 	}
 
 	for rows.Next() {
-		var id int
 		var userid int
-		var submissionID int
 
-		rows.Scan(&id, &userid, &submissionID)
+		rows.Scan(&userid)
 
 		// Add course to courses array
 		submissions = append(submissions, Submission{
-			ID:           id,
 			UserID:       userid,
-			SubmissionID: submissionID,
+			SubmissionID: SubmissionID,
+			AssignmentID: AssignmentID,
 		})
 	}
 
@@ -67,10 +68,15 @@ func savePairs(pairs Pairs) bool {
 	}
 
 	for _, pair := range pairs {
-		_, err := tx.Exec("INSERT INTO peer_reviews(submission_id, user_id, review_submission_id) VALUES(?, ?, ?)", pair.SubmissionID, pair.UserID, pair.ReviewID)
+
+		fmt.Println(pair)
+
+		_, err := tx.Exec("INSERT INTO peer_reviews(submission_id, assignment_id, user_id, review_user_id) VALUES(?, ?, ?, ?)", pair.SubmissionID, pair.AssignmentID, pair.UserID, pair.ReviewUserID)
 
 		if err != nil {
 			//todo log error
+
+			fmt.Println("EFSWDPHUIFPidsuDFPSHIGUFPHIduw")
 			log.Fatal(err.Error())
 			tx.Rollback() //quit transaction if error
 			return false
