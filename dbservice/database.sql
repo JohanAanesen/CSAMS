@@ -327,6 +327,7 @@ CREATE TABLE `user_submissions`
 CREATE TABLE `schedule_tasks`
 (
   `submission_id`  int(11)     not null,
+  `assignment_id`  int(11)     not null,
   `scheduled_time` datetime    not null,
   `task`           varchar(32) not null,
   `data`           blob        not null
@@ -613,4 +614,5 @@ ALTER TABLE `user_submissions`
 -- Begrensninger for tabell `schedule_tasks`
 --
 ALTER TABLE `schedule_tasks`
-  ADD CONSTRAINT schedule_tasks_submission_id_fk FOREIGN KEY (submission_id) REFERENCES submissions (id);
+  ADD CONSTRAINT schedule_tasks_submission_id_fk FOREIGN KEY (submission_id) REFERENCES submissions (id),
+  ADD CONSTRAINT schedule_tasks_assignment_id_fk FOREIGN KEY (assignment_id) REFERENCES assignments (id);
