@@ -105,6 +105,7 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/submission", http.StatusFound)
 }
 
+// AdminSubmissionUpdateGET handles GET-request @ /admin/submission/update/{id:[0-9]+}
 func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -140,6 +141,7 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 }
 
+// AdminSubmissionUpdatePOST handles POST-request @ /admin/submission/update
 func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// Get data from the form
 	data := r.FormValue("data")

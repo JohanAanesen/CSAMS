@@ -12,7 +12,7 @@ type Submission struct {
 }
 
 // SubmissionRepository ... TODO (Svein): comment
-type SubmissionRepository struct {}
+type SubmissionRepository struct{}
 
 // Insert form and fields to database
 func (repo *SubmissionRepository) Insert(form Form) error {
@@ -103,6 +103,8 @@ func (repo *SubmissionRepository) GetAll() ([]Submission, error) {
 	return result, nil
 }
 
+// Update a form in the database
+// Deletes all fields, and recreates them
 func (repo *SubmissionRepository) Update(form Form) error {
 	query := "UPDATE forms SET prefix=?, name=?, description=? WHERE id=?"
 	tx, err := db.GetDB().Begin()

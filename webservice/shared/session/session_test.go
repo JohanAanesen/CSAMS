@@ -40,7 +40,7 @@ func TestSession(t *testing.T) {
 		},
 		{
 			name: "TestEmpty",
-			f: TestEmpty,
+			f:    TestEmpty,
 		},
 	}
 

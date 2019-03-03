@@ -164,7 +164,7 @@ func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	newSemester := r.FormValue("semester")
 
 	//make sure they are not empty
-	if newName == "" || newCode == "" || newDescription == "" || newSemester == ""{
+	if newName == "" || newCode == "" || newDescription == "" || newSemester == "" {
 		log.Printf("id: %v", err)
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return

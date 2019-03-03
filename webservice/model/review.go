@@ -4,13 +4,15 @@ import "github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignmen
 
 // Review struct
 type Review struct {
-	ID     int   `json:"id" db:"id"`
-	FormID int   `json:"-" db:"form_id"`
+	ID     int  `json:"id" db:"id"`
+	FormID int  `json:"-" db:"form_id"`
 	Form   Form `json:"form"`
 }
 
-type ReviewRepository struct {}
+// ReviewRepository struct handles all database action for review-forms
+type ReviewRepository struct{}
 
+// Insert a form into the database
 func (repo *ReviewRepository) Insert(form Form) error {
 	// Declare FormRepository
 	var formRepo = FormRepository{}
@@ -99,6 +101,8 @@ func (repo *ReviewRepository) GetAll() ([]Review, error) {
 	return result, nil
 }
 
+// Update a form in the database
+// Deletes all fields, and recreates them
 func (repo *ReviewRepository) Update(form Form) error {
 	query := "UPDATE forms SET prefix=?, name=?, description=? WHERE id=?"
 	tx, err := db.GetDB().Begin()

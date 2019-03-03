@@ -32,7 +32,7 @@ func TestDeadlineDue(t *testing.T) {
 		t.Fail()
 	}
 
-	then = time.Now().UTC().Add(+2*time.Hour)
+	then = time.Now().UTC().Add(+2 * time.Hour)
 
 	buffer = new(bytes.Buffer)
 
