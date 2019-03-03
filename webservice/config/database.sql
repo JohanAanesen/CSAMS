@@ -368,6 +368,16 @@ create table peer_reviews
   foreign key (review_submission_id) references user_submissions (id)
 );
 
+create table schedule_tasks
+(
+  submission_id  int         not null,
+  scheduled_time datetime    not null,
+  task           varchar(32) not null,
+  data           blob        not null,
+  constraint schedule_tasks_submission_id_fk
+    foreign key (submission_id) references submissions (id)
+);
+
 /*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION = @OLD_COLLATION_CONNECTION */;

@@ -10,7 +10,7 @@ import (
 //Payload struct
 type Payload struct {
 	Authentication string `json:"authentication"`
-	SubmissionID   int    `json:"submissionid"`
+	SubmissionID   int    `json:"submission_id"`
 	Reviewers      int    `json:"reviewers"`
 }
 
@@ -29,15 +29,15 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 
 	//check that request body is not empty
 	if r.Body == nil {
-		log.Println("Please send a request body")
-		http.Error(w, "Please send a request body", http.StatusBadRequest)
+		log.Println("No Body in request") //todo real logger
+		http.Error(w, "No Body in request", http.StatusBadRequest)
 		return
 	}
 
 	//decode json request into struct
 	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
-		log.Println("Something went wrong decoding request")
+		log.Println("Something went wrong decoding request") //todo real logger
 		http.Error(w, "Something went wrong decoding request", http.StatusBadRequest)
 		return
 	}
@@ -45,7 +45,7 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 
 	//authenticate
 	if payload.Authentication != os.Getenv("PEER_AUTH") { //don't accept requests from places we don't know
-		log.Println("Unauthorized request")
+		log.Println("Unauthorized request") //todo real logger
 		http.Error(w, "Unauthorized request", http.StatusUnauthorized)
 		return
 	}
@@ -55,7 +55,7 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 
 	//make sure the nr of reviewers is greater than the number of submissions
 	if payload.Reviewers >= len(ShuffledSubmissions) {
-		log.Println("Submissions is less than the number of submissions everyone should review.")
+		log.Println("Submissions is less than the number of submissions everyone should review.") //todo real logger
 		http.Error(w, "Submissions is less than the number of submissions everyone should review.", http.StatusBadRequest)
 		return
 	}
@@ -82,12 +82,13 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 
 	//store peer reviewers in database
 	if !savePairs(GeneratedReviewers) {
-		log.Println("Something went wrong storing peer_reviews to database. Try again.")
+		log.Println("Something went wrong storing peer_reviews to database. Try again.") //todo real logger
 		http.Error(w, "Something went wrong storing peer_reviews to database. Try again.", http.StatusInternalServerError)
 		return
 	}
 
 	if err := json.NewEncoder(w).Encode(payload); err != nil {
-		panic(err)
+		log.Println("Something went wrong encoding response") //todo real logger
+		http.Error(w, "Something went wrong encoding response", http.StatusInternalServerError)
 	}
 }

@@ -11,7 +11,10 @@ services:
     links:
       - database
       - peerservice
+      - schedulerservice
     environment:
+      PEER_AUTH: "5243980712315079823517089"
+      SCHEDULE_SERVICE: schedulerservice:8086
       DATABASE_URL: database:3306
       DATABASE_USER: root
       DATABASE_PASSWORD: root
@@ -32,6 +35,24 @@ services:
       DATABASE_PASSWORD: root
       DATABASE_DATABASE: cs53
       PEER_AUTH: "5243980712315079823517089"
+    restart: always
+
+  schedulerservice:
+    build: schedulerservice
+    depends_on:
+      - database
+    ports:
+      - 8086:8086
+    links:
+      - database
+      - peerservice
+    environment:
+      DATABASE_URL: database:3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root
+      DATABASE_DATABASE: cs53
+      PEER_AUTH: "5243980712315079823517089"
+      PEER_SERVICE: http://peerservice:8087
     restart: always
 
   adminer:
