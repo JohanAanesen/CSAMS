@@ -19,7 +19,8 @@
                 </div>
             </div><!-- /.row -->
 
-            {{ if .Courses }}<h2>Courses</h2><hr>{{end}}
+            {{ if .Courses }}<h2>Courses</h2>
+            <hr>{{end}}
             <div class="row">
                 {{ range .Courses }}
                     <div class="col-md-6 col-sm-12 mb-3">
@@ -36,7 +37,8 @@
                 {{ end }}
 
             </div> <!-- /.row -->
-            {{ if .Assignments }}<h2>Active Assignments</h2><hr>{{end}}
+            {{ if .Assignments }}<h2>Active Assignments</h2>
+            <hr>{{end}}
             <div class="row">
 
                 {{ range .Assignments }}
