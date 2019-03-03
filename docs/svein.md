@@ -1,5 +1,26 @@
 Svein's log
 ============
+# Week 9 report
+#### Worked on
+* 
+#### Decisions
+* 
+#### Good
+* 
+#### Bad
+*  
+
+## 03/03/2019
+#### Worked on
+* Updating reviews
+* Creating reviews
+#### Good
+* Found bug in Javascript-framework, but was easily fixed 
+#### Bad
+* 
+#### Decisions
+* None
+
 ## 02/03/2019
 #### Worked on
 * Updating submissions
