@@ -249,7 +249,10 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		sched := scheduler.Scheduler{}
 
 
-		err := sched.SchedulePeerReview(int(assignment.SubmissionID.Int64), int(assignment.Reviewers.Int64), assignment.Deadline)
+		err := sched.SchedulePeerReview(int(assignment.SubmissionID.Int64),
+			int(assignment.ID),
+			int(assignment.Reviewers.Int64),
+			assignment.Deadline)
 		if err != nil{
 			log.Println(err)
 			return
