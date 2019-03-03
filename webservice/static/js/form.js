@@ -22,6 +22,8 @@ const REGEXP = /\W/;
  * @constructor
  */
 let Form = function() {
+    this.id = 0;
+
     /**
      * Holds the fields of the form
      * @type {Object[]}
@@ -307,11 +309,44 @@ let Form = function() {
         });
 
         return JSON.stringify({
+            id:             this.id,
             prefix:         this.prefix,
             name:           this.name,
             description:    this.description,
             fields:         result,
         });
+    };
+
+    /**
+     * Loads a form from JSON-data, for updating existing form
+     * @param {string} data
+     */
+    this.fromJSON = function(data) {
+        let json = JSON.parse(data);
+
+        this.id = json.id;
+        this.name = json.name;
+        this.description = json.description;
+        this.prefix = json.prefix;
+
+        for (let i = 0; i < json.fields.length; i++) {
+            let f = new Field({
+                weighted: this.weighted,
+            });
+            f.name = json.fields[i].name;
+            f.description = json.fields[i].description;
+            f.label = json.fields[i].label;
+            f.type = json.fields[i].type;
+            f.order = json.fields[i].order;
+            if (typeof json.fields[i].choices === 'string') {
+                f.choices = json.fields[i].choices.split(',');
+            }
+
+            this.add(f);
+        }
+
+
+        this.renderAll();
     };
 };
 
@@ -472,7 +507,10 @@ let Field = function(settings) {
 
         // == CHOICES START ==
         formGroup = document.createElement('div');
-        formGroup.classList.add(...['form-group', 'sr-only']);
+        formGroup.classList.add(...['form-group']);
+        if (this.type !== TYPES.RADIO) {
+            formGroup.classList.add(...['sr-only']);
+        }
         formGroup.id = `choices_form-group_${id}`;
 
         label = document.createElement('label');
@@ -483,6 +521,7 @@ let Field = function(settings) {
         textarea.classList.add(...['form-control']);
         textarea.setAttribute('name', `choices_${id}`);
         textarea.id = `choices_${id}`;
+        textarea.value = this.choices.join('\n');
 
         textarea.addEventListener('keyup', e => {
             this.choices = e.target.value.split('\n');
@@ -634,7 +673,7 @@ let Field = function(settings) {
             description:    this.description,
             order:          this.order,
             weight:         this.weight,
-            choices:        this.choices,
+            choices:        this.choices.join(','),
         }
     };
 };

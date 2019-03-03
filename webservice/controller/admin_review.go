@@ -11,40 +11,40 @@ import (
 	"strconv"
 )
 
-// AdminSubmissionGET handles GET-request to /admin/submission
-func AdminSubmissionGET(w http.ResponseWriter, r *http.Request) {
+// AdminReviewGET handles GET-requests @ /admin/review
+func AdminReviewGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
-	var subRepo = model.SubmissionRepository{}
+	var reviewRepo = model.ReviewRepository{}
 
-	submissions, err := subRepo.GetAll()
+	reviews, err := reviewRepo.GetAll()
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
 	v := view.New(r)
-	v.Name = "admin/submission/index"
+	v.Name = "admin/review/index"
 
-	v.Vars["Submissions"] = submissions
+	v.Vars["Reviews"] = reviews
 
 	v.Render(w)
 }
 
-// AdminSubmissionCreateGET handles GET-request to /admin/submission/create
-func AdminSubmissionCreateGET(w http.ResponseWriter, r *http.Request) {
+// AdminReviewCreateGET handles GET-requests @ /admin/review/create
+func AdminReviewCreateGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
-	v.Name = "admin/submission/create"
+	v.Name = "admin/review/create"
 
 	v.Render(w)
 }
 
-// AdminSubmissionCreatePOST handles POST-request to /admin/submission/create
-func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
+// AdminReviewCreatePOST handles POST-requests @ /admin/review/create
+func AdminReviewCreatePOST(w http.ResponseWriter, r *http.Request) {
 	// Get data from the form
 	data := r.FormValue("data")
 	fmt.Println(data)
@@ -82,7 +82,7 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 
 		v := view.New(r)
-		v.Name = "admin/submission/create"
+		v.Name = "admin/review/create"
 
 		v.Vars["Errors"] = errorMessages
 		v.Vars["formJSON"] = string(formBytes)
@@ -93,7 +93,7 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Declare an empty Repository for Submission
-	var repo = model.SubmissionRepository{}
+	var repo = model.ReviewRepository{}
 	// Insert data to database
 	err = repo.Insert(form)
 	if err != nil {
@@ -102,11 +102,11 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Redirect to /admin/submission
-	http.Redirect(w, r, "/admin/submission", http.StatusFound)
+	http.Redirect(w, r, "/admin/review", http.StatusFound)
 }
 
-// AdminSubmissionUpdateGET handles GET-request @ /admin/submission/update/{id:[0-9]+}
-func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
+// AdminReviewUpdateGET handles GET-requests @ /admin/review/update/{id:[0-9]+}
+func AdminReviewUpdateGET(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -134,15 +134,15 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
-	v.Name = "admin/submission/update"
+	v.Name = "admin/review/update"
 
 	v.Vars["formJSON"] = string(formBytes)
 
 	v.Render(w)
 }
 
-// AdminSubmissionUpdatePOST handles POST-request @ /admin/submission/update
-func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
+// AdminReviewUpdatePOST handles POST-requests @ /admin/review/update
+func AdminReviewUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// Get data from the form
 	data := r.FormValue("data")
 
@@ -192,7 +192,7 @@ func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Declare an empty Repository for Submission
-	var repo = model.SubmissionRepository{}
+	var repo = model.ReviewRepository{}
 	// Insert data to database
 	err = repo.Update(form)
 	if err != nil {
@@ -201,5 +201,5 @@ func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Redirect to /admin/submission
-	http.Redirect(w, r, "/admin/submission", http.StatusFound)
+	http.Redirect(w, r, "/admin/review", http.StatusFound)
 }

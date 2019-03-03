@@ -27,7 +27,7 @@
                 <div class="form-group">
                     <label for="course_id">Course</label>
                     <select name="course_id" id="course_id" class="form-control" required>
-                        {{range .Courses.Items}}
+                        {{range .Courses}}
                             <option value="{{.ID}}">{{.Code}} {{.Name}}</option>
                         {{end}}
                     </select>
@@ -85,6 +85,9 @@
                             <label for="review_id">Select Form</label>
                             <select name="review_id" id="review_id" class="form-control">
                                 <option value="">None</option>
+                                {{range .Reviews}}
+                                    <option value="{{.ID}}">{{.Form.Name}}</option>
+                                {{end}}
                             </select>
                         </div>
 
