@@ -1,4 +1,3 @@
-
 CREATE DATABASE IF NOT EXISTS cs53 COLLATE = utf8_general_ci;
 
 USE cs53;
@@ -6,7 +5,8 @@ USE cs53;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
-SET time_zone = "+01:00"; -- Norwegian time zone! --
+SET time_zone = "+01:00";
+-- Norwegian time zone! --
 
 --
 -- Database: `cs53`
@@ -173,10 +173,11 @@ CREATE TABLE `logs`
 
 CREATE TABLE `peer_reviews`
 (
-  `id`                   int(11) NOT NULL,
-  `submission_id`        int(11) NOT NULL,
-  `user_id`              int(11) NOT NULL,
-  `review_submission_id` int(11) NOT NULL
+  `id`             int(11) NOT NULL,
+  `submission_id`  int(11) NOT NULL,
+  `assignment_id`  int(11) NOT NULL,
+  `user_id`        int(11) NOT NULL,
+  `review_user_id` int(11) NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
@@ -401,8 +402,9 @@ ALTER TABLE `logs`
 ALTER TABLE `peer_reviews`
   ADD PRIMARY KEY (`id`),
   ADD KEY `peer_reviews_submissions_id_fk` (`submission_id`),
+  ADD KEY `peer_reviews_assignment_id_fk` (`assignment_id`),
   ADD KEY `peer_reviews_user_id_fk` (`user_id`),
-  ADD KEY `peer_reviews_review_submission_id_fk` (`review_submission_id`);
+  ADD KEY `peer_reviews_review_user_id_fk` (`review_user_id`);
 
 --
 -- Indexes for table `reviews`
@@ -559,8 +561,9 @@ ALTER TABLE `logs`
 -- Begrensninger for tabell `peer_reviews`
 --
 ALTER TABLE `peer_reviews`
-  ADD CONSTRAINT `peer_reviews_review_submission_id_fk` FOREIGN KEY (`review_submission_id`) REFERENCES `user_submissions` (`id`),
+  ADD CONSTRAINT `peer_reviews_review_user_id_fk` FOREIGN KEY (`review_user_id`) REFERENCES `user_submissions` (`user_id`),
   ADD CONSTRAINT `peer_reviews_submissions_id_fk` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`),
+  ADD CONSTRAINT `peer_review_assignment_id_fk` FOREIGN KEY (`assignment_id`) REFERENCES `assignments` (`id`),
   ADD CONSTRAINT `peer_reviews_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 
