@@ -343,12 +343,15 @@ CREATE TABLE `user_submissions`
 --
 
 INSERT INTO `user_submissions` (`id`, `user_id`, `assignment_id`, `submission_id`, `type`, `answer`)
-VALUES (1, 3, 1, 1, 'text', 'JohanAanesen'),
-       (2, 3, 1, 1, 'url', 'https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments'),
-       (3, 3, 1, 1, 'textarea', 'I did good!'),
-       (4, 5, 1, 1, 'text', 'StianFJ'),
-       (5, 5, 1, 1, 'url', 'https://github.com/StianFJ/Sudoku'),
-       (6, 5, 1, 1, 'textarea', 'I did sexy good!');
+VALUES (1, 4, 1, 1, 'text', 'JohanKlausen'),
+       (2, 4, 1, 1, 'url', 'https://github.com/JohanKlausen/yeet'),
+       (3, 4, 1, 1, 'textarea', 'I did good!'),
+       (4, 5, 1, 1, 'text', 'StianFjerdingstad'),
+       (5, 5, 1, 1, 'url', 'https://github.com/StianFjerdingstad/Sudoku'),
+       (6, 5, 1, 1, 'textarea', 'I did sexy good!'),
+       (7, 10, 1, 1, 'text', 'KlausAanesen'),
+       (8, 10, 1, 1, 'url', 'https://github.com/KlausAanesen/1337yeet420'),
+       (9, 10, 1, 1, 'textarea', 'I did bad :(');
 
 --
 -- Indexes for dumped tables

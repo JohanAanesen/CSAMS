@@ -2,7 +2,6 @@ package controller
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
@@ -374,8 +373,6 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(assignmentID) // TODO brede : remove this
-
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
@@ -383,6 +380,22 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 
 	assignment, err := assignmentRepo.GetSingle(int(assignmentID))
 	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	course := model.GetCourse(assignment.CourseID)
+	if course.Name == "" {
+		log.Println("Error: could not get course! (admin_assignment.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// TODO brede : sort by user delivered and not + show if delivered or not in table
+	students := model.GetUsersToCourse(assignment.CourseID)
+	if len(students.Items) < 0 {
+		log.Println("Error: could not get students from course! (admin_assignment.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -391,10 +404,13 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "admin/assignment/submissions"
 
 	v.Vars["Assignment"] = assignment
+	v.Vars["Students"] = students
+	v.Vars["Course"] = course
 
 	v.Render(w)
 }
 
+/*
 // AdminAssignmentSubmissionGET servers one user submission in course to admin
 func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
 
@@ -406,11 +422,9 @@ func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(assignmentID) // TODO brede : remove this
-
 	userID, err := strconv.Atoi(r.FormValue("userid"))
 	if err != nil {
-		log.Printf("id: %v", err)
+		log.Printf("userid: %v", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -424,10 +438,12 @@ func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
 
 	assignment, err := assignmentRepo.GetSingle(int(assignmentID))
 	if err != nil {
+		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
+	// TODO brede : use same page as peer rews aka. out of admin/
 	v := view.New(r)
 	v.Name = "admin/assignment/singlesubmission"
 
@@ -436,3 +452,4 @@ func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 
 }
+*/

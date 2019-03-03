@@ -101,11 +101,12 @@ func GetUser(userID int) User {
 
 		// Return the user in a User struct from model folder
 		return User{
-			ID:           userID,
-			Name:         name,
-			EmailStudent: emailStudent,
-			EmailPrivate: emailPrivate.String,
-			Teacher:      teacher,
+			ID:            userID,
+			Name:          name,
+			EmailStudent:  emailStudent,
+			EmailPrivate:  emailPrivate.String,
+			Teacher:       teacher,
+			Authenticated: true,
 		}
 	}
 

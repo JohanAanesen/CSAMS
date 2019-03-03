@@ -706,6 +706,12 @@ func TestAdminAssignmentSubmissionsGET(t *testing.T) {
 	// TODO brede : write test here
 }
 
+/*
 func TestAdminAssignmentSubmissionGET(t *testing.T) {
+	// TODO brede : write test here
+}
+*/
+
+func TestAssignmentUserSubmissionGET(t *testing.T) {
 	// TODO brede : write test here
 }
