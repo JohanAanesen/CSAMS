@@ -139,7 +139,7 @@ func ScheduleTask(payload Payload) bool {
 
 		//Schedule task
 		if !peerTask.Schedule(payload.ScheduledTime) {
-			log.Printf("Could not schedule task for submissionID: %v", peerTask.SubmissionID)
+			log.Printf("Could not schedule task for submissionID: %v and assignmentID: %v\n", peerTask.SubmissionID, peerTask.AssignmentID)
 			return false
 		}
 	default:

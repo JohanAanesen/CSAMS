@@ -30,11 +30,11 @@ func (payload Payload) GetPeerTask() (PeerTask, error) {
 }
 
 //Save stores the payload object to the database for redundancy
-func (payload Payload) Save()(int, bool) {
+func (payload Payload) Save() bool {
 	tx, err := db.GetDB().Begin() //start transaction
 	if err != nil {
 		log.Println(err.Error())
-		return 0, false
+		return false
 	}
 
 	ex, err := tx.Exec("INSERT INTO schedule_tasks(submission_id, assignment_id, scheduled_time, task, data) VALUES(?, ?, ?, ?, ?)",
@@ -50,23 +50,24 @@ func (payload Payload) Save()(int, bool) {
 		if err = tx.Rollback(); err != nil { //quit transaction if error
 			log.Fatal(err.Error()) //die
 		}
-		return 0, false
+		return false
 	}
 
 	schedId, err := ex.LastInsertId()
 	if err != nil {
 		log.Fatal(err.Error())
-		return 0, false
+		return false
 	}
 
 	err = tx.Commit() //finish transaction
 	if err != nil {
 		log.Fatal(err.Error())
-		return 0, false
+		return false
 	}
 
+	payload.ID = int(schedId)
 
-	return int(schedId), true
+	return true
 }
 
 //GetPayloads from db
@@ -116,7 +117,7 @@ func GetPayloads() []Payload {
 //GetPayload from db
 func GetPayload(subID int, assID int) Payload {
 
-	rows, err := db.GetDB().Query("SELECT submission_id, assignment_id, scheduled_time, task, data FROM schedule_tasks WHERE submission_id = ? AND assignment_id = ?", subID, assID)
+	rows, err := db.GetDB().Query("SELECT id, submission_id, assignment_id, scheduled_time, task, data FROM schedule_tasks WHERE submission_id = ? AND assignment_id = ?", subID, assID)
 	if err != nil {
 		log.Fatal(err.Error()) // TODO : log error
 		// returns empty course array if it fails
@@ -124,13 +125,14 @@ func GetPayload(subID int, assID int) Payload {
 	}
 
 	for rows.Next() {
+		var ID int
 		var submissionID int
 		var assignmentID int
 		var scheduledTime time.Time
 		var task string
 		var data []byte
 
-		err := rows.Scan(&submissionID, &assignmentID, &scheduledTime, &task, &data)
+		err := rows.Scan(&ID, &submissionID, &assignmentID, &scheduledTime, &task, &data)
 		if err != nil {
 			log.Println(err.Error()) // TODO : log error
 			// returns empty course array if it fails
@@ -141,6 +143,7 @@ func GetPayload(subID int, assID int) Payload {
 		var payload Payload
 
 		payload = Payload{
+			ID:            ID,
 			ScheduledTime: scheduledTime,
 			Task:          task,
 			SubmissionID:  submissionID,

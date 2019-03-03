@@ -24,16 +24,16 @@ func StopTimer(timerID int){
 }
 
 //UpdateTimer should update the time of an existing timer (delete and create new timer)
-func UpdateTimer(timerID int, newTime time.Time, payload Payload) bool{
+func UpdateTimer(newTime time.Time, payload Payload) bool{
 
 	//update time in payload object
 	payload.ScheduledTime = newTime
 
-	stop := Timers[timerID].Stop()
+	stop := Timers[payload.ID].Stop()
 	if stop {
-		fmt.Printf("Timer %v stopped\n", timerID)
+		fmt.Printf("Timer %v stopped\n", payload.ID)
 	}
-	delete(Timers, timerID) //delete from map
+	delete(Timers, payload.ID) //delete from map
 
 	timeNow := time.Now() //time now
 	Duration := newTime.Sub(timeNow) //subtract now's time from target time to get time until trigger
