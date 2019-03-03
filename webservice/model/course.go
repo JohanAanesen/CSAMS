@@ -5,7 +5,6 @@ import (
 	"log"
 )
 
-
 // Course holds the data for courses
 type Course struct {
 	ID          int          `json:"id"`

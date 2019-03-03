@@ -62,7 +62,7 @@ func IsLoggedIn(r *http.Request) bool {
 
 //GetUserFromSession returns user object stored in session
 func GetUserFromSession(r *http.Request) model.User {
-	session, err := Instance(r) //get session
+	session, err := Instance(r) // get session
 
 	if err != nil {
 		log.Printf("ocould not get instance of session: %v", err)
@@ -78,7 +78,7 @@ func GetUserFromSession(r *http.Request) model.User {
 	return user
 }
 
-//SaveUserToSession saves user object to sessionstore
+//SaveUserToSession saves user object to session store
 func SaveUserToSession(user model.User, w http.ResponseWriter, r *http.Request) bool {
 	session, err := Instance(r) //get session
 

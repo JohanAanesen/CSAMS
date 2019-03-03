@@ -91,6 +91,9 @@
                             <label for="review_id">Select Form</label>
                             <select name="review_id" id="review_id" class="form-control">
                                 <option value="">None</option>
+                                {{range $R := .Reviews}}
+                                    <option value="{{$R.ID}}"{{if eq $R.ID $A.SubmissionID.Int64}} selected{{end}}>{{$R.Form.Name}}</option>
+                                {{end}}
                             </select>
                         </div>
 

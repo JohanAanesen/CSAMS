@@ -1,4 +1,4 @@
-{{define "title"}}Create Review{{end}}
+{{define "title"}}Update Submission{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
     {{if .Errors}}
@@ -14,9 +14,10 @@
     let form = new Form();
     form.Initialize({
         output: '#output',
-        title: 'Create new Review form',
-        request: '/admin/review/create',
-        weighted: true,
+        title: 'Update Submission form',
+        request: '/admin/submission/update',
+        weighted: false,
     });
+    form.fromJSON({{.formJSON}})
 </script>
 {{end}}

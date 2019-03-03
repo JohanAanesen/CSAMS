@@ -2,7 +2,6 @@ package model
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
-	"strings"
 )
 
 // Submission .... TODO (Svein): comment
@@ -13,8 +12,7 @@ type Submission struct {
 }
 
 // SubmissionRepository ... TODO (Svein): comment
-type SubmissionRepository struct {
-}
+type SubmissionRepository struct{}
 
 // Insert form and fields to database
 func (repo *SubmissionRepository) Insert(form Form) error {
@@ -40,12 +38,10 @@ func (repo *SubmissionRepository) Insert(form Form) error {
 
 	// Loop trough fields in the forms
 	for _, field := range form.Fields {
-		// Join the array to a single string for 'choices'
-		choices := strings.Join(field.Choices, ",")
 		// Insertion query
 		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
 		// Execute the query
-		rows, err := db.GetDB().Query(query, int(formID), field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, choices)
+		rows, err := db.GetDB().Query(query, formID, field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
 		// Check for error
 		if err != nil {
 			return err
@@ -68,7 +64,7 @@ func (repo *SubmissionRepository) GetAll() ([]Submission, error) {
 	rows, err := db.GetDB().Query(query)
 	// Check for error
 	if err != nil {
-		return []Submission{}, err
+		return result, err
 	}
 	// Close connection
 	defer rows.Close()
@@ -105,4 +101,49 @@ func (repo *SubmissionRepository) GetAll() ([]Submission, error) {
 	}
 
 	return result, nil
+}
+
+// Update a form in the database
+// Deletes all fields, and recreates them
+func (repo *SubmissionRepository) Update(form Form) error {
+	query := "UPDATE forms SET prefix=?, name=?, description=? WHERE id=?"
+	tx, err := db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = db.GetDB().Exec(query, form.Prefix, form.Name, form.Description, form.ID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	query = "DELETE FROM fields WHERE form_id=?"
+	rows, err := db.GetDB().Query(query, form.ID)
+	if err != nil {
+		return err
+	}
+	rows.Close()
+
+	// Loop trough fields in the forms
+	for _, field := range form.Fields {
+		// Insertion query
+		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+		// Execute the query
+		rows, err := db.GetDB().Query(query, form.ID, field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
+		// Check for error
+		if err != nil {
+			return err
+		}
+		// Close the connection
+		rows.Close()
+	}
+
+	// Return no error
+	return nil
 }

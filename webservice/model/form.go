@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"time"
 )
@@ -18,14 +17,14 @@ type Form struct {
 
 // Field TODO (Svein): comment
 type Field struct {
-	ID          int      `json:"id" db:"id"`
-	Type        string   `json:"type" db:"type"`
-	Name        string   `json:"name" db:"name"`
-	Label       string   `json:"label" db:"label"`
-	Description string   `json:"description" db:"description"`
-	Order       int      `json:"order" db:"priority"`
-	Weight      int      `json:"weight" db:"weight"`
-	Choices     []string `json:"choices" db:"choices"`
+	ID          int    `json:"id" db:"id"`
+	Type        string `json:"type" db:"type"`
+	Name        string `json:"name" db:"name"`
+	Label       string `json:"label" db:"label"`
+	Description string `json:"description" db:"description"`
+	Order       int    `json:"order" db:"priority"`
+	Weight      int    `json:"weight" db:"weight"`
+	Choices     string `json:"choices,omitempty" db:"choices"`
 }
 
 // Answer struct used for storing answers from users in forms
@@ -40,7 +39,7 @@ type FormRepository struct {
 }
 
 // Insert form to database
-func (repo *FormRepository) Insert(form Form) (int64, error) {
+func (repo *FormRepository) Insert(form Form) (int, error) {
 	// Insertions Query
 	query := "INSERT INTO forms (prefix, name, description) VALUES (?, ?, ?);"
 	// Execute query with parameters
@@ -57,35 +56,52 @@ func (repo *FormRepository) Insert(form Form) (int64, error) {
 		return -1, err
 	}
 
-	return id, nil
+	return int(id), nil
 }
 
 // Get a single form based on the Primary Key, 'id'
 func (repo *FormRepository) Get(id int) (Form, error) {
+	var result = Form{}
+
 	// Create query-string
 	query := "SELECT id, prefix, name, description, created FROM forms WHERE id = ?"
 	// Perform query
 	rows, err := db.GetDB().Query(query, id)
 	// Check for error
 	if err != nil {
-		return Form{}, err
+		return result, err
 	}
 
 	// Check if there is any rows
 	if rows.Next() {
-		// Declare an empty Form
-		var form = Form{}
 		// Scan
-		err = rows.Scan(&form.ID, &form.Prefix, &form.Name, &form.Description, &form.Created)
+		err = rows.Scan(&result.ID, &result.Prefix, &result.Name, &result.Description, &result.Created)
 		// Check for error
 		if err != nil {
-			return Form{}, err
+			return result, err
 		}
-
-		return form, nil
+	}
+	// Create new query for getting all the fields
+	query = "SELECT id, type, name, label, description, priority, weight, choices FROM fields WHERE form_id = ?"
+	// Execute query
+	rows, err = db.GetDB().Query(query, id)
+	if err != nil {
+		return result, err
 	}
 
-	return Form{}, errors.New("form: Could not do rows.Next()")
+	// Loop through all rows
+	for rows.Next() {
+		var temp Field
+		// Get values
+		err = rows.Scan(&temp.ID, &temp.Type, &temp.Name, &temp.Label, &temp.Description, &temp.Order, &temp.Weight, &temp.Choices)
+		if err != nil {
+			return result, err
+		}
+		// Append field to slice in the result
+		result.Fields = append(result.Fields, temp)
+	}
+
+	return result, err
 }
 
 // GetFromAssignmentID get form from the assignment id key
@@ -105,7 +121,6 @@ func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) 
 		return form, err
 	}
 
-	// NOT 'if rows.Next()'!! THAT IS NOT THE SAME FUCK!
 	for rows.Next() {
 		var formID int
 		var fieldID int
@@ -115,16 +130,14 @@ func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) 
 		var desc string
 		var priority int
 		var weight int
+		var choices string
 
 		// Scan
-		err = rows.Scan(&formID, &fieldID, &fieldType, &name, &label, &desc, &priority, &weight) //, &choices)
+		err = rows.Scan(&formID, &fieldID, &fieldType, &name, &label, &desc, &priority, &weight, &choices)
 		// Check for error
 		if err != nil {
 			return form, err
 		}
-
-		// This only needs to be set one time really :/
-		//form.ID = formID
 
 		form.Fields = append(form.Fields, Field{
 			ID:          formID,
@@ -134,7 +147,7 @@ func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) 
 			Description: desc,
 			Order:       priority,
 			Weight:      weight,
-			//Choices:     choices, // TODO : uncomment this
+			Choices:     choices,
 		})
 	}
 
