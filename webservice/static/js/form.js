@@ -332,7 +332,9 @@ let Form = function() {
             f.label = json.fields[i].label;
             f.type = json.fields[i].type;
             f.order = json.fields[i].order;
-            f.choices = json.fields[i].choices.split(',');
+            if (typeof json.fields[i].choices === 'string') {
+                f.choices = json.fields[i].choices.split(',');
+            }
 
             this.fields.push(f);
         }

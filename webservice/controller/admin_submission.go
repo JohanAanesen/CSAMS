@@ -143,7 +143,7 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// Get data from the form
 	data := r.FormValue("data")
-	fmt.Println(data)
+
 	// Declare Form-struct
 	var form = model.Form{}
 	// Unmarshal the JSON-string sent from the form
