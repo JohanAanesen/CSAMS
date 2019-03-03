@@ -242,25 +242,22 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute
-	if assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(time.Now()){
+	if assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(time.Now()) {
 
 		sched := scheduler.Scheduler{}
-
 
 		err := sched.SchedulePeerReview(int(assignment.SubmissionID.Int64),
 			int(assignment.ID),
 			int(assignment.Reviewers.Int64),
 			assignment.Deadline)
-		if err != nil{
+		if err != nil {
 			log.Println(err)
 			return
 		}
 
 		fmt.Println("Successfully scheduled peer review!")
 	}
-
 
 	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
 }
@@ -428,6 +425,19 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		Valid: val != 0,
 	}
 
+	if r.FormValue("reviewers") != "" {
+		val, err = strconv.Atoi(r.FormValue("reviewers"))
+		if err != nil {
+			log.Println("reviewers")
+			log.Println(err)
+			return
+		}
+	}
+	reviewers := sql.NullInt64{
+		Int64: int64(val),
+		Valid: val != 0,
+	}
+
 	assignmentRepo := model.AssignmentRepository{}
 
 	assignment := model.Assignment{
@@ -438,6 +448,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		CourseID:     courseID,
 		SubmissionID: submissionID,
 		ReviewID:     reviewID,
+		Reviewers:    reviewers,
 	}
 
 	err = assignmentRepo.Update(id, assignment)

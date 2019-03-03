@@ -46,7 +46,7 @@ func (repo *AssignmentRepository) GetSingle(id int) (Assignment, error) {
 		// Scan row for data
 		err = rows.Scan(&result.ID, &result.Name, &result.Description,
 			&result.Created, &result.Publish, &result.Deadline, &result.CourseID,
-			&result.SubmissionID, &result.ReviewID)
+			&result.SubmissionID, &result.ReviewID, &result.Reviewers)
 		// Check for error
 		if err != nil {
 			return Assignment{}, err
@@ -193,14 +193,14 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) error {
 
 // Update an assignment based on the ID and the data inside an Assignment-object
 func (repo *AssignmentRepository) Update(id int, assignment Assignment) error {
-	query := "UPDATE assignments SET name=?, description=?, course_id=?, publish=?, deadline=? WHERE id=?"
+	query := "UPDATE assignments SET name=?, description=?, course_id=?, publish=?, deadline=?, reviewers=? WHERE id=?"
 
 	tx, err := db.GetDB().Begin()
 	if err != nil {
 		return err
 	}
 
-	_, err = tx.Exec(query, assignment.Name, assignment.Description, assignment.CourseID, assignment.Publish, assignment.Deadline, id)
+	_, err = tx.Exec(query, assignment.Name, assignment.Description, assignment.CourseID, assignment.Publish, assignment.Deadline, assignment.Reviewers, id)
 	if err != nil {
 		tx.Rollback()
 		return err
