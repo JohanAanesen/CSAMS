@@ -16,14 +16,38 @@ import (
 
 // AdminAssignmentGET handles GET-request at /admin/assignment
 func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
+	// repo's
+	courseRepo := &model.CourseRepository{}
 	assignmentRepo := model.AssignmentRepository{}
 
-	// Get all assignments to user in sorted order
-	assignments, err := assignmentRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
-
+	//get courses to user/teacher
+	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 	if err != nil {
 		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
+	}
+
+	//need custom struct to get the coursecode
+	type ActiveAssignment struct {
+		Assignment model.Assignment
+		CourseCode string
+	}
+
+	var activeAssignments []ActiveAssignment
+
+	for _, course := range courses{ //iterate all courses
+		assignments, err := assignmentRepo.GetAllFromCourse(course.ID) //get assignments from course
+		if err != nil {
+			log.Println(err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		for _, assignment := range assignments { //go through all it's assignments again
+			activeAssignments = append(activeAssignments, ActiveAssignment{Assignment:assignment, CourseCode:course.Code})
+		}
+
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -32,7 +56,7 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/assignment/index"
 
-	v.Vars["Assignments"] = assignments
+	v.Vars["Assignments"] = activeAssignments
 
 	v.Render(w)
 }

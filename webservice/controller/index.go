@@ -45,7 +45,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 	var activeAssignments []ActiveAssignment
 
 	for _, course := range courses{ //iterate all courses
-		assignments ,err := assignmentRepo.GetAllFromCourse(course.ID) //get assignments from course
+		assignments, err := assignmentRepo.GetAllFromCourse(course.ID) //get assignments from course
 		if err != nil {
 			log.Println(err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
