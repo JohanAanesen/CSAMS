@@ -14,11 +14,11 @@ services:
       - schedulerservice
     environment:
       PEER_AUTH: "5243980712315079823517089"
-      SCHEDULE_SERVICE: schedulerservice:8086
       DATABASE_URL: database:3306
       DATABASE_USER: root
       DATABASE_PASSWORD: root
       DATABASE_DATABASE: cs53
+      SCHEDULE_SERVICE: scheduleservice:8086
     restart: always
 
   peerservice:
@@ -52,7 +52,7 @@ services:
       DATABASE_PASSWORD: root
       DATABASE_DATABASE: cs53
       PEER_AUTH: "5243980712315079823517089"
-      PEER_SERVICE: http://peerservice:8087
+      PEER_SERVICE: peerservice:8087
     restart: always
 
   adminer:

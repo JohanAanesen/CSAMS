@@ -2,7 +2,9 @@ package controller
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/scheduler"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
@@ -12,6 +14,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // AdminAssignmentGET handles GET-request at /admin/assignment
@@ -36,7 +39,7 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 	var activeAssignments []ActiveAssignment
 
-	for _, course := range courses{ //iterate all courses
+	for _, course := range courses { //iterate all courses
 		assignments, err := assignmentRepo.GetAllFromCourse(course.ID) //get assignments from course
 		if err != nil {
 			log.Println(err)
@@ -45,7 +48,7 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, assignment := range assignments { //go through all it's assignments again
-			activeAssignments = append(activeAssignments, ActiveAssignment{Assignment:assignment, CourseCode:course.Code})
+			activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: assignment, CourseCode: course.Code})
 		}
 
 	}
@@ -107,6 +110,8 @@ func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminAssignmentCreatePOST handles POST-request from /admin/assigment/create
 func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.FormValue("reviewers"))
+
 	// Declare empty slice of strings
 	var errorMessages []string
 
@@ -205,6 +210,19 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		Valid: val != 0,
 	}
 
+	if r.FormValue("reviewers") != "" {
+		val, err = strconv.Atoi(r.FormValue("reviewers"))
+		if err != nil {
+			log.Println("reviewers")
+			log.Println(err)
+			return
+		}
+	}
+	reviewers := sql.NullInt64{
+		Int64: int64(val),
+		Valid: val != 0,
+	}
+
 	// Put all data into an Assignment-struct
 	assignment := model.Assignment{
 		Name:         assignmentName,
@@ -214,6 +232,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		CourseID:     courseID,
 		SubmissionID: submissionID,
 		ReviewID:     reviewID,
+		Reviewers:    reviewers,
 	}
 
 	// Insert data to database
@@ -222,6 +241,23 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
+
+
+	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute
+	if assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(time.Now()){
+
+		sched := scheduler.Scheduler{}
+
+
+		err := sched.SchedulePeerReview(int(assignment.SubmissionID.Int64), int(assignment.Reviewers.Int64), assignment.Deadline)
+		if err != nil{
+			log.Println(err)
+			return
+		}
+
+		fmt.Println("Successfully scheduled peer review!")
+	}
+
 
 	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
 }

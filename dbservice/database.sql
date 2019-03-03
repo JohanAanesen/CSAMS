@@ -1,4 +1,3 @@
-
 CREATE DATABASE IF NOT EXISTS cs53 COLLATE = utf8_general_ci;
 
 USE cs53;
@@ -6,7 +5,8 @@ USE cs53;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
-SET time_zone = "+01:00"; -- Norwegian time zone! --
+SET time_zone = "+01:00";
+-- Norwegian time zone! --
 
 --
 -- Database: `cs53`
@@ -51,7 +51,8 @@ CREATE TABLE `assignments`
   `course_id`     int(11)     NOT NULL,
   `submission_id` int(11)              DEFAULT NULL,
   `review_id`     int(11)              DEFAULT NULL,
-  `validation_id` int(11)     NULL
+  `validation_id` int(11)     NULL,
+  `reviewers`     int(11)     NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 

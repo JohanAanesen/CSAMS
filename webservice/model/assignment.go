@@ -20,6 +20,7 @@ type Assignment struct {
 	ReviewID     sql.NullInt64 `json:"-" db:"review_id"`
 	Submission   Submission    `json:"submission"`
 	Review       Review        `json:"review"`
+	Reviewers    sql.NullInt64 `json:"reviewers"`
 }
 
 // AssignmentRepository holds all assignments, and DB-functions
@@ -31,7 +32,7 @@ func (repo *AssignmentRepository) GetSingle(id int) (Assignment, error) {
 	var result Assignment
 
 	// Create query string
-	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id FROM assignments WHERE id = ?"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, reviewers FROM assignments WHERE id = ?"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query, id)
 	// Check for error
@@ -61,7 +62,7 @@ func (repo *AssignmentRepository) GetAll() ([]Assignment, error) {
 	var result []Assignment
 
 	// Create query string
-	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id FROM assignments;"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, reviewers FROM assignments;"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query)
 	if err != nil {
@@ -156,13 +157,11 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) error {
 		// Create query string
 		query := "UPDATE assignments SET submission_id = ? WHERE id = ?;"
 		// Prepare and execute query
-		rows, err := db.GetDB().Query(query, assignment.SubmissionID, id)
+		_, err := db.GetDB().Exec(query, assignment.SubmissionID, id)
 		// Check for error
 		if err != nil {
 			return err
 		}
-		// Close connection
-		defer rows.Close()
 	}
 
 	// Check if we have set a review_id
@@ -170,13 +169,23 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) error {
 		// Create query string
 		query := "UPDATE assignments SET review_id = ? WHERE id = ?;"
 		// Prepare and execute query
-		rows, err := db.GetDB().Query(query, assignment.ReviewID, id)
+		_, err := db.GetDB().Exec(query, assignment.ReviewID, id)
 		// Check for error
 		if err != nil {
 			return err
 		}
-		// Close connection
-		defer rows.Close()
+	}
+
+	// Check if we have set reviewers
+	if assignment.Reviewers.Valid  {
+		// Create query string
+		query := "UPDATE assignments SET reviewers = ? WHERE id = ?;"
+		// Prepare and execute query
+		_, err := db.GetDB().Exec(query, assignment.Reviewers, id)
+		// Check for error
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
