@@ -451,8 +451,10 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	courseRepo := &model.CourseRepository{}
+
 	// Get course and log possible error
-	course, err := model.GetCourseCodeAndName(assignment.CourseID)
+	course, err := courseRepo.GetSingle(assignment.CourseID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)

@@ -393,9 +393,11 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	course := model.GetCourse(assignment.CourseID)
-	if course.Name == "" {
-		log.Println("Error: could not get course! (admin_assignment.go)")
+	courseRepo := &model.CourseRepository{}
+
+	course, err := courseRepo.GetSingle(assignment.CourseID)
+	if err != nil {
+		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}

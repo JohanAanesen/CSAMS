@@ -186,6 +186,7 @@ this was mostly because I use ca. 7h all together to get the project starting.
     * Can now show list of all students in course for each assignment
     * The teacher can see the submission outside admin/ beacuse other students that are going to peer review it should 
     also see the submission, and this way I am saved from duplicate code :D
+    * Merged with main
 
 ## Week Five
 

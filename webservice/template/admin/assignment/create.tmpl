@@ -11,7 +11,11 @@
     <form action="/admin/assignment/create" method="POST">
         <div class="row">
             <div class="col">
-                <h1 class="display-4">Create assignment <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#templatesModal">Templates</button></h1>
+                <h1 class="display-4">Create assignment
+                    <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#templatesModal">
+                        Templates
+                    </button>
+                </h1>
             </div>
         </div>
 
@@ -21,13 +25,14 @@
             <div class="col-12 col-lg">
                 <div class="form-group">
                     <label for="name">Name</label>
-                    <input type="text" id="name" name="name" class="form-control" placeholder="Assignment Name" value="{{.AssignmentName}}" required>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Assignment Name"
+                           value="{{.AssignmentName}}" required>
                 </div>
 
                 <div class="form-group">
                     <label for="course_id">Course</label>
                     <select name="course_id" id="course_id" class="form-control" required>
-                        {{range .Courses.Items}}
+                        {{range .Courses }}
                             <option value="{{.ID}}">{{.Code}} {{.Name}}</option>
                         {{end}}
                     </select>
@@ -50,7 +55,8 @@
 
                 <div class="form-group">
                     <label for="simplemde">Description</label>
-                    <textarea name="description" id="simplemde" placeholder="Description (Hint: Markdown)">{{.AssignmentDescription}}</textarea>
+                    <textarea name="description" id="simplemde"
+                              placeholder="Description (Hint: Markdown)">{{.AssignmentDescription}}</textarea>
                 </div>
             </div>
 
@@ -110,7 +116,8 @@
     </form>
 {{end}}
 {{define "foot"}}
-    <div class="modal fade" id="templatesModal" tabindex="-1" role="dialog" aria-labelledby="templatesModel" aria-hidden="true">
+    <div class="modal fade" id="templatesModal" tabindex="-1" role="dialog" aria-labelledby="templatesModel"
+         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
 
@@ -136,7 +143,7 @@
 
     <script src="/static/js/simplemde.min.js"></script>
     <script>
-        (function() {
+        (function () {
             // Enable the SmpleMDE
             let simplemde = new SimpleMDE({
                 element: document.getElementById('simplemde'),
