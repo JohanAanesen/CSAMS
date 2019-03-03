@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"time"
@@ -71,10 +72,15 @@ func savePairs(pairs Pairs) bool {
 	}
 
 	for _, pair := range pairs {
+
+		fmt.Println(pair)
+
 		_, err := tx.Exec("INSERT INTO peer_reviews(submission_id, assignment_id, user_id, review_user_id) VALUES(?, ?, ?, ?)", pair.SubmissionID, pair.AssignmentID, pair.UserID, pair.ReviewUserID)
 
 		if err != nil {
 			//todo log error
+
+			fmt.Println("EFSWDPHUIFPidsuDFPSHIGUFPHIduw")
 			log.Fatal(err.Error())
 			tx.Rollback() //quit transaction if error
 			return false

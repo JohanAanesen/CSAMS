@@ -69,6 +69,7 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 
 			subpair.UserID = item.UserID
 			subpair.SubmissionID = payload.SubmissionID
+			subpair.AssignmentID = payload.AssignmentID
 
 			counter := i + j
 			if counter >= len(ShuffledSubmissions) { //if it exceeds array, start from beginning
