@@ -349,6 +349,11 @@ VALUES (1, 4, 1, 1, 'text', 'JohanKlausen'),
        (8, 10, 1, 1, 'url', 'https://github.com/KlausAanesen/1337yeet420'),
        (9, 10, 1, 1, 'textarea', 'I did bad :(');
 
+INSERT INTO `peer_reviews` (`id`, `submission_id`, `assignment_id`, `user_id`, `review_user_id`)
+VALUES (1, 1, 1, 3, 4),
+       (2, 1, 1, 3, 5),
+       (3, 1, 2, 9, 4);
+
 --
 -- Indexes for dumped tables
 --

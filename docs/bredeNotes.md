@@ -184,9 +184,11 @@ this was mostly because I use ca. 7h all together to get the project starting.
 ### Sunday - 03/03/19
 * started on [#32 - Admin Show User Submissions](https://trello.com/c/OR60Pi7l).
     * Can now show list of all students in course for each assignment
-    * The teacher can see the submission outside admin/ beacuse other students that are going to peer review it should 
+    * The teacher can see the submission outside admin/ because other students that are going to peer review it should 
     also see the submission, and this way I am saved from duplicate code :D
     * Merged with main
+    * Checks if review user is verified now
+    * Gets the links to the submissions user is going to review
 
 ## Week Five
 

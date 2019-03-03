@@ -97,10 +97,6 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 
 	submissionReviews := model.GetReviewUserIDs(session.GetUserFromSession(r).ID, assignment.ID)
 
-	for _, element := range submissionReviews.Items {
-		fmt.Println(element)
-	}
-
 	//course repo
 	courseRepo := &model.CourseRepository{}
 
