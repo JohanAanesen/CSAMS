@@ -108,7 +108,7 @@ func (repo *FormRepository) Get(id int) (Form, error) {
 func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) {
 
 	// Create query-string
-	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight from fields AS f WHERE f.form_id IN (SELECT s.form_id FROM submissions AS s WHERE id IN (SELECT a.submission_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
+	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices from fields AS f WHERE f.form_id IN (SELECT s.form_id FROM submissions AS s WHERE id IN (SELECT a.submission_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
 
 	// Perform query
 	rows, err := db.GetDB().Query(query, assignmentID)

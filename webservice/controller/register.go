@@ -4,6 +4,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
+	"log"
 	"net/http"
 )
 
@@ -65,12 +66,17 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := model.RegisterUser(name, email, password) //register user in database
+	user, err := model.RegisterUser(name, email, password) //register user in database
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError) //change this one to like, email used already fuck off?
+		return
+	}
 
 	//course repo
 	courseRepo := &model.CourseRepository{}
 
-	if ok {
+	if user.ID != 0 {
 		//save user to session values
 		user.Authenticated = true
 		session.SaveUserToSession(user, w, r)
@@ -81,10 +87,6 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 				courseRepo.AddUserToCourse(user.ID, id)
 			}
 		}
-	} else {
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		//todo log this event
-		return
 	}
 
 	http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
