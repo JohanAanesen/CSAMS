@@ -95,7 +95,7 @@ func (repo *CourseRepository) GetAllToUserSorted(UserID int) ([]Course, error) {
 	var result []Course
 
 	// Create query string
-	// The tables is connected like this example: users -> usercourse -> course -> assignments
+	// The tables is connected like this example: users -> usercourse -> course
 	query := "SELECT course.id, course.hash, course.coursecode, course.coursename, course.description, course.teacher, course.year, course.semester  " +
 		"FROM `course` INNER JOIN usercourse ON course.id = usercourse.courseid WHERE usercourse.userid = ? " +
 		"ORDER BY course.year DESC, course.coursename ASC;"

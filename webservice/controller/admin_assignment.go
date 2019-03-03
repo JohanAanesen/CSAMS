@@ -240,6 +240,7 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 	assignmentRepo := &model.AssignmentRepository{}
 	submissionRepo := &model.SubmissionRepository{}
+	courseRepo := &model.CourseRepository{}
 
 	submissions, err := submissionRepo.GetAll()
 	if err != nil {
@@ -254,9 +255,6 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	//course repo
-	courseRepo := &model.CourseRepository{}
 
 	//get courses to user
 	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
