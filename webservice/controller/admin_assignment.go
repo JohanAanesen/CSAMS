@@ -250,6 +250,7 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 	assignmentRepo := &model.AssignmentRepository{}
 	submissionRepo := &model.SubmissionRepository{}
+	reviewRepo := &model.ReviewRepository{}
 	courseRepo := &model.CourseRepository{}
 
 	submissions, err := submissionRepo.GetAll()
@@ -274,6 +275,13 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	reviews, err := reviewRepo.GetAll()
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	v := view.New(r)
 	v.Name = "admin/assignment/update"
 
@@ -282,6 +290,7 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Deadline"] = util.GoToHTMLDatetimeLocal(assignment.Deadline)
 	v.Vars["Courses"] = courses
 	v.Vars["Submissions"] = submissions
+	v.Vars["Reviews"] = reviews
 
 	v.Render(w)
 }
