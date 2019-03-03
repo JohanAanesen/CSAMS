@@ -1,4 +1,4 @@
-{{define "title"}}Create Submission{{end}}
+{{define "title"}}Create Review{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
     {{if .Errors}}
@@ -14,9 +14,9 @@
     let form = new Form();
     form.Initialize({
         output: '#output',
-        title: 'Create new Submission form',
-        request: '/admin/submission/create',
-        weighted: false,
+        title: 'Create new Review form',
+        request: '/admin/review/create',
+        weighted: true,
     });
 </script>
 {{end}}

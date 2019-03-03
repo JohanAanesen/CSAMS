@@ -55,7 +55,7 @@ func (repo *ReviewRepository) GetAll() ([]Review, error) {
 	// Declare return slice
 	var result []Review
 	// Create query-string
-	query := "SELECT id, form_id FROM review"
+	query := "SELECT id, form_id FROM reviews"
 	// Perform query
 	rows, err := db.GetDB().Query(query)
 	// Check for error
