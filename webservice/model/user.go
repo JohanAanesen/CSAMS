@@ -38,6 +38,27 @@ func UpdateUserName(userID int, newName string) bool {
 	return true
 }
 
+// UserIsRreviewer Checks if the user (userID) can review another user(reviewUserID)
+func UserIsRreviewer(UserID int, assignmentID int, submissionID int64, reviewUserID int) bool {
+
+	// Run query
+	rows, err := db.GetDB().Query("SELECT * from peer_reviews WHERE assignment_id = ? AND submission_id = ? AND review_user_id = ? AND user_id = ?", assignmentID, submissionID, reviewUserID, UserID)
+	if err != nil {
+		// Return false if user can not review
+		return false
+	}
+
+	// If there was a match
+	if rows.Next() {
+		return true
+	}
+
+	defer rows.Close()
+
+	// Return true if user can review
+	return false
+}
+
 //UpdateUserEmail updates the users email in the db
 func UpdateUserEmail(userID int, email string) bool {
 	rows, err := db.GetDB().Query("UPDATE users SET email_private = ? WHERE id = ?", email, userID)

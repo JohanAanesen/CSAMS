@@ -411,15 +411,6 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 // AssignmentUserSubmissionGET serves one suser submission to admin and the peer reviews
 func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 
-	/*
-	// TODO : add check for the peer review students too
-	if !session.GetUserFromSession(r).Teacher {
-		log.Println("Error: Unauthorized access!")
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-	*/
-
 	vars := mux.Vars(r)
 	assignmentID, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -435,6 +426,7 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get relevant user
 	user := model.GetUser(userID)
 	if user.Authenticated != true {
 		log.Printf("Error: Could not get user (assignment.go)")
@@ -442,8 +434,8 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get relevant assignment
 	assignmentRepo := &model.AssignmentRepository{}
-
 	assignment, err := assignmentRepo.GetSingle(assignmentID)
 	if err != nil {
 		log.Println(err.Error())
@@ -451,9 +443,15 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	courseRepo := &model.CourseRepository{}
+	// Give error if user isn't teacher or reviewer for this user
+	if !session.GetUserFromSession(r).Teacher && !model.UserIsRreviewer(session.GetUserFromSession(r).ID, assignment.ID, assignment.SubmissionID.Int64, userID) {
+		log.Println("Error: Unauthorized access!")
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
 
 	// Get course and log possible error
+	courseRepo := &model.CourseRepository{}
 	course, err := courseRepo.GetSingle(assignment.CourseID)
 	if err != nil {
 		log.Println(err.Error())
