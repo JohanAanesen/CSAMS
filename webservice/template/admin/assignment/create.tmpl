@@ -55,50 +55,46 @@
             </div>
 
             <div class="col-12 col-lg">
-                <div class="row">
-                    <div class="col">
-                        <h3>Submission Form</h3>
-                        <div class="form-group">
-                            <label for="submission_id">Select Form</label>
-                            <select name="submission_id" id="submission_id" class="form-control">
-                                <option value="">None</option>
-                                {{range .Submissions}}
-                                    <option value="{{.ID}}">{{.Form.Name}}</option>
-                                {{end}}
-                                <!-- TODO (Svein): Create an API-call for getting the JSON og the submission form -->
-                            </select>
-                        </div>
-
-                        <hr>
-
-                        <h6>Preview</h6>
-                        <hr>
-                        <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
-                        <hr>
+                <div class="col">
+                    <h3>Submission Form</h3>
+                    <div class="form-group">
+                        <label for="submission_id">Select Form</label>
+                        <select name="submission_id" id="submission_id" class="form-control">
+                            <option value="">None</option>
+                            {{range .Submissions}}
+                                <option value="{{.ID}}">{{.Form.Name}}</option>
+                            {{end}}
+                            <!-- TODO (Svein): Create an API-call for getting the JSON og the submission form -->
+                        </select>
                     </div>
+
+                    <hr>
+
+                    <h6>Preview</h6>
+                    <hr>
+                    <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
+                    <hr>
                 </div>
 
-                <div class="row">
-                    <div class="col">
-                        <h3>Review Form</h3>
-                        <div class="form-group">
-                            <label for="review_id">Select Form</label>
-                            <select name="review_id" id="review_id" class="form-control">
-                                <option value="">None</option>
-                                {{range .Reviews}}
-                                    <option value="{{.ID}}">{{.Form.Name}}</option>
-                                {{end}}
-                            </select>
-                        </div>
-
-                        <hr>
-
-                        <h6>Preview</h6>
-                        <hr>
-                        <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
-                        <hr>
-                        <div id="review_container"></div>
+                <div class="col">
+                    <h3>Review Form</h3>
+                    <div class="form-group">
+                        <label for="review_id">Select Form</label>
+                        <select name="review_id" id="review_id" class="form-control">
+                            <option value="">None</option>
+                            {{range .Reviews}}
+                                <option value="{{.ID}}">{{.Form.Name}}</option>
+                            {{end}}
+                        </select>
                     </div>
+
+                    <hr>
+
+                    <h6>Preview</h6>
+                    <hr>
+                    <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
+                    <hr>
+                    <div id="review_container"></div>
                 </div>
             </div>
 
