@@ -95,6 +95,12 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	submissionReviews := model.GetReviewUserIDs(session.GetUserFromSession(r).ID, assignment.ID)
+
+	for _, element := range submissionReviews.Items {
+		fmt.Println(element)
+	}
+
 	//course repo
 	courseRepo := &model.CourseRepository{}
 
@@ -123,6 +129,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["HasAutoValidation"] = hasAutoValidation
 	v.Vars["IsDeadlineOver"] = isDeadlineOver
 	v.Vars["CourseID"] = course.ID
+	v.Vars["Reviews"] = submissionReviews
 	v.Vars["HasBeenValidated"] = hasBeenValidated
 
 	v.Render(w)
@@ -444,7 +451,7 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Give error if user isn't teacher or reviewer for this user
-	if !session.GetUserFromSession(r).Teacher && !model.UserIsRreviewer(session.GetUserFromSession(r).ID, assignment.ID, assignment.SubmissionID.Int64, userID) {
+	if !session.GetUserFromSession(r).Teacher && !model.UserIsReviewer(session.GetUserFromSession(r).ID, assignment.ID, assignment.SubmissionID.Int64, userID) {
 		log.Println("Error: Unauthorized access!")
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return

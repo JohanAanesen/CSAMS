@@ -38,11 +38,11 @@ func UpdateUserName(userID int, newName string) bool {
 	return true
 }
 
-// UserIsRreviewer Checks if the user (userID) can review another user(reviewUserID)
-func UserIsRreviewer(UserID int, assignmentID int, submissionID int64, reviewUserID int) bool {
+// UserIsReviewer Checks if the user (userID) can review another user(reviewUserID)
+func UserIsReviewer(userID int, assignmentID int, submissionID int64, reviewUserID int) bool {
 
 	// Run query
-	rows, err := db.GetDB().Query("SELECT * from peer_reviews WHERE assignment_id = ? AND submission_id = ? AND review_user_id = ? AND user_id = ?", assignmentID, submissionID, reviewUserID, UserID)
+	rows, err := db.GetDB().Query("SELECT * from peer_reviews WHERE assignment_id = ? AND submission_id = ? AND review_user_id = ? AND user_id = ?", assignmentID, submissionID, reviewUserID, userID)
 	if err != nil {
 		// Return false if user can not review
 		return false
@@ -57,6 +57,43 @@ func UserIsRreviewer(UserID int, assignmentID int, submissionID int64, reviewUse
 
 	// Return true if user can review
 	return false
+}
+
+// GetReviewUserIDs returns the userIDs to the assignment the user is going to review
+func GetReviewUserIDs(userID int, assignmentID int) Users {
+
+	var userIDs = Users{}
+
+	// Run query
+	rows, err := db.GetDB().Query("SELECT peer_reviews.review_user_id, users.name FROM peer_reviews INNER JOIN users ON peer_reviews.review_user_id = users.id WHERE user_id = ? AND assignment_id = ?", userID, assignmentID)
+	if err != nil {
+		// Return false if user can not review
+		return userIDs
+	}
+
+	// If there was a match
+	for rows.Next() {
+		var id int
+		var name string
+		err := rows.Scan(&id, &name)
+		if err != nil {
+			return userIDs
+		}
+
+		// Add id to user struct
+		userIDs.Items = append(userIDs.Items, User{
+			ID:            id,
+			Name:          name,
+			Authenticated: true,
+		})
+
+	}
+
+	defer rows.Close()
+
+	// Return true if user can review
+	return userIDs
+
 }
 
 //UpdateUserEmail updates the users email in the db
