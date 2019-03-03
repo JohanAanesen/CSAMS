@@ -13,7 +13,7 @@ type Payload struct {
 	Authentication string    `json:"authentication"`
 	ScheduledTime  time.Time `json:"scheduled_time"`
 	Task           string    `json:"task"`
-	SubmissionID   int       `json:"submission_id"`
+	AssignmentID	int `json:"assignment_id"`
 	Data           json.RawMessage
 }
 

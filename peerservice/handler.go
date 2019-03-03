@@ -11,6 +11,7 @@ import (
 type Payload struct {
 	Authentication string `json:"authentication"`
 	SubmissionID   int    `json:"submission_id"`
+	AssignmentID   int    `json:"assignment_id"`
 	Reviewers      int    `json:"reviewers"`
 }
 
@@ -51,7 +52,7 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//get submissions from database
-	ShuffledSubmissions = getSubmissions(payload.SubmissionID).shuffle() //shuffle part important!
+	ShuffledSubmissions = getSubmissions(payload.SubmissionID, payload.AssignmentID).shuffle() //shuffle part important!
 
 	//make sure the nr of reviewers is greater than the number of submissions
 	if payload.Reviewers >= len(ShuffledSubmissions) {
@@ -74,7 +75,7 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 				counter -= len(ShuffledSubmissions)
 			}
 
-			subpair.ReviewID = ShuffledSubmissions[counter].ID
+			subpair.ReviewUserID = ShuffledSubmissions[counter].ID
 
 			GeneratedReviewers = append(GeneratedReviewers, subpair) //save to generated pairs
 		}

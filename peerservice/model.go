@@ -12,8 +12,9 @@ type Submissions []Submission
 //Submission struct
 type Submission struct {
 	ID           int `json:"id"`
-	UserID       int `json:"userid"`
-	SubmissionID int `json:"submissionid"`
+	UserID       int `json:"user_id"`
+	SubmissionID int `json:"submission_id"`
+	AssignmentID int `json:"assignment_id"`
 }
 
 //Pairs type subpair slice
@@ -21,18 +22,19 @@ type Pairs []SubPair
 
 //SubPair struct
 type SubPair struct {
-	SubmissionID int `json:"submissionid"`
-	UserID       int `json:"userid"`
-	ReviewID     int `json:"reviewid"`
+	SubmissionID int `json:"submission_id"`
+	AssignmentID int `json:"assignment_id"`
+	UserID       int `json:"user_id"`
+	ReviewUserID int `json:"review_user_id"`
 }
 
 //getSubmissions fetches user_submissions from database with submissionID
-func getSubmissions(SubmissionID int) Submissions {
+func getSubmissions(SubmissionID int, AssignmentID int) Submissions {
 
 	//Create an empty courses array
 	var submissions Submissions
 
-	rows, err := GetDB().Query("SELECT id, user_id, submission_id FROM user_submissions WHERE submission_id = ?", SubmissionID)
+	rows, err := GetDB().Query("SELECT id, user_id, submission_id, assignment_id FROM user_submissions WHERE submission_id = ? AND assignment_id = ?", SubmissionID, AssignmentID)
 	if err != nil {
 		log.Println(err.Error()) // TODO : log error
 		// returns empty course array if it fails
@@ -43,14 +45,16 @@ func getSubmissions(SubmissionID int) Submissions {
 		var id int
 		var userid int
 		var submissionID int
+		var assignmentID int
 
-		rows.Scan(&id, &userid, &submissionID)
+		rows.Scan(&id, &userid, &submissionID, &assignmentID)
 
 		// Add course to courses array
 		submissions = append(submissions, Submission{
 			ID:           id,
 			UserID:       userid,
 			SubmissionID: submissionID,
+			AssignmentID: assignmentID,
 		})
 	}
 
@@ -67,7 +71,7 @@ func savePairs(pairs Pairs) bool {
 	}
 
 	for _, pair := range pairs {
-		_, err := tx.Exec("INSERT INTO peer_reviews(submission_id, user_id, review_submission_id) VALUES(?, ?, ?)", pair.SubmissionID, pair.UserID, pair.ReviewID)
+		_, err := tx.Exec("INSERT INTO peer_reviews(submission_id, assignment_id, user_id, review_user_id) VALUES(?, ?, ?, ?)", pair.SubmissionID, pair.AssignmentID, pair.UserID, pair.ReviewUserID)
 
 		if err != nil {
 			//todo log error
