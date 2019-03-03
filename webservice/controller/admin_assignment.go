@@ -2,6 +2,7 @@ package controller
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
@@ -360,4 +361,78 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
+}
+
+// AdminAssignmentSubmissionsGET servers list of all users in course to admin
+func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	assignmentID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Printf("id: %v", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println(assignmentID) // TODO brede : remove this
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	assignmentRepo := &model.AssignmentRepository{}
+
+	assignment, err := assignmentRepo.GetSingle(int(assignmentID))
+	if err != nil {
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	v := view.New(r)
+	v.Name = "admin/assignment/submissions"
+
+	v.Vars["Assignment"] = assignment
+
+	v.Render(w)
+}
+
+// AdminAssignmentSubmissionGET servers one user submission in course to admin
+func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	assignmentID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Printf("id: %v", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println(assignmentID) // TODO brede : remove this
+
+	userID, err := strconv.Atoi(r.FormValue("userid"))
+	if err != nil {
+		log.Printf("id: %v", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println(userID) // TODO brede : remove this
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	assignmentRepo := &model.AssignmentRepository{}
+
+	assignment, err := assignmentRepo.GetSingle(int(assignmentID))
+	if err != nil {
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	v := view.New(r)
+	v.Name = "admin/assignment/singlesubmission"
+
+	v.Vars["Assignment"] = assignment
+
+	v.Render(w)
+
 }

@@ -701,3 +701,11 @@ func TestAssignmentUploadGET(t *testing.T) {
 func TestAssignmentUploadPOST(t *testing.T) {
 	// TODO brede : write test here
 }
+
+func TestAdminAssignmentSubmissionsGET(t *testing.T) {
+	// TODO brede : write test here
+}
+
+func TestAdminAssignmentSubmissionGET(t *testing.T) {
+	// TODO brede : write test here
+}
