@@ -317,6 +317,10 @@ let Form = function() {
         });
     };
 
+    /**
+     * Loads a form from JSON-data, for updating existing form
+     * @param {string} data
+     */
     this.fromJSON = function(data) {
         let json = JSON.parse(data);
 
@@ -326,7 +330,9 @@ let Form = function() {
         this.prefix = json.prefix;
 
         for (let i = 0; i < json.fields.length; i++) {
-            let f = new Field(this.weighted);
+            let f = new Field({
+                weighted: this.weighted,
+            });
             f.name = json.fields[i].name;
             f.description = json.fields[i].description;
             f.label = json.fields[i].label;
@@ -336,7 +342,7 @@ let Form = function() {
                 f.choices = json.fields[i].choices.split(',');
             }
 
-            this.fields.push(f);
+            this.add(f);
         }
 
 
