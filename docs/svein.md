@@ -25,6 +25,8 @@ Svein's log
 #### Worked on
 * Updating submissions
 * Creating reviews
+* Tests for the view-plugins
+* Parsing JSON to Javascript Form
 #### Good
 * Javascript framework for dynamic forms is working great, and easily changeable
 #### Bad
