@@ -29,7 +29,7 @@
                     <label for="course_id">Course</label>
                     <select name="course_id" id="course_id" class="form-control" required>
                         {{$A := .Assignment}}
-                        {{range $C := .Courses.Items}}
+                        {{range $C := .Courses}}
                             <option value="{{$C.ID}}"{{if eq $C.ID $A.CourseID}} selected{{end}}>{{$C.Code}} {{$C.Name}}</option>
                         {{end}}
                     </select>

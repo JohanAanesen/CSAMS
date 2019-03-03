@@ -54,7 +54,10 @@ func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/assignment/create"
 
-	courses, err := model.GetCoursesToUser(session.GetUserFromSession(r).ID)
+	//course repo
+	courseRepo := &model.CourseRepository{}
+
+	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -106,15 +109,18 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 
-		v := view.New(r)
-		v.Name = "admin/assignment/create"
+		//course repo
+		courseRepo := &model.CourseRepository{}
 
-		courses, err := model.GetCoursesToUser(session.GetUserFromSession(r).ID)
+		courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println(err)
 			return
 		}
+
+		v := view.New(r)
+		v.Name = "admin/assignment/create"
 
 		v.Vars["Errors"] = errorMessages
 		v.Vars["AssignmentName"] = assignmentName
@@ -234,6 +240,7 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 	assignmentRepo := &model.AssignmentRepository{}
 	submissionRepo := &model.SubmissionRepository{}
+	courseRepo := &model.CourseRepository{}
 
 	submissions, err := submissionRepo.GetAll()
 	if err != nil {
@@ -249,7 +256,8 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	courses, err := model.GetCoursesToUser(session.GetUserFromSession(r).ID)
+	//get courses to user
+	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)

@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
 
@@ -51,9 +52,9 @@ func TestHandlers(t *testing.T) {
 			method: "POST",
 			url:    "/",
 			body: getReaderFromPayload(Payload{
-				Authentication: "5243980712315079823517089",
+				Authentication: os.Getenv("PEER_AUTH"),
 				SubmissionID:   1,
-				Reviewers:      2,
+				Reviewers:      2000000, //we want to trigger the bad request
 			}),
 			handler:      HandlerPOST,
 			expectedCode: http.StatusBadRequest,

@@ -172,3 +172,26 @@ Tuesday 26/2
 * Deployed application with docker, a lot easier than expected
 * Added Auth, POST and more functionality to the peer service
 * Need a Scheduler Service to run tasks at a given time
+
+Wednesday 27/2
+---------
+* Finished off the peer review service, although lacking of a duplicate request failure
+* Helped Brede setup the project on both openstack and on his computer with docker installed <3
+* There is a lot of duplicate files across the services, tried to move this out of the services and into a /internal folder
+* No luck in making the services use those files tho
+* Creating the SchedulerService
+* Making it so it doesn't neccessarily only take peer scheduling request
+* First bit of the request has to be the same, but from there I can add different execution
+methods and functionality :)
+* Using Goroutines to keep track of when to execute what services
+* Switched to use the AfterFunc(duration, func) which triggers func after duration has passed.
+* Perfect for this usecase
+
+Thursday 28/2
+----------
+* Scheduler service is now working wonderfully, both registering through a http post request
+and it actually triggering the peerservice correctly works.
+* Still missing RUD out of CRUD, but that should be pretty easy to do tomorrow.
+* Scheduler will not accept requests with the same submission id as a current timers submission id
+* The peer service and Scheduler service both needs some polishing, but are functional for the alpha
+planned on monday

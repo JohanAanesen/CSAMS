@@ -12,7 +12,7 @@
     "hostname": "0.0.0.0",
     "useHTTP": true,
     "useHTTPS": false,
-    "HTTPPort": 8087,
+    "HTTPPort": 8086,
     "HTTPSPort": 4430,
     "certFile": "",
     "keyFile": ""

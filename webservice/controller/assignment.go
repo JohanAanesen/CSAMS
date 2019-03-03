@@ -95,8 +95,11 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	course := model.GetCourse(assignment.CourseID)
-	if course.Name == "" {
+	//course repo
+	courseRepo := &model.CourseRepository{}
+
+	course, err := courseRepo.GetSingle(assignment.CourseID)
+	if err != nil {
 		log.Println("Something went wrong with getting course (assignment.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
@@ -223,8 +226,11 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//course repo
+	courseRepo := &model.CourseRepository{}
+
 	// Get course and log possible error
-	course, err := model.GetCourseCodeAndName(assignment.CourseID)
+	course, err := courseRepo.GetSingle(assignment.CourseID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)

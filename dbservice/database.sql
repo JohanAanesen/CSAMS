@@ -1,11 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 4.7.4
--- https://www.phpmyadmin.net/
---
--- Host: 127.0.0.1
--- Generation Time: 29. Jan, 2019 17:17 PM
--- Server-versjon: 10.1.28-MariaDB
--- PHP Version: 7.1.10
 
 CREATE DATABASE IF NOT EXISTS cs53 COLLATE = utf8_general_ci;
 
@@ -15,12 +7,6 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+01:00"; -- Norwegian time zone! --
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT = @@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS = @@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION = @@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Database: `cs53`
@@ -38,8 +24,7 @@ CREATE TABLE `adminfaq`
   `timestamp` datetime                    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `questions` text COLLATE utf8_danish_ci NOT NULL
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_danish_ci;
+  DEFAULT CHARSET = utf8;
 
 --
 -- Dataark for tabell `adminfaq`
@@ -92,12 +77,11 @@ CREATE TABLE `course`
   `coursecode`  varchar(10) COLLATE utf8_danish_ci            NOT NULL,
   `coursename`  varchar(64) COLLATE utf8_danish_ci            NOT NULL,
   `teacher`     int(11)                                       NOT NULL,
-  `description` text COLLATE utf8_danish_ci,
+  `description` text                                          NOT NULL,
   `year`        int(11)                                       NOT NULL,
   `semester`    enum ('fall','spring') COLLATE utf8_danish_ci NOT NULL
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_danish_ci;
+  DEFAULT CHARSET = utf8;
 
 --
 -- Dataark for tabell `course`
@@ -179,8 +163,7 @@ CREATE TABLE `logs`
   `oldvalue`     text COLLATE utf8_danish_ci,
   `newValue`     text COLLATE utf8_danish_ci
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_danish_ci;
+  DEFAULT CHARSET = utf8;
 
 -- --------------------------------------------------------
 
@@ -241,8 +224,7 @@ CREATE TABLE `usercourse`
   `userid`   int(11) NOT NULL,
   `courseid` int(11) NOT NULL
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_danish_ci;
+  DEFAULT CHARSET = utf8;
 
 --
 -- Dataark for tabell `usercourse`
@@ -277,8 +259,7 @@ CREATE TABLE `users`
   `email_private` varchar(64) COLLATE utf8_danish_ci DEFAULT NULL,
   `password`      varchar(64) COLLATE utf8_danish_ci NOT NULL
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_danish_ci;
+  DEFAULT CHARSET = utf8;
 
 --
 -- Dataark for tabell `users`
@@ -335,6 +316,19 @@ CREATE TABLE `user_submissions`
   `submission_id` int(11)     NOT NULL,
   `type`          varchar(64) NOT NULL,
   `answer`        mediumtext
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+--
+-- Tabellstruktur for tabell `schedule_tasks`
+--
+
+CREATE TABLE `schedule_tasks`
+(
+  `submission_id`  int(11)     not null,
+  `scheduled_time` datetime    not null,
+  `task`           varchar(32) not null,
+  `data`           blob        not null
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
@@ -539,7 +533,8 @@ ALTER TABLE `assignments`
 -- Begrensninger for tabell `course`
 --
 ALTER TABLE `course`
-  ADD CONSTRAINT `course_ibfk_1` FOREIGN KEY (`teacher`) REFERENCES `users` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `course_ibfk_1` FOREIGN KEY (`teacher`) REFERENCES `users` (`id`)
+    ON UPDATE CASCADE;
 
 --
 -- Begrensninger for tabell `fields`
@@ -547,12 +542,18 @@ ALTER TABLE `course`
 ALTER TABLE `fields`
   ADD CONSTRAINT `fields_forms_id_fk` FOREIGN KEY (`form_id`) REFERENCES `forms` (`id`);
 
+
 --
 -- Begrensninger for tabell `logs`
 --
 ALTER TABLE `logs`
-  ADD CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `logs_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE,
+  ADD CONSTRAINT `logs_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE;
+
 
 --
 -- Begrensninger for tabell `peer_reviews`
@@ -562,11 +563,13 @@ ALTER TABLE `peer_reviews`
   ADD CONSTRAINT `peer_reviews_submissions_id_fk` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`),
   ADD CONSTRAINT `peer_reviews_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
+
 --
 -- Begrensninger for tabell `reviews`
 --
 ALTER TABLE `reviews`
   ADD CONSTRAINT `reviews_forms_id_fk` FOREIGN KEY (`form_id`) REFERENCES `forms` (`id`);
+
 
 --
 -- Begrensninger for tabell `submissions`
@@ -574,12 +577,18 @@ ALTER TABLE `reviews`
 ALTER TABLE `submissions`
   ADD CONSTRAINT `submissions_forms_id_fk` FOREIGN KEY (`form_id`) REFERENCES `forms` (`id`);
 
+
 --
 -- Begrensninger for tabell `usercourse`
 --
 ALTER TABLE `usercourse`
-  ADD CONSTRAINT `usercourse_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `usercourse_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `usercourse_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  ADD CONSTRAINT `usercourse_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+
 
 --
 -- Begrensninger for tabell `user_reviews`
@@ -595,8 +604,10 @@ ALTER TABLE `user_submissions`
   ADD CONSTRAINT `user_submission_assignment_id_fk` FOREIGN KEY (`assignment_id`) REFERENCES `assignments` (`id`),
   ADD CONSTRAINT `user_submissions_submissions_id_fk` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`),
   ADD CONSTRAINT `user_submissions_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
-COMMIT;
 
-/*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION = @OLD_COLLATION_CONNECTION */;
+
+--
+-- Begrensninger for tabell `schedule_tasks`
+--
+ALTER TABLE `schedule_tasks`
+  ADD CONSTRAINT schedule_tasks_submission_id_fk FOREIGN KEY (submission_id) REFERENCES submissions (id);
