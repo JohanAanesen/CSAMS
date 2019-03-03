@@ -48,25 +48,35 @@ func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
+	reviewRepo := model.ReviewRepository{}
+	reviews, err := reviewRepo.GetAll()
 
-	v := view.New(r)
-	v.Name = "admin/assignment/create"
-
-	//course repo
-	courseRepo := &model.CourseRepository{}
-
-	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
+	//course repo
+	courseRepo := model.CourseRepository{}
+	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
+
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/assignment/create"
+
 	v.Vars["Courses"] = courses
 
 	v.Vars["Submissions"] = submissions
+	v.Vars["Reviews"] = reviews
 
 	v.Render(w)
 }
