@@ -497,9 +497,6 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-
 	assignmentRepo := &model.AssignmentRepository{}
 
 	assignment, err := assignmentRepo.GetSingle(int(assignmentID))
@@ -526,6 +523,9 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
 	v := view.New(r)
 	v.Name = "admin/assignment/submissions"
 
@@ -537,6 +537,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
+TODO brede : use this with iframe after alpha
 // AdminAssignmentSubmissionGET servers one user submission in course to admin
 func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
 
@@ -557,9 +558,6 @@ func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(userID) // TODO brede : remove this
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-
 	assignmentRepo := &model.AssignmentRepository{}
 
 	assignment, err := assignmentRepo.GetSingle(int(assignmentID))
@@ -568,6 +566,9 @@ func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
 
 	// TODO brede : use same page as peer rews aka. out of admin/
 	v := view.New(r)

@@ -4,7 +4,7 @@
     <main role="main" class="container">
         <div class="col my-2">
             <!-- TODO brede : add link for back button to students -->
-            <a href="{{ if .IsTeacher }}/admin/assignment/{{ .Assignment.ID }}/submissions {{ else }}#{{ end}}"
+            <a href="{{ if .IsTeacher }}/admin/assignment/{{ .Assignment.ID }}/submissions {{ else }}/assignment/{{.Assignment.ID}}{{ end}}"
                class="btn btn-outline-dark">Go Back</a>
             <div class="col my-1 container pt-3 jumbotron">
                 <h1 class="display-4">{{ .Course.Code }} {{ .Course.Name }}</h1>

@@ -38,6 +38,14 @@
         {{if .HasBeenValidated}}
             <a href="#" class="btn btn-warning btn-lg">See auto validation</a>
         {{end}}
+
+        {{ $id := .Assignment.ID }}
+        {{ $length := len .Reviews.Items }}
+        {{ if gt $length 0 }}
+            {{ range .Reviews.Items }}
+                <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-dark btn-lg">Review {{ .Name }}</a>
+            {{ end }}
+        {{end }}
     </div>
 {{end}}
 {{define "foot"}}{{end}}

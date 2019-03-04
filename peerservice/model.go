@@ -76,7 +76,6 @@ func savePairs(pairs Pairs) bool {
 		if err != nil {
 			//todo log error
 
-			fmt.Println("EFSWDPHUIFPidsuDFPSHIGUFPHIduw")
 			log.Fatal(err.Error())
 			tx.Rollback() //quit transaction if error
 			return false
