@@ -50,3 +50,24 @@
 * Add deadline to assignments and gray out former assignments
 * We informed [Project Owner](https://www.ntnu.no/ansatte/christopher.frantz) that it's [skiday](https://www.facebook.com/events/2070975702972081/) on thursday :)
 * Document all smaller things that's vital for others later, ex. timezone in the sql file.
+
+## Monay - 04/03/19
+* Check url in back-end
+* Sanitize input
+* If a user has answerd submission form, don't let admin change the form
+* Tell why stuff be like it be to the end-user
+* Get hash from course and display to admin in front-end
+* Give admin login/register link for joining course
+* Add convert to MD plugin
+* Set time uploaded on submissions admin
+* Get the total number of submissions admin
+* Maybe track view for submissions admin, to see whats new
+* Remove joined course bug
+* Fix submit new course btn
+* Add order by course.semester back again >:(
+* Make real name uneditable, maybe add username instead
+* Forgot password functionality?
+
+* Tabs on course -> more visible
+* Maybe don't let admin submit assignment
+* Add equation possibility in MD ([mathjax](https://www.mathjax.org/))
