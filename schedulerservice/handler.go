@@ -40,11 +40,17 @@ func IndexSingleGET(w http.ResponseWriter, r *http.Request){
 
 	payload := model.GetPayload(subID, assID)
 
-	err = json.NewEncoder(w).Encode(payload)
-	if err != nil{
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
+
+	if payload.ID != 0{
+		http.Header.Add(w.Header(), "content-type", "application/json")
+		err = json.NewEncoder(w).Encode(payload)
+		if err != nil{
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
 	}
+
+	http.Error(w, "bad request", http.StatusNotFound)
 }
 
 // IndexPOST handles POST requests

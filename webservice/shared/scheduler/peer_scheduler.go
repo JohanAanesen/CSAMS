@@ -151,20 +151,19 @@ func (scheduler Scheduler) DeleteSchedule(subID int, assID int) error {
 	return nil
 }
 
-func (scheduler Scheduler) SchedulerExists(subID int, assID int) (bool, error) {
+func (scheduler Scheduler) SchedulerExists(subID int, assID int) bool {
 
-	parameters := fmt.Sprintf("?subid=%v&assid=%v", subID, assID)
+	parameters := fmt.Sprintf("/%v/%v", subID, assID)
 
-	response, err := http.Get(os.Getenv("PEER_SERVICE")+parameters)
+	response, err := http.Get("http://"+os.Getenv("SCHEDULE_SERVICE")+parameters)
 	if err != nil {
-		fmt.Printf("The HTTP request to schedulerservice failed with error %s\n", err)
-	} else {
-		data, _ := ioutil.ReadAll(response.Body)
-		fmt.Println(string(data))
+		log.Printf("The HTTP request to schedulerservice failed with error %s\n", err)
+		return false
 	}
 
+	if response.StatusCode == 404{
+		return false
+	}
 
-
-
-	return true, nil
+	return true
 }

@@ -18,6 +18,8 @@ import (
 
 // AdminAssignmentGET handles GET-request at /admin/assignment
 func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
+
+
 	// repo's
 	courseRepo := &model.CourseRepository{}
 	assignmentRepo := model.AssignmentRepository{}
@@ -461,13 +463,26 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 
 		sched := scheduler.Scheduler{}
 
-		err := sched.UpdateSchedule(int(assignment.SubmissionID.Int64),
-			assignment.ID, //assignment ID
-			assignment.Deadline)
-		if err != nil {
-			log.Println(err)
-			return
+		if sched.SchedulerExists(int(assignment.SubmissionID.Int64), assignment.ID){
+			err := sched.UpdateSchedule(int(assignment.SubmissionID.Int64),
+				assignment.ID, //assignment ID
+				assignment.Deadline)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+		}else{
+			err := sched.SchedulePeerReview(int(assignment.SubmissionID.Int64),
+				assignment.ID, //assignment ID
+				int(assignment.Reviewers.Int64),
+				assignment.Deadline)
+			if err != nil {
+				log.Println(err)
+				return
+			}
 		}
+
+
 
 	}
 
