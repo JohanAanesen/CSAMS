@@ -44,7 +44,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 
 	var activeAssignments []ActiveAssignment
 
-	for _, course := range courses{ //iterate all courses
+	for _, course := range courses { //iterate all courses
 		assignments, err := assignmentRepo.GetAllFromCourse(course.ID) //get assignments from course
 		if err != nil {
 			log.Println(err)
@@ -54,7 +54,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 
 		for _, assignment := range assignments { //go through all it's assignments again
 			if time.Now().After(assignment.Publish) && time.Now().Before(assignment.Deadline) { //save all 'active' assignments
-				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment:assignment, CourseCode:course.Code})
+				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: assignment, CourseCode: course.Code})
 			}
 		}
 

@@ -37,7 +37,7 @@ func (payload Payload) Save() bool {
 		return false
 	}
 
-	ex, err := tx.Exec("INSERT INTO schedule_tasks(submission_id, assignment_id, scheduled_time, task, data) VALUES(?, ?, ?, ?, ?)",
+	_, err = tx.Exec("INSERT INTO schedule_tasks(submission_id, assignment_id, scheduled_time, task, data) VALUES(?, ?, ?, ?, ?)",
 		payload.SubmissionID,
 		payload.AssignmentID,
 		payload.ScheduledTime,
@@ -53,19 +53,11 @@ func (payload Payload) Save() bool {
 		return false
 	}
 
-	schedId, err := ex.LastInsertId()
-	if err != nil {
-		log.Fatal(err.Error())
-		return false
-	}
-
 	err = tx.Commit() //finish transaction
 	if err != nil {
 		log.Fatal(err.Error())
 		return false
 	}
-
-	payload.ID = int(schedId)
 
 	return true
 }
@@ -163,6 +155,8 @@ func GetPayload(subID int, assID int) Payload {
 //DeletePayload removes payload from db
 func DeletePayload(subID int, assID int) bool {
 
+	payload := GetPayload(subID, assID)
+
 	tx, err := db.GetDB().Begin() //start transaction
 	if err != nil {
 		log.Println(err.Error())
@@ -186,7 +180,7 @@ func DeletePayload(subID int, assID int) bool {
 		return false
 	}
 
-	StopTimer(subID) //stops ongoing timer
+	StopTimer(payload.ID) //stops ongoing timer
 
 	return true
 }

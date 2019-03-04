@@ -19,28 +19,7 @@ type PeerTask struct {
 	Reviewers      int    `json:"reviewers"`
 }
 
-var dummyUpdate = struct {
-	Authentication string    `json:"authentication"`
-	SubmissionID   int       `json:"submission_id"`
-	AssignmentID   int       `json:"assignment_id"`
-	ScheduledTime  time.Time `json:"scheduled_time"`
-}{
-	Authentication: os.Getenv("PEER_AUTH"),
-	SubmissionID:   1,
-	AssignmentID:   1,
-	ScheduledTime:  time.Now().Add(time.Hour * 2351467),
-}
-
-var dummyDelete = struct {
-	Authentication string `json:"authentication"`
-	SubmissionID   int    `json:"submission_id"`
-	AssignmentID   int    `json:"assignment_id"`
-}{
-	Authentication: os.Getenv("PEER_AUTH"),
-	SubmissionID:   1,
-	AssignmentID:   1,
-}
-
+// SchedulePeerReview schedules a peer review task with scheduler service
 func (scheduler Scheduler) SchedulePeerReview(subID int, assID int, reviewers int, scheduledTime time.Time) error {
 	// PeerTask, this is what is being sent to the peerservice
 
@@ -67,18 +46,16 @@ func (scheduler Scheduler) SchedulePeerReview(subID int, assID int, reviewers in
 		return err
 	}
 
-	response, err := http.Post("http://"+os.Getenv("SCHEDULE_SERVICE"), "application/json", bytes.NewBuffer(jsonValue))
+	_, err = http.Post("http://"+os.Getenv("SCHEDULE_SERVICE"), "application/json", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Printf("The HTTP request failed with error %s\n", err)
 		return err
-	} else {
-		data, _ := ioutil.ReadAll(response.Body)
-		fmt.Println(string(data))
 	}
 
 	return nil
 }
 
+// UpdateSchedule updates a schedule task on service
 func (scheduler Scheduler) UpdateSchedule(subID int, assID int, scheduledTime time.Time) error {
 
 	//this is what is being sent to the scheduler service
@@ -116,6 +93,7 @@ func (scheduler Scheduler) UpdateSchedule(subID int, assID int, scheduledTime ti
 	return nil
 }
 
+// DeleteSchedule deletes a planned task from schedule service
 func (scheduler Scheduler) DeleteSchedule(subID int, assID int) error {
 
 	//this is what is being sent to the scheduler service
@@ -152,6 +130,7 @@ func (scheduler Scheduler) DeleteSchedule(subID int, assID int) error {
 	return nil
 }
 
+//SchedulerExists returns true if a scheduler with subID and assID identical exists
 func (scheduler Scheduler) SchedulerExists(subID int, assID int) bool {
 
 	parameters := fmt.Sprintf("/%v/%v", subID, assID)

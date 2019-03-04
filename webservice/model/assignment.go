@@ -177,7 +177,7 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 	}
 
 	// Check if we have set reviewers
-	if assignment.Reviewers.Valid  {
+	if assignment.Reviewers.Valid {
 		// Create query string
 		query := "UPDATE assignments SET reviewers = ? WHERE id = ?;"
 		// Prepare and execute query

@@ -1,3 +1,4 @@
 package scheduler
 
-type Scheduler struct {}
+// Scheduler struct to access scheduler functions
+type Scheduler struct{}

@@ -22,6 +22,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(model.GetPayloads())
 }
 
+// IndexSingleGET gets a single schedule from service
 func IndexSingleGET(w http.ResponseWriter, r *http.Request){
 	vars := mux.Vars(r)
 	subID, err := strconv.Atoi(vars["subid"])

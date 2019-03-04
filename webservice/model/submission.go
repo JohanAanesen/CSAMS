@@ -47,7 +47,6 @@ func (repo *SubmissionRepository) Insert(form Form) error {
 		// Insertion query
 		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
 
-
 		//Execute query
 		_, err = tx.Exec(query, formID, field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
 		if err != nil {
