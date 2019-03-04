@@ -47,6 +47,7 @@ func (scheduler Scheduler) SchedulePeerReview(subID int, assID int, reviewers in
 	var peerTask = PeerTask{
 		Authentication: os.Getenv("PEER_AUTH"),
 		SubmissionID:   subID,
+		AssignmentID:   assID,
 		Reviewers:      reviewers,
 	}
 
@@ -155,13 +156,13 @@ func (scheduler Scheduler) SchedulerExists(subID int, assID int) bool {
 
 	parameters := fmt.Sprintf("/%v/%v", subID, assID)
 
-	response, err := http.Get("http://"+os.Getenv("SCHEDULE_SERVICE")+parameters)
+	response, err := http.Get("http://" + os.Getenv("SCHEDULE_SERVICE") + parameters)
 	if err != nil {
 		log.Printf("The HTTP request to schedulerservice failed with error %s\n", err)
 		return false
 	}
 
-	if response.StatusCode == 404{
+	if response.StatusCode == 404 {
 		return false
 	}
 

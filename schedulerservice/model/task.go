@@ -50,6 +50,8 @@ func (peer PeerTask) Trigger() {
 //Schedule schedules a PeerTask for being triggered in the future
 func (peer PeerTask) Schedule(scheduledTime time.Time) bool {
 
+	payload := GetPayload(peer.SubmissionID, peer.AssignmentID)
+
 	loc, err := time.LoadLocation("Europe/Oslo")
 	if err != nil {
 		log.Println("Something wrong with time location")
@@ -68,7 +70,7 @@ func (peer PeerTask) Schedule(scheduledTime time.Time) bool {
 	}
 
 	//afterFunc will run the function after the duration has passed
-	Timers[peer.SubmissionID] = time.AfterFunc(Duration, peer.Trigger)
+	Timers[payload.ID] = time.AfterFunc(Duration, peer.Trigger)
 
 	return true
 }
@@ -105,8 +107,9 @@ func (peer PeerTask) Delete() bool {
 //NewTask registers a new Task in database and ships it off for scheduling
 func NewTask(payload Payload) bool {
 	//Make sure a timer does not exist for this submission
-	if GetTimer(payload.AssignmentID) != nil {
-		log.Println("Timer for this submissions already exists.")
+	pay2 := GetPayload(payload.SubmissionID, payload.AssignmentID)
+	if pay2.ID != 0{
+		log.Println("Payload with these id's already exists.")
 		return false
 	}
 
@@ -115,6 +118,8 @@ func NewTask(payload Payload) bool {
 		log.Println("Something went wrong saving task")
 		return false
 	}
+
+	payload = GetPayload(payload.SubmissionID, payload.AssignmentID) //get a fresh payload with id from db
 
 	//schedule task
 	if !ScheduleTask(payload) {
