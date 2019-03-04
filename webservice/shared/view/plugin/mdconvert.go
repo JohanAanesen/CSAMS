@@ -5,6 +5,9 @@ import (
 	"html/template"
 )
 
+// MDConvert convert markdown text to HTML text within the parser
+// Usage:
+// {{ MDCONVERT .Text }}
 func MDConvert() template.FuncMap {
 	f := make(template.FuncMap)
 
