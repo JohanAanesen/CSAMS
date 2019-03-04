@@ -25,29 +25,39 @@ func (repo *SubmissionRepository) Insert(form Form) error {
 		return err
 	}
 
-	// Insertions query
-	query := "INSERT INTO submissions (form_id) VALUES(?)"
-	// Insert form_id into submissions
-	rows, err := db.GetDB().Query(query, formID)
-	// Check for error
+	//Start transaction
+	tx, err := db.GetDB().Begin()
 	if err != nil {
 		return err
 	}
-	// Close the connections
-	defer rows.Close()
+
+	// Insertions query
+	query := "INSERT INTO submissions (form_id) VALUES(?)"
+	// Insert form_id into submissions
+	_, err = tx.Exec(query, formID)
+	// Check for error
+	if err != nil {
+		tx.Rollback() //rollback if err
+		return err
+	}
 
 	// Loop trough fields in the forms
 	for _, field := range form.Fields {
+
 		// Insertion query
 		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
-		// Execute the query
-		rows, err := db.GetDB().Query(query, formID, field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
-		// Check for error
+
+		//Execute query
+		_, err = tx.Exec(query, formID, field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
 		if err != nil {
+			tx.Rollback() //rollback if err
 			return err
 		}
-		// Close the connection
-		rows.Close()
+	}
+
+	err = tx.Commit() //commit transaction/changes
+	if err != nil {
+		return err
 	}
 
 	// Return no error
@@ -118,30 +128,29 @@ func (repo *SubmissionRepository) Update(form Form) error {
 		return err
 	}
 
-	err = tx.Commit()
-	if err != nil {
-		return err
-	}
-
 	query = "DELETE FROM fields WHERE form_id=?"
-	rows, err := db.GetDB().Query(query, form.ID)
+	_, err = db.GetDB().Exec(query, form.ID)
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
-	rows.Close()
 
 	// Loop trough fields in the forms
 	for _, field := range form.Fields {
 		// Insertion query
 		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
 		// Execute the query
-		rows, err := db.GetDB().Query(query, form.ID, field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
+		_, err := db.GetDB().Exec(query, form.ID, field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
 		// Check for error
 		if err != nil {
+			tx.Rollback()
 			return err
 		}
-		// Close the connection
-		rows.Close()
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
 	}
 
 	// Return no error

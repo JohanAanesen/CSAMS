@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/json"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/model"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -18,6 +20,38 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 	//todo
 	http.Header.Add(w.Header(), "content-type", "application/json")
 	_ = json.NewEncoder(w).Encode(model.GetPayloads())
+}
+
+// IndexSingleGET gets a single schedule from service
+func IndexSingleGET(w http.ResponseWriter, r *http.Request){
+	vars := mux.Vars(r)
+	subID, err := strconv.Atoi(vars["subid"])
+	if err != nil {
+		log.Printf("id: %v", err)
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	assID, err := strconv.Atoi(vars["assid"])
+	if err != nil {
+		log.Printf("id: %v", err)
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	payload := model.GetPayload(subID, assID)
+
+
+	if payload.ID != 0{
+		http.Header.Add(w.Header(), "content-type", "application/json")
+		err = json.NewEncoder(w).Encode(payload)
+		if err != nil{
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	http.Error(w, "bad request", http.StatusNotFound)
 }
 
 // IndexPOST handles POST requests

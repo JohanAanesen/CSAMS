@@ -20,6 +20,7 @@ type Assignment struct {
 	ReviewID     sql.NullInt64 `json:"-" db:"review_id"`
 	Submission   Submission    `json:"submission"`
 	Review       Review        `json:"review"`
+	Reviewers    sql.NullInt64 `json:"reviewers"`
 }
 
 // AssignmentRepository holds all assignments, and DB-functions
@@ -31,7 +32,7 @@ func (repo *AssignmentRepository) GetSingle(id int) (Assignment, error) {
 	var result Assignment
 
 	// Create query string
-	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id FROM assignments WHERE id = ?"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, reviewers FROM assignments WHERE id = ?"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query, id)
 	// Check for error
@@ -45,7 +46,7 @@ func (repo *AssignmentRepository) GetSingle(id int) (Assignment, error) {
 		// Scan row for data
 		err = rows.Scan(&result.ID, &result.Name, &result.Description,
 			&result.Created, &result.Publish, &result.Deadline, &result.CourseID,
-			&result.SubmissionID, &result.ReviewID)
+			&result.SubmissionID, &result.ReviewID, &result.Reviewers)
 		// Check for error
 		if err != nil {
 			return Assignment{}, err
@@ -61,7 +62,7 @@ func (repo *AssignmentRepository) GetAll() ([]Assignment, error) {
 	var result []Assignment
 
 	// Create query string
-	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id FROM assignments;"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, reviewers FROM assignments;"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query)
 	if err != nil {
@@ -134,21 +135,21 @@ func (repo *AssignmentRepository) GetAllToUserSorted(UserID int) ([]Assignment, 
 }
 
 // Insert a new assignment to the database
-func (repo *AssignmentRepository) Insert(assignment Assignment) error {
+func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 	// Create query string
 	query := "INSERT INTO assignments (name, description, publish, deadline, course_id) VALUES (?, ?, ?, ?, ?);"
 	// Prepare and execute query
-	rows, err := db.GetDB().Exec(query, assignment.Name, assignment.Description, assignment.Publish, assignment.Deadline, assignment.CourseID)
+	ex, err := db.GetDB().Exec(query, assignment.Name, assignment.Description, assignment.Publish, assignment.Deadline, assignment.CourseID)
 	// Check for error
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	// Get last inserted ID
-	id, err := rows.LastInsertId()
+	id, err := ex.LastInsertId()
 	// Check for error
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	// Check if we have set a submission_id
@@ -156,13 +157,11 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) error {
 		// Create query string
 		query := "UPDATE assignments SET submission_id = ? WHERE id = ?;"
 		// Prepare and execute query
-		rows, err := db.GetDB().Query(query, assignment.SubmissionID, id)
+		_, err := db.GetDB().Exec(query, assignment.SubmissionID, id)
 		// Check for error
 		if err != nil {
-			return err
+			return 0, err
 		}
-		// Close connection
-		defer rows.Close()
 	}
 
 	// Check if we have set a review_id
@@ -170,28 +169,38 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) error {
 		// Create query string
 		query := "UPDATE assignments SET review_id = ? WHERE id = ?;"
 		// Prepare and execute query
-		rows, err := db.GetDB().Query(query, assignment.ReviewID, id)
+		_, err := db.GetDB().Exec(query, assignment.ReviewID, id)
 		// Check for error
 		if err != nil {
-			return err
+			return 0, err
 		}
-		// Close connection
-		defer rows.Close()
 	}
 
-	return nil
+	// Check if we have set reviewers
+	if assignment.Reviewers.Valid {
+		// Create query string
+		query := "UPDATE assignments SET reviewers = ? WHERE id = ?;"
+		// Prepare and execute query
+		_, err := db.GetDB().Exec(query, assignment.Reviewers, id)
+		// Check for error
+		if err != nil {
+			return 0, err
+		}
+	}
+
+	return int(id), nil
 }
 
 // Update an assignment based on the ID and the data inside an Assignment-object
 func (repo *AssignmentRepository) Update(id int, assignment Assignment) error {
-	query := "UPDATE assignments SET name=?, description=?, course_id=?, publish=?, deadline=? WHERE id=?"
+	query := "UPDATE assignments SET name=?, description=?, course_id=?, publish=?, deadline=?, reviewers=? WHERE id=?"
 
 	tx, err := db.GetDB().Begin()
 	if err != nil {
 		return err
 	}
 
-	_, err = tx.Exec(query, assignment.Name, assignment.Description, assignment.CourseID, assignment.Publish, assignment.Deadline, id)
+	_, err = tx.Exec(query, assignment.Name, assignment.Description, assignment.CourseID, assignment.Publish, assignment.Deadline, assignment.Reviewers, id)
 	if err != nil {
 		tx.Rollback()
 		return err

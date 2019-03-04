@@ -43,8 +43,9 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	//get user
 	user := session.GetUserFromSession(r)
 
-	//course repo
+	//repo's
 	courseRepo := &model.CourseRepository{}
+	assignmentRepo := model.AssignmentRepository{}
 
 	//get info from db
 	course, err = courseRepo.GetSingle(courseID)
@@ -54,7 +55,6 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	assignmentRepo := model.AssignmentRepository{}
 	assignments, err := assignmentRepo.GetAllFromCourse(courseID)
 	if err != nil {
 		log.Println(err)

@@ -259,22 +259,29 @@ func UserAuth(email string, password string) (User, bool) {
 }
 
 //RegisterUser registers users to database
-func RegisterUser(name string, email string, password string) (User, bool) {
+func RegisterUser(name string, email string, password string) (User, error) {
 	pass, err := hashPassword(password)
-
 	if err != nil {
-		log.Fatal(err.Error())
-		return User{Authenticated: false}, false
+		return User{Authenticated: false}, err
 	}
 
-	_, err = db.GetDB().Exec("INSERT INTO users(name, email_student, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
-
+	tx, err := db.GetDB().Begin()
 	if err != nil {
-		log.Fatal(err.Error())
-		return User{Authenticated: false}, false
+		return User{Authenticated: false}, err
 	}
 
-	return UserAuth(email, password) //fetch user-id through existing method
+	ex, err := db.GetDB().Exec("INSERT INTO users(name, email_student, teacher, password) VALUES(?, ?, 0, ?)", name, email, pass)
+
+	if err != nil {
+		tx.Rollback()
+		return User{Authenticated: false}, err
+	}
+
+	userID, err := ex.LastInsertId() //get ID
+
+	user := GetUser(int(userID)) //get user from ID
+
+	return user, nil //fetch user-id through existing method
 }
 
 //CheckPasswordHash compares password string and hashed string

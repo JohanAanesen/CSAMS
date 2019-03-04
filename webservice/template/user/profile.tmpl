@@ -103,8 +103,8 @@
 
 
                         <!-- Show number of classes the user is a student in -->
-                        {{if .Courses }}
-                            <p id="noOfClasses"><strong>Number of classes: </strong>{{len .Courses }}</p>
+                        {{if .Courses}}
+                            <p id="noOfClasses"><strong>Number of classes: </strong>{{len .Courses}}</p>
                         {{else}}
                             <!-- Else, show error message -->
                             <p id="noOfClasses"><strong>You don't have any active classes</strong></p>
@@ -121,9 +121,7 @@
                 <div class="col-sm-12">
                     <div class="col-xs-12">
                         <h6 class="border-bottom border-gray pb-2 mb-0">Courses</h6>
-
-                        <!-- TODO : Maybe show assignments here too?  -->
-                        {{range .Courses }}
+                        {{range .Courses}}
                             <div class="media text-muted pt-3">
                                 <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                                     <div class="d-flex justify-content-between align-items-center">
