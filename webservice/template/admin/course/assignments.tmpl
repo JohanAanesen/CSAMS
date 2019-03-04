@@ -22,6 +22,9 @@
                         <a href="/admin/assignment/{{.ID}}"
                            class="btn btn-outline-{{if DEADLINEDUE .Deadline}}light{{else}}dark{{end}} btn-sm">See
                             details</a>
+                        <a href="/admin/assignment/{{.ID}}/submissions"
+                           class="btn btn-outline-{{if DEADLINEDUE .Deadline}}light{{else}}dark{{end}} btn-sm">See
+                            submissions</a>
                     </div>
                 </div>
             </div>

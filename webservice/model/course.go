@@ -21,7 +21,7 @@ type Course struct {
 // CourseRepository holds all assignments, and DB-functions
 type CourseRepository struct{}
 
-// GetSingle retrieves a single Assignment based on Primary Key (id)
+// GetSingle retrieves a single Course based on Primary Key (id)
 func (repo *CourseRepository) GetSingle(id int) (Course, error) {
 	// Declare empty struct
 	var result Course

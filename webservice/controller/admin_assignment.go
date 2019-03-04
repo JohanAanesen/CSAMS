@@ -386,3 +386,98 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
 }
+
+// AdminAssignmentSubmissionsGET servers list of all users in course to admin
+func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	assignmentID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Printf("id: %v", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	assignmentRepo := &model.AssignmentRepository{}
+
+	assignment, err := assignmentRepo.GetSingle(int(assignmentID))
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	courseRepo := &model.CourseRepository{}
+
+	course, err := courseRepo.GetSingle(assignment.CourseID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// TODO brede : sort by user delivered and not + show if delivered or not in table
+	students := model.GetUsersToCourse(assignment.CourseID)
+	if len(students.Items) < 0 {
+		log.Println("Error: could not get students from course! (admin_assignment.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/assignment/submissions"
+
+	v.Vars["Assignment"] = assignment
+	v.Vars["Students"] = students
+	v.Vars["Course"] = course
+
+	v.Render(w)
+}
+
+/*
+TODO brede : use this with iframe after alpha
+// AdminAssignmentSubmissionGET servers one user submission in course to admin
+func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	assignmentID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Printf("id: %v", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	userID, err := strconv.Atoi(r.FormValue("userid"))
+	if err != nil {
+		log.Printf("userid: %v", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println(userID) // TODO brede : remove this
+
+	assignmentRepo := &model.AssignmentRepository{}
+
+	assignment, err := assignmentRepo.GetSingle(int(assignmentID))
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	// TODO brede : use same page as peer rews aka. out of admin/
+	v := view.New(r)
+	v.Name = "admin/assignment/singlesubmission"
+
+	v.Vars["Assignment"] = assignment
+
+	v.Render(w)
+
+}
+*/

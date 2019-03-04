@@ -43,6 +43,7 @@ func TestHandlers(t *testing.T) {
 				Authentication: "none",
 				SubmissionID:   1,
 				Reviewers:      2,
+				AssignmentID:   1,
 			}),
 			handler:      HandlerPOST,
 			expectedCode: http.StatusUnauthorized,
@@ -54,6 +55,7 @@ func TestHandlers(t *testing.T) {
 			body: getReaderFromPayload(Payload{
 				Authentication: os.Getenv("PEER_AUTH"),
 				SubmissionID:   1,
+				AssignmentID:   1,
 				Reviewers:      2000000, //we want to trigger the bad request
 			}),
 			handler:      HandlerPOST,

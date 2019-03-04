@@ -1,4 +1,3 @@
-
 CREATE DATABASE IF NOT EXISTS cs53 COLLATE = utf8_general_ci;
 
 USE cs53;
@@ -6,7 +5,8 @@ USE cs53;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
-SET time_zone = "+01:00"; -- Norwegian time zone! --
+SET time_zone = "+01:00";
+-- Norwegian time zone! --
 
 --
 -- Database: `cs53`
@@ -173,10 +173,11 @@ CREATE TABLE `logs`
 
 CREATE TABLE `peer_reviews`
 (
-  `id`                   int(11) NOT NULL,
-  `submission_id`        int(11) NOT NULL,
-  `user_id`              int(11) NOT NULL,
-  `review_submission_id` int(11) NOT NULL
+  `id`             int(11) NOT NULL,
+  `submission_id`  int(11) NOT NULL,
+  `assignment_id`  int(11) NOT NULL,
+  `user_id`        int(11) NOT NULL,
+  `review_user_id` int(11) NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
@@ -326,6 +327,7 @@ CREATE TABLE `user_submissions`
 CREATE TABLE `schedule_tasks`
 (
   `submission_id`  int(11)     not null,
+  `assignment_id`  int(11)     not null,
   `scheduled_time` datetime    not null,
   `task`           varchar(32) not null,
   `data`           blob        not null
@@ -337,9 +339,20 @@ CREATE TABLE `schedule_tasks`
 --
 
 INSERT INTO `user_submissions` (`id`, `user_id`, `assignment_id`, `submission_id`, `type`, `answer`)
-VALUES (1, 3, 1, 1, 'text', 'BredeFK'),
-       (2, 3, 1, 1, 'url', 'https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments'),
-       (3, 3, 1, 1, 'textarea', 'I did good!');
+VALUES (1, 4, 1, 1, 'text', 'JohanKlausen'),
+       (2, 4, 1, 1, 'url', 'https://github.com/JohanKlausen/yeet'),
+       (3, 4, 1, 1, 'textarea', 'I did good!'),
+       (4, 5, 1, 1, 'text', 'StianFjerdingstad'),
+       (5, 5, 1, 1, 'url', 'https://github.com/StianFjerdingstad/Sudoku'),
+       (6, 5, 1, 1, 'textarea', 'I did sexy good!'),
+       (7, 10, 1, 1, 'text', 'KlausAanesen'),
+       (8, 10, 1, 1, 'url', 'https://github.com/KlausAanesen/1337yeet420'),
+       (9, 10, 1, 1, 'textarea', 'I did bad :(');
+
+INSERT INTO `peer_reviews` (`id`, `submission_id`, `assignment_id`, `user_id`, `review_user_id`)
+VALUES (1, 1, 1, 3, 4),
+       (2, 1, 1, 3, 5),
+       (3, 1, 2, 9, 4);
 
 --
 -- Indexes for dumped tables
@@ -395,8 +408,9 @@ ALTER TABLE `logs`
 ALTER TABLE `peer_reviews`
   ADD PRIMARY KEY (`id`),
   ADD KEY `peer_reviews_submissions_id_fk` (`submission_id`),
+  ADD KEY `peer_reviews_assignment_id_fk` (`assignment_id`),
   ADD KEY `peer_reviews_user_id_fk` (`user_id`),
-  ADD KEY `peer_reviews_review_submission_id_fk` (`review_submission_id`);
+  ADD KEY `peer_reviews_review_user_id_fk` (`review_user_id`);
 
 --
 -- Indexes for table `reviews`
@@ -553,8 +567,9 @@ ALTER TABLE `logs`
 -- Begrensninger for tabell `peer_reviews`
 --
 ALTER TABLE `peer_reviews`
-  ADD CONSTRAINT `peer_reviews_review_submission_id_fk` FOREIGN KEY (`review_submission_id`) REFERENCES `user_submissions` (`id`),
+  ADD CONSTRAINT `peer_reviews_review_user_id_fk` FOREIGN KEY (`review_user_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `peer_reviews_submissions_id_fk` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`),
+  ADD CONSTRAINT `peer_review_assignment_id_fk` FOREIGN KEY (`assignment_id`) REFERENCES `assignments` (`id`),
   ADD CONSTRAINT `peer_reviews_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 
@@ -604,4 +619,5 @@ ALTER TABLE `user_submissions`
 -- Begrensninger for tabell `schedule_tasks`
 --
 ALTER TABLE `schedule_tasks`
-  ADD CONSTRAINT schedule_tasks_submission_id_fk FOREIGN KEY (submission_id) REFERENCES submissions (id);
+  ADD CONSTRAINT schedule_tasks_submission_id_fk FOREIGN KEY (submission_id) REFERENCES submissions (id),
+  ADD CONSTRAINT schedule_tasks_assignment_id_fk FOREIGN KEY (assignment_id) REFERENCES assignments (id);
