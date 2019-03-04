@@ -52,10 +52,11 @@ func (scheduler Scheduler) SchedulePeerReview(subID int, assID int, reviewers in
 
 	//this is what is being sent to the scheduler service
 	jsonData := map[string]interface{}{
+		"authentication": os.Getenv("PEER_AUTH"),
 		"scheduled_time": scheduledTime,
 		"task":           "peer",
 		"submission_id":  subID,
-		"assignment_id": assID,
+		"assignment_id":  assID,
 		"data":           peerTask,
 	}
 
@@ -77,14 +78,14 @@ func (scheduler Scheduler) SchedulePeerReview(subID int, assID int, reviewers in
 	return nil
 }
 
-func (scheduler Scheduler) UpdateSchedule(subID int, assID, scheduledTime time.Time) error {
+func (scheduler Scheduler) UpdateSchedule(subID int, assID int, scheduledTime time.Time) error {
 
 	//this is what is being sent to the scheduler service
 	jsonData := map[string]interface{}{
 		"authentication": os.Getenv("PEER_AUTH"),
 		"scheduled_time": scheduledTime,
 		"submission_id":  subID,
-		"assignment_id": assID,
+		"assignment_id":  assID,
 	}
 
 	//this is just sending the request
@@ -93,9 +94,8 @@ func (scheduler Scheduler) UpdateSchedule(subID int, assID, scheduledTime time.T
 		return err
 	}
 
-
 	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodPut, os.Getenv("SCHEDULE_SERVICE"), bytes.NewBuffer(jsonValue))
+	req, err := http.NewRequest(http.MethodPut, "http://"+os.Getenv("SCHEDULE_SERVICE"), bytes.NewBuffer(jsonValue))
 	if err != nil {
 		// handle error
 		log.Fatal(err)
@@ -111,7 +111,6 @@ func (scheduler Scheduler) UpdateSchedule(subID int, assID, scheduledTime time.T
 		data, _ := ioutil.ReadAll(response.Body)
 		fmt.Println(string(data))
 	}
-
 
 	return nil
 }
@@ -122,7 +121,7 @@ func (scheduler Scheduler) DeleteSchedule(subID int, assID int) error {
 	jsonData := map[string]interface{}{
 		"authentication": os.Getenv("PEER_AUTH"),
 		"submission_id":  subID,
-		"assignment_id": assID,
+		"assignment_id":  assID,
 	}
 
 	//this is just sending the request
@@ -131,9 +130,8 @@ func (scheduler Scheduler) DeleteSchedule(subID int, assID int) error {
 		return err
 	}
 
-
 	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodDelete, os.Getenv("SCHEDULE_SERVICE"), bytes.NewBuffer(jsonValue))
+	req, err := http.NewRequest(http.MethodDelete, "http://"+os.Getenv("SCHEDULE_SERVICE"), bytes.NewBuffer(jsonValue))
 	if err != nil {
 		// handle error
 		log.Fatal(err)
@@ -151,4 +149,22 @@ func (scheduler Scheduler) DeleteSchedule(subID int, assID int) error {
 	}
 
 	return nil
+}
+
+func (scheduler Scheduler) SchedulerExists(subID int, assID int) (bool, error) {
+
+	parameters := fmt.Sprintf("?subid=%v&assid=%v", subID, assID)
+
+	response, err := http.Get(os.Getenv("PEER_SERVICE")+parameters)
+	if err != nil {
+		fmt.Printf("The HTTP request to schedulerservice failed with error %s\n", err)
+	} else {
+		data, _ := ioutil.ReadAll(response.Body)
+		fmt.Println(string(data))
+	}
+
+
+
+
+	return true, nil
 }

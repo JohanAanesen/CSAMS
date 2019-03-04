@@ -18,7 +18,7 @@ services:
       DATABASE_USER: root
       DATABASE_PASSWORD: root
       DATABASE_DATABASE: cs53
-      SCHEDULE_SERVICE: scheduleservice:8086
+      SCHEDULE_SERVICE: schedulerservice:8086
     restart: always
 
   peerservice:

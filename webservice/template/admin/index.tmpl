@@ -39,8 +39,8 @@
                         <a href="/admin/assignment/{{.Assignment.ID}}"
                            class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
                             details</a>
-                        <a href="/admin/assignment/{{.ID}}/submissions"
-                           class="btn btn-outline-{{if DEADLINEDUE .Deadline}}light{{else}}dark{{end}} btn-sm">See
+                        <a href="/admin/assignment/{{.Assignment.ID}}/submissions"
+                           class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
                             submissions</a>
                     </div>
                 </div>

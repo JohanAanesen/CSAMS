@@ -49,15 +49,17 @@ func UpdateTimer(newTime time.Time, payload Payload) bool{
 			log.Println("Something went wrong fetching peertask from payload")
 			return false
 		}
-
-		Timers[task.SubmissionID] = time.AfterFunc(Duration, task.Trigger)
+		log.Printf("Timer %v started with duration %v\n",payload.ID, Duration)
+		Timers[payload.ID] = time.AfterFunc(Duration, task.Trigger)
 
 	default:
 		return false
 	}
 
-	//todo update db
-
+	if !payload.UpdatePayload(){
+		log.Println("Something went wrong updating the payload")
+		return false
+	}
 
 	return true
 }

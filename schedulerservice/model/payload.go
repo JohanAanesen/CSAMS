@@ -75,7 +75,7 @@ func GetPayloads() []Payload {
 
 	var payloads []Payload
 
-	rows, err := db.GetDB().Query("SELECT submission_id, assignment_id, scheduled_time, task, data FROM schedule_tasks")
+	rows, err := db.GetDB().Query("SELECT id, submission_id, assignment_id, scheduled_time, task, data FROM schedule_tasks")
 	if err != nil {
 		log.Fatal(err.Error()) // TODO : log error
 		// returns empty course array if it fails
@@ -83,13 +83,14 @@ func GetPayloads() []Payload {
 	}
 
 	for rows.Next() {
+		var ID int
 		var submissionID int
 		var assignmentID int
 		var scheduledTime time.Time
 		var task string
 		var data []byte
 
-		err := rows.Scan(&submissionID, &assignmentID, &scheduledTime, &task, &data)
+		err := rows.Scan(&ID, &submissionID, &assignmentID, &scheduledTime, &task, &data)
 		if err != nil {
 			log.Println(err.Error()) // TODO : log error
 			// returns empty course array if it fails
@@ -100,6 +101,7 @@ func GetPayloads() []Payload {
 		var payload Payload
 
 		payload = Payload{
+			ID:            ID,
 			ScheduledTime: scheduledTime,
 			Task:          task,
 			SubmissionID:  submissionID,
