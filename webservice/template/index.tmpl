@@ -19,6 +19,8 @@
                 </div>
             </div><!-- /.row -->
 
+            {{ if .Courses }}<h2>Courses</h2>
+            <hr>{{end}}
             <div class="row">
                 {{ range .Courses }}
                     <div class="col-md-6 col-sm-12 mb-3">
@@ -32,6 +34,30 @@
                         </div>
                     </div>
 
+                {{ end }}
+
+            </div> <!-- /.row -->
+            {{ if .Assignments }}<h2>Active Assignments</h2>
+            <hr>{{end}}
+            <div class="row">
+
+                {{ range .Assignments }}
+                    <div class="col-md-6 col-sm-12 mb-3">
+                        <div class="card shadow-sm{{if DEADLINEDUE .Assignment.Deadline}} bg-secondary text-light{{ else }} text-dark {{end}}">
+                            <div class="card-body">
+                                <h2 class="display-5">{{.Assignment.Name}}</h2>
+                                <h5>
+                                    <span class="badge {{if DEADLINEDUE .Assignment.Deadline}}badge-dark{{ else}} badge-secondary{{end}}">{{.CourseCode}}</span>
+                                </h5>
+                                <p{{if DEADLINEDUE .Assignment.Deadline}} class="text-danger"{{end}}>
+                                    <strong>Deadline: </strong> {{PRETTYTIME .Assignment.Deadline}}</p>
+                                <hr class="bg-light">
+                                <a href="/assignment/{{.Assignment.ID}}"
+                                   class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
+                                    details</a>
+                            </div>
+                        </div>
+                    </div>
                 {{ end }}
 
             </div> <!-- /.row -->

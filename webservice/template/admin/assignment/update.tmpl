@@ -60,51 +60,65 @@
             </div>
 
             <div class="col-12 col-lg">
-                <div class="row">
-                    <div class="col">
-                        <h3>Submission Form</h3>
-                        <div class="form-group">
-                            <label for="submission_id">Select Form</label>
-                            <select name="submission_id" id="submission_id" class="form-control">
-                                <!-- TODO : delete all former submissions if the form is changed -->
-                                <option value="">None</option>
-                                {{range $S := .Submissions}}
-                                    <option value="{{$S.ID}}"{{if eq $S.ID $A.SubmissionID.Int64}} selected{{end}}>{{$S.Form.Name}}</option>
-                                {{end}}
-                                <!-- TODO (Svein): Create an API-call for getting the JSON og the submission form -->
-                            </select>
-                        </div>
 
-                        <hr>
-
-                        <h6>Preview</h6>
-                        <hr>
-                        <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
-                        <hr>
+                <div class="col">
+                    <h3>Peer Review</h3>
+                    <div class="form-group">
+                        <label for="reviewers">How many submissions should every student review on this assignment:</label>
+                        <select name="reviewers" id="reviewers" class="form-control" required>
+                            option
+                            {{if .Assignment.Reviewers.Valid}}<option value="{{.Assignment.Reviewers.Int64}}" selected>{{.Assignment.Reviewers.Int64}}</option>{{end}}
+                            <script>
+                                for (let i = 1; i <= 6; i++) {
+                                    document.write(`<option value="${i}">${i}</option>`);
+                                }
+                            </script>
+                        </select>
                     </div>
+                    <hr>
                 </div>
 
-                <div class="row">
-                    <div class="col">
-                        <h3>Review Form</h3>
-                        <div class="form-group">
-                            <label for="review_id">Select Form</label>
-                            <select name="review_id" id="review_id" class="form-control">
-                                <option value="">None</option>
-                                {{range $R := .Reviews}}
-                                    <option value="{{$R.ID}}"{{if eq $R.ID $A.SubmissionID.Int64}} selected{{end}}>{{$R.Form.Name}}</option>
-                                {{end}}
-                            </select>
-                        </div>
-
-                        <hr>
-
-                        <h6>Preview</h6>
-                        <hr>
-                        <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
-                        <hr>
-                        <div id="review_container"></div>
+                <div class="col">
+                    <h3>Submission Form</h3>
+                    <div class="form-group">
+                        <label for="submission_id">Select Form</label>
+                        <select name="submission_id" id="submission_id" class="form-control">
+                            <!-- TODO : delete all former submissions if the form is changed -->
+                            <option value="">None</option>
+                            {{range $S := .Submissions}}
+                                <option value="{{$S.ID}}"{{if eq $S.ID $A.SubmissionID.Int64}} selected{{end}}>{{$S.Form.Name}}</option>
+                            {{end}}
+                            <!-- TODO (Svein): Create an API-call for getting the JSON og the submission form -->
+                        </select>
                     </div>
+
+                    <hr>
+
+                    <h6>Preview</h6>
+                    <hr>
+                    <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
+                    <hr>
+                </div>
+
+                <div class="col">
+                    <h3>Review Form</h3>
+                    <div class="form-group">
+                        <label for="review_id">Select Form</label>
+                        <select name="review_id" id="review_id" class="form-control">
+                            <option value="">None</option>
+                            {{range $R := .Reviews}}
+                                <option value="{{$R.ID}}"{{if eq $R.ID $A.SubmissionID.Int64}} selected{{end}}>{{$R.Form.Name}}</option>
+                            {{end}}
+                        </select>
+                    </div>
+
+                    <hr>
+
+                    <h6>Preview</h6>
+                    <hr>
+                    <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
+                    <hr>
+                    <div id="review_container"></div>
                 </div>
             </div>
 

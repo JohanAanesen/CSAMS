@@ -28,19 +28,19 @@
         <!-- TODO Brede : only show active assignments -->
         {{range .Assignments}}
             <div class="col-12 col-md-6 col-lg-4 mb-3">
-                <div class="card shadow-sm{{if DEADLINEDUE .Deadline}} bg-secondary text-light{{end}}">
+                <div class="card shadow-sm{{if DEADLINEDUE .Assignment.Deadline}} bg-secondary text-light{{end}}">
                     <div class="card-body">
-                        <h2 class="display-5">{{.Name}}</h2>
-                        <h5><span class="badge {{if DEADLINEDUE .Deadline}}badge-dark{{ else}} badge-secondary{{end}}">COURSE_CODE</span>
+                        <h2 class="display-5">{{.Assignment.Name}}</h2>
+                        <h5><span class="badge {{if DEADLINEDUE .Assignment.Deadline}}badge-dark{{ else}} badge-secondary{{end}}">{{.CourseCode}}</span>
                         </h5>
-                        <p{{if DEADLINEDUE .Deadline}} class="text-danger"{{end}}>
-                            <strong>Deadline: </strong> {{PRETTYTIME .Deadline}}</p>
+                        <p{{if DEADLINEDUE .Assignment.Deadline}} class="text-danger"{{end}}>
+                            <strong>Deadline: </strong> {{PRETTYTIME .Assignment.Deadline}}</p>
                         <hr class="bg-light">
-                        <a href="/admin/assignment/{{.ID}}"
-                           class="btn btn-outline-{{if DEADLINEDUE .Deadline}}light{{else}}dark{{end}} btn-sm">See
+                        <a href="/admin/assignment/{{.Assignment.ID}}"
+                           class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
                             details</a>
-                        <a href="/admin/assignment/{{.ID}}/submissions"
-                           class="btn btn-outline-{{if DEADLINEDUE .Deadline}}light{{else}}dark{{end}} btn-sm">See
+                        <a href="/admin/assignment/{{.Assignment.ID}}/submissions"
+                           class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
                             submissions</a>
                     </div>
                 </div>

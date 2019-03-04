@@ -51,7 +51,8 @@ CREATE TABLE `assignments`
   `course_id`     int(11)     NOT NULL,
   `submission_id` int(11)              DEFAULT NULL,
   `review_id`     int(11)              DEFAULT NULL,
-  `validation_id` int(11)     NULL
+  `validation_id` int(11)     NULL,
+  `reviewers`     int(11)     NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
@@ -326,6 +327,7 @@ CREATE TABLE `user_submissions`
 
 CREATE TABLE `schedule_tasks`
 (
+  `id`             int(11)     NOT NULL,
   `submission_id`  int(11)     not null,
   `assignment_id`  int(11)     not null,
   `scheduled_time` datetime    not null,
@@ -525,6 +527,11 @@ ALTER TABLE `user_reviews`
 ALTER TABLE `user_submissions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
   AUTO_INCREMENT = 4;
+
+
+ALTER TABLE `schedule_tasks`
+  ADD PRIMARY KEY (`id`),
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- Begrensninger for dumpede tabeller
 --

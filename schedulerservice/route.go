@@ -33,6 +33,8 @@ func routes() http.Handler {
 
 	// Peer schedule handlers
 	router.HandleFunc("/", IndexGET).Methods("GET")
+	router.HandleFunc("/{subid:[0-9]+}/{assid:[0-9]+}", IndexSingleGET).Methods("GET")
+
 	router.HandleFunc("/", IndexPOST).Methods("POST")
 	router.HandleFunc("/", IndexPUT).Methods("PUT")
 	router.HandleFunc("/", IndexDELETE).Methods("DELETE")

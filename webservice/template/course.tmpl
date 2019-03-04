@@ -47,7 +47,7 @@
                                 <!-- TODO : theese should be longer -->
                                 {{$C := .Course}}
                                 {{range .Assignments}}
-                                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                                    <div class="col-md-6 col-sm-12 mb-3">
                                         <div class="card shadow-sm{{if DEADLINEDUE .Deadline}} bg-secondary text-light{{ else }} text-dark {{end}}">
                                             <div class="card-body">
                                                 <h2 class="display-5">{{.Name}}</h2>

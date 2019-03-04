@@ -37,7 +37,7 @@ func (payload Payload) Save() bool {
 		return false
 	}
 
-	ex, err := tx.Exec("INSERT INTO schedule_tasks(submission_id, assignment_id, scheduled_time, task, data) VALUES(?, ?, ?, ?, ?)",
+	_, err = tx.Exec("INSERT INTO schedule_tasks(submission_id, assignment_id, scheduled_time, task, data) VALUES(?, ?, ?, ?, ?)",
 		payload.SubmissionID,
 		payload.AssignmentID,
 		payload.ScheduledTime,
@@ -53,19 +53,11 @@ func (payload Payload) Save() bool {
 		return false
 	}
 
-	schedId, err := ex.LastInsertId()
-	if err != nil {
-		log.Fatal(err.Error())
-		return false
-	}
-
 	err = tx.Commit() //finish transaction
 	if err != nil {
 		log.Fatal(err.Error())
 		return false
 	}
-
-	payload.ID = int(schedId)
 
 	return true
 }
@@ -75,7 +67,7 @@ func GetPayloads() []Payload {
 
 	var payloads []Payload
 
-	rows, err := db.GetDB().Query("SELECT submission_id, assignment_id, scheduled_time, task, data FROM schedule_tasks")
+	rows, err := db.GetDB().Query("SELECT id, submission_id, assignment_id, scheduled_time, task, data FROM schedule_tasks")
 	if err != nil {
 		log.Fatal(err.Error()) // TODO : log error
 		// returns empty course array if it fails
@@ -83,13 +75,14 @@ func GetPayloads() []Payload {
 	}
 
 	for rows.Next() {
+		var ID int
 		var submissionID int
 		var assignmentID int
 		var scheduledTime time.Time
 		var task string
 		var data []byte
 
-		err := rows.Scan(&submissionID, &assignmentID, &scheduledTime, &task, &data)
+		err := rows.Scan(&ID, &submissionID, &assignmentID, &scheduledTime, &task, &data)
 		if err != nil {
 			log.Println(err.Error()) // TODO : log error
 			// returns empty course array if it fails
@@ -100,6 +93,7 @@ func GetPayloads() []Payload {
 		var payload Payload
 
 		payload = Payload{
+			ID:            ID,
 			ScheduledTime: scheduledTime,
 			Task:          task,
 			SubmissionID:  submissionID,
@@ -161,6 +155,8 @@ func GetPayload(subID int, assID int) Payload {
 //DeletePayload removes payload from db
 func DeletePayload(subID int, assID int) bool {
 
+	payload := GetPayload(subID, assID)
+
 	tx, err := db.GetDB().Begin() //start transaction
 	if err != nil {
 		log.Println(err.Error())
@@ -184,7 +180,7 @@ func DeletePayload(subID int, assID int) bool {
 		return false
 	}
 
-	StopTimer(subID) //stops ongoing timer
+	StopTimer(payload.ID) //stops ongoing timer
 
 	return true
 }

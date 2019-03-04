@@ -3,6 +3,7 @@ package controller
 import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/scheduler"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
@@ -12,18 +13,44 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // AdminAssignmentGET handles GET-request at /admin/assignment
 func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
+
+	// repo's
+	courseRepo := &model.CourseRepository{}
 	assignmentRepo := model.AssignmentRepository{}
 
-	// Get all assignments to user in sorted order
-	assignments, err := assignmentRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
-
+	//get courses to user/teacher
+	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 	if err != nil {
 		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
+	}
+
+	//need custom struct to get the coursecode
+	type ActiveAssignment struct {
+		Assignment model.Assignment
+		CourseCode string
+	}
+
+	var activeAssignments []ActiveAssignment
+
+	for _, course := range courses { //iterate all courses
+		assignments, err := assignmentRepo.GetAllFromCourse(course.ID) //get assignments from course
+		if err != nil {
+			log.Println(err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		for _, assignment := range assignments { //go through all it's assignments again
+			activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: assignment, CourseCode: course.Code})
+		}
+
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -32,7 +59,7 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/assignment/index"
 
-	v.Vars["Assignments"] = assignments
+	v.Vars["Assignments"] = activeAssignments
 
 	v.Render(w)
 }
@@ -83,6 +110,7 @@ func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminAssignmentCreatePOST handles POST-request from /admin/assigment/create
 func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
+
 	// Declare empty slice of strings
 	var errorMessages []string
 
@@ -181,6 +209,19 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		Valid: val != 0,
 	}
 
+	if r.FormValue("reviewers") != "" {
+		val, err = strconv.Atoi(r.FormValue("reviewers"))
+		if err != nil {
+			log.Println("reviewers")
+			log.Println(err)
+			return
+		}
+	}
+	reviewers := sql.NullInt64{
+		Int64: int64(val),
+		Valid: val != 0,
+	}
+
 	// Put all data into an Assignment-struct
 	assignment := model.Assignment{
 		Name:         assignmentName,
@@ -190,13 +231,30 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		CourseID:     courseID,
 		SubmissionID: submissionID,
 		ReviewID:     reviewID,
+		Reviewers:    reviewers,
 	}
 
 	// Insert data to database
-	err = assignmentRepository.Insert(assignment)
+	assID, err := assignmentRepository.Insert(assignment)
 	if err != nil {
 		log.Println(err)
 		return
+	}
+
+	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute
+	if assID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(time.Now()) {
+
+		sched := scheduler.Scheduler{}
+
+		err := sched.SchedulePeerReview(int(assignment.SubmissionID.Int64),
+			assID, //assignment ID
+			int(assignment.Reviewers.Int64),
+			assignment.Deadline)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
 	}
 
 	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
@@ -365,9 +423,23 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		Valid: val != 0,
 	}
 
+	if r.FormValue("reviewers") != "" {
+		val, err = strconv.Atoi(r.FormValue("reviewers"))
+		if err != nil {
+			log.Println("reviewers")
+			log.Println(err)
+			return
+		}
+	}
+	reviewers := sql.NullInt64{
+		Int64: int64(val),
+		Valid: val != 0,
+	}
+
 	assignmentRepo := model.AssignmentRepository{}
 
 	assignment := model.Assignment{
+		ID:           id,
 		Name:         r.FormValue("name"),
 		Description:  r.FormValue("description"),
 		Publish:      publish,
@@ -375,6 +447,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		CourseID:     courseID,
 		SubmissionID: submissionID,
 		ReviewID:     reviewID,
+		Reviewers:    reviewers,
 	}
 
 	err = assignmentRepo.Update(id, assignment)
@@ -382,6 +455,32 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
+	}
+
+	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute
+	if assignment.ID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(time.Now()) {
+
+		sched := scheduler.Scheduler{}
+
+		if sched.SchedulerExists(int(assignment.SubmissionID.Int64), assignment.ID) {
+			err := sched.UpdateSchedule(int(assignment.SubmissionID.Int64),
+				assignment.ID, //assignment ID
+				assignment.Deadline)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+		} else {
+			err := sched.SchedulePeerReview(int(assignment.SubmissionID.Int64),
+				assignment.ID, //assignment ID
+				int(assignment.Reviewers.Int64),
+				assignment.Deadline)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+		}
+
 	}
 
 	http.Redirect(w, r, "/admin/assignment", http.StatusFound)

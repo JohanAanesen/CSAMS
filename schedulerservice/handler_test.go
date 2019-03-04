@@ -41,7 +41,7 @@ var dummyUpdate = struct {
 var dummyDelete = struct {
 	Authentication string `json:"authentication"`
 	SubmissionID   int    `json:"submission_id"`
-	AssignmentID   int       `json:"assignment_id"`
+	AssignmentID   int    `json:"assignment_id"`
 }{
 	Authentication: os.Getenv("PEER_AUTH"),
 	SubmissionID:   1,
@@ -56,6 +56,7 @@ func getReaderFromPayload(payload model.Payload) io.Reader {
 func getReaderFromUpdate(payload struct {
 	Authentication string    `json:"authentication"`
 	SubmissionID   int       `json:"submission_id"`
+	AssignmentID   int       `json:"assignment_id"`
 	ScheduledTime  time.Time `json:"scheduled_time"`
 }) io.Reader {
 	body, _ := json.Marshal(payload)
@@ -65,6 +66,7 @@ func getReaderFromUpdate(payload struct {
 func getReaderFromDelete(payload struct {
 	Authentication string `json:"authentication"`
 	SubmissionID   int    `json:"submission_id"`
+	AssignmentID   int    `json:"assignment_id"`
 }) io.Reader {
 	body, _ := json.Marshal(payload)
 	return bytes.NewReader(body)
