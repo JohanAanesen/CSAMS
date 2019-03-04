@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"log"
 	"time"
 )
@@ -18,17 +17,13 @@ func GetTimer(timerID int) *time.Timer {
 func StopTimer(timerID int) {
 	stop := Timers[timerID].Stop()
 	if stop {
-		fmt.Printf("Timer %v stopped\n", timerID)
+		log.Printf("Timer %v stopped\n", timerID)
 	}
 	delete(Timers, timerID) //deletes timer from map so it may be re-assigned
 }
 
 //UpdateTimer should update the time of an existing timer (delete and create new timer)
 func UpdateTimer(newTime time.Time, payload Payload) bool {
-
-	fmt.Println(Timers[3])
-	fmt.Println(newTime)
-	fmt.Println(payload)
 
 	//update time in payload object
 	payload.ScheduledTime = newTime

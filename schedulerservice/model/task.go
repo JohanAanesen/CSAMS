@@ -61,8 +61,6 @@ func (peer PeerTask) Schedule(scheduledTime time.Time) bool {
 	timeNow := time.Now().In(loc)          //time now
 	Duration := scheduledTime.Sub(timeNow) //subtract now's time from target time to get time until trigger
 
-	fmt.Printf("Duration registered: %v\n", Duration) //todo remove this
-
 	if Duration < 0 { //scheduled time has to be in the future
 		log.Printf("Could not schedule timer for submissionID: %v", peer.SubmissionID)
 		peer.Delete() //todo trigger tasks that hasn't been triggered?
@@ -71,6 +69,8 @@ func (peer PeerTask) Schedule(scheduledTime time.Time) bool {
 
 	//afterFunc will run the function after the duration has passed
 	Timers[payload.ID] = time.AfterFunc(Duration, peer.Trigger)
+
+	log.Printf("Timer %v started with duration %v\n", payload.ID, Duration)
 
 	return true
 }
