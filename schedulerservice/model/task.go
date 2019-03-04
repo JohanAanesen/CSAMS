@@ -33,7 +33,7 @@ func (peer PeerTask) Trigger() {
 
 	//Send request to peer service
 	jsonValue, _ := json.Marshal(peer) //json encode the request
-	response, err := http.Post(os.Getenv("PEER_SERVICE"), "application/json", bytes.NewBuffer(jsonValue))
+	response, err := http.Post("http://"+os.Getenv("PEER_SERVICE"), "application/json", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Printf("The HTTP request to peerservice failed with error %s\n", err)
 	} else {
