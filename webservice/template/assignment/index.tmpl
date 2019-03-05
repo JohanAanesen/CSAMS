@@ -1,17 +1,33 @@
 {{define "title"}}Assignment: {{.Assignment.Name}}{{end}}
-{{define "head"}}{{end}}
+{{define "head"}}
+
+    <style>
+        /* link color in general */
+        a {
+            color: #1e90ff;
+        }
+
+        /* link color hovered in general */
+        a:hover {
+            color: #00008b;
+        }
+    </style>
+
+    <link rel="stylesheet" href="/static/css/highlight.css">
+    <link rel="stylesheet" href="/static/css/highlight-Go.css">
+{{end}}
 {{define "content"}}
     <div class="container pt-3">
-
-        <a href="/course?id={{ .CourseID }}" class="btn btn-outline-dark">Go Back</a>
         {{if .Delivered}}
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <strong>Notice!</strong> You have already delivered this assignment!
+                <strong>Notice!</strong> You have already submitted this assignment!
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
         {{end}}
+        <a href="/course?id={{ .CourseID }}" class="btn btn-outline-dark">Go Back</a>
+
         <h1 class="display-4">
             {{.Assignment.Name}}
         </h1>
@@ -28,22 +44,22 @@
             {{end}}
         {{else}}
             {{if not .Delivered}}
-                <a href="/assignment/submission?id={{ .Assignment.ID }}" class="btn btn-primary btn-lg">Deliver
+                <a href="/assignment/submission?id={{ .Assignment.ID }}" class="btn btn-outline-dark btn-lg">Deliver
                     assignment</a>
             {{else}}
-                <a href="/assignment/submission?id={{ .Assignment.ID }}" class="btn btn-success btn-lg">Re-Deliver
-                    assignment</a>
+                <a href="/assignment/submission?id={{ .Assignment.ID }}" class="btn btn-outline-dark btn-lg">Change your
+                    submission</a>
             {{end}}
         {{end}}
         {{if .HasBeenValidated}}
-            <a href="#" class="btn btn-warning btn-lg">See auto validation</a>
+            <a href="#" class="btn btn-outline-dark btn-lg disabled">Auto Scoring</a>
         {{end}}
 
         {{ $id := .Assignment.ID }}
         {{ $length := len .Reviews.Items }}
         {{ if gt $length 0 }}
             {{ range .Reviews.Items }}
-                <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-dark btn-lg">Review {{ .Name }}</a>
+                <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-dark btn-lg">Review {{ .Name }}</a>
             {{ end }}
         {{end }}
     </div>
