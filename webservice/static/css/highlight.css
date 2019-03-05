@@ -1,3 +1,8 @@
+pre {
+    background-color: #1b1b1b;
+    color: lawngreen;
+}
+
 .highlight pre {
     background: #333333; !important;
 }

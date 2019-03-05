@@ -1,44 +1,46 @@
 {{define "title"}}Course{{end}}
 {{define "head"}}
     <style>
+        /* link color in general */
         a {
             color: #929292;
         }
 
+        /* link color hovered in general */
         a:hover {
             color: #ffffff;
         }
 
-        pre {
-            background-color: #1b1b1b;
-            color: lawngreen;
-        }
-
+        /* link color in participant list */
         tbody a{
+
             color: white;
         }
 
+        /* card header text color and background color */
         .card-header {
             color: black;
-            //background-image: linear-gradient(to bottom right, #152734, cyan);
             background-color: white;
             border-bottom-color: black;
         }
 
+        /* active tab background-color, text-color and border-color */
         .nav-item a.nav-link.active {
-            background-color: #343a40; !important;
+            background-color: #343a40;
             color: white;
             border-color: black;
             border-bottom-color: transparent;
         }
 
+        /* hovered tab background-color, text-color and border-color */
         .nav-item a.nav-link:hover {
-            background-color: #343a40; !important;
+            background-color: #343a40;
             color: white;
             border-color: black;
             border-bottom-color: transparent;
         }
 
+        /* tabs text-color and border-color */
         .nav-tabs .nav-link {
             color: black;
             border-color: black;
