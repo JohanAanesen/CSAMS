@@ -84,3 +84,28 @@ we decided to go with an editable markdown page.
 * I wasn't that productive this week (see: hangover after ski day)
 * Used some time with \#22 because of various bugs, found out it was bootstrap that fucked me over at the end thx to Johan <3
 * I din't have birthday this week :/
+
+## Week Four
+### What I Have Done
+Worked on \#21, \#18 and \#32.
+Also deployed VM on openstack, that took some time...
+Finished with \#21 on monday, started on \#18 on tuesday - friday (24h).
+On saturday, I started on \#32 and finished it at 2-3 night on monday.
+
+### Design/Architecture Decisions
+* \#21 I chose to sort the assignments by earliest deadline and course by year/semester desc.
+This is so you can see the earliest assignment the user is going to deliver and with the courses, the
+most relevant course the user is taking that year.
+* \#18 I added a countdown on the assignment delivery page so the user can see more properly
+how much time is left until the deadline. 
+* \#32 I have to fix some stuff from here next week. Admin can see everybody in assignment, even if student hasn't delivered.
+This was because its a alpha prototype. Student and teacher share the same page for when they are reviewing an assignment
+this was to save me from duplicate code.
+### What Went Good
+* Got a lot done because we had a prototype deadline on monday.
+* Actually liked the design in my code now
+most stuff worked
+
+### What Went Bad
+* Docker and Openstack slowed me down by 7ish h in total this week, since I couldn't get it working
+* Had some really easy bugs, but couldn't find them before after 1-2hours...

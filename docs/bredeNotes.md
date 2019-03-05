@@ -191,6 +191,12 @@ this was mostly because I use ca. 7h all together to get the project starting.
     * Gets the links to the submissions user is going to review
 
 ## Week Five
+### Monday 04/03/19
+* Had some meetings
+* Started on [Alpha fix functionallity Req](https://trello.com/c/kv8MfMcv) with Svein and Johan
+
+### Tuesday 05/03/19
+* Fixed joined course bug
 
 
 
