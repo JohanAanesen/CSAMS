@@ -22,7 +22,6 @@
                 <div class="form-group">
                     <label for="year">Year</label>
                     <select name="year" id="year" class="form-control" required>
-                        option
                         <script>
                             let y = (new Date()).getFullYear();
 
@@ -42,19 +41,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea name="description" id="description" class="form-control" required></textarea>
+                    <label for="simplemde">Description</label>
+                    <textarea name="description" id="simplemde"
+                              placeholder="Description (Hint: Markdown)"></textarea>
                 </div>
-
-                <!--
-                <div class="form-group">
-                    <label for="">Students</label>
-                    <div class="custom-file">
-                        <input type="file" id="students" class="custom-file-input">
-                        <label for="students" class="custom-file-label">*.csv</label>
-                    </div>
-                </div>
-                -->
 
                 <input type="submit" class="btn btn-success">
                 <br><br>
@@ -77,7 +67,7 @@
 {{define "foot"}}
     <script>
         let simplemde = new SimpleMDE({
-            element: document.getElementById('description'),
+            element: document.getElementById('simplemde'),
             hideIcons: ["side-by-side", "fullscreen"],
         });
     </script>
