@@ -1,11 +1,11 @@
 {{define "title"}}User Submission{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-    <main role="main" class="container">
-        <div class="col my-2">
+    <main role="main" class="container pt-3">
+        <div class="col">
             <!-- TODO brede : add link for back button to students -->
             <a href="{{ if .IsTeacher }}/admin/assignment/{{ .Assignment.ID }}/submissions {{ else }}/assignment/{{.Assignment.ID}}{{ end}}"
-               class="btn btn-outline-dark">Go Back</a>
+               class="btn btn-outline-dark mb-3">Go Back</a>
             <div class="col my-1 container pt-3 jumbotron">
                 <h1 class="display-4">{{ .Course.Code }} {{ .Course.Name }}</h1>
                 <h2 class="display-5">{{ .Assignment.Name }} - {{ .User.Name }}</h2>
@@ -19,8 +19,9 @@
                                 <input type="text" name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control"
                                        value="{{ .Answer.Value}}" disabled>
                             {{ else if eq .Field.Type "url" }}
-                                <input type="url" name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control"
-                                       value="{{ .Answer.Value}}" disabled>
+                                <br>
+                                <a href="{{.Answer.Value}}" class="btn btn-primary px-5" target="_blank">Link</a>
+                                <!--<input type="url" name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control" value="{{ .Answer.Value}}" disabled>-->
                             {{ else if eq .Field.Type "textarea" }}
                                 <textarea name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control"
                                           disabled>{{ .Answer.Value}}</textarea>
@@ -28,6 +29,7 @@
 
                         </div>
                     {{ end }}
+
                 {{ else }}
                     {{ range .Fields }}
                         <div class="form-group">
@@ -44,6 +46,28 @@
                     {{ end }}
                 {{ end }}
             </div>
+
+            {{if .Delivered}}
+                <div class="col-12">
+                    <h2 class="display-4">Peer Review</h2>
+                    <hr>
+                    <form action="/some/action" method="post">
+                        {{ range .Review.Form.Fields }}
+                            <div class="form-group">
+                                <label for="{{ .Name }}">{{ .Label }}</label>
+                                {{ if eq .Type "text" }}
+                                    <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control">
+                                {{ else if eq .Type "url" }}
+                                    <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control">
+                                {{ else if eq .Type "textarea" }}
+                                    <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control"></textarea>
+                                {{ end }}
+
+                            </div>
+                        {{ end }}
+                    </form>
+                </div>
+            {{end}}
         </div>
     </main>
 {{end}}

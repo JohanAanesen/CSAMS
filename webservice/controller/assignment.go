@@ -411,10 +411,11 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	AssignmentUploadGET(w, r)
 }
 
-// AssignmentUserSubmissionGET serves one suser submission to admin and the peer reviews
+// AssignmentUserSubmissionGET serves one user submission to admin and the peer reviews
 func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
-
+	// Get parameters in the URL
 	vars := mux.Vars(r)
+
 	assignmentID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		log.Printf("id: %v", err)
@@ -424,7 +425,7 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 
 	userID, err := strconv.Atoi(vars["userid"])
 	if err != nil {
-		log.Printf("id: %v", err)
+		log.Printf("userid: %v", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -437,8 +438,15 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get relevant assignment
+	// Initialize repositories
 	assignmentRepo := &model.AssignmentRepository{}
+	courseRepo := &model.CourseRepository{}
+	formRepo := model.FormRepository{}
+	reviewRepo := model.ReviewRepository{}
+
+	currentUser := session.GetUserFromSession(r)
+
+	// Get relevant assignment
 	assignment, err := assignmentRepo.GetSingle(assignmentID)
 	if err != nil {
 		log.Println(err.Error())
@@ -447,14 +455,13 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Give error if user isn't teacher or reviewer for this user
-	if !session.GetUserFromSession(r).Teacher && !model.UserIsReviewer(session.GetUserFromSession(r).ID, assignment.ID, assignment.SubmissionID.Int64, userID) {
+	if !currentUser.Teacher && !model.UserIsReviewer(currentUser.ID, assignment.ID, assignment.SubmissionID.Int64, userID) {
 		log.Println("Error: Unauthorized access!")
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
 
 	// Get course and log possible error
-	courseRepo := &model.CourseRepository{}
 	course, err := courseRepo.GetSingle(assignment.CourseID)
 	if err != nil {
 		log.Println(err.Error())
@@ -463,7 +470,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get form and log possible error
-	formRepo := model.FormRepository{}
 	form, err := formRepo.GetFromAssignmentID(assignment.ID)
 	if err != nil {
 		log.Println(err.Error())
@@ -482,15 +488,14 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	com := MergedAnswerField{}
 	// Only merge if user has delivered
 	if len(answers) > 0 {
-
 		// Make sure answers and fields are same length before merging
 		if len(answers) != len(form.Fields) {
 			log.Println("Error: answers(" + strconv.Itoa(len(answers)) + ") is not equal length as fields(" + strconv.Itoa(len(form.Fields)) + ")! (assignment.go)")
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
-		// Merge field and answer if assignment is delivered
 
+		// Merge field and answer if assignment is delivered
 		for i := 0; i < len(form.Fields); i++ {
 			com.Items = append(com.Items, Combined{
 				Answer: answers[i],
@@ -499,18 +504,35 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	review, err := reviewRepo.GetSingle(assignmentID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
 	// Set values
 	v := view.New(r)
+
 	v.Name = "assignment/submission"
+
 	v.Vars["Assignment"] = assignment
 	v.Vars["User"] = user
 	v.Vars["Course"] = course
-	v.Vars["Fields"] = form.Fields
+
 	v.Vars["Delivered"] = len(answers)
-	v.Vars["AnswersAndFields"] = com.Items
 	v.Vars["IsTeacher"] = session.GetUserFromSession(r).Teacher
+
+	v.Vars["Fields"] = form.Fields
+
+	v.Vars["AnswersAndFields"] = com.Items
+
+	if review.FormID != 0 {
+		v.Vars["Review"] = review
+	}
+
 	v.Render(w)
 }

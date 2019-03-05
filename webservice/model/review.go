@@ -145,3 +145,34 @@ func (repo *ReviewRepository) Update(form Form) error {
 	// Return no error
 	return nil
 }
+
+func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
+	result := Review{}
+	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM reviews AS s WHERE id IN (SELECT a.review_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
+	rows, err := db.GetDB().Query(query, assignmentID)
+	if err != nil {
+		return result, err
+	}
+	defer rows.Close()
+
+	var formID int
+	var form Form
+
+	for rows.Next() {
+		var field Field
+
+		err = rows.Scan(&formID, &field.ID, &field.Type, &field.Name, &field.Label, &field.Description, &field.Order, &field.Weight, &field.Choices)
+		if err != nil {
+			return result, err
+		}
+
+		form.Fields = append(form.Fields, field)
+	}
+
+	form.ID = formID
+
+	result.Form = form
+	result.FormID = formID
+
+	return result, err
+}
