@@ -4,6 +4,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
+	"github.com/microcosm-cc/bluemonday"
 	"log"
 	"net/http"
 )
@@ -48,6 +49,9 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 //RegisterPOST validates register requests from users
 func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 
+	//XSS sanitizer
+	p := bluemonday.UGCPolicy()
+
 	user := session.GetUserFromSession(r)
 
 	if session.IsLoggedIn(r) { //already logged in, no need to register
@@ -66,6 +70,10 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	name = p.Sanitize(name)
+	email = p.Sanitize(email)
+	password = p.Sanitize(password)
+
 	user, err := model.RegisterUser(name, email, password) //register user in database
 	if err != nil {
 		log.Println(err.Error())
@@ -83,6 +91,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		// Add new user to course
 
 		if hash != "" {
+			hash = p.Sanitize(hash)
 			if id := courseRepo.CourseExists(hash).ID; id != -1 {
 				courseRepo.AddUserToCourse(user.ID, id)
 			}
