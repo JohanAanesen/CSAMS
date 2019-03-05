@@ -16,6 +16,14 @@
                             </div>
                         </div>
                     </form>
+                    {{ if .Message }}
+                        <div class="alert alert-success" id="joinedOrNah">
+                            <strong>Notice!</strong> {{ .Message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {{ end }}
                 </div>
             </div><!-- /.row -->
 
@@ -65,9 +73,4 @@
     </main>
 {{ end }}
 {{define "foot"}}
-    <script>
-        {{ if .Message }}
-        confirm("You have successfully joined the course: " + {{ .Message}});
-        {{ end }}
-    </script>
 {{end}}
