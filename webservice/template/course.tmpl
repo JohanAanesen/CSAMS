@@ -2,17 +2,30 @@
 {{define "head"}}
     <style>
         a {
-            color: #888888;
+            color: #929292;
         }
 
         a:hover {
-            color: #888888;
+            color: #ffffff;
         }
 
         pre {
-            color: #888888;
+            background-color: #000000;
+            color: lawngreen;
+        }
+
+        .card-header {
+            background-image: linear-gradient(to bottom right, #152734, cyan);
+            border-bottom-color: #ffffff;
+        }
+
+        .nav-tabs .nav-link {
+            color: #ffffff;
+            border-color: #ffffff;
         }
     </style>
+    <link rel="stylesheet" href="/static/css/highlight.css">
+    <link rel="stylesheet" href="/static/css/highlight-Go.css">
 {{end}}
 {{define "content"}}
     <main role="main" class="container">
