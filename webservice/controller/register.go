@@ -70,6 +70,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//Sanitize input
 	name = p.Sanitize(name)
 	email = p.Sanitize(email)
 	password = p.Sanitize(password)
