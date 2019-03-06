@@ -1,5 +1,9 @@
 {{define "title"}}Dashboard{{end}}
-{{define "head"}}{{end}}
+{{define "head"}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+{{end}}
 {{define "content"}}
     <h2 class="display-4 mb-3">Courses <a href="/admin/course/create" class="btn btn-success btn-sm px-3">New</a></h2>
     <hr>
@@ -11,10 +15,14 @@
                     <div class="card-body">
                         <h2 class="display-4">{{ .Code }}</h2>
                         <h3 class="mb-3">{{ .Name }}</h3>
+                        <h6><strong>Hash:</strong> {{ .Hash }}</h6>
                         <hr>
                         <a href="/course/?id={{ .ID }}" class="btn btn-outline-dark">See Course</a>
                         <a href="/admin/course/{{.ID}}/assignments" class="btn btn-outline-dark">See Assignments</a>
                         <a href="/admin/course/update/{{.ID}}" class="btn btn-outline-dark">Edit Course</a>
+                        <a onclick="copyLinks({{ .Hash }})" class="btn btn-outline-dark fa fa-copy"
+                           style="font-size:24px" data-toggle="tooltip" data-placement="bottom"
+                           title="Copy link for students to join class"></a>
                     </div>
                 </div>
             </div>
@@ -31,7 +39,8 @@
                 <div class="card shadow-sm{{if DEADLINEDUE .Assignment.Deadline}} bg-secondary text-light{{end}}">
                     <div class="card-body">
                         <h2 class="display-5">{{.Assignment.Name}}</h2>
-                        <h5><span class="badge {{if DEADLINEDUE .Assignment.Deadline}}badge-dark{{ else}} badge-secondary{{end}}">{{.CourseCode}}</span>
+                        <h5>
+                            <span class="badge {{if DEADLINEDUE .Assignment.Deadline}}badge-dark{{ else}} badge-secondary{{end}}">{{.CourseCode}}</span>
                         </h5>
                         <p{{if DEADLINEDUE .Assignment.Deadline}} class="text-danger"{{end}}>
                             <strong>Deadline: </strong> {{PRETTYTIME .Assignment.Deadline}}</p>
@@ -49,4 +58,10 @@
     </div>
 {{end}}
 {{define "foot"}}
+    <script src="/static/js/copyLinks.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
 {{end}}
