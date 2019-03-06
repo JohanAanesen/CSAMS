@@ -112,7 +112,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {{ range .Classmates.Items }}
+                                {{ range .Classmates }}
                                     <tr {{if .Teacher}} class="bg-primary" {{end}}>
                                         <th scope="row">{{.ID}}</th>
                                         <td>{{.Name}}</td>
