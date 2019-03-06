@@ -11,6 +11,33 @@
         a:hover {
             color: #00008b;
         }
+
+        .card-header {
+            background-color: #343a40;
+        }
+
+        .card-body {
+            background-color: #f8f9fa;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: #f8f9fa;!important;
+            color: black;
+        }
+
+        /* hovered tab background-color, text-color and border-color */
+        .nav-item a.nav-link:hover {
+            background-color: #f8f9fa;
+            color: black;
+        }
+
+        /* tabs text-color and border-color */
+        .nav-pills .nav-link {
+            color: #f8f9fa;
+            border-color: #f8f9fa;
+            border-bottom-color: #f8f9fa;
+        }
+
     </style>
 
     <link rel="stylesheet" href="/static/css/highlight.css">
@@ -35,9 +62,61 @@
         {{if .HasAutoValidation}}<span class="badge badge-warning">Auto Validated</span>{{end}}
 
         <p class="lead"><strong>Deadline:</strong> {{PRETTYTIME .Assignment.Deadline}}</p>
-        <div class="jumbotron">
-            {{.Description}}
+        <div class="card ">
+            <div class="card-header">
+                <ul class="nav nav-pills card-header-tabs pull-right" id="myTab" role="tablist" style="float:left;">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                           aria-controls="home" aria-selected="true">Assignment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="peerReview-tab" data-toggle="tab" href="#peerReview" role="tab"
+                           aria-controls="peerReview" aria-selected="false">Peer Review</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="participant-tab" data-toggle="tab" href="#autoValidation"
+                           role="tab"
+                           aria-controls="participants" aria-selected="false">Auto Validation</a>
+                    </li>
+                </ul>
+
+                <ul class="nav nav-pills" style="float:right;">
+                    <li>
+                        {{if not .Delivered}}
+                            <a style="float:right;" href="/assignment/submission?id={{ .Assignment.ID }}"
+                               class="btn btn-outline-light btn-success">Deliver
+                                assignment</a>
+                        {{else}}
+                            <a href="/assignment/submission?id={{ .Assignment.ID }}"
+                               class="btn btn-outline-light btn-danger">Change your
+                                submission</a>
+                        {{end}}
+                    </li>
+                </ul>
+
+
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                        {{.Description}}
+                    </div>
+                    <div class="tab-pane fade" id="peerReview" role="tabpanel" aria-labelledby="home-tab">
+
+                        <div>:D</div>
+
+                    </div>
+                    <div class="tab-pane fade" id="autoValidation" role="tabpanel"
+                         aria-labelledby="home-tab">
+                        <div>:(</div>
+                    </div>
+                </div>
+            </div>
+
+
         </div>
+
+
         {{  if .IsDeadlineOver }}
             {{if .HasReview}}
                 <a href="#" class="btn btn-info btn-lg">Peer-Review</a>
@@ -59,7 +138,8 @@
         {{ $length := len .Reviews }}
         {{ if gt $length 0 }}
             {{ range .Reviews }}
-                <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-dark btn-lg">Review {{ .Name }}</a>
+                <a href="/assignment/{{$id}}/submission/{{.ID}}"
+                   class="btn btn-outline-dark btn-lg">Review {{ .Name }}</a>
             {{ end }}
         {{end }}
     </div>
