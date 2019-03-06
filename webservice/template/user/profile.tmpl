@@ -140,7 +140,6 @@
 {{end}}
 {{define "foot"}}
     <script>
-        let userName = document.getElementById("name");
         let sEmail = document.getElementById("email_private");
         let passwords = document.getElementById("passwords");
         let noOfClasses = document.getElementById("noOfClasses");
@@ -154,10 +153,8 @@
          * */
         function btnEdit() {
 
-            userName.readOnly = false;
             sEmail.readOnly = false;
 
-            userName.className = "form-control form-control-lg col-sm-6";
             sEmail.className = "form-control";
             passwords.className = "";
             noOfClasses.className = "beGone";
@@ -172,10 +169,8 @@
          */
         function saveNewInfo() {
             // Success: save shit and revert
-            userName.readOnly = true;
             sEmail.readOnly = true;
 
-            userName.className = "form-control-plaintext form-control-lg col-sm-6";
             sEmail.className = "form-control-plaintext";
             noOfClasses.className = "";
             passwords.className = "beGone";

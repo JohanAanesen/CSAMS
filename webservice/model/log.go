@@ -11,7 +11,6 @@ type activity string
 
 // Enum for logs
 const (
-	ChangeName          activity = "CHANGE-NAME"                            // User changed name
 	ChangeEmail         activity = "CHANGE-EMAIL"                           // User changed email
 	ChangePassword      activity = "CHANGE-PASSWORD"                        // User changed password (DO NOT SHOW OLD/NEW PASSWORD IN LOG)
 	DeliveredAssignment activity = "ASSIGNMENT-DELIVERED"                   // User delivered assignment
@@ -52,7 +51,7 @@ func LogToDB(payload Log) bool {
 
 	// TODO Brede : switch and new functions :)
 	// User changes name or email
-	if payload.Activity == ChangeEmail || payload.Activity == ChangeName || payload.Activity == UpdateAdminFAQ {
+	if payload.Activity == ChangeEmail || payload.Activity == UpdateAdminFAQ {
 		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `activity`, `oldvalue`, `newvalue`) "+
 			"VALUES (?, ?, ?, ?)", payload.UserID, payload.Activity, payload.OldValue, payload.NewValue)
 

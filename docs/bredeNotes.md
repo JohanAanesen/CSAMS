@@ -198,6 +198,12 @@ this was mostly because I use ca. 7h all together to get the project starting.
 ### Tuesday 05/03/19
 * Fixed joined course bug
 
+### Wednesday 06/03/19
+* Course hash is now displayed to Admin
+* It's only one link for joining course now
+* Admin can copy the one join course link
+* Changed name to Full name and made it unchangeable 
+
 
 
 
