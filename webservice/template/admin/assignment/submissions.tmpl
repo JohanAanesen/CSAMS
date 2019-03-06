@@ -22,7 +22,7 @@
                     <th scope="row">{{ .User.ID }}</th>
                     <td>{{ .User.Name }}</td>
                     <td><a href="mailto:{{ .User.EmailStudent }}">{{ .User.EmailStudent }}</a></td>
-                    <td>{{if .Submitted}}{{ .SubmittedTime }}{{end}}</td>
+                    <td>{{if .Submitted}}{{PRETTYTIME .SubmittedTime }}{{end}}</td>
                     <td>{{if .Submitted}}<a href="/assignment/{{ $A.ID }}/submission/{{ .User.ID }}">See submission</a>{{end}}</td>
                 </tr>
             {{ end }}
