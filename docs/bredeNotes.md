@@ -202,7 +202,8 @@ this was mostly because I use ca. 7h all together to get the project starting.
 * Course hash is now displayed to Admin
 * It's only one link for joining course now
 * Admin can copy the one join course link
-* Changed name to Full name and made it unchangeable 
+* Changed name to Full name and made it unchangeable
+* Switched to PRETTYTIME in faq and updated the faq 
 
 
 
