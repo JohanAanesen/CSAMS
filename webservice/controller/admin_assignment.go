@@ -534,13 +534,14 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type UserAndSubmit struct {
-		User model.User
-		Submitted time.Time
+		User          model.User
+		SubmittedTime time.Time
+		Submitted     bool
 	}
 
 	var users []UserAndSubmit
 
-	for _, student := range students{
+	for _, student := range students {
 		submitTime, submitted, err := model.GetSubmittedTime(student.ID, assignmentID)
 		if err != nil {
 			log.Println(err.Error())
@@ -548,20 +549,27 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if submitted{
+		if submitted {
 			var data = UserAndSubmit{
-				User: student,
-				Submitted: submitTime,
+				User:          student,
+				SubmittedTime: submitTime,
+				Submitted:     true,
 			}
 
 			users = append(users, data)
+		} else {
+			var data = UserAndSubmit{
+				User:      student,
+				Submitted: false,
+			}
 
+			users = append(users, data)
 		}
 	}
 
 	//Sort slice by submitted time
 	sort.Slice(users, func(i, j int) bool {
-		return users[i].Submitted.Before(users[j].Submitted)
+		return users[i].SubmittedTime.After(users[j].SubmittedTime)
 	})
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -572,7 +580,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 
 	v.Vars["SubmissionCount"] = submissionCount
 	v.Vars["Assignment"] = assignment
-	v.Vars["Students"] = students
+	v.Vars["Students"] = users
 	v.Vars["Course"] = course
 
 	v.Render(w)

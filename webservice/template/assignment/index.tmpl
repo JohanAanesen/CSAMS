@@ -56,9 +56,9 @@
         {{end}}
 
         {{ $id := .Assignment.ID }}
-        {{ $length := len .Reviews.Items }}
+        {{ $length := len .Reviews }}
         {{ if gt $length 0 }}
-            {{ range .Reviews.Items }}
+            {{ range .Reviews }}
                 <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-dark btn-lg">Review {{ .Name }}</a>
             {{ end }}
         {{end }}
