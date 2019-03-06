@@ -10,8 +10,13 @@ function copyLinks(hash) {
     // Create an element and attach to document body
     const element = document.createElement('textarea');
 
-    // TODO brede : dynamically get root url
-    element.value = 'http://localhost:8088/login?courseid=' + hash;
+    // Dynamically get root url
+    const rootURL = window.location.origin;
+
+    // Set value to element
+    element.value = rootURL + '/login?courseid=' + hash;
+
+    // Append to body
     document.body.appendChild(element);
 
     // select element and copy to clipboard

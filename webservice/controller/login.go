@@ -57,9 +57,9 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 
 	// Send the correct link to template
 	if hash == "" {
-		v.Vars["Action"] = "/login"
+		v.Vars["Action"] = ""
 	} else {
-		v.Vars["Action"] = "/login?courseid=" + hash
+		v.Vars["Action"] = "?courseid=" + hash
 	}
 
 	v.Render(w)
