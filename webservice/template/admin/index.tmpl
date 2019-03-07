@@ -42,6 +42,10 @@
                         <a href="/admin/assignment/{{.Assignment.ID}}/submissions"
                            class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
                             submissions</a>
+                        <a href="/admin/assignment/update/{{.Assignment.ID}}"
+                           class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">Edit
+                            assignment
+                        </a>
                     </div>
                 </div>
             </div>
