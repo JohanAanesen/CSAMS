@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
+	"time"
 )
 
 // UserSubmission is an struct for user submissions
@@ -10,6 +11,7 @@ type UserSubmission struct {
 	AssignmentID int
 	SubmissionID int64
 	Answers      []Answer
+	Submitted    time.Time
 }
 
 // GetUserAnswers returns answers if it exists, empty if not
@@ -53,6 +55,40 @@ func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
 	}
 
 	return answers, nil
+}
+
+// GetSubmittedTime returns submitted time if it exists, empty if not
+func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
+
+	var submitted time.Time
+
+	// Create query string
+	query := "select distinct submitted from user_submissions WHERE user_id =? AND assignment_id=?;"
+	// Prepare and execute query
+	rows, err := db.GetDB().Query(query, userID, assignmentID)
+	if err != nil {
+
+		// Returns empty if it fails
+		return submitted, false, err
+	}
+
+	// Close connection
+	defer rows.Close()
+
+	// Loop through results
+	if rows.Next() {
+		// Scan rows
+		err := rows.Scan(&submitted)
+
+		// Check for error
+		if err != nil {
+			return time.Time{}, false, err
+		}
+
+		return submitted, true, nil
+	}
+
+	return time.Time{}, false, nil
 }
 
 // UploadUserSubmission uploads user submission to the db

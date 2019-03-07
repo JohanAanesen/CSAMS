@@ -12,6 +12,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
 	"time"
 )
@@ -515,13 +516,61 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	submissionRepo := &model.SubmissionRepository{}
+
+	submissionCount, err := submissionRepo.GetSubmissionsCountFromAssignment(assignment.ID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	// TODO brede : sort by user delivered and not + show if delivered or not in table
 	students := model.GetUsersToCourse(assignment.CourseID)
-	if len(students.Items) < 0 {
+	if len(students) < 0 {
 		log.Println("Error: could not get students from course! (admin_assignment.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
+
+	type UserAndSubmit struct {
+		User          model.User
+		SubmittedTime time.Time
+		Submitted     bool
+	}
+
+	var users []UserAndSubmit
+
+	for _, student := range students {
+		submitTime, submitted, err := model.GetSubmittedTime(student.ID, assignmentID)
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		if submitted {
+			var data = UserAndSubmit{
+				User:          student,
+				SubmittedTime: submitTime,
+				Submitted:     true,
+			}
+
+			users = append(users, data)
+		} else {
+			var data = UserAndSubmit{
+				User:      student,
+				Submitted: false,
+			}
+
+			users = append(users, data)
+		}
+	}
+
+	//Sort slice by submitted time
+	sort.Slice(users, func(i, j int) bool {
+		return users[i].SubmittedTime.After(users[j].SubmittedTime)
+	})
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -529,8 +578,9 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/assignment/submissions"
 
+	v.Vars["SubmissionCount"] = submissionCount
 	v.Vars["Assignment"] = assignment
-	v.Vars["Students"] = students
+	v.Vars["Students"] = users
 	v.Vars["Course"] = course
 
 	v.Render(w)
