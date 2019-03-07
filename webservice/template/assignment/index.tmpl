@@ -20,22 +20,31 @@
             background-color: #f8f9fa;
         }
 
-        .nav-pills .nav-link.active {
-            background-color: #f8f9fa;!important;
+        #myTab.nav-pills .nav-link.active {
+            background-color: #f8f9fa;
+        !important;
             color: black;
         }
 
         /* hovered tab background-color, text-color and border-color */
-        .nav-item a.nav-link:hover {
+        #myTab.nav-item a.nav-link:hover {
             background-color: #f8f9fa;
             color: black;
         }
 
         /* tabs text-color and border-color */
-        .nav-pills .nav-link {
+        #myTab.nav-pills .nav-link {
             color: #f8f9fa;
             border-color: #f8f9fa;
             border-bottom-color: #f8f9fa;
+        }
+
+        a#participant-tab.nav-link.disabled {
+            color: #6c7985;
+        }
+
+        a#peerReview-tab.nav-link.disabled {
+            color: #6c7985;
         }
 
     </style>
@@ -44,6 +53,8 @@
     <link rel="stylesheet" href="/static/css/highlight-Go.css">
 {{end}}
 {{define "content"}}
+    {{ $id := .Assignment.ID }}
+    {{ $length := len .Reviews }}
     <div class="container pt-3">
         {{if .Delivered}}
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -62,7 +73,7 @@
         {{if .HasAutoValidation}}<span class="badge badge-warning">Auto Validated</span>{{end}}
 
         <p class="lead"><strong>Deadline:</strong> {{PRETTYTIME .Assignment.Deadline}}</p>
-        <div class="card ">
+        <div class="card">
             <div class="card-header">
                 <ul class="nav nav-pills card-header-tabs pull-right" id="myTab" role="tablist" style="float:left;">
                     <li class="nav-item">
@@ -70,11 +81,17 @@
                            aria-controls="home" aria-selected="true">Assignment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="peerReview-tab" data-toggle="tab" href="#peerReview" role="tab"
-                           aria-controls="peerReview" aria-selected="false">Peer Review</a>
+                        <a class="nav-link {{if eq $length 0}}disabled{{end}}" id="peerReview-tab" data-toggle="tab"
+                           href="#peerReview" role="tab"
+                           aria-controls="peerReview" aria-selected="false">Peer Review
+                            {{ if gt $length 0 }}
+                                <span class="badge badge-danger">{{$length}}</span>
+                            {{end}}
+
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="participant-tab" data-toggle="tab" href="#autoValidation"
+                        <a class="nav-link disabled" id="participant-tab" data-toggle="tab" href="#autoValidation"
                            role="tab"
                            aria-controls="participants" aria-selected="false">Auto Validation</a>
                     </li>
@@ -84,11 +101,11 @@
                     <li>
                         {{if not .Delivered}}
                             <a style="float:right;" href="/assignment/submission?id={{ .Assignment.ID }}"
-                               class="btn btn-outline-light btn-success">Deliver
+                               class="btn btn-outline-light btn-success {{if .IsDeadlineOver}}disabled{{end}}">Deliver
                                 assignment</a>
                         {{else}}
                             <a href="/assignment/submission?id={{ .Assignment.ID }}"
-                               class="btn btn-outline-light btn-warning">Change your
+                               class="btn btn-outline-light btn-warning {{if .IsDeadlineOver}}disabled{{end}}">Change your
                                 submission</a>
                         {{end}}
                     </li>
@@ -98,50 +115,45 @@
             </div>
             <div class="card-body">
                 <div class="tab-content" id="myTabContent">
+
                     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                         {{.Description}}
                     </div>
+
                     <div class="tab-pane fade" id="peerReview" role="tabpanel" aria-labelledby="home-tab">
-
-                        <div>:D</div>
-
+                        <div class="row">
+                            {{ if gt $length 0 }}
+                                {{ range .Reviews }}
+                                    <div class="col-md-6 col-sm-12 mb-3">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body">
+                                                <h2 class="display-5">{{.Name}}</h2>
+                                                <h5>
+                                                    <span class="badge badge-info">Peer-Review</span>
+                                                </h5>
+                                                <hr class="bg-light">
+                                                <a href="/assignment/{{$id}}/submission/{{.ID}}"
+                                                   class="btn btn-outline-dark btn-lg">Review</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {{ end }}
+                            {{end }}
+                        </div>
                     </div>
+
                     <div class="tab-pane fade" id="autoValidation" role="tabpanel"
                          aria-labelledby="home-tab">
                         <div>:(</div>
                     </div>
+
                 </div>
             </div>
 
 
         </div>
+        
 
-
-        {{  if .IsDeadlineOver }}
-            {{if .HasReview}}
-                <a href="#" class="btn btn-info btn-lg">Peer-Review</a>
-            {{end}}
-        {{else}}
-            {{if not .Delivered}}
-                <a href="/assignment/submission?id={{ .Assignment.ID }}" class="btn btn-outline-dark btn-lg">Deliver
-                    assignment</a>
-            {{else}}
-                <a href="/assignment/submission?id={{ .Assignment.ID }}" class="btn btn-outline-dark btn-lg">Change your
-                    submission</a>
-            {{end}}
-        {{end}}
-        {{if .HasBeenValidated}}
-            <a href="#" class="btn btn-outline-dark btn-lg disabled">Auto Scoring</a>
-        {{end}}
-
-        {{ $id := .Assignment.ID }}
-        {{ $length := len .Reviews }}
-        {{ if gt $length 0 }}
-            {{ range .Reviews }}
-                <a href="/assignment/{{$id}}/submission/{{.ID}}"
-                   class="btn btn-outline-dark btn-lg">Review {{ .Name }}</a>
-            {{ end }}
-        {{end }}
     </div>
 {{end}}
 {{define "foot"}}{{end}}
