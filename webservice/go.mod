@@ -7,7 +7,7 @@ require (
 	github.com/gorilla/mux v1.7.0
 	github.com/gorilla/sessions v1.1.3
 	github.com/kr/pretty v0.1.0 // indirect
-	github.com/microcosm-cc/bluemonday v1.0.2 // indirect
+	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/rs/xid v1.2.1
 	github.com/sergi/go-diff v1.0.0 // indirect
 	github.com/shurcooL/github_flavored_markdown v0.0.0-20181002035957-2122de532470
