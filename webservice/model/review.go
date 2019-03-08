@@ -162,6 +162,7 @@ func (repo *ReviewRepository) Update(form Form) error {
 	return nil
 }
 
+// Get single review form from the database
 func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 	result := Review{}
 
@@ -211,6 +212,7 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 	return result, err
 }
 
+// InsertReviewAnswers inserts answers from a review into the database
 func (repo *ReviewRepository) InsertReviewAnswers(fr FullReview) error {
 	query := "INSERT user_reviews (user_reviewer, user_target, review_id, assignment_id, type, name, answer) VALUES (?, ?, ?, ?, ?, ?, ?)"
 
@@ -233,4 +235,51 @@ func (repo *ReviewRepository) InsertReviewAnswers(fr FullReview) error {
 	}
 
 	return err
+}
+
+// GetUserWhoHasDoneReview returns user ID for users who have done the peer-review
+func (repo *ReviewRepository) GetUserWhoHasDoneReview(userId, assignmentId int) ([]int, error) {
+	result := make([]int, 0)
+
+	query := "SELECT DISTINCT user_reviewer FROM user_reviews WHERE user_target=? AND assignment_id=?"
+	rows, err := db.GetDB().Query(query, userId, assignmentId)
+	if err != nil {
+		return result, err
+	}
+
+	for rows.Next() {
+		var temp int
+
+		err = rows.Scan(&temp)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, temp)
+	}
+
+	return result, err
+}
+
+// GetAnswersFromReview returns answers from an review based on user id (target, reviewer) and assignment id
+func (repo *ReviewRepository) GetAnswersFromReview(target, reviewer, assignment int) ([]ReviewAnswer, error) {
+	result := make([]ReviewAnswer, 0)
+	query := "SELECT type, name, answer FROM user_reviews WHERE user_target=? AND user_reviewer=? AND assignment_id=?"
+	rows, err := db.GetDB().Query(query, target, reviewer, assignment)
+	if err != nil {
+		return result, err
+	}
+
+	for rows.Next() {
+		var temp ReviewAnswer
+
+		err = rows.Scan(&temp.Type, &temp.Name, &temp.Answer)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, temp)
+	}
+
+	return result, err
 }
