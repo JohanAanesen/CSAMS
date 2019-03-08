@@ -77,6 +77,9 @@ func Initialize(configFile string) *Configuration {
 	view.LoadPlugins(
 		plugin.PrettyTime(),
 		plugin.DeadlineDue(),
+		plugin.MDConvert(),
+		plugin.Increment(),
+		plugin.SplitChoices(),
 	)
 
 	return cfg
