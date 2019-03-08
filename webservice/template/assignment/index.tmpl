@@ -95,6 +95,13 @@
                            role="tab"
                            aria-controls="participants" aria-selected="false">Auto Validation</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="viewReview-tab" data-toggle="tab"
+                           href="#viewReview" role="tab"
+                           aria-controls="viewReview" aria-selected="false">
+                            View Reviews
+                        </a>
+                    </li>
                 </ul>
 
                 <ul class="nav nav-pills" style="float:right;">
@@ -145,6 +152,23 @@
                     <div class="tab-pane fade" id="autoValidation" role="tabpanel"
                          aria-labelledby="home-tab">
                         <div>:(</div>
+                    </div>
+
+                    <div class="tab-pane fade" id="viewReview" role="tabpanel">
+                        {{range .MyReviews}}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    {{range .Answers}}
+                                        <div class="form-group">
+                                            <label for=""><!-- TODO (Svein): Get label --></label>
+                                            {{if eq .Type "text"}}
+                                                <input type="text" class="form-control" value="{{.Answer}}" disabled>
+                                            {{end}}
+                                        </div>
+                                    {{end}}
+                                </div>
+                            </div>
+                        {{end}}
                     </div>
 
                 </div>
