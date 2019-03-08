@@ -129,7 +129,7 @@ func (repo *SubmissionRepository) DeleteSubmissionsToAssignment(assID int, subID
 	return nil
 }
 
-// GetAll returns all submission in the database from specific assignment and submission form
+// GetSubmissionsCountFromAssignment returns all submission in the database from specific assignment and submission form
 func (repo *SubmissionRepository) GetSubmissionsCountFromAssignment(assID int, subID int64) (int, error) {
 	// Declare return slice
 	var result int
