@@ -54,17 +54,38 @@
                     <hr>
                     <form action="/assignment/{{.Assignment.ID}}/submission/{{.User.ID}}" method="post">
                         {{ range .Review.Form.Fields }}
-                            <div class="form-group">
-                                <label for="{{ .Name }}">{{ .Label }}</label>
-                                {{ if eq .Type "text" }}
-                                    <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control">
-                                {{ else if eq .Type "url" }}
-                                    <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control">
-                                {{ else if eq .Type "textarea" }}
-                                    <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control"></textarea>
-                                {{ end }}
+                            {{if eq .Type "radio"}}
+                                <!--
+                                TODO (Svein):
 
+                                Create plugin for splitting choices
+                                 -->
+                                {{$R := .}}
+                                {{$V := 1}}
+                                {{range SPLITCHOICES .Choices}}
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="{{$R.Name}}" id="{{$R.Name}}" value="{{$V}}">
+                                        <label class="form-check-label" for="{{$R.Name}}">{{$R.Label}}</label>
+                                    </div>
+                                    <!-- TODO (Svein): Create an increment plugin: { { $V = $V + 1 } } -->
+                                {{end}}
+
+                            {{else}}
+                            <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}}">
+                                <label{{if eq .Type "checkbox"}} class="form-check-inline"{{end}} for="{{ .Name }}">{{ .Label }}</label>
+                                {{ if eq .Type "text" }}
+                                    <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
+                                {{ else if eq .Type "url" }}
+                                    <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
+                                {{ else if eq .Type "textarea" }}
+                                    <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control" required></textarea>
+                                {{ else if eq .Type "number" }}
+                                    <input type="number" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
+                                {{ else if eq .Type "checkbox" }}
+                                    <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input">
+                                {{ end }}
                             </div>
+                            {{end}}
                         {{ end }}
                         <input type="hidden" name="review_id" value="{{.Review.ID}}">
                         <input type="submit" class="btn btn-success">
