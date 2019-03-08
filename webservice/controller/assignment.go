@@ -6,6 +6,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/gorilla/mux"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/shurcooL/github_flavored_markdown"
 	"html/template"
 	"log"
@@ -286,16 +287,19 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 // AssignmentUploadPOST servers the
 func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 
+	//XSS sanitizer
+	p := bluemonday.UGCPolicy()
+
 	// Check for ID in url and give error if not
 	id := r.FormValue("id")
 	if id == "" {
 		log.Println("Error: id can't be empty! (assignment.go)")
-		ErrorHandler(w, r, http.StatusInternalServerError)
+		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
 
 	// Convert id from string to int
-	assignmentID, err := strconv.Atoi(id)
+	assignmentID, err := strconv.Atoi(p.Sanitize(id))
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -379,12 +383,15 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 
 		// If delivered, only change the value
 		if delivered {
-			userSub.Answers[index].Value = r.FormValue(field.Name)
+			sanitizedValue := p.Sanitize(r.FormValue(field.Name)) //sanitize input
+			userSub.Answers[index].Value = sanitizedValue
 		} else {
 			// Else, create new answers array
+			sanitizedValue := p.Sanitize(r.FormValue(field.Name)) //sanitize input
+
 			userSub.Answers = append(userSub.Answers, model.Answer{
 				Type:  field.Type,
-				Value: r.FormValue(field.Name),
+				Value: sanitizedValue,
 			})
 		}
 

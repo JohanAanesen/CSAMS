@@ -317,7 +317,8 @@ CREATE TABLE `user_submissions`
   `assignment_id` int(11)     NOT NULL,
   `submission_id` int(11)     NOT NULL,
   `type`          varchar(64) NOT NULL,
-  `answer`        mediumtext
+  `answer`        mediumtext  NULL,
+  `submitted`     timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
@@ -404,15 +405,6 @@ ALTER TABLE `logs`
   ADD KEY `assignmentid` (`assignmentid`),
   ADD KEY `submissionid` (`submissionid`);
 
---
--- Indexes for table `peer_reviews`
---
-ALTER TABLE `peer_reviews`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `peer_reviews_submissions_id_fk` (`submission_id`),
-  ADD KEY `peer_reviews_assignment_id_fk` (`assignment_id`),
-  ADD KEY `peer_reviews_user_id_fk` (`user_id`),
-  ADD KEY `peer_reviews_review_user_id_fk` (`review_user_id`);
 
 --
 -- Indexes for table `reviews`
@@ -494,11 +486,7 @@ ALTER TABLE `fields`
 ALTER TABLE `forms`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
   AUTO_INCREMENT = 2;
---
--- AUTO_INCREMENT for table `peer_reviews`
---
-ALTER TABLE `peer_reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT for table `reviews`
 --
@@ -537,6 +525,23 @@ ALTER TABLE `schedule_tasks`
 --
 
 --
+-- Indexes for table `peer_reviews`
+--
+ALTER TABLE `peer_reviews`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `peer_reviews_submissions_id_fk` (`submission_id`),
+  ADD KEY `peer_reviews_assignment_id_fk` (`assignment_id`),
+  ADD KEY `peer_reviews_user_id_fk` (`user_id`),
+  ADD KEY `peer_reviews_review_user_id_fk` (`review_user_id`);
+
+--
+-- AUTO_INCREMENT for table `peer_reviews`
+--
+ALTER TABLE `peer_reviews`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+
+--
 -- Begrensninger for tabell `assignments`
 --
 ALTER TABLE `assignments`
@@ -568,16 +573,6 @@ ALTER TABLE `logs`
   ADD CONSTRAINT `logs_ibfk_2` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE;
-
-
---
--- Begrensninger for tabell `peer_reviews`
---
-ALTER TABLE `peer_reviews`
-  ADD CONSTRAINT `peer_reviews_review_user_id_fk` FOREIGN KEY (`review_user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `peer_reviews_submissions_id_fk` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`),
-  ADD CONSTRAINT `peer_review_assignment_id_fk` FOREIGN KEY (`assignment_id`) REFERENCES `assignments` (`id`),
-  ADD CONSTRAINT `peer_reviews_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 
 --
@@ -628,3 +623,13 @@ ALTER TABLE `user_submissions`
 ALTER TABLE `schedule_tasks`
   ADD CONSTRAINT schedule_tasks_submission_id_fk FOREIGN KEY (submission_id) REFERENCES submissions (id),
   ADD CONSTRAINT schedule_tasks_assignment_id_fk FOREIGN KEY (assignment_id) REFERENCES assignments (id);
+
+--
+-- Begrensninger for tabell `peer_reviews`
+--
+ALTER TABLE `peer_reviews`
+  ADD CONSTRAINT `peer_reviews_review_user_id_fk` FOREIGN KEY (`review_user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `peer_reviews_submissions_id_fk` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`),
+  ADD CONSTRAINT `peer_reviews_assignment_id_fk` FOREIGN KEY (`assignment_id`) REFERENCES `assignments` (`id`),
+  ADD CONSTRAINT `peer_reviews_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+

@@ -1,18 +1,51 @@
 {{define "title"}}Course{{end}}
 {{define "head"}}
     <style>
+        /* link color in general */
         a {
-            color: #888888;
+            color: #929292;
         }
 
+        /* link color hovered in general */
         a:hover {
-            color: #888888;
+            color: #ffffff;
         }
 
-        pre {
-            color: #888888;
+        /* link color in participant list */
+        tbody a{
+            color: white;
+        }
+
+        /* card header text color and background color */
+        .card-header {
+            color: black;
+            background-color: white;
+            border-bottom-color: black;
+        }
+
+        /* hovered tab background-color, text-color and border-color */
+        .nav-item a.nav-link:hover {
+            background-color: #343a40;
+            color: white;
+            border-color: black;
+        }
+
+        /* active tab background-color, text-color and border-color */
+        .nav-item a.nav-link.active {
+            background-color: #343a40;
+            color: white;
+            border-color: black;
+            border-bottom-color: transparent;
+        }
+
+        /* tabs text-color and border-color */
+        .nav-tabs .nav-link {
+            color: black;
+            border-color: black;
         }
     </style>
+    <link rel="stylesheet" href="/static/css/highlight.css">
+    <link rel="stylesheet" href="/static/css/highlight-Go.css">
 {{end}}
 {{define "content"}}
     <main role="main" class="container">
@@ -79,7 +112,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {{ range .Classmates.Items }}
+                                {{ range .Classmates }}
                                     <tr {{if .Teacher}} class="bg-primary" {{end}}>
                                         <th scope="row">{{.ID}}</th>
                                         <td>{{.Name}}</td>

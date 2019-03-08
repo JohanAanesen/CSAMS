@@ -5,6 +5,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
+	"github.com/microcosm-cc/bluemonday"
 	"log"
 	"net/http"
 )
@@ -68,6 +69,9 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 //LoginPOST validates login requests
 func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
+	//sanitizer
+	p := bluemonday.UGCPolicy()
+
 	user := session.GetUserFromSession(r)
 
 	if user.Authenticated { //already logged in, redirect to home page
@@ -84,7 +88,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := model.UserAuth(email, password) //authenticate user
+	user, ok := model.UserAuth(p.Sanitize(email), p.Sanitize(password)) //authenticate user
 
 	//course repo
 	courseRepo := &model.CourseRepository{}
@@ -102,7 +106,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		}
 
 	} else {
-		//redirect to errorhandler
+		//redirect to errorhandler //todo return message to user and let them login again
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		//todo log this event
 		log.Println("LoginPOST error")

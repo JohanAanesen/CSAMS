@@ -7,11 +7,6 @@ import (
 	"log"
 )
 
-// Users hold the data for a slice of Course-struct
-type Users struct {
-	Items []User `json:"users"`
-}
-
 //User struct to hold session data
 type User struct {
 	ID            int    `json:"id"`
@@ -60,9 +55,9 @@ func UserIsReviewer(userID int, assignmentID int, submissionID int64, reviewUser
 }
 
 // GetReviewUserIDs returns the userIDs to the assignment the user is going to review
-func GetReviewUserIDs(userID int, assignmentID int) Users {
+func GetReviewUserIDs(userID int, assignmentID int) []User {
 
-	var userIDs = Users{}
+	var userIDs []User
 
 	// Run query
 	rows, err := db.GetDB().Query("SELECT peer_reviews.review_user_id, users.name FROM peer_reviews INNER JOIN users ON peer_reviews.review_user_id = users.id WHERE user_id = ? AND assignment_id = ?", userID, assignmentID)
@@ -81,7 +76,7 @@ func GetReviewUserIDs(userID int, assignmentID int) Users {
 		}
 
 		// Add id to user struct
-		userIDs.Items = append(userIDs.Items, User{
+		userIDs = append(userIDs, User{
 			ID:            id,
 			Name:          name,
 			Authenticated: true,
@@ -195,10 +190,10 @@ func GetHash(id int) string {
 }
 
 // GetUsersToCourse returns all users to one course
-func GetUsersToCourse(courseID int) Users {
+func GetUsersToCourse(courseID int) []User {
 
 	//Create an empty courses array
-	var users Users
+	var users []User
 
 	rows, err := db.GetDB().Query("SELECT users.id, users.name, users.email_student, teacher FROM users INNER JOIN usercourse ON users.id = usercourse.userid WHERE usercourse.courseid = ?", courseID)
 	if err != nil {
@@ -217,7 +212,7 @@ func GetUsersToCourse(courseID int) Users {
 		rows.Scan(&id, &name, &email, &teacher)
 
 		// Add course to courses array
-		users.Items = append(users.Items, User{
+		users = append(users, User{
 			ID:           id,
 			Name:         name,
 			EmailStudent: email,

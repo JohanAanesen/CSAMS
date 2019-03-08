@@ -3,24 +3,27 @@
 {{define "content"}}
 
     <h2 class="display-4 mb-3">{{ .Assignment.Name }} submissions</h2>
-    <table class="table table-borderless table-sm">
+    <h5>{{ .SubmissionCount }} submitted</h5>
+    <table class="table table-striped table-sm">
         <thead>
         <tr>
             <th scope="col">#</th>
             <th scope="col">Name</th>
             <th scope="col">Email</th>
+            <th scope="col">Submitted</th>
             <th scope="col">Submission</th>
         </tr>
         </thead>
         <tbody>
         {{$A := .Assignment}}
-        {{ range .Students.Items }}
-            {{ if not .Teacher }}
+        {{ range .Students }}
+            {{ if not .User.Teacher }}
                 <tr class="clickable-row">
-                    <th scope="row">{{ .ID }}</th>
-                    <td>{{ .Name }}</td>
-                    <td><a href="mailto:{{ .EmailStudent }}">{{ .EmailStudent }}</a></td>
-                    <td><a href="/assignment/{{ $A.ID }}/submission/{{ .ID }}">See submission</a></td>
+                    <th scope="row">{{ .User.ID }}</th>
+                    <td>{{ .User.Name }}</td>
+                    <td><a href="mailto:{{ .User.EmailStudent }}">{{ .User.EmailStudent }}</a></td>
+                    <td>{{if .Submitted}}{{PRETTYTIME .SubmittedTime }}{{end}}</td>
+                    <td>{{if .Submitted}}<a href="/assignment/{{ $A.ID }}/submission/{{ .User.ID }}">See submission</a>{{end}}</td>
                 </tr>
             {{ end }}
         {{ end }}
