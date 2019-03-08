@@ -139,6 +139,17 @@ func GetAndDeleteMessageFromSession(w http.ResponseWriter, r *http.Request)strin
 		return ""
 	}
 
+	ok = DeleteMessageFromSession(w, r)
+	if !ok{
+		return ""
+	}
+
+	return msg
+}
+
+func DeleteMessageFromSession(w http.ResponseWriter, r *http.Request) bool{
+	session, err := Instance(r) // get session
+
 	session.Values["Message"] = ""
 
 	err = session.Save(r, w) //save session changes
@@ -146,8 +157,8 @@ func GetAndDeleteMessageFromSession(w http.ResponseWriter, r *http.Request)strin
 		//todo log this event
 		log.Printf("Could not save session: %v", err)
 		//redirect somewhere
-		return ""
+		return false
 	}
 
-	return msg
+	return true
 }

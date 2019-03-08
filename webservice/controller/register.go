@@ -57,7 +57,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 
 	user := session.GetUserFromSession(r)
 
-	if session.IsLoggedIn(r) { //already logged in, no need to register
+	if user.Authenticated { //already logged in, no need to register
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
@@ -69,7 +69,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 
 	//check that nothing is empty and password match passwordConfirm
 	if name == "" || email == "" || password == "" || password != r.FormValue("passwordConfirm") { //login credentials cannot be empty
-		session.SaveMessageToSession("Passwords don't match!", w, r)
+		session.SaveMessageToSession("Passwords does not match or fields are empty!", w, r)
 		RegisterGET(w, r)
 		return
 	}
