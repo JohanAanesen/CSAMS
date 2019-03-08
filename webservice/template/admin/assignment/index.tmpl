@@ -9,6 +9,7 @@
             <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                 <div class="card shadow-sm{{if DEADLINEDUE .Assignment.Deadline}} bg-secondary text-light{{end}}">
                     <div class="card-body">
+                        <h5 class="float-right text-secondary">ID: {{.Assignment.ID}}</h5>
                         <h2 class="display-5">{{.Assignment.Name}}</h2>
                         <h5>
                             <span class="badge {{if DEADLINEDUE .Assignment.Deadline}}badge-dark{{ else}} badge-secondary{{end}}">{{.CourseCode}}</span>
