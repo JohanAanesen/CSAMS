@@ -547,7 +547,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 
 // AssignmentUserSubmissionPOST handles POST-request @ /assignment/{id:[0-9]+}/submission/{userid:[0-9]+}
 func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
-	// TODO (Svein): Check auth
 	currentUser := session.GetUserFromSession(r)
 	if !currentUser.Authenticated {
 		log.Printf("Error: Could not get user (assignment.go)")
