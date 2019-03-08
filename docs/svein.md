@@ -1,5 +1,39 @@
 Svein's log
 ============
+## 08/03/2019
+#### Worked on
+* Created a few new view plugins for helping with the review-form
+  * Increment
+  * Split Choices
+* 
+#### Good
+* 
+#### Bad
+* 
+#### Decisions
+* None
+
+## 07/03/2019
+#### Worked on
+* Generating the review form
+* Remodelling the `user_reviews` table
+#### Good
+*  
+#### Bad
+* 
+#### Decisions
+* None
+
+## 04/03/2019
+#### Worked on
+* Generating the review form
+#### Good
+* 
+#### Bad
+* 
+#### Decisions
+* None
+
 # Week 9 report
 #### Worked on
 * 
