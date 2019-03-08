@@ -205,6 +205,11 @@ this was mostly because I use ca. 7h all together to get the project starting.
 * Changed name to Full name and made it unchangeable
 * Switched to PRETTYTIME in faq and updated the faq 
 
+## Thursday 07/03/19 
+* **Hafjell**
+
+### Friday 08/03/19
+* Added confirm to user if admin wants to delete submission form or not.
 
 
 

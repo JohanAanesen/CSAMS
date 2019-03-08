@@ -326,6 +326,14 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get number of Students that has delivered submission with specific submission form
+	submissionCount, err := submissionRepo.GetSubmissionsCountFromAssignment(assignment.ID, assignment.SubmissionID.Int64)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	//get courses to user
 	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 	if err != nil {
@@ -345,6 +353,7 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "admin/assignment/update"
 
 	v.Vars["Assignment"] = assignment
+	v.Vars["SubmissionCount"] = submissionCount
 	v.Vars["Publish"] = util.GoToHTMLDatetimeLocal(assignment.Publish)
 	v.Vars["Deadline"] = util.GoToHTMLDatetimeLocal(assignment.Deadline)
 	v.Vars["Courses"] = courses
@@ -404,6 +413,8 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	// TODO brede : I think I need the value to be 0 sometimes
 	submissionID := sql.NullInt64{
 		Int64: int64(val),
 		Valid: val != 0,
@@ -518,7 +529,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 
 	submissionRepo := &model.SubmissionRepository{}
 
-	submissionCount, err := submissionRepo.GetSubmissionsCountFromAssignment(assignment.ID)
+	submissionCount, err := submissionRepo.GetSubmissionsCountFromAssignment(assignment.ID, assignment.SubmissionID.Int64)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)

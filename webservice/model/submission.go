@@ -113,14 +113,14 @@ func (repo *SubmissionRepository) GetAll() ([]Submission, error) {
 	return result, nil
 }
 
-// GetAll returns all submission in the database
-func (repo *SubmissionRepository) GetSubmissionsCountFromAssignment(assID int) (int, error) {
+// GetAll returns all submission in the database from specific assignment and submission form
+func (repo *SubmissionRepository) GetSubmissionsCountFromAssignment(assID int, subID int64) (int, error) {
 	// Declare return slice
 	var result int
 	// Create query-string
-	query := "select count(distinct user_id) from user_submissions WHERE assignment_id LIKE ?"
+	query := "select count(distinct user_id) from user_submissions WHERE assignment_id LIKE ? AND submission_id LIKE ?"
 	// Perform query
-	rows, err := db.GetDB().Query(query, assID)
+	rows, err := db.GetDB().Query(query, assID, subID)
 	// Check for error
 	if err != nil {
 		return 0, err
