@@ -40,6 +40,9 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 	} else {
 		v.Vars["Action"] = "/register?courseid=" + hash
 	}
+
+	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w,r)
+
 	v.Render(w)
 
 	//todo check if there is a class hash in request
@@ -78,7 +81,8 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	user, err := model.RegisterUser(name, email, password) //register user in database
 	if err != nil {
 		log.Println(err.Error())
-		ErrorHandler(w, r, http.StatusInternalServerError) //change this one to like, email used already fuck off?
+		session.SaveMessageToSession("Email already in use!", w, r)
+		RegisterGET(w, r)
 		return
 	}
 
