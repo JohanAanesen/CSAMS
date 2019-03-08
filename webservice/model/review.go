@@ -1,12 +1,28 @@
 package model
 
-import "github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
+import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
+)
 
 // Review struct
 type Review struct {
 	ID     int  `json:"id" db:"id"`
 	FormID int  `json:"-" db:"form_id"`
 	Form   Form `json:"form"`
+}
+
+type ReviewAnswer struct {
+	Type string
+	Name string
+	Answer string
+}
+
+type FullReview struct {
+	Reviewer int // User that is doing the review
+	Target int // User that is getting the review
+	ReviewID int
+	AssignmentID int
+	Answers []ReviewAnswer
 }
 
 // ReviewRepository struct handles all database action for review-forms
@@ -148,8 +164,26 @@ func (repo *ReviewRepository) Update(form Form) error {
 
 func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 	result := Review{}
-	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM reviews AS s WHERE id IN (SELECT a.review_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
+
+	query := "SELECT review_id FROM assignments WHERE id=?"
 	rows, err := db.GetDB().Query(query, assignmentID)
+	if err != nil {
+		return result, err
+	}
+
+	var reviewID int
+
+	for rows.Next() {
+		err = rows.Scan(&reviewID)
+		if err != nil {
+			return result, err
+		}
+	}
+
+	result.ID = reviewID
+
+	query = "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM reviews AS s WHERE id IN (SELECT a.review_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
+	rows, err = db.GetDB().Query(query, assignmentID)
 	if err != nil {
 		return result, err
 	}
@@ -175,4 +209,28 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 	result.FormID = formID
 
 	return result, err
+}
+
+func (repo *ReviewRepository) InsertReviewAnswers(fr FullReview) error {
+	query := "INSERT user_reviews (user_reviewer, user_target, review_id, assignment_id, type, name, answer) VALUES (?, ?, ?, ?, ?, ?, ?)"
+
+	tx, err := db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+
+	for _, answer := range fr.Answers {
+		_, err := db.GetDB().Exec(query, fr.Reviewer, fr.Target, fr.ReviewID, fr.AssignmentID, answer.Type, answer.Name, answer.Answer)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	return err
 }

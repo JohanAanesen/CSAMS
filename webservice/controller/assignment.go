@@ -223,7 +223,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 
 	// Get form and log possible error
 	formRepo := model.FormRepository{}
-	form, err := formRepo.GetFromAssignmentID(assignment.ID)
+	form, err := formRepo.GetSubmissionFormFromAssignmentID(assignment.ID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -332,7 +332,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 
 	// Get form and log possible error
 	formRepo := model.FormRepository{}
-	form, err := formRepo.GetFromAssignmentID(assignment.ID)
+	form, err := formRepo.GetSubmissionFormFromAssignmentID(assignment.ID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -477,7 +477,7 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get form and log possible error
-	form, err := formRepo.GetFromAssignmentID(assignment.ID)
+	form, err := formRepo.GetSubmissionFormFromAssignmentID(assignment.ID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -511,6 +511,7 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Get review form for the assignment
 	review, err := reviewRepo.GetSingle(assignmentID)
 	if err != nil {
 		log.Println(err.Error())
@@ -538,8 +539,87 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["AnswersAndFields"] = com.Items
 
 	if review.FormID != 0 {
+		fmt.Println(review)
 		v.Vars["Review"] = review
 	}
 
 	v.Render(w)
+}
+
+// AssignmentUserSubmissionPOST handles POST-request @ /assignment/{id:[0-9]+}/submission/{userid:[0-9]+}
+func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
+	// TODO (Svein): Check auth
+	currentUser := session.GetUserFromSession(r)
+
+	vars := mux.Vars(r)
+
+	p := bluemonday.UGCPolicy()
+
+	assignmentId, err := strconv.Atoi(p.Sanitize(vars["id"]))
+	if err != nil {
+		log.Println("id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	targetID, err := strconv.Atoi(p.Sanitize(vars["userid"]))
+	if err != nil {
+		log.Println("userid", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	reviewID, err := strconv.Atoi(p.Sanitize(r.FormValue("review_id")))
+	if err != nil {
+		log.Println("review_id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get form and log possible error
+	formRepo := model.FormRepository{}
+	form, err := formRepo.GetReviewFormFromAssignmentID(assignmentId)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	fullReview := model.FullReview{
+		Reviewer:     currentUser.ID,
+		Target:       targetID,
+		ReviewID:     reviewID,
+		AssignmentID: assignmentId,
+		Answers:      make([]model.ReviewAnswer, 0),
+	}
+
+	for _, field := range form.Fields {
+		answer := model.ReviewAnswer{
+			Type:   field.Type,
+			Name:   field.Name,
+			Answer: p.Sanitize(r.FormValue(field.Name)),
+		}
+
+		fullReview.Answers = append(fullReview.Answers, answer)
+	}
+
+	fmt.Println(fullReview)
+
+	reviewRepo := model.ReviewRepository{}
+	err = reviewRepo.InsertReviewAnswers(fullReview)
+	if err != nil {
+		log.Println("insert review answers", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+
+	AssignmentUserSubmissionGET(w, r)
 }

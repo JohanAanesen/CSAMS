@@ -46,6 +46,7 @@ func routes() http.Handler {
 	router.HandleFunc("/assignment/submission", controller.AssignmentUploadGET).Methods("GET")
 	router.HandleFunc("/assignment/submission/update", controller.AssignmentUploadPOST).Methods("POST")
 	router.HandleFunc("/assignment/{id:[0-9]+}/submission/{userid:[0-9]+}", controller.AssignmentUserSubmissionGET).Methods("GET")
+	router.HandleFunc("/assignment/{id:[0-9]+}/submission/{userid:[0-9]+}", controller.AssignmentUserSubmissionPOST).Methods("POST")
 
 	// User-page Handlers
 	router.HandleFunc("/user", controller.UserGET).Methods("GET")
