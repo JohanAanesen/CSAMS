@@ -55,24 +55,22 @@
                     <form action="/assignment/{{.Assignment.ID}}/submission/{{.User.ID}}" method="post">
                         {{ range .Review.Form.Fields }}
                             {{if eq .Type "radio"}}
-                                <!--
-                                TODO (Svein):
-
-                                Create plugin for splitting choices
-                                 -->
                                 {{$R := .}}
                                 {{$V := 1}}
-                                {{range SPLITCHOICES .Choices}}
+                                <fieldset>
+                                    <legend>{{$R.Label}}</legend>
+                                {{range SPLIT_CHOICES .Choices}}
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="{{$R.Name}}" id="{{$R.Name}}" value="{{$V}}">
-                                        <label class="form-check-label" for="{{$R.Name}}">{{$R.Label}}</label>
+                                        <label class="form-check-label" for="{{$R.Name}}">{{.}}</label>
                                     </div>
-                                    <!-- TODO (Svein): Create an increment plugin: { { $V = $V + 1 } } -->
+                                    {{INCREMENT $V}}
                                 {{end}}
+                                </fieldset>
 
                             {{else}}
                             <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}}">
-                                <label{{if eq .Type "checkbox"}} class="form-check-inline"{{end}} for="{{ .Name }}">{{ .Label }}</label>
+                                {{if ne .Type "checbox"}}<label for="{{ .Name }}">{{ .Label }}</label>{{end}}
                                 {{ if eq .Type "text" }}
                                     <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
                                 {{ else if eq .Type "url" }}
@@ -83,6 +81,7 @@
                                     <input type="number" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
                                 {{ else if eq .Type "checkbox" }}
                                     <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input">
+                                    <label class="form-check-inline" for="{{ .Name }}">{{ .Label }}</label>
                                 {{ end }}
                             </div>
                             {{end}}
