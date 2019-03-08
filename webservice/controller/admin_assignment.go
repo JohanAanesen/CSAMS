@@ -414,7 +414,6 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// TODO brede : I think I need the value to be 0 sometimes
 	submissionID := sql.NullInt64{
 		Int64: int64(val),
 		Valid: val != 0,
