@@ -63,6 +63,8 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 		v.Vars["Action"] = "/login?courseid=" + hash
 	}
 
+	v.Vars["Message"] = r.FormValue("msg")
+
 	v.Render(w)
 }
 
@@ -107,7 +109,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 		//redirect to errorhandler //todo return message to user and let them login again
-		ErrorHandler(w, r, http.StatusUnauthorized)
+		http.Redirect(w, r, "/?msg=Wrong%20Credentials", http.StatusFound)
 		//todo log this event
 		log.Println("LoginPOST error")
 		return
