@@ -9,9 +9,6 @@ import (
 	"time"
 )
 
-// TODO : maybe remove/refactor global variable later :/
-var joinedCourse = ""
-
 // IndexGET serves homepage to authenticated users, send anonymous to login
 func IndexGET(w http.ResponseWriter, r *http.Request) {
 	user := session.GetUserFromSession(r)
@@ -66,15 +63,13 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 
 	v.Vars["Courses"] = courses
 	v.Vars["Assignments"] = activeAssignments
-	v.Vars["Message"] = joinedCourse
+	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
 
 	v.Render(w)
 }
 
 // JoinCoursePOST adds user to course
 func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
-	joinedCourse = ""
-
 	//course repo
 	courseRepo := &model.CourseRepository{}
 
@@ -110,7 +105,7 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Give feedback to user
-	joinedCourse = course.Code + " - " + course.Name
+	session.SaveMessageToSession(course.Code+" - "+course.Name, w, r)
 
 	//IndexGET(w, r)
 	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
