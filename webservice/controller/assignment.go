@@ -100,6 +100,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 
 	reviewRepo := model.ReviewRepository{}
 
+	// Filter out the reviews that the current user already has done
 	submissionReviews := model.GetReviewUserIDs(currentUser.ID, assignment.ID)
 	filteredSubmissionReviews := make([]model.User, 0)
 	for _, v := range submissionReviews {
@@ -124,10 +125,6 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	//reviewRepo := &model.ReviewRepository{}
-
-	// TODO (Svein): Remove reviews for the once that the user already has reviewed
 
 	var isDeadlineOver = assignment.Deadline.Before(time.Now().UTC().Add(time.Hour))
 
