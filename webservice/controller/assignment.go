@@ -539,7 +539,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["AnswersAndFields"] = com.Items
 
 	if review.FormID != 0 {
-		fmt.Println(review)
 		v.Vars["Review"] = review
 	}
 
@@ -550,6 +549,11 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	// TODO (Svein): Check auth
 	currentUser := session.GetUserFromSession(r)
+	if !currentUser.Authenticated {
+		log.Printf("Error: Could not get user (assignment.go)")
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
 
 	vars := mux.Vars(r)
 
