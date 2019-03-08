@@ -55,6 +55,8 @@ func AssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 // AssignmentSingleGET handles GET-request @ /assignment/{id:[0-9]+}
 func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
+	currentUser := session.GetUserFromSession(r)
+
 	vars := mux.Vars(r)
 
 	assignmentID, err := strconv.Atoi(vars["id"])
@@ -75,7 +77,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	descriptionMD := []byte(assignment.Description)
 	description := github_flavored_markdown.Markdown(descriptionMD)
 
-	delivered, err := assignmentRepo.HasUserSubmitted(assignmentID, session.GetUserFromSession(r).ID)
+	delivered, err := assignmentRepo.HasUserSubmitted(assignmentID, currentUser.ID)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -96,7 +98,22 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	submissionReviews := model.GetReviewUserIDs(session.GetUserFromSession(r).ID, assignment.ID)
+	reviewRepo := model.ReviewRepository{}
+
+	submissionReviews := model.GetReviewUserIDs(currentUser.ID, assignment.ID)
+	filteredSubmissionReviews := make([]model.User, 0)
+	for _, v := range submissionReviews {
+		check, err := reviewRepo.HasBeenReviewed(v.ID, currentUser.ID, assignmentID)
+		if err != nil {
+			log.Println(err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		if !check {
+			filteredSubmissionReviews = append(filteredSubmissionReviews, v)
+		}
+	}
 
 	//course repo
 	courseRepo := &model.CourseRepository{}
@@ -130,7 +147,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["HasAutoValidation"] = hasAutoValidation
 	v.Vars["IsDeadlineOver"] = isDeadlineOver
 	v.Vars["CourseID"] = course.ID
-	v.Vars["Reviews"] = submissionReviews
+	v.Vars["Reviews"] = filteredSubmissionReviews
 	v.Vars["HasBeenValidated"] = hasBeenValidated
 
 	v.Render(w)
