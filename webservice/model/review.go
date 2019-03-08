@@ -297,3 +297,51 @@ func (repo *ReviewRepository) HasBeenReviewed(target, reviewer, assignment int) 
 
 	return false, nil
 }
+
+// GetReviewForUser returns answered reviews for a single user at a given assignment
+func (repo *ReviewRepository) GetReviewForUser(user, assignment int) ([]FullReview, error) {
+	result := make([]FullReview, 0)
+
+	query := "SELECT DISTINCT user_reviewer FROM user_reviews WHERE user_target=? AND assignment_id=?"
+	rows, err := db.GetDB().Query(query, user, assignment)
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var tempID int
+
+		err = rows.Scan(&tempID)
+		if err != nil {
+			return result, err
+		}
+
+		query = "SELECT type, name, answer FROM user_reviews WHERE user_target=? AND assignment_id=? AND user_reviewer=?"
+		nextRows, err := db.GetDB().Query(query, user,assignment, tempID)
+		if err != nil {
+			return result, err
+		}
+
+		fullReview := FullReview{
+			Reviewer: tempID,
+			Answers: make([]ReviewAnswer, 0),
+		}
+
+		for nextRows.Next() {
+			var reviewAnswer ReviewAnswer
+
+			err = nextRows.Scan(&reviewAnswer.Type, &reviewAnswer.Name, &reviewAnswer.Answer)
+			if err != nil {
+				return result, err
+			}
+
+			fullReview.Answers = append(fullReview.Answers, reviewAnswer)
+		}
+
+		result = append(result, fullReview)
+	}
+
+	return result, err
+}
