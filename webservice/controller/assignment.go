@@ -126,6 +126,13 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	myReviews, err := reviewRepo.GetReviewForUser(currentUser.ID, assignment.ID)
+	if err != nil {
+		log.Println("GetReviewFromUser", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	var isDeadlineOver = assignment.Deadline.Before(time.Now().UTC().Add(time.Hour))
 
 	// TODO : make this dynamic
@@ -146,6 +153,9 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["CourseID"] = course.ID
 	v.Vars["Reviews"] = filteredSubmissionReviews
 	v.Vars["HasBeenValidated"] = hasBeenValidated
+	v.Vars["MyReviews"] = myReviews
+
+	fmt.Println(myReviews)
 
 	v.Render(w)
 }
