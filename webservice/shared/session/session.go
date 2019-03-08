@@ -124,11 +124,11 @@ func SaveMessageToSession(msg string, w http.ResponseWriter, r *http.Request) bo
 	return true
 }
 
-func GetMessageFromSession(r *http.Request)string{
+func GetAndDeleteMessageFromSession(w http.ResponseWriter, r *http.Request)string{
 	session, err := Instance(r) // get session
 
 	if err != nil {
-		log.Printf("ocould not get instance of session: %v", err)
+		log.Printf("Could not get instance of session: %v", err)
 		return ""
 	}
 
@@ -138,5 +138,16 @@ func GetMessageFromSession(r *http.Request)string{
 	if !ok{
 		return ""
 	}
+
+	session.Values["Message"] = ""
+
+	err = session.Save(r, w) //save session changes
+	if err != nil {
+		//todo log this event
+		log.Printf("Could not save session: %v", err)
+		//redirect somewhere
+		return ""
+	}
+
 	return msg
 }

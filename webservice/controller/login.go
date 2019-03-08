@@ -63,11 +63,9 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 		v.Vars["Action"] = "/login?courseid=" + hash
 	}
 
-	v.Vars["Message"] = session.GetMessageFromSession(r)
+	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w,r)
 
 	v.Render(w)
-
-	session.SaveMessageToSession("", w, r) //clear message
 }
 
 //LoginPOST validates login requests
