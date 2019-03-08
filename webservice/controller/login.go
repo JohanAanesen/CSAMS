@@ -63,9 +63,11 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 		v.Vars["Action"] = "/login?courseid=" + hash
 	}
 
-	v.Vars["Message"] = r.FormValue("msg")
+	v.Vars["Message"] = session.GetMessageFromSession(r)
 
 	v.Render(w)
+
+	session.SaveMessageToSession("", w, r) //clear message
 }
 
 //LoginPOST validates login requests
@@ -109,7 +111,8 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 		//redirect to errorhandler //todo return message to user and let them login again
-		http.Redirect(w, r, "/?msg=Wrong%20Credentials", http.StatusFound)
+		session.SaveMessageToSession("Wrong credentials!", w, r)
+		LoginGET(w,r) //try again
 		//todo log this event
 		log.Println("LoginPOST error")
 		return

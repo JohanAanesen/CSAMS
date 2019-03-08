@@ -100,3 +100,43 @@ func SaveUserToSession(user model.User, w http.ResponseWriter, r *http.Request) 
 
 	return true
 }
+
+
+func SaveMessageToSession(msg string, w http.ResponseWriter, r *http.Request) bool {
+	session, err := Instance(r) //get session
+
+	if err != nil {
+		log.Printf("Could not get instance of session: %v", err)
+		return false
+	}
+
+	session.Values["Message"] = msg
+
+	err = session.Save(r, w) //save session changes
+
+	if err != nil {
+		//todo log this event
+		log.Printf("Could not save session: %v", err)
+		//redirect somewhere
+		return false
+	}
+
+	return true
+}
+
+func GetMessageFromSession(r *http.Request)string{
+	session, err := Instance(r) // get session
+
+	if err != nil {
+		log.Printf("ocould not get instance of session: %v", err)
+		return ""
+	}
+
+	val := session.Values["Message"]
+	var msg string
+	msg, ok := val.(string)
+	if !ok{
+		return ""
+	}
+	return msg
+}
