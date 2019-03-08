@@ -108,6 +108,10 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//reviewRepo := &model.ReviewRepository{}
+
+	// TODO (Svein): Remove reviews for the once that the user already has reviewed
+
 	var isDeadlineOver = assignment.Deadline.Before(time.Now().UTC().Add(time.Hour))
 
 	// TODO : make this dynamic
@@ -453,11 +457,24 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 
 	currentUser := session.GetUserFromSession(r)
 
+
 	// Get relevant assignment
 	assignment, err := assignmentRepo.GetSingle(assignmentID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	hasBeenReviewed, err := reviewRepo.HasBeenReviewed(user.ID, currentUser.ID, assignment.ID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	if hasBeenReviewed {
+		IndexGET(w, r)
 		return
 	}
 
@@ -579,6 +596,20 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	reviewRepo := model.ReviewRepository{}
+
+	hasBeenReviewed, err := reviewRepo.HasBeenReviewed(targetID, currentUser.ID, assignmentId)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	if hasBeenReviewed {
+		IndexGET(w, r)
+		return
+	}
+
 	err = r.ParseForm()
 	if err != nil {
 		log.Println(err)
@@ -613,7 +644,6 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		fullReview.Answers = append(fullReview.Answers, answer)
 	}
 
-	reviewRepo := model.ReviewRepository{}
 	err = reviewRepo.InsertReviewAnswers(fullReview)
 	if err != nil {
 		log.Println("insert review answers", err)
