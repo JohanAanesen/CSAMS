@@ -610,8 +610,6 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		fullReview.Answers = append(fullReview.Answers, answer)
 	}
 
-	fmt.Println(fullReview)
-
 	reviewRepo := model.ReviewRepository{}
 	err = reviewRepo.InsertReviewAnswers(fullReview)
 	if err != nil {
@@ -620,6 +618,6 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
-	AssignmentUserSubmissionGET(w, r)
+	// TODO (Svein): Want to send back to /assignment/{id}. HOW TO?
+	IndexGET(w, r)
 }
