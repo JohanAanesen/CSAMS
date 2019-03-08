@@ -220,7 +220,7 @@
                 let len = parseInt({{ .SubmissionCount }}, 10);
 
                 // If one or more users has answered this subForm, Ask user and if it sttill should be changed, if no, change back to original value
-                if (len > 0 && !confirm("WARNING! " + len + " students has already answered this submission form. Do you still want to change it?")) {
+                if (len > 0 && !confirm("WARNING! " + len + " students has already answered this submission form. Do you still want to change it? (This will delete former submissions)")) {
                     selectedSubmissionID.value = formerID;
                 }
             }

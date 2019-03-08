@@ -113,6 +113,22 @@ func (repo *SubmissionRepository) GetAll() ([]Submission, error) {
 	return result, nil
 }
 
+// DeleteSubmissionsToAssignment deletes specific submissions to assignmentID and SubmissionID
+func (repo *SubmissionRepository) DeleteSubmissionsToAssignment(assID int, subID int64) error {
+	// Create query-string
+	query := "DELETE  FROM user_submissions WHERE assignment_id = ? AND submission_id = ?"
+	// Perform query
+	rows, err := db.GetDB().Query(query, assID, subID)
+	// Check for error
+	if err != nil {
+		return err
+	}
+	// Close connection
+	defer rows.Close()
+
+	return nil
+}
+
 // GetAll returns all submission in the database from specific assignment and submission form
 func (repo *SubmissionRepository) GetSubmissionsCountFromAssignment(assID int, subID int64) (int, error) {
 	// Declare return slice

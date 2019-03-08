@@ -210,6 +210,8 @@ this was mostly because I use ca. 7h all together to get the project starting.
 
 ### Friday 08/03/19
 * Added confirm to user if admin wants to delete submission form or not.
+* Updates submission_id in assignment even if it's nil now (That's good)
+* Former submissions will now be deleted if submission form is changed
 
 
 

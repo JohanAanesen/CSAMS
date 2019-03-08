@@ -419,6 +419,38 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		Valid: val != 0,
 	}
 
+	// Delete former submissions if admin changes submission form TODO brede
+	assignmentRepo := model.AssignmentRepository{}
+	submissionRepo := &model.SubmissionRepository{}
+	formerAssignment, err := assignmentRepo.GetSingle(id)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	var formerID int64
+	var newID int64
+	formerID = 0
+	newID = 0
+
+	if formerAssignment.SubmissionID.Valid {
+		formerID = formerAssignment.SubmissionID.Int64
+	}
+	if submissionID.Valid {
+		newID = submissionID.Int64
+	}
+
+	// If submission id has changed, and it wasn't 'None' before, delete former submissions
+	if formerID != newID && formerID != 0 {
+		err := submissionRepo.DeleteSubmissionsToAssignment(formerAssignment.ID, formerAssignment.SubmissionID.Int64)
+		if err != nil {
+			log.Println(err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+	}
+
 	val = 0
 
 	if r.FormValue("review_id") != "" {
@@ -446,8 +478,6 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		Int64: int64(val),
 		Valid: val != 0,
 	}
-
-	assignmentRepo := model.AssignmentRepository{}
 
 	assignment := model.Assignment{
 		ID:           id,
