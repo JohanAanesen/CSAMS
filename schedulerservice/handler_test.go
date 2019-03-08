@@ -14,7 +14,7 @@ import (
 
 var dummyPayload = model.Payload{
 	Authentication: os.Getenv("PEER_AUTH"),
-	ScheduledTime:  time.Now().Add(time.Hour * 24 * 31),
+	ScheduledTime:  time.Now().Add(time.Hour * 24 * 31), // TODO time
 	Task:           "peer",
 	SubmissionID:   1,
 	AssignmentID:   1,
@@ -35,7 +35,7 @@ var dummyUpdate = struct {
 	Authentication: os.Getenv("PEER_AUTH"),
 	SubmissionID:   1,
 	AssignmentID:   1,
-	ScheduledTime:  time.Now().Add(time.Hour * 2351467),
+	ScheduledTime:  time.Now().Add(time.Hour * 2351467), // TODO time
 }
 
 var dummyDelete = struct {

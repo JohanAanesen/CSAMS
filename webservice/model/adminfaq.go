@@ -46,7 +46,7 @@ func GetDateAndQuestionsFAQ() Faq {
 // UpdateFAQ updates the questions and date in FAQ
 func UpdateFAQ(newFaq string) bool {
 
-	// Get current Norwegian time
+	// Get current Norwegian time TODO time
 	date := time.Now().UTC().Add(time.Hour)
 
 	// Update to database

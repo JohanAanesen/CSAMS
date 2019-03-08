@@ -50,6 +50,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, assignment := range assignments { //go through all it's assignments again
+			// TODO time
 			if time.Now().After(assignment.Publish) && time.Now().Before(assignment.Deadline) { //save all 'active' assignments
 				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: assignment, CourseCode: course.Code})
 			}

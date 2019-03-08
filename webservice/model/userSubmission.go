@@ -114,12 +114,15 @@ func UploadUserSubmission(userSub UserSubmission) error {
 // UpdateUserSubmission updates user submission to the db
 func UpdateUserSubmission(userSub UserSubmission) error {
 
+	// Norwegian time TODO time
+	now := time.Now().UTC().Add(time.Hour)
+
 	// Go through all answers
 	for _, answer := range userSub.Answers {
 
 		// Sql query
-		query := "UPDATE `user_submissions` SET `answer` = ? WHERE `id` = ?"
-		_, err := db.GetDB().Exec(query, answer.Value, answer.ID)
+		query := "UPDATE `user_submissions` SET `answer` = ?, `submitted` = ? WHERE `id` = ?"
+		_, err := db.GetDB().Exec(query, answer.Value, now, answer.ID)
 
 		// Check if there was an error
 		if err != nil {

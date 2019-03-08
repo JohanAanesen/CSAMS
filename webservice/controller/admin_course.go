@@ -54,7 +54,7 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	user := session.GetUserFromSession(r)
 
 	course := model.Course{
-		Hash:        xid.NewWithTime(time.Now()).String(),
+		Hash:        xid.NewWithTime(time.Now()).String(), // TODO time
 		Code:        r.FormValue("code"),
 		Name:        r.FormValue("name"),
 		Description: r.FormValue("description"),
