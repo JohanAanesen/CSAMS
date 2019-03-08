@@ -283,3 +283,17 @@ func (repo *ReviewRepository) GetAnswersFromReview(target, reviewer, assignment 
 
 	return result, err
 }
+
+// HasBeenReviewed checks if a user
+func (repo *ReviewRepository) HasBeenReviewed(target, reviewer, assignment int) (bool, error) {
+	temp, err := repo.GetAnswersFromReview(target, reviewer, assignment)
+	if err != nil {
+		return false, err
+	}
+
+	if len(temp) > 0 {
+		return true, nil
+	}
+
+	return false, nil
+}
