@@ -41,7 +41,7 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 		v.Vars["Action"] = "/register?courseid=" + hash
 	}
 
-	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w,r)
+	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
 
 	v.Render(w)
 
@@ -69,7 +69,8 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 
 	//check that nothing is empty and password match passwordConfirm
 	if name == "" || email == "" || password == "" || password != r.FormValue("passwordConfirm") { //login credentials cannot be empty
-		http.Redirect(w, r, "/", http.StatusBadRequest) //400 bad request
+		session.SaveMessageToSession("Passwords don't match!", w, r)
+		RegisterGET(w, r)
 		return
 	}
 
