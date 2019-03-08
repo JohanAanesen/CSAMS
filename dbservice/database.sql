@@ -195,6 +195,13 @@ CREATE TABLE `reviews`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
+--
+-- Dumping data for table `reviews`
+--
+
+INSERT INTO `reviews` (`id`, `form_id`) VALUES
+(1, 2);
+
 -- --------------------------------------------------------
 
 --
@@ -292,17 +299,28 @@ VALUES (1, 'Test User', 'hei@gmail.com', 1, 'test@yahoo.com',
 -- --------------------------------------------------------
 
 --
--- Tabellstruktur for tabell `user_reviews`
+-- Table structure for table `user_reviews`
 --
 
-CREATE TABLE `user_reviews`
-(
-  `id`        int(11)  NOT NULL,
-  `user_id`   int(11)  NOT NULL,
-  `review_id` int(11)  NOT NULL,
-  `data`      longtext NOT NULL
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
+CREATE TABLE `user_reviews` (
+  `id` int(11) NOT NULL,
+  `user_reviewer` int(11) NOT NULL,
+  `user_target` int(11) NOT NULL,
+  `review_id` int(11) NOT NULL,
+  `assignment_id` int(11) NOT NULL,
+  `type` varchar(64) NOT NULL,
+  `name` varchar(64) NOT NULL,
+  `answer` text NOT NULL,
+  `submitted` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `user_reviews`
+--
+
+INSERT INTO `user_reviews` (`id`, `user_reviewer`, `user_target`, `review_id`, `assignment_id`, `type`, `name`, `answer`, `submitted`) VALUES
+(3, 3, 4, 1, 1, 'text', 'test_text_0', 'good', '2019-03-08 01:08:43'),
+(4, 3, 4, 1, 1, 'text', 'test_text_1', 'bad', '2019-03-08 01:08:43');
 
 -- --------------------------------------------------------
 
@@ -441,7 +459,9 @@ ALTER TABLE `users`
 ALTER TABLE `user_reviews`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_reviews_reviews_id_fk` (`review_id`),
-  ADD KEY `user_reviews_users_id_fk` (`user_id`);
+  ADD KEY `user_reviews_assignment_id_fk` (`assignment_id`),
+  ADD KEY `user_reviews_user_reviewer_fk` (`user_reviewer`),
+  ADD KEY `user_reviews_user_target_fk` (`user_target`);
 
 --
 -- Indexes for table `user_submissions`
@@ -602,11 +622,13 @@ ALTER TABLE `usercourse`
 
 
 --
--- Begrensninger for tabell `user_reviews`
+-- Constraints for table `user_reviews`
 --
 ALTER TABLE `user_reviews`
+  ADD CONSTRAINT `user_reviews_assignment_id_fk` FOREIGN KEY (`assignment_id`) REFERENCES `assignments` (`id`),
   ADD CONSTRAINT `user_reviews_reviews_id_fk` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`),
-  ADD CONSTRAINT `user_reviews_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `user_reviews_user_reviewer_fk` FOREIGN KEY (`user_reviewer`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `user_reviews_user_target_fk` FOREIGN KEY (`user_target`) REFERENCES `users` (`id`);
 
 --
 -- Begrensninger for tabell `user_submissions`
