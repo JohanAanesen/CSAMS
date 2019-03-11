@@ -11,12 +11,15 @@ type Review struct {
 	Form   Form `json:"form"`
 }
 
+// ReviewAnswer holds the data for a single review answer
 type ReviewAnswer struct {
 	Type string
 	Name string
+	Label string
 	Answer string
 }
 
+// Full review holds specific data about an review for displaying it
 type FullReview struct {
 	Reviewer int // User that is doing the review
 	Target int // User that is getting the review
@@ -214,7 +217,7 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 
 // InsertReviewAnswers inserts answers from a review into the database
 func (repo *ReviewRepository) InsertReviewAnswers(fr FullReview) error {
-	query := "INSERT user_reviews (user_reviewer, user_target, review_id, assignment_id, type, name, answer) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	query := "INSERT user_reviews (user_reviewer, user_target, review_id, assignment_id, type, name, label, answer) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 
 	tx, err := db.GetDB().Begin()
 	if err != nil {
@@ -222,7 +225,7 @@ func (repo *ReviewRepository) InsertReviewAnswers(fr FullReview) error {
 	}
 
 	for _, answer := range fr.Answers {
-		_, err := db.GetDB().Exec(query, fr.Reviewer, fr.Target, fr.ReviewID, fr.AssignmentID, answer.Type, answer.Name, answer.Answer)
+		_, err := db.GetDB().Exec(query, fr.Reviewer, fr.Target, fr.ReviewID, fr.AssignmentID, answer.Type, answer.Name, answer.Label, answer.Answer)
 		if err != nil {
 			tx.Rollback()
 			return err
@@ -264,7 +267,7 @@ func (repo *ReviewRepository) GetUserWhoHasDoneReview(userId, assignmentId int) 
 // GetAnswersFromReview returns answers from an review based on user id (target, reviewer) and assignment id
 func (repo *ReviewRepository) GetAnswersFromReview(target, reviewer, assignment int) ([]ReviewAnswer, error) {
 	result := make([]ReviewAnswer, 0)
-	query := "SELECT type, name, answer FROM user_reviews WHERE user_target=? AND user_reviewer=? AND assignment_id=?"
+	query := "SELECT type, name, label, answer FROM user_reviews WHERE user_target=? AND user_reviewer=? AND assignment_id=?"
 	rows, err := db.GetDB().Query(query, target, reviewer, assignment)
 	if err != nil {
 		return result, err
@@ -273,7 +276,7 @@ func (repo *ReviewRepository) GetAnswersFromReview(target, reviewer, assignment 
 	for rows.Next() {
 		var temp ReviewAnswer
 
-		err = rows.Scan(&temp.Type, &temp.Name, &temp.Answer)
+		err = rows.Scan(&temp.Type, &temp.Name, &temp.Label, &temp.Answer)
 		if err != nil {
 			return result, err
 		}
@@ -318,7 +321,7 @@ func (repo *ReviewRepository) GetReviewForUser(user, assignment int) ([]FullRevi
 			return result, err
 		}
 
-		query = "SELECT type, name, answer FROM user_reviews WHERE user_target=? AND assignment_id=? AND user_reviewer=?"
+		query = "SELECT type, name, label, answer FROM user_reviews WHERE user_target=? AND assignment_id=? AND user_reviewer=?"
 		nextRows, err := db.GetDB().Query(query, user,assignment, tempID)
 		if err != nil {
 			return result, err
@@ -332,7 +335,7 @@ func (repo *ReviewRepository) GetReviewForUser(user, assignment int) ([]FullRevi
 		for nextRows.Next() {
 			var reviewAnswer ReviewAnswer
 
-			err = nextRows.Scan(&reviewAnswer.Type, &reviewAnswer.Name, &reviewAnswer.Answer)
+			err = nextRows.Scan(&reviewAnswer.Type, &reviewAnswer.Name, &reviewAnswer.Label, &reviewAnswer.Answer)
 			if err != nil {
 				return result, err
 			}

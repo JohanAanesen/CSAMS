@@ -155,8 +155,6 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["HasBeenValidated"] = hasBeenValidated
 	v.Vars["MyReviews"] = myReviews
 
-	fmt.Println(myReviews)
-
 	v.Render(w)
 }
 
@@ -481,7 +479,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 
 	currentUser := session.GetUserFromSession(r)
 
-
 	// Get relevant assignment
 	assignment, err := assignmentRepo.GetSingle(assignmentID)
 	if err != nil {
@@ -662,6 +659,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		answer := model.ReviewAnswer{
 			Type:   field.Type,
 			Name:   field.Name,
+			Label:  field.Label,
 			Answer: p.Sanitize(r.FormValue(field.Name)),
 		}
 

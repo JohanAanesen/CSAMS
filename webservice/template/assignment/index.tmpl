@@ -73,7 +73,7 @@
         {{if .HasAutoValidation}}<span class="badge badge-warning">Auto Validated</span>{{end}}
 
         <p class="lead"><strong>Deadline:</strong> {{PRETTYTIME .Assignment.Deadline}}</p>
-        <div class="card">
+        <div class="card mb-5">
             <div class="card-header">
                 <ul class="nav nav-pills card-header-tabs pull-right" id="myTab" role="tablist" style="float:left;">
                     <li class="nav-item">
@@ -155,12 +155,16 @@
                     </div>
 
                     <div class="tab-pane fade" id="viewReview" role="tabpanel">
+                        {{$i := 1}}
                         {{range .MyReviews}}
                             <div class="card mb-3">
+                                <div class="card-header bg-secondary">
+                                    <h5 class="card-title mb-0">Review {{$i}}</h5>{{$i = INCREMENT $i}}
+                                </div>
                                 <div class="card-body">
                                     {{range .Answers}}
                                         <div class="form-group">
-                                            <label for=""><!-- TODO (Svein): Get label --></label>
+                                            <label for="">{{.Label}}</label>
                                             {{if eq .Type "text"}}
                                                 <input type="text" class="form-control" value="{{.Answer}}" disabled>
                                             {{end}}
