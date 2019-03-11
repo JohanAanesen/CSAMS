@@ -6,7 +6,7 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+01:00";
--- Norwegian time zone! --
+-- Norwegian time zone!  TODO time --
 
 --
 -- Database: `cs53`
@@ -31,8 +31,8 @@ CREATE TABLE `adminfaq`
 --
 
 INSERT INTO `adminfaq` (`id`, `timestamp`, `questions`)
-VALUES (1, '1997-02-13 13:37:00',
-        'Q: How do I make a course + link?\r\n--------------------------------\r\n**A:** Dashboard -> Courses -> new. And create the course there\r\n\r\nQ: How do I make an assignment?\r\n--------------------------------\r\n**A:** Dashboard -> Assignments-> new. And create the assignment there\r\n\r\nQ: How do I invite students to the course?\r\n--------------------------------\r\n**A:** Create a link for the course and email the students the link\r\n\r\nQ: How do I import database?\r\n--------------------------------\r\n**A:** Start xampp and go to import in phpmyadmin\r\n\r\nQ: How do I export database?\r\n--------------------------------\r\n**A:** Start xampp and go to export in phpmyadmin\r\n\r\nQ: How do I sign up?\r\n--------------------------------\r\n**A:** You go to `/register` and register a user there\n\n![Reddit](https://external-preview.redd.it/lzcL5WbUuBr7pI9zIM9ZbUSrETZR1UNb-g6C5DehYss.jpg?width=960&crop=smart&auto=webp&s=4b483a024ac9103bfe6df2e98599043bbed29146)');
+VALUES (1, '2019-03-06 15:53:00',
+        'Q: How do I make a course?\n--------------------------------\n**A:** Dashboard -> Courses -> new. And create the course there\n\nQ: How do I invite students to course?\n--------------------------------\n**A:** You go to [admin/course](/admin/course) or [admin/](/admin) and on the course card, click the copy button to get the `join course through link` and send that to all students in preferred way (ex: email)\n\nQ: How do I make an assignment?\n--------------------------------\n**A:** Dashboard -> Assignments-> new. And create the assignment there');
 
 -- --------------------------------------------------------
 
@@ -360,16 +360,16 @@ CREATE TABLE `schedule_tasks`
 -- Dataark for tabell `user_submissions`
 --
 
-INSERT INTO `user_submissions` (`id`, `user_id`, `assignment_id`, `submission_id`, `type`, `answer`)
-VALUES (1, 4, 1, 1, 'text', 'JohanKlausen'),
-       (2, 4, 1, 1, 'url', 'https://github.com/JohanKlausen/yeet'),
-       (3, 4, 1, 1, 'textarea', 'I did good!'),
-       (4, 5, 1, 1, 'text', 'StianFjerdingstad'),
-       (5, 5, 1, 1, 'url', 'https://github.com/StianFjerdingstad/Sudoku'),
-       (6, 5, 1, 1, 'textarea', 'I did sexy good!'),
-       (7, 10, 1, 1, 'text', 'KlausAanesen'),
-       (8, 10, 1, 1, 'url', 'https://github.com/KlausAanesen/1337yeet420'),
-       (9, 10, 1, 1, 'textarea', 'I did bad :(');
+INSERT INTO `user_submissions` (`id`, `user_id`, `assignment_id`, `submission_id`, `type`, `answer`, `submitted`)
+VALUES (1, 4, 1, 1, 'text', 'JohanKlausen', CURRENT_TIMESTAMP),
+       (2, 4, 1, 1, 'url', 'https://github.com/JohanKlausen/yeet', CURRENT_TIMESTAMP),
+       (3, 4, 1, 1, 'textarea', 'I did good!', CURRENT_TIMESTAMP),
+       (4, 5, 1, 1, 'text', 'StianFjerdingstad', '2019-03-01 23:59:59'),
+       (5, 5, 1, 1, 'url', 'https://github.com/StianFjerdingstad/Sudoku', '2019-03-01 23:59:59'),
+       (6, 5, 1, 1, 'textarea', 'I did sexy good!', '2019-03-01 23:59:59'),
+       (7, 10, 1, 1, 'text', 'KlausAanesen', '2019-02-28 15:23:23'),
+       (8, 10, 1, 1, 'url', 'https://github.com/KlausAanesen/1337yeet420', '2019-02-28 15:23:23'),
+       (9, 10, 1, 1, 'textarea', 'I did bad :(', '2019-02-28 15:23:23');
 
 INSERT INTO `peer_reviews` (`id`, `submission_id`, `assignment_id`, `user_id`, `review_user_id`)
 VALUES (1, 1, 1, 3, 4),

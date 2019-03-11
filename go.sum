@@ -5,6 +5,8 @@ github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webse
 github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice v0.0.0-20190227122654-f3748a4e9b21/go.mod h1:HjVQHJXkRtgV8V1C5L9mKi687OLj+z+paXYICjPQW0g=
 github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice v0.0.0-20190228140739-9fb766c37240 h1:rcicsOVqXvNPpHXuT7ntqYbmLLcHD+1BV/QgSVpfaRA=
 github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice v0.0.0-20190228140739-9fb766c37240/go.mod h1:HjVQHJXkRtgV8V1C5L9mKi687OLj+z+paXYICjPQW0g=
+github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice v0.0.0-20190307165410-713e45feac92 h1:Hdfzv91fo1S5634DnMP/pLLDmJXlBez52PQfR62QESU=
+github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice v0.0.0-20190307165410-713e45feac92/go.mod h1:AfKX8c9lP6ehq2SSJxMNQzsxxkJHHtlPOaXtxd+wYDU=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-sql-driver/mysql v1.4.1 h1:g24URVg0OFbNUTx9qqY1IRZ9D9z3iPyi5zKhQZpNwpA=
 github.com/go-sql-driver/mysql v1.4.1/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=

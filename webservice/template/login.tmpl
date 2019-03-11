@@ -7,7 +7,7 @@
                 <h1 class="display-4 mb-3">Please sign in</h1>
 
 
-                <form action={{ .Action}} class="form-signin" method="POST">
+                <form action="/login{{ .Action}}" class="form-signin" method="POST">
                     <div class="form-group">
                         <label for="inputEmail" class="sr-only">Email address</label>
                         <input type="email" name="email" id="inputEmail" class="form-control"
@@ -23,9 +23,11 @@
                     <button class="btn btn-primary btn-block mb-3" type="submit">Sign in</button>
                 </form>
 
-                <a href="/register">No account? Sign up</a>
+
+                <a href="/register{{ .Action}}">No account? Sign up</a>
             </div>
         </div>
     </div>
 {{end}}
-{{define "foot"}}{{end}}
+{{define "foot"}}
+{{end}}

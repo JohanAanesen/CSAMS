@@ -27,7 +27,7 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 
 	v := view.New(r)
 	v.Name = "admin/faq/index"
-	v.Vars["Updated"] = content.Date.Format("02. January 2006 - 15:04")
+	v.Vars["Updated"] = content
 	v.Vars["Questions"] = template.HTML(questions)
 
 	v.Render(w)
@@ -48,8 +48,7 @@ func AdminFaqEditGET(w http.ResponseWriter, r *http.Request) {
 
 	v := view.New(r)
 	v.Name = "admin/faq/edit"
-	v.Vars["Updated"] = content.Date.Format("02. January 2006 - 15:04")
-	v.Vars["RawContent"] = content.Questions
+	v.Vars["Content"] = content
 
 	v.Render(w)
 }

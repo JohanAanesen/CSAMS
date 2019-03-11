@@ -58,6 +58,7 @@ func (peer PeerTask) Schedule(scheduledTime time.Time) bool {
 		return false
 	}
 
+	// TODO time
 	timeNow := time.Now().In(loc)          //time now
 	Duration := scheduledTime.Sub(timeNow) //subtract now's time from target time to get time until trigger
 

@@ -191,7 +191,27 @@ this was mostly because I use ca. 7h all together to get the project starting.
     * Gets the links to the submissions user is going to review
 
 ## Week Five
+### Monday 04/03/19
+* Had some meetings
+* Started on [Alpha fix functionallity Req](https://trello.com/c/kv8MfMcv) with Svein and Johan
 
+### Tuesday 05/03/19
+* Fixed joined course bug
+
+### Wednesday 06/03/19
+* Course hash is now displayed to Admin
+* It's only one link for joining course now
+* Admin can copy the one join course link
+* Changed name to Full name and made it unchangeable
+* Switched to PRETTYTIME in faq and updated the faq 
+
+## Thursday 07/03/19 
+* **Hafjell**
+
+### Friday 08/03/19
+* Added confirm to user if admin wants to delete submission form or not.
+* Updates submission_id in assignment even if it's nil now (That's good)
+* Former submissions will now be deleted if submission form is changed
 
 
 

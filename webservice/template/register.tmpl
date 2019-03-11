@@ -6,11 +6,12 @@
             <div class="col-6">
                 <h1 class="display-4 mb-3">Sign up</h1>
 
-                <form action={{ .Action }} class="form-register" method="POST">
+                <form action="/register{{ .Action }}" class="form-register" method="POST">
 
                     <div class="form-group">
-                        <label for="inputName">Name</label>
-                        <input type="text" name="name" id="inputName" class="form-control" placeholder="Name" required
+                        <label for="inputName">Full Name</label>
+                        <input type="text" name="name" id="inputName" class="form-control" placeholder="Full Name"
+                               required
                                autofocus>
                     </div>
 
@@ -35,7 +36,7 @@
                     <button class="btn btn-lg btn-primary btn-block mb-3" type="submit">Sign up</button>
                 </form>
 
-                <a href="/login">Already have a user? Sign in</a>
+                <a href="/login{{ .Action }}">Already have a user? Sign in</a>
             </div>
         </div>
     </div>
