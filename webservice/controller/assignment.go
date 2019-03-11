@@ -8,8 +8,6 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/gorilla/mux"
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/shurcooL/github_flavored_markdown"
-	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -73,9 +71,6 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	descriptionMD := []byte(assignment.Description)
-	description := github_flavored_markdown.Markdown(descriptionMD)
 
 	delivered, err := assignmentRepo.HasUserSubmitted(assignmentID, currentUser.ID)
 	if err != nil {
@@ -146,7 +141,6 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "assignment/index"
 
 	v.Vars["Assignment"] = assignment
-	v.Vars["Description"] = template.HTML(description)
 	v.Vars["Delivered"] = delivered
 	v.Vars["HasReview"] = hasReview
 	v.Vars["HasAutoValidation"] = hasAutoValidation

@@ -195,3 +195,52 @@ and it actually triggering the peerservice correctly works.
 * Scheduler will not accept requests with the same submission id as a current timers submission id
 * The peer service and Scheduler service both needs some polishing, but are functional for the alpha
 planned on monday
+
+Friday 1/3
+----------
+* Implemented GET, PUT, DELETE to schedulerservice
+
+Saturday 2/3
+-----------
+* Added tests to schedulerservice
+* Issues with computer, piece of crap 
+* Made edit course functionality
+* Changed course model to courseRepository to access db functionality of model
+
+Sunday 3/3
+----------
+* Created 'see active assignments' functionality for frontpage
+* Fixed course_code to show in the badges on assignments
+* Fixed insert to use transaction in submissionRepo
+* Had to redo shcedulerservice to also use assignmentID because apparently one submission might have several rows of input
+* Made update and delete functions to schedule peer tasks in webservice
+* Setting and updating reviewer count/nr functionality
+* Bug fixes from hell
+
+Monday 4/3
+----------
+* Fixed course create button
+
+Tuesday 5/3
+----------
+* Added XSS Sanitization with the bluemonday package
+    * Login
+    * Register
+    * Assignment submission page
+* Made tabs more clearer and design neater on course page
+* Added css library for Go syntax highlighting from markdown code tags
+
+Wednesday 6/3
+----------
+* Added time submitted and a count of nr of submissions to admin assignment submissions page
+* Fixed width issues with course and assignment boxes
+* Updated design on assignment page
+
+
+Thursday 7/3
+-----------
+* Assignment page frontend finished :)
+* Added 'edit assignment' button to assignment boxes in admin dashboard
+
+Friday 8/3
+-----------

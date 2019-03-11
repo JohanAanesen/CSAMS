@@ -50,8 +50,8 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
+	//w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	//w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
 	v.Name = "login"
@@ -62,6 +62,8 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 	} else {
 		v.Vars["Action"] = "?courseid=" + hash
 	}
+
+	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
 
 	v.Render(w)
 }
@@ -84,6 +86,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 	hash := r.FormValue("courseid")     // courseID from link
 
 	if email == "" || password == "" { //login credentials cannot be empty
+		session.SaveMessageToSession("Credentials cannot be empty!", w, r)
 		LoginGET(w, r)
 		return
 	}
@@ -107,7 +110,8 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 		//redirect to errorhandler //todo return message to user and let them login again
-		ErrorHandler(w, r, http.StatusUnauthorized)
+		session.SaveMessageToSession("Wrong credentials!", w, r)
+		LoginGET(w, r) //try again
 		//todo log this event
 		log.Println("LoginPOST error")
 		return

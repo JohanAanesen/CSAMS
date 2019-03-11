@@ -1,8 +1,6 @@
 {{define "title"}}Courses{{end}}
 {{define "head"}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 {{end}}
 {{define "content"}}
     <h2 class="display-4 mb-3">Courses <a href="/admin/course/create" class="btn btn-success btn-sm px-3">New</a></h2>
@@ -10,9 +8,10 @@
     <hr>
     <div class="row">
         {{ range .Courses }}
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+            <div class="col-xl-4 col-md-6 col-sm-12 mb-3">
                 <div class="card shadow-sm">
                     <div class="card-body">
+                        <h5 class="float-right text-secondary">ID: {{.ID}}</h5>
                         <h2 class="display-4">{{ .Code }}</h2>
                         <h3 class="mb-3">{{ .Name }}</h3>
                         <h6><strong>Hash:</strong> {{ .Hash }}</h6>
