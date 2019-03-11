@@ -225,7 +225,9 @@ _Merged following to master_
 * Also added TODO : time on places that used time, for later refactoring
 ```
 * Starting on `Hardcode in norwegian timezone- alpha` and `Display PRETTYTIME in Norwegian format`
-
+* Prettytime is fixed
+* Go function for norwegian time is done
+* Bug on js function for norwegian time
 
 
 
