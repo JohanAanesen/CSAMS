@@ -1,5 +1,25 @@
 Svein's log
 ============
+## 11/03/2019
+#### Worked on
+Finished of  the alpha work for reviews, displaying, submitting them.
+#### Good
+* Got the pull request out for the rest of the group, early on monday morning
+#### Bad
+#### Decisions
+
+# Week 10 report
+#### Worked on
+* Review features
+* Was gone 3 days for a work interview, lost does days for production
+#### Decisions
+* 
+#### Good
+* 
+#### Bad
+* Lost 3 days of programming due to traveling
+
+
 ## 08/03/2019
 #### Worked on
 * Created a few new view plugins for helping with the review-form
@@ -36,13 +56,13 @@ Svein's log
 
 # Week 9 report
 #### Worked on
-* 
+* Review features
 #### Decisions
 * 
 #### Good
 * 
 #### Bad
-*  
+* 
 
 ## 03/03/2019
 #### Worked on
