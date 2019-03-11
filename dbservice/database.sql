@@ -310,6 +310,7 @@ CREATE TABLE `user_reviews` (
   `assignment_id` int(11) NOT NULL,
   `type` varchar(64) NOT NULL,
   `name` varchar(64) NOT NULL,
+  `label` varchar(64) NOT NULL,
   `answer` text NOT NULL,
   `submitted` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -318,9 +319,9 @@ CREATE TABLE `user_reviews` (
 -- Dumping data for table `user_reviews`
 --
 
-INSERT INTO `user_reviews` (`id`, `user_reviewer`, `user_target`, `review_id`, `assignment_id`, `type`, `name`, `answer`, `submitted`) VALUES
-(3, 3, 4, 1, 1, 'text', 'test_text_0', 'good', '2019-03-08 01:08:43'),
-(4, 3, 4, 1, 1, 'text', 'test_text_1', 'bad', '2019-03-08 01:08:43');
+INSERT INTO `user_reviews` (`id`, `user_reviewer`, `user_target`, `review_id`, `assignment_id`, `type`, `name`, `label`, `answer`, `submitted`) VALUES
+(3, 3, 4, 1, 1, 'text', 'test_text_0', 'A', 'good', '2019-03-08 01:08:43'),
+(4, 3, 4, 1, 1, 'text', 'test_text_1', 'B', 'bad', '2019-03-08 01:08:43');
 
 -- --------------------------------------------------------
 
