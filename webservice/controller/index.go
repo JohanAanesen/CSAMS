@@ -54,7 +54,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-	
+
 
 	// Set values
 	v := view.New(r)
