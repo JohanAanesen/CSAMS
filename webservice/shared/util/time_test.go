@@ -72,3 +72,16 @@ func TestDatetimeLocalToRFC33392(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestGetTimeInNorwegian(t *testing.T) {
+	timeUTC := time.Now().UTC().Add(time.Hour)
+	norwegianTime := util.GetTimeInNorwegian()
+
+	diff := norwegianTime.Sub(timeUTC).Seconds()
+
+	if diff > 0 {
+		t.Error("Timezones is not the same!")
+		t.Fail()
+	}
+
+}
