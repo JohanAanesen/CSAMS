@@ -73,7 +73,7 @@
         {{if .HasAutoValidation}}<span class="badge badge-warning">Auto Validated</span>{{end}}
 
         <p class="lead"><strong>Deadline:</strong> {{PRETTYTIME .Assignment.Deadline}}</p>
-        <div class="card">
+        <div class="card mb-5">
             <div class="card-header">
                 <ul class="nav nav-pills card-header-tabs pull-right" id="myTab" role="tablist" style="float:left;">
                     <li class="nav-item">
@@ -94,6 +94,13 @@
                         <a class="nav-link disabled" id="participant-tab" data-toggle="tab" href="#autoValidation"
                            role="tab"
                            aria-controls="participants" aria-selected="false">Auto Validation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="viewReview-tab" data-toggle="tab"
+                           href="#viewReview" role="tab"
+                           aria-controls="viewReview" aria-selected="false">
+                            View Reviews
+                        </a>
                     </li>
                 </ul>
 
@@ -145,6 +152,28 @@
                     <div class="tab-pane fade" id="autoValidation" role="tabpanel"
                          aria-labelledby="home-tab">
                         <div>:(</div>
+                    </div>
+
+                    <div class="tab-pane fade" id="viewReview" role="tabpanel">
+                        {{$i := 1}}
+                        {{range .MyReviews}}
+                            <div class="card mb-3">
+                                <div class="card-header bg-secondary">
+                                    <h5 class="card-title mb-0">Review {{$i}}</h5>{{$i = INCREMENT $i}}
+                                </div>
+                                <div class="card-body">
+                                    <!-- TODO (Svein): Get the other field types -->
+                                    {{range .Answers}}
+                                        <div class="form-group">
+                                            <label for="">{{.Label}}</label>
+                                            {{if eq .Type "text"}}
+                                                <input type="text" class="form-control" value="{{.Answer}}" disabled>
+                                            {{end}}
+                                        </div>
+                                    {{end}}
+                                </div>
+                            </div>
+                        {{end}}
                     </div>
 
                 </div>

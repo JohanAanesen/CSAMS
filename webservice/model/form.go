@@ -104,11 +104,11 @@ func (repo *FormRepository) Get(id int) (Form, error) {
 	return result, err
 }
 
-// GetFromAssignmentID get form from the assignment id key
-func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) {
+// GetSubmissionFormFromAssignmentID get form from the assignment id key
+func (repo *FormRepository) GetSubmissionFormFromAssignmentID(assignmentID int) (Form, error) {
 
 	// Create query-string
-	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices from fields AS f WHERE f.form_id IN (SELECT s.form_id FROM submissions AS s WHERE id IN (SELECT a.submission_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
+	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM submissions AS s WHERE id IN (SELECT a.submission_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
 
 	// Perform query
 	rows, err := db.GetDB().Query(query, assignmentID)
@@ -154,4 +154,54 @@ func (repo *FormRepository) GetFromAssignmentID(assignmentID int) (Form, error) 
 	// TODO brede use sql.null<type>
 
 	return form, nil
+}
+
+// GetReviewFormFromAssignmentID get review-form from the assignment id key
+func (repo *FormRepository) GetReviewFormFromAssignmentID(assignmentID int) (Form, error) {
+
+	// Create query-string
+	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM reviews AS s WHERE id IN (SELECT a.review_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
+
+	// Perform query
+	rows, err := db.GetDB().Query(query, assignmentID)
+
+	// Declare an empty Form
+	form := Form{}
+
+	// Check for error
+	if err != nil {
+		return form, err
+	}
+
+	for rows.Next() {
+		var formID int
+		var fieldID int
+		var fieldType string
+		var name string
+		var label string
+		var desc string
+		var priority int
+		var weight int
+		var choices string
+
+		// Scan
+		err = rows.Scan(&formID, &fieldID, &fieldType, &name, &label, &desc, &priority, &weight, &choices)
+		// Check for error
+		if err != nil {
+			return form, err
+		}
+
+		form.Fields = append(form.Fields, Field{
+			ID:          formID,
+			Type:        fieldType,
+			Name:        name,
+			Label:       label,
+			Description: desc,
+			Order:       priority,
+			Weight:      weight,
+			Choices:     choices,
+		})
+	}
+
+	return form, err
 }
