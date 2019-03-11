@@ -13,19 +13,19 @@ type Review struct {
 
 // ReviewAnswer holds the data for a single review answer
 type ReviewAnswer struct {
-	Type string
-	Name string
-	Label string
+	Type   string
+	Name   string
+	Label  string
 	Answer string
 }
 
 // Full review holds specific data about an review for displaying it
 type FullReview struct {
-	Reviewer int // User that is doing the review
-	Target int // User that is getting the review
-	ReviewID int
+	Reviewer     int // User that is doing the review
+	Target       int // User that is getting the review
+	ReviewID     int
 	AssignmentID int
-	Answers []ReviewAnswer
+	Answers      []ReviewAnswer
 }
 
 // ReviewRepository struct handles all database action for review-forms
@@ -322,14 +322,14 @@ func (repo *ReviewRepository) GetReviewForUser(user, assignment int) ([]FullRevi
 		}
 
 		query = "SELECT type, name, label, answer FROM user_reviews WHERE user_target=? AND assignment_id=? AND user_reviewer=?"
-		nextRows, err := db.GetDB().Query(query, user,assignment, tempID)
+		nextRows, err := db.GetDB().Query(query, user, assignment, tempID)
 		if err != nil {
 			return result, err
 		}
 
 		fullReview := FullReview{
 			Reviewer: tempID,
-			Answers: make([]ReviewAnswer, 0),
+			Answers:  make([]ReviewAnswer, 0),
 		}
 
 		for nextRows.Next() {

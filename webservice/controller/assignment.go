@@ -489,20 +489,20 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	/*
-	hasBeenReviewed, err := reviewRepo.HasBeenReviewed(user.ID, currentUser.ID, assignment.ID)
-	if err != nil {
-		log.Println(err.Error())
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
+		hasBeenReviewed, err := reviewRepo.HasBeenReviewed(user.ID, currentUser.ID, assignment.ID)
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 	*/
 
 	/*
-	// TODO (Svein): Review if this is needed?
-	if hasBeenReviewed {
-		IndexGET(w, r)
-		return
-	}
+		// TODO (Svein): Review if this is needed?
+		if hasBeenReviewed {
+			IndexGET(w, r)
+			return
+		}
 	*/
 
 	// Give error if user isn't teacher or reviewer for this user
