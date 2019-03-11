@@ -419,7 +419,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		Valid: val != 0,
 	}
 
-	// Delete former submissions if admin changes submission form TODO brede
+	// Delete former submissions if admin changes submission form
 	assignmentRepo := model.AssignmentRepository{}
 	submissionRepo := &model.SubmissionRepository{}
 	formerAssignment, err := assignmentRepo.GetSingle(id)
