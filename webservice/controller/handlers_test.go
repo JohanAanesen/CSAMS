@@ -298,8 +298,6 @@ func TestCourseListHandler(t *testing.T) {
 
 func TestUserHandler(t *testing.T) {
 
-	// TODO : fix this
-
 	req, err := http.NewRequest("GET", "/user", nil)
 	if err != nil {
 		t.Fatal(err.Error())
