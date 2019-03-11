@@ -9,12 +9,17 @@
  *      - checkbox
  *      - radio
  *
- * How to use: */
+ * How to use:
+ *
+ * DEPENDENCIES:
+ *      - Bootstrap CSS, tested only on 4.2.1, should work with all 4.x
+ *      - https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js
+ *
+ * HTML
+ <div id="output"></div>
 
-/*
-<div id="output"></div>
-
-let formBuilder = new FormBuilder({
+ * JS:
+ let formBuilder = new FormBuilder({
     title: 'Form Builder', // Title of the form
     description: 'This is some description', // Description of the form
     request: '/form-builder', // Action on the form
@@ -22,9 +27,8 @@ let formBuilder = new FormBuilder({
     output: document.getElementById('output'), // The output element of the application
     weighted: true, // Boolean: is the form weighted
 });
-*/
 
-/**
+
  * @author Svein Are Danielsen
  * @version 1.0.0
  * @licence GPL-3.0
