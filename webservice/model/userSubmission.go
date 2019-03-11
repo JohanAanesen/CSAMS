@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"time"
 )
 
@@ -114,8 +115,8 @@ func UploadUserSubmission(userSub UserSubmission) error {
 // UpdateUserSubmission updates user submission to the db
 func UpdateUserSubmission(userSub UserSubmission) error {
 
-	// Norwegian time TODO time
-	now := time.Now().UTC().Add(time.Hour)
+	// Norwegian time TODO norwegian-time
+	now := util.GetTimeInNorwegian()
 
 	// Go through all answers
 	for _, answer := range userSub.Answers {

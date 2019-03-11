@@ -11,7 +11,6 @@ import (
 
 func TestDeadlineDue(t *testing.T) {
 
-	// TODO time
 	then := time.Now().UTC().Add(-time.Hour)
 
 	const foo = `{{DEADLINEDUE .}}`
@@ -34,7 +33,6 @@ func TestDeadlineDue(t *testing.T) {
 		t.Fail()
 	}
 
-	// TODO time
 	then = time.Now().UTC().Add(+2 * time.Hour)
 
 	buffer = new(bytes.Buffer)

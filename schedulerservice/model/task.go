@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -52,15 +53,9 @@ func (peer PeerTask) Schedule(scheduledTime time.Time) bool {
 
 	payload := GetPayload(peer.SubmissionID, peer.AssignmentID)
 
-	loc, err := time.LoadLocation("Europe/Oslo")
-	if err != nil {
-		log.Println("Something wrong with time location")
-		return false
-	}
-
-	// TODO time
-	timeNow := time.Now().In(loc)          //time now
-	Duration := scheduledTime.Sub(timeNow) //subtract now's time from target time to get time until trigger
+	// TODO norwegian-time
+	timeNow := util.GetTimeInNorwegian()   // Get norwegian time now
+	Duration := scheduledTime.Sub(timeNow) // Subtract now's time from target time to get time until trigger
 
 	if Duration < 0 { //scheduled time has to be in the future
 		log.Printf("Could not schedule timer for submissionID: %v", peer.SubmissionID)
@@ -109,7 +104,7 @@ func (peer PeerTask) Delete() bool {
 func NewTask(payload Payload) bool {
 	//Make sure a timer does not exist for this submission
 	pay2 := GetPayload(payload.SubmissionID, payload.AssignmentID)
-	if pay2.ID != 0{
+	if pay2.ID != 0 {
 		log.Println("Payload with these id's already exists.")
 		return false
 	}

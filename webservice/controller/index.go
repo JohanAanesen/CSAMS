@@ -3,10 +3,10 @@ package controller
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"log"
 	"net/http"
-	"time"
 )
 
 // TODO : maybe remove/refactor global variable later :/
@@ -49,9 +49,10 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// TODO norwegian-time
+		timeNow := util.GetTimeInNorwegian()
 		for _, assignment := range assignments { //go through all it's assignments again
-			// TODO time
-			if time.Now().After(assignment.Publish) && time.Now().Before(assignment.Deadline) { //save all 'active' assignments
+			if timeNow.After(assignment.Publish) && timeNow.Before(assignment.Deadline) { //save all 'active' assignments
 				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: assignment, CourseCode: course.Code})
 			}
 		}

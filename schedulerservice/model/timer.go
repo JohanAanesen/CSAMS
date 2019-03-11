@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"log"
 	"time"
 )
@@ -30,8 +31,8 @@ func UpdateTimer(newTime time.Time, payload Payload) bool {
 
 	StopTimer(payload.ID)
 
-	timeNow := time.Now()            //time now  TODO time
-	Duration := newTime.Sub(timeNow) //subtract now's time from target time to get time until trigger
+	timeNow := util.GetTimeInNorwegian() // Get Norwegian time now  TODO norwegian-time
+	Duration := newTime.Sub(timeNow)     // subtract now's time from target time to get time until trigger
 
 	if Duration < 0 { //scheduled time has to be in the future
 		return false
@@ -65,7 +66,7 @@ func InitializeTimers() {
 	payloads := GetPayloads()
 
 	for _, payload := range payloads {
-		if payload.ScheduledTime.Sub(time.Now()) < 0 { //trigger tasks that has dinged when service was down  TODO time
+		if payload.ScheduledTime.Sub(util.GetTimeInNorwegian()) < 0 { // Trigger tasks that has dinged when service was down  TODO norwegian-time
 			task, err := payload.GetPeerTask()
 			if err != nil {
 				log.Printf("asdla") //todo

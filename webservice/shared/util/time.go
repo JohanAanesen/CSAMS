@@ -55,3 +55,8 @@ func GoToHTMLDatetimeLocal(t time.Time) string {
 
 	return fmt.Sprintf("%s-%s-%sT%s:%s", year, month, day, hour, minute)
 }
+
+// GetTimeInNorwegian returns the time in Norwegian time
+func GetTimeInNorwegian() time.Time {
+	return time.Now().UTC().Add(time.Hour)
+}

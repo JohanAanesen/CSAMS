@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"log"
 	"time"
 )
@@ -46,8 +47,8 @@ func GetDateAndQuestionsFAQ() Faq {
 // UpdateFAQ updates the questions and date in FAQ
 func UpdateFAQ(newFaq string) bool {
 
-	// Get current Norwegian time TODO time
-	date := time.Now().UTC().Add(time.Hour)
+	// Get current Norwegian time TODO norwegian-time
+	date := util.GetTimeInNorwegian()
 
 	// Update to database
 	rows, err := db.GetDB().Query("UPDATE `adminfaq` SET `timestamp` = ?, `questions` = ? WHERE `id` = 1", date, newFaq)

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -14,7 +15,7 @@ import (
 
 var dummyPayload = model.Payload{
 	Authentication: os.Getenv("PEER_AUTH"),
-	ScheduledTime:  time.Now().Add(time.Hour * 24 * 31), // TODO time
+	ScheduledTime:  util.GetTimeInNorwegian().Add(time.Hour * 24 * 31), // TODO norwegian-time
 	Task:           "peer",
 	SubmissionID:   1,
 	AssignmentID:   1,
@@ -35,7 +36,7 @@ var dummyUpdate = struct {
 	Authentication: os.Getenv("PEER_AUTH"),
 	SubmissionID:   1,
 	AssignmentID:   1,
-	ScheduledTime:  time.Now().Add(time.Hour * 2351467), // TODO time
+	ScheduledTime:  util.GetTimeInNorwegian().Add(time.Hour * 2351467), // TODO norwegian-time
 }
 
 var dummyDelete = struct {

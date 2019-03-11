@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/gorilla/mux"
 	"github.com/microcosm-cc/bluemonday"
@@ -12,7 +13,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 // Combined holds answer and field
@@ -133,8 +133,8 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO time
-	var isDeadlineOver = assignment.Deadline.Before(time.Now().UTC().Add(time.Hour))
+	// TODO norwegian-time
+	var isDeadlineOver = assignment.Deadline.Before(util.GetTimeInNorwegian())
 
 	// TODO : make this dynamic
 	var hasBeenValidated = true
@@ -350,8 +350,8 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if the deadline is reached TODO time
-	var isDeadlineOver = assignment.Deadline.Before(time.Now().UTC().Add(time.Hour))
+	// Check if the deadline is reached TODO norwegian-time
+	var isDeadlineOver = assignment.Deadline.Before(util.GetTimeInNorwegian())
 	if isDeadlineOver {
 		log.Println("Error: Deadline is reached! (assignment.go)")
 		ErrorHandler(w, r, http.StatusBadRequest)
