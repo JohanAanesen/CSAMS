@@ -300,14 +300,15 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 
 	// Set values
 	v := view.New(r)
+	v.Name = "assignment/upload"
+
 	v.Vars["Course"] = course
 	v.Vars["Assignment"] = assignment
 	v.Vars["Fields"] = form.Fields
 	v.Vars["Delivered"] = len(answers)
 	v.Vars["AnswersAndFields"] = com.Items
-	v.Name = "assignment/upload"
-	v.Render(w)
 
+	v.Render(w)
 }
 
 // AssignmentUploadPOST servers the
@@ -487,17 +488,22 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	/*
 	hasBeenReviewed, err := reviewRepo.HasBeenReviewed(user.ID, currentUser.ID, assignment.ID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
+	*/
 
+	/*
+	// TODO (Svein): Review if this is needed?
 	if hasBeenReviewed {
 		IndexGET(w, r)
 		return
 	}
+	*/
 
 	// Give error if user isn't teacher or reviewer for this user
 	if !currentUser.Teacher && !model.UserIsReviewer(currentUser.ID, assignment.ID, assignment.SubmissionID.Int64, userID) {
@@ -575,6 +581,20 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Fields"] = form.Fields
 
 	v.Vars["AnswersAndFields"] = com.Items
+
+	// TODO (Svein): move this futher up?
+	if session.GetUserFromSession(r).Teacher {
+		reviewRepo := model.ReviewRepository{}
+
+		myReviews, err := reviewRepo.GetReviewForUser(userID, assignmentID)
+		if err != nil {
+			log.Println("GetReviewFromUser", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		v.Vars["MyReviews"] = myReviews
+	}
 
 	if review.FormID != 0 {
 		v.Vars["Review"] = review
