@@ -19,7 +19,7 @@ type ReviewAnswer struct {
 	Answer string
 }
 
-// Full review holds specific data about an review for displaying it
+// FullReview holds specific data about an review for displaying it
 type FullReview struct {
 	Reviewer     int // User that is doing the review
 	Target       int // User that is getting the review
@@ -165,7 +165,7 @@ func (repo *ReviewRepository) Update(form Form) error {
 	return nil
 }
 
-// Get single review form from the database
+// GetSingle review form from the database
 func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 	result := Review{}
 
@@ -241,11 +241,11 @@ func (repo *ReviewRepository) InsertReviewAnswers(fr FullReview) error {
 }
 
 // GetUserWhoHasDoneReview returns user ID for users who have done the peer-review
-func (repo *ReviewRepository) GetUserWhoHasDoneReview(userId, assignmentId int) ([]int, error) {
+func (repo *ReviewRepository) GetUserWhoHasDoneReview(userID, assignmentID int) ([]int, error) {
 	result := make([]int, 0)
 
 	query := "SELECT DISTINCT user_reviewer FROM user_reviews WHERE user_target=? AND assignment_id=?"
-	rows, err := db.GetDB().Query(query, userId, assignmentId)
+	rows, err := db.GetDB().Query(query, userID, assignmentID)
 	if err != nil {
 		return result, err
 	}

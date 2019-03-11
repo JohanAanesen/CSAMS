@@ -466,7 +466,7 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 
 	// Get relevant user
 	user := model.GetUser(userID)
-	if user.Authenticated != true {
+	if !user.Authenticated {
 		log.Printf("Error: Could not get user (assignment.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
@@ -611,7 +611,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 
 	p := bluemonday.UGCPolicy()
 
-	assignmentId, err := strconv.Atoi(p.Sanitize(vars["id"]))
+	assignmentID, err := strconv.Atoi(p.Sanitize(vars["id"]))
 	if err != nil {
 		log.Println("id", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -634,7 +634,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 
 	reviewRepo := model.ReviewRepository{}
 
-	hasBeenReviewed, err := reviewRepo.HasBeenReviewed(targetID, currentUser.ID, assignmentId)
+	hasBeenReviewed, err := reviewRepo.HasBeenReviewed(targetID, currentUser.ID, assignmentID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -655,7 +655,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 
 	// Get form and log possible error
 	formRepo := model.FormRepository{}
-	form, err := formRepo.GetReviewFormFromAssignmentID(assignmentId)
+	form, err := formRepo.GetReviewFormFromAssignmentID(assignmentID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -666,7 +666,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		Reviewer:     currentUser.ID,
 		Target:       targetID,
 		ReviewID:     reviewID,
-		AssignmentID: assignmentId,
+		AssignmentID: assignmentID,
 		Answers:      make([]model.ReviewAnswer, 0),
 	}
 

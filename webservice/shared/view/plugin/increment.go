@@ -4,6 +4,7 @@ import (
 	"html/template"
 )
 
+// Increment takes in an int and returns is plus one
 func Increment() template.FuncMap {
 	f := make(template.FuncMap)
 

@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// SplitChoices splits a string by "," (comma) and returns a string-slice
 func SplitChoices() template.FuncMap {
 	f := make(template.FuncMap)
 
