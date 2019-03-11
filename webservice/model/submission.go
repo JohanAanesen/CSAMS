@@ -113,7 +113,7 @@ func (repo *SubmissionRepository) GetAll() ([]Submission, error) {
 	return result, nil
 }
 
-// GetAll returns all submission in the database
+// GetSubmissionsCountFromAssignment returns amount of submission on a single assignment
 func (repo *SubmissionRepository) GetSubmissionsCountFromAssignment(assID int) (int, error) {
 	// Declare return slice
 	var result int
