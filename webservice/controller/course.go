@@ -5,7 +5,6 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
-	"github.com/shurcooL/github_flavored_markdown"
 	"html/template"
 	"log"
 	"net/http"
@@ -74,16 +73,12 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
-	md := []byte(course.Description)
-	description := github_flavored_markdown.Markdown(md) //todo sanitize markdown
-
 	v := view.New(r)
 	v.Name = "course"
 
 	v.Vars["Course"] = course
 	v.Vars["User"] = user
 	v.Vars["Classmates"] = classmates
-	v.Vars["Description"] = template.HTML(description)
 	v.Vars["Assignments"] = assignments
 
 	v.Render(w)
