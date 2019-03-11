@@ -1,49 +1,118 @@
 {{define "title"}}User Submission{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-    <main role="main" class="container">
-        <div class="col my-2">
-            <!-- TODO brede : add link for back button to students -->
-            <a href="{{ if .IsTeacher }}/admin/assignment/{{ .Assignment.ID }}/submissions {{ else }}/assignment/{{.Assignment.ID}}{{ end}}"
-               class="btn btn-outline-dark">Go Back</a>
-            <div class="col my-1 container pt-3 jumbotron">
-                <h1 class="display-4">{{ .Course.Code }} {{ .Course.Name }}</h1>
-                <h2 class="display-5">{{ .Assignment.Name }} - {{ .User.Name }}</h2>
+    <main role="main" class="container pt-3">
+        <div class="row">
+            <div class="col-12 mb-3">
+                <!-- TODO brede : add link for back button to students -->
+                <a href="{{ if .IsTeacher }}/admin/assignment/{{ .Assignment.ID }}/submissions {{ else }}/assignment/{{.Assignment.ID}}{{ end}}"
+                   class="btn btn-outline-dark mb-3">Go Back</a>
+                <div class="col my-1 container pt-3 jumbotron">
+                    <h1 class="display-4">{{ .Course.Code }} {{ .Course.Name }}</h1>
+                    <h2 class="display-5">{{ .Assignment.Name }} - {{ .User.Name }}</h2>
 
-                <!-- TODO (Svein) : There are more types, but are not essential for the alpha  -->
-                {{ if .Delivered }}
-                    {{ range .AnswersAndFields }}
-                        <div class="form-group">
-                            <label for="{{ .Field.Name }}">{{ .Field.Label }}</label>
-                            {{ if eq .Field.Type "text" }}
-                                <input type="text" name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control"
-                                       value="{{ .Answer.Value}}" disabled>
-                            {{ else if eq .Field.Type "url" }}
-                                <input type="url" name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control"
-                                       value="{{ .Answer.Value}}" disabled>
-                            {{ else if eq .Field.Type "textarea" }}
-                                <textarea name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control"
-                                          disabled>{{ .Answer.Value}}</textarea>
-                            {{ end }}
+                    <!-- TODO (Svein) : There are more types, but are not essential for the alpha  -->
+                    {{ if .Delivered }}
+                        {{ range .AnswersAndFields }}
+                            <div class="form-group">
+                                <label for="{{ .Field.Name }}">{{ .Field.Label }}</label>
+                                {{ if eq .Field.Type "text" }}
+                                    <input type="text" name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control"
+                                           value="{{ .Answer.Value}}" disabled>
+                                {{ else if eq .Field.Type "url" }}
+                                    <br>
+                                    <a href="{{.Answer.Value}}" class="btn btn-primary px-5" target="_blank">Link</a>
+                                    <!--<input type="url" name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control" value="{{ .Answer.Value}}" disabled>-->
+                                {{ else if eq .Field.Type "textarea" }}
+                                    <textarea name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control"
+                                              disabled>{{ .Answer.Value}}</textarea>
+                                {{ end }}
 
-                        </div>
+                            </div>
+                        {{ end }}
+
+                    {{ else }}
+                        {{ range .Fields }}
+                            <div class="form-group">
+                                <label for="{{ .Name }}">{{ .Label }}</label>
+                                {{ if eq .Type "text" }}
+                                    <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" disabled>
+                                {{ else if eq .Type "url" }}
+                                    <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" disabled>
+                                {{ else if eq .Type "textarea" }}
+                                    <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control" disabled></textarea>
+                                {{ end }}
+
+                            </div>
+                        {{ end }}
                     {{ end }}
-                {{ else }}
-                    {{ range .Fields }}
-                        <div class="form-group">
-                            <label for="{{ .Name }}">{{ .Label }}</label>
-                            {{ if eq .Type "text" }}
-                                <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" disabled>
-                            {{ else if eq .Type "url" }}
-                                <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" disabled>
-                            {{ else if eq .Type "textarea" }}
-                                <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control" disabled></textarea>
-                            {{ end }}
-
-                        </div>
-                    {{ end }}
-                {{ end }}
+                </div>
             </div>
+            {{if .IsTeacher}}
+                <div class="col-12 mb-3">
+                    {{range .MyReviews}}
+                        <div class="card mb-3">
+                            <div class="card-header bg-secondary">
+                                <h5 class="card-title mb-0">Review by {{.Reviewer}}</h5><!-- TODO (Svein): Plugin for converting id to username -->
+                            </div>
+                            <div class="card-body">
+                                {{range .Answers}}
+                                    <div class="form-group">
+                                        <label for="">{{.Label}}</label>
+                                        {{if eq .Type "text"}}
+                                            <input type="text" class="form-control" value="{{.Answer}}" disabled>
+                                        {{end}}
+                                    </div>
+                                {{end}}
+                            </div>
+                        </div>
+                    {{end}}
+                </div>
+            {{else}}
+                {{if not .Delivered}}
+                    <div class="col-12">
+                        <h2 class="display-4">Peer Review</h2>
+                        <hr>
+                        <form action="/assignment/{{.Assignment.ID}}/submission/{{.User.ID}}" method="post">
+                            {{ range .Review.Form.Fields }}
+                                {{if eq .Type "radio"}}
+                                    {{$R := .}}
+                                    {{$V := 1}}
+                                    <fieldset>
+                                        <legend>{{$R.Label}}</legend>
+                                    {{range SPLIT_CHOICES .Choices}}
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="{{$R.Name}}" id="{{$R.Name}}_{{$V}}" value="{{$V}}">
+                                            <label class="form-check-label" for="{{$R.Name}}_{{$V}}">{{.}}</label>
+                                        </div>
+                                        {{$V = INCREMENT $V}}
+                                    {{end}}
+                                    </fieldset>
+
+                                {{else}}
+                                <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}}">
+                                    {{if ne .Type "checkbox"}}<label for="{{ .Name }}">{{ .Label }}</label>{{end}}
+                                    {{ if eq .Type "text" }}
+                                        <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
+                                    {{ else if eq .Type "url" }}
+                                        <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
+                                    {{ else if eq .Type "textarea" }}
+                                        <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control" required></textarea>
+                                    {{ else if eq .Type "number" }}
+                                        <input type="number" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
+                                    {{ else if eq .Type "checkbox" }}
+                                        <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input">
+                                        <label class="form-check-inline" for="{{ .Name }}">{{ .Label }}</label>
+                                    {{ end }}
+                                </div>
+                                {{end}}
+                            {{ end }}
+                            <input type="hidden" name="review_id" value="{{.Review.ID}}">
+                            <input type="submit" class="btn btn-success">
+                        </form>
+                    </div>
+                {{end}}
+            {{end}}
         </div>
     </main>
 {{end}}
