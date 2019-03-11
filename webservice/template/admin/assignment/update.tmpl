@@ -8,7 +8,7 @@
             <div class="alert alert-warning">{{.}}</div>
         {{end}}
     {{end}}
-    <form action="/admin/assignment/update" method="POST">
+    <form id="assignmentForm" action="/admin/assignment/update" method="POST">
         <div class="row">
             <div class="col">
                 <h1 class="display-4">Update assignment</h1>
@@ -64,10 +64,13 @@
                 <div class="col">
                     <h3>Peer Review</h3>
                     <div class="form-group">
-                        <label for="reviewers">How many submissions should every student review on this assignment:</label>
+                        <label for="reviewers">How many submissions should every student review on this
+                            assignment:</label>
                         <select name="reviewers" id="reviewers" class="form-control" required>
                             option
-                            {{if .Assignment.Reviewers.Valid}}<option value="{{.Assignment.Reviewers.Int64}}" selected>{{.Assignment.Reviewers.Int64}}</option>{{end}}
+                            {{if .Assignment.Reviewers.Valid}}
+                                <option value="{{.Assignment.Reviewers.Int64}}"
+                                        selected>{{.Assignment.Reviewers.Int64}}</option>{{end}}
                             <script>
                                 for (let i = 1; i <= 6; i++) {
                                     document.write(`<option value="${i}">${i}</option>`);
@@ -176,5 +179,51 @@
                 publish.value = new Date().toISOString().substring(0, 16);
             });
         })();
+
+        // On submit form, call this function
+        window.onload = function () {
+            document.getElementById('assignmentForm').onsubmit = function () {
+                CheckSubmissionForm();
+            };
+        };
+
+        /**
+         * CheckSubmissionForm
+         *
+         * Checks if one or more users(students) has delivered with a specified submission form in a
+         * specified assignment. If it's true, give the admin a warning and ask if it still should be changed.
+         * If yes(ok), do nothing but if no(Cancel), change the value back to the original value.
+         * */
+        function CheckSubmissionForm() {
+
+            // Get element
+            let selectedSubmissionID = document.getElementById('submission_id');
+
+            // Declare submission ID
+            let id;
+
+            // Parse to int, -1 if None is selected
+            if (selectedSubmissionID.value.length == 0) {
+                id = 0;
+            } else {
+                // Parse to INT
+                id = parseInt(selectedSubmissionID.value, 10);
+            }
+
+            // Parse former submission id
+            let formerID = parseInt({{ .Assignment.SubmissionID.Int64 }}, 10);
+
+            // If the submission form is changed
+            if (id != formerID) {
+
+                // Check if a student has answered it and ask teacher for confirmation if so
+                let len = parseInt({{ .SubmissionCount }}, 10);
+
+                // If one or more users has answered this subForm, Ask user and if it sttill should be changed, if no, change back to original value
+                if (len > 0 && !confirm("WARNING! " + len + " students has already answered this submission form. Do you still want to change it? (This will delete former submissions)")) {
+                    selectedSubmissionID.value = formerID;
+                }
+            }
+        }
     </script>
 {{end}}

@@ -1,53 +1,55 @@
 {{define "title"}}Register{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-<div class="container pt-5">
 
-{{ if .Message }}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>Notice!</strong> {{.Message}}!
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-{{end}}
+    <div class="container pt-5">
 
-    <div class="row justify-content-center align-items-center">
-        <div class="col-6">
-            <h1 class="display-4 mb-3">Sign up</h1>
+        {{ if .Message }}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Notice!</strong> {{.Message}}!
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {{end}}
 
-            <form action={{ .Action }} class="form-register" method="POST">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-6">
+                <h1 class="display-4 mb-3">Sign up</h1>
 
-                <div class="form-group">
-                    <label for="inputName">Name</label>
-                    <input type="text" name="name" id="inputName" class="form-control" placeholder="Name" required
-                           autofocus>
-                </div>
+                <form action="/register{{ .Action }}" class="form-register" method="POST">
 
-                <div class="form-group">
-                    <label for="inputEmail">Email address</label>
-                    <input type="email" name="email" id="inputEmail" class="form-control"
-                           placeholder="Email address" required>
-                </div>
+                    <div class="form-group">
+                        <label for="inputName">Full Name</label>
+                        <input type="text" name="name" id="inputName" class="form-control" placeholder="Full Name"
+                               required
+                               autofocus>
+                    </div>
 
-                <div class="form-group">
-                    <label for="inputPassword">Password</label>
-                    <input type="password" name="password" id="inputPassword" class="form-control"
-                           placeholder="Password" required>
-                </div>
+                    <div class="form-group">
+                        <label for="inputEmail">Email address</label>
+                        <input type="email" name="email" id="inputEmail" class="form-control"
+                               placeholder="Email address" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="inputPasswordConfirm">Confirm Password</label>
-                    <input type="password" name="passwordConfirm" id="inputPasswordConfirm" class="form-control"
-                           placeholder="Confirm Password" required>
-                </div>
+                    <div class="form-group">
+                        <label for="inputPassword">Password</label>
+                        <input type="password" name="password" id="inputPassword" class="form-control"
+                               placeholder="Password" required>
+                    </div>
 
-                <button class="btn btn-lg btn-primary btn-block mb-3" type="submit">Sign up</button>
-            </form>
+                    <div class="form-group">
+                        <label for="inputPasswordConfirm">Confirm Password</label>
+                        <input type="password" name="passwordConfirm" id="inputPasswordConfirm" class="form-control"
+                               placeholder="Confirm Password" required>
+                    </div>
 
-            <a href="/login">Already have a user? Sign in</a>
+                    <button class="btn btn-lg btn-primary btn-block mb-3" type="submit">Sign up</button>
+                </form>
+
+                <a href="/login{{ .Action }}">Already have a user? Sign in</a>
+            </div>
         </div>
     </div>
-</div>
 {{end}}
 {{define "foot"}}{{end}}

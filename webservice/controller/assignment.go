@@ -133,6 +133,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO time
 	var isDeadlineOver = assignment.Deadline.Before(time.Now().UTC().Add(time.Hour))
 
 	// TODO : make this dynamic
@@ -349,7 +350,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if the deadline is reached
+	// Check if the deadline is reached TODO time
 	var isDeadlineOver = assignment.Deadline.Before(time.Now().UTC().Add(time.Hour))
 	if isDeadlineOver {
 		log.Println("Error: Deadline is reached! (assignment.go)")

@@ -18,9 +18,6 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-
 	// repo's
 	courseRepo := &model.CourseRepository{}
 	assignmentRepo := model.AssignmentRepository{}
@@ -50,12 +47,16 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, assignment := range assignments { //go through all it's assignments again
+			// TODO time
 			if time.Now().After(assignment.Publish) && time.Now().Before(assignment.Deadline) { //save all 'active' assignments
 				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: assignment, CourseCode: course.Code})
 			}
 		}
 
 	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
 
 	// Set values
 	v := view.New(r)
@@ -102,11 +103,13 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	lodData := model.Log{UserID: user.ID, Activity: model.JoinedCourse, CourseID: course.ID}
 	if !model.LogToDB(lodData) {
 		log.Fatal("Could not save JoinCourse log to database! (index.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	// Give feedback to user
-	session.SaveMessageToSession(course.Code+" - "+course.Name, w, r)
+	session.SaveMessageToSession("You joined "+course.Code+" - "+course.Name, w, r)
 
-	//IndexGET(w, r)
-	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
+	IndexGET(w, r)
+	//http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
 }

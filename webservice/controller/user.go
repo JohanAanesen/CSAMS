@@ -54,37 +54,15 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	hash := model.GetHash(user.ID)
 
 	// Get new data from the form
-	name := r.FormValue("usersName")
 	secondaryEmail := r.FormValue("secondaryEmail")
 	oldPass := r.FormValue("oldPass")
 	newPass := r.FormValue("newPass")
 	repeatPass := r.FormValue("repeatPass")
 
-	// Users name
-	if name == "" {
-		ErrorHandler(w, r, http.StatusBadRequest)
-		return
-	} else if name != user.Name && model.UpdateUserName(user.ID, name) {
-		log.Println("Success: name changed from " + user.Name + " to " + name)
-
-		// Save information to log struct
-		logData := model.Log{UserID: user.ID, Activity: model.ChangeName, OldValue: user.Name, NewValue: name}
-
-		//update session
-		user.Name = name
-		session.SaveUserToSession(user, w, r)
-
-		// Log name change in the database and give error if something went wrong
-		if !model.LogToDB(logData) {
-			log.Fatal("Could not save name log to database! (user.go)")
-		}
-	}
-
 	// Users Email
 	// If secondary-email input isn't blank it has changed
 	if secondaryEmail != "" && secondaryEmail != user.EmailPrivate {
 		if model.UpdateUserEmail(user.ID, secondaryEmail) {
-			log.Println("Success: Private email changed from " + user.EmailPrivate + " to " + secondaryEmail)
 
 			// Save information to log struct
 			logData := model.Log{UserID: user.ID, Activity: model.ChangeEmail, OldValue: user.EmailPrivate, NewValue: secondaryEmail}
@@ -95,7 +73,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 
 			// Log email change in the database and give error if something went wrong
 			if !model.LogToDB(logData) {
-				log.Fatal("Could not save email log to database! (user.go)")
+				log.Println("Could not save email log to database! (user.go)")
 			}
 		}
 	}
@@ -108,14 +86,13 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// If there's no problem with passwords and teh password is changed
 	if passwordIsOkay && model.CheckPasswordHash(oldPass, hash) {
 		if model.UpdateUserPassword(user.ID, newPass) {
-			log.Println("Success: Password is now changed!")
 
 			// Save information to log struct
 			logData := model.Log{UserID: user.ID, Activity: model.ChangePassword}
 
 			// Log password change in the database and give error if something went wrong
 			if !model.LogToDB(logData) {
-				log.Fatal("Could not save password log to database! (user.go)")
+				log.Println("Could not save password log to database! (user.go)")
 			}
 		} else {
 			ErrorHandler(w, r, http.StatusInternalServerError)

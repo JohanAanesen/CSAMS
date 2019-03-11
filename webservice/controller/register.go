@@ -36,9 +36,9 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "register"
 	// Send the correct link to template
 	if hash == "" {
-		v.Vars["Action"] = "/register"
+		v.Vars["Action"] = ""
 	} else {
-		v.Vars["Action"] = "/register?courseid=" + hash
+		v.Vars["Action"] = "?courseid=" + hash
 	}
 
 	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)

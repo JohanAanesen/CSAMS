@@ -30,7 +30,7 @@ func UpdateTimer(newTime time.Time, payload Payload) bool {
 
 	StopTimer(payload.ID)
 
-	timeNow := time.Now()            //time now
+	timeNow := time.Now()            //time now  TODO time
 	Duration := newTime.Sub(timeNow) //subtract now's time from target time to get time until trigger
 
 	if Duration < 0 { //scheduled time has to be in the future
@@ -65,7 +65,7 @@ func InitializeTimers() {
 	payloads := GetPayloads()
 
 	for _, payload := range payloads {
-		if payload.ScheduledTime.Sub(time.Now()) < 0 { //trigger tasks that has dinged when service was down
+		if payload.ScheduledTime.Sub(time.Now()) < 0 { //trigger tasks that has dinged when service was down  TODO time
 			task, err := payload.GetPeerTask()
 			if err != nil {
 				log.Printf("asdla") //todo
