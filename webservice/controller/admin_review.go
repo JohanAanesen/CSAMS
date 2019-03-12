@@ -203,3 +203,39 @@ func AdminReviewUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// Redirect to /admin/submission
 	http.Redirect(w, r, "/admin/review", http.StatusFound)
 }
+
+// AdminReviewDELETE deletes a review
+func AdminReviewDELETE(w http.ResponseWriter, r *http.Request) {
+	temp := struct {
+		ID int `json:"id"`
+	}{}
+
+	err := json.NewDecoder(r.Body).Decode(&temp)
+	if err != nil {
+		log.Println("json decode error", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// TODO (Svein): Delete review
+
+	msg := struct {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+		Location string `json:"location"`
+	}{
+		Code: http.StatusOK,
+		Message: "deletion successful!",
+		Location: "/admin/review",
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+
+	err = json.NewEncoder(w).Encode(msg)
+	if err != nil {
+		log.Println("json encode error", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+}

@@ -9,16 +9,17 @@
     <div class="row" id="output"></div>
 {{end}}
 {{define "foot"}}
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <script src="/static/js/form-builder.js"></script>
-    <script>
-        let formBuilder = new FormBuilder({
-            title: 'Update Review Form',
-            description: '',
-            request: '/admin/review/update',
-            output: document.getElementById('output'),
-        });
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script src="/static/js/form-builder.js"></script>
+<script>
+    let formBuilder = new FormBuilder({
+        title: 'Update Review Form',
+        description: '',
+        request: '/admin/review/update',
+        output: document.getElementById('output'),
+        deleteRequest: '/admin/review/delete',
+    });
 
-        formBuilder.import({{.formJSON}})
-    </script>
+    formBuilder.import({{.formJSON}})
+</script>
 {{end}}

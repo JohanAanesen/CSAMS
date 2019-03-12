@@ -85,10 +85,14 @@ function Form(args) {
     this.method = (args.method !== undefined) ? args.method : 'POST';
     this.fields = (args.fields !== undefined) ? args.fields : [];
     this.regexp = (args.regexp !== undefined) ? args.regexp : /\W/;
+    this.deleteRequest = (args.deleteRequest !== undefined) ? args.deleteRequest : '';
+    this.deleteMethod = (args.deleteMethod !== undefined) ? args.deleteMethod : 'DELETE';
 
     this.totalWeight = 0;
 
     this.sortable = null;
+
+    this.lastId = 0;
 
     /**
      * Initialize the form object
@@ -285,6 +289,56 @@ function Form(args) {
         leftCol.appendChild(submitButton);
         leftCol.appendChild(hr);
 
+        if (this.deleteRequest !== '') {
+            let deleteButton = createElement({
+                type: 'button',
+                classList: ['btn', 'btn-outline-danger', 'btn-block'],
+                attributes: [
+                    {
+                        name: 'type',
+                        value: 'button',
+                    },
+                ],
+                innerText: 'Delete',
+                id: 'delete_btn',
+            });
+
+            deleteButton.addEventListener('click', e => {
+                let ok = window.confirm('Are you sure you want to delete this?');
+                if (ok) {
+                    fetch(this.deleteRequest, {
+                        method: this.deleteMethod,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: this.id,
+                        }),
+                    })
+                        .then((response) => {
+                            if (response.status === 200) {
+                                return response.json();
+                            } else {
+                                return {};
+                            }
+                        })
+                        .then((json) => {
+                            if (json.location !== undefined) {
+                                window.location = json.location;
+                            }
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                        })
+                }
+            });
+
+            hr = createElement({ type: 'hr' });
+
+            leftCol.appendChild(deleteButton);
+            leftCol.appendChild(hr);
+        }
+
         return leftCol;
     };
 
@@ -345,6 +399,18 @@ function Form(args) {
             hidden.value = this.toJSON();
             console.log(hidden.value);
         });
+
+
+        let self = this;
+        this.fields.forEach(e => {
+            let deleteButton = document.getElementById(`delete_field_${e.id}`);
+            deleteButton.addEventListener('click', () => {
+                self.fields = self.fields.filter((f) => {
+                    return f.id !== e.id;
+                });
+                this.render();
+            });
+        });
     };
 
     /**
@@ -370,7 +436,7 @@ function Form(args) {
      */
     this.newField = function() {
         this.fields.push(new Field({
-            id: this.fields.length,
+            id: this.lastId++,
             order: this.fields.length,
             weighted: this.weighted,
         }));
@@ -625,6 +691,21 @@ function Field(args) {
         if (this.weighted) {
             cardBody.appendChild(this.renderWeightInput());
         }
+
+        let deleteButton = createElement({
+            type: 'button',
+            classList: ['btn', 'btn-danger', 'btn-sm', 'px-2'],
+            attributes: [
+                {
+                    name: 'type',
+                    value: 'button',
+                },
+            ],
+            id: `delete_field_${this.id}`,
+            innerText: 'Remove this field',
+        });
+
+        cardBody.appendChild(deleteButton);
 
         collapse.appendChild(cardBody);
 
