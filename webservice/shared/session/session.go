@@ -100,7 +100,6 @@ func SaveUserToSession(user model.User, w http.ResponseWriter, r *http.Request) 
 	return true
 }
 
-
 func SaveMessageToSession(msg string, w http.ResponseWriter, r *http.Request) bool {
 	session, err := Instance(r) //get session
 
@@ -123,7 +122,7 @@ func SaveMessageToSession(msg string, w http.ResponseWriter, r *http.Request) bo
 	return true
 }
 
-func GetAndDeleteMessageFromSession(w http.ResponseWriter, r *http.Request)string{
+func GetAndDeleteMessageFromSession(w http.ResponseWriter, r *http.Request) string {
 	session, err := Instance(r) // get session
 
 	if err != nil {
@@ -134,19 +133,19 @@ func GetAndDeleteMessageFromSession(w http.ResponseWriter, r *http.Request)strin
 	val := session.Values["Message"]
 	var msg string
 	msg, ok := val.(string)
-	if !ok{
+	if !ok {
 		return ""
 	}
 
 	ok = DeleteMessageFromSession(w, r)
-	if !ok{
+	if !ok {
 		return ""
 	}
 
 	return msg
 }
 
-func DeleteMessageFromSession(w http.ResponseWriter, r *http.Request) bool{
+func DeleteMessageFromSession(w http.ResponseWriter, r *http.Request) bool {
 	session, err := Instance(r) // get session
 
 	session.Values["Message"] = ""
