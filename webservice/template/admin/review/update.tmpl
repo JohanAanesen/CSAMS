@@ -9,15 +9,16 @@
     <div class="row" id="output"></div>
 {{end}}
 {{define "foot"}}
-<script src="/static/js/form.js"></script>
-<script>
-    let form = new Form();
-    form.Initialize({
-        output: '#output',
-        title: 'Update Review form',
-        request: '/admin/review/update',
-        weighted: true,
-    });
-    form.fromJSON({{.formJSON}})
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="/static/js/form-builder.js"></script>
+    <script>
+        let formBuilder = new FormBuilder({
+            title: 'Update Review Form',
+            description: '',
+            request: '/admin/review/update',
+            output: document.getElementById('output'),
+        });
+
+        formBuilder.import({{.formJSON}})
+    </script>
 {{end}}

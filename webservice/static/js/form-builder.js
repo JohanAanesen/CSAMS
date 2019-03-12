@@ -45,6 +45,14 @@
 function FormBuilder(args) {
     this.form = new Form(args);
     this.form.initialize();
+
+    /**
+     * Imports data from a string in JSON-format
+     * @param {string} data
+     */
+    this.import = function(data) {
+        this.form.fromJSON(data);
+    };
 }
 
 /**
@@ -422,28 +430,40 @@ function Form(args) {
         this.id = json.id;
         this.name = json.name;
         this.prefix = json.prefix;
-        this.weighted = json.weighted;
+        this.weighted = false;
 
         for (let i = 0; i < json.fields.length; i++) {
-            let f = new Field({
-                weighted: this.weighted,
-            });
+            let field = json.fields[i];
 
-            f.name = json.fields[i].name;
-            f.description = json.fields[i].description;
-            f.label = json.fields[i].label;
-            f.type = json.fields[i].type;
-            f.order = json.fields[i].order;
-            f.choices = json.fields[i].choices;
-            f.hasComment = json.fields[i].hasComment;
-
-            if (json.weighted) {
-                f.weight = json.fields[i].weight;
+            if (field.weight !== 0) {
+                this.weighted = true;
             }
 
-            this.fields.push(f);
+            let temp = new Field({
+                id: field.id,
+                label: field.label,
+                name: field.name,
+                description: field.description,
+                hasComment: field.hasComment,
+                type: field.type,
+                weight: field.weight,
+                order: field.order,
+            });
+
+            if (json.weighted) {
+                temp.weight = json.fields[i].weight;
+            }
+
+            this.fields.push(temp);
         }
 
+        if (this.weighted) {
+            this.fields.forEach(e => {
+                e.weighted = true;
+            })
+        }
+
+        this.sortFields();
         this.render();
     };
 
@@ -453,9 +473,9 @@ function Form(args) {
     this.sortFields = function() {
         this.fields.sort((a, b) => {
             if (a.order > b.order) {
-                return -1;
-            } else if (a.order < b.order) {
                 return 1;
+            } else if (a.order < b.order) {
+                return -1;
             } else {
                 return 0;
             }
@@ -1019,7 +1039,9 @@ function Field(args) {
      * Handles all rendering that needs to happen at the end of rendering
      */
     this.postRender = function() {
-        // let totalWeight = localStorage.getItem('totalWeight'); // TODO (Svein): Fix this later, storing the total weight, for using as calculation for showing percentage for each field with weights
+        // TODO (Svein): Fix this later, storing the total weight,
+        //  for using as calculation for showing percentage for each field with weights
+        // let totalWeight = localStorage.getItem('totalWeight');
     };
 
     /**
