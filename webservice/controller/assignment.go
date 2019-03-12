@@ -128,7 +128,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO norwegian-time
+	// TODO time-norwegian
 	var isDeadlineOver = assignment.Deadline.Before(util.GetTimeInNorwegian())
 
 	// TODO : make this dynamic
@@ -344,7 +344,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if the deadline is reached TODO norwegian-time
+	// Check if the deadline is reached TODO time-norwegian
 	var isDeadlineOver = assignment.Deadline.Before(util.GetTimeInNorwegian())
 	if isDeadlineOver {
 		log.Println("Error: Deadline is reached! (assignment.go)")

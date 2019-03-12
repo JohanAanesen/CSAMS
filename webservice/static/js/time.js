@@ -5,5 +5,7 @@
  * @return date in norwegian time
  * */
 function getTimeNorwegian() {
-    return new Date().getTime() + (1000 * 60 * 60);
+    let date = new Date();
+    let norwegianDate = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours() + 1, date.getUTCMinutes(), date.getUTCSeconds());
+    return new Date(norwegianDate);
 }

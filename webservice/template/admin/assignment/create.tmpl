@@ -173,10 +173,9 @@
             let deadline = document.getElementById('deadline');
 
 
-            // TODO implement function here brede
-            // TODO time
+            // TODO time-norwegian
             publishNowButton.addEventListener('click', () => {
-                publish.value = new Date().toISOString().substring(0, 16);
+                publish.value = getTimeNorwegian().toISOString().substring(0, 16);
             });
         })();
     </script>

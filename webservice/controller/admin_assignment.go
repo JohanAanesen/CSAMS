@@ -242,7 +242,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute  TODO norwegian-time
+	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute  TODO time-norwegian
 	if assID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInNorwegian()) {
 
 		sched := scheduler.Scheduler{}
@@ -498,7 +498,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute TODO norwegian-time
+	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute TODO time-norwegian
 	if assignment.ID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInNorwegian()) {
 
 		sched := scheduler.Scheduler{}

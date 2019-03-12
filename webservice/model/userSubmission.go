@@ -115,7 +115,7 @@ func UploadUserSubmission(userSub UserSubmission) error {
 // UpdateUserSubmission updates user submission to the db
 func UpdateUserSubmission(userSub UserSubmission) error {
 
-	// Norwegian time TODO norwegian-time
+	// Norwegian time TODO time-norwegian
 	now := util.GetTimeInNorwegian()
 
 	// Go through all answers
