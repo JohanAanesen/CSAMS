@@ -14,7 +14,7 @@
         <div class="card shadow-sm mb-3">
             <div class="card-body">
                 <h5 class="card-title">{{.Form.Name}}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{PRETTYTIME .Form.Created}}</h6>
+                <h6 class="card-subtitle mb-2 text-muted">{{PRETTYTIME .Form.Created}} <i>(Norwegian time!)</i></h6> <!-- TODO time-norwegian -->
                 <p class="card-text">{{.Form.Description}}</p>
                 <p>
                     <a href="/admin/submission/update/{{.FormID}}" class="btn btn-outline-dark">Edit</a>
