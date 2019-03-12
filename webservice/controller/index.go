@@ -9,10 +9,6 @@ import (
 	"time"
 )
 
-// TODO : maybe remove/refactor global variable later :/
-// NOTE (Svein): this is a private global variable within the package 'controller', but can be accessed by other files in the package
-var joinedCourse = ""
-
 // IndexGET serves homepage to authenticated users, send anonymous to login
 func IndexGET(w http.ResponseWriter, r *http.Request) {
 	user := session.GetUserFromSession(r)
@@ -21,9 +17,6 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 		LoginGET(w, r)
 		return
 	}
-
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
 
 	// repo's
 	courseRepo := &model.CourseRepository{}
@@ -54,6 +47,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, assignment := range assignments { //go through all it's assignments again
+			// TODO time
 			if time.Now().After(assignment.Publish) && time.Now().Before(assignment.Deadline) { //save all 'active' assignments
 				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: assignment, CourseCode: course.Code})
 			}
@@ -61,21 +55,20 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+
 	// Set values
 	v := view.New(r)
 	v.Name = "index"
 
 	v.Vars["Courses"] = courses
 	v.Vars["Assignments"] = activeAssignments
-	v.Vars["Message"] = joinedCourse
+	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
 
 	v.Render(w)
 }
 
 // JoinCoursePOST adds user to course
 func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
-	joinedCourse = ""
-
 	//course repo
 	courseRepo := &model.CourseRepository{}
 
@@ -108,11 +101,13 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	lodData := model.Log{UserID: user.ID, Activity: model.JoinedCourse, CourseID: course.ID}
 	if !model.LogToDB(lodData) {
 		log.Fatal("Could not save JoinCourse log to database! (index.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	// Give feedback to user
-	joinedCourse = course.Code + " - " + course.Name
+	session.SaveMessageToSession("You joined "+course.Code+" - "+course.Name, w, r)
 
-	//IndexGET(w, r)
-	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
+	IndexGET(w, r)
+	//http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
 }

@@ -193,14 +193,18 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 
 // Update an assignment based on the ID and the data inside an Assignment-object
 func (repo *AssignmentRepository) Update(id int, assignment Assignment) error {
-	query := "UPDATE assignments SET name=?, description=?, course_id=?, publish=?, deadline=?, reviewers=? WHERE id=?"
+	query := "UPDATE assignments SET name=?, description=?, course_id=?, submission_id=?, publish=?, deadline=?, reviewers=? WHERE id=?"
 
 	tx, err := db.GetDB().Begin()
 	if err != nil {
 		return err
 	}
 
-	_, err = tx.Exec(query, assignment.Name, assignment.Description, assignment.CourseID, assignment.Publish, assignment.Deadline, assignment.Reviewers, id)
+	if assignment.SubmissionID.Valid {
+		_, err = tx.Exec(query, assignment.Name, assignment.Description, assignment.CourseID, assignment.SubmissionID, assignment.Publish, assignment.Deadline, assignment.Reviewers, id)
+	} else {
+		_, err = tx.Exec(query, assignment.Name, assignment.Description, assignment.CourseID, nil, assignment.Publish, assignment.Deadline, assignment.Reviewers, id)
+	}
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -209,25 +213,6 @@ func (repo *AssignmentRepository) Update(id int, assignment Assignment) error {
 	err = tx.Commit()
 	if err != nil {
 		return err
-	}
-
-	if assignment.SubmissionID.Valid {
-		query = "UPDATE assignments SET submission_id=? WHERE id=?"
-		tx, err = db.GetDB().Begin()
-		if err != nil {
-			return err
-		}
-
-		_, err = tx.Exec(query, assignment.SubmissionID, id)
-		if err != nil {
-			tx.Rollback()
-			return err
-		}
-
-		err = tx.Commit()
-		if err != nil {
-			return err
-		}
 	}
 
 	if assignment.ReviewID.Valid {

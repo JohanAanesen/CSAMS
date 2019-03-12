@@ -36,10 +36,13 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "register"
 	// Send the correct link to template
 	if hash == "" {
-		v.Vars["Action"] = "/register"
+		v.Vars["Action"] = ""
 	} else {
-		v.Vars["Action"] = "/register?courseid=" + hash
+		v.Vars["Action"] = "?courseid=" + hash
 	}
+
+	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
+
 	v.Render(w)
 
 	//todo check if there is a class hash in request
@@ -54,7 +57,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 
 	user := session.GetUserFromSession(r)
 
-	if session.IsLoggedIn(r) { //already logged in, no need to register
+	if user.Authenticated { //already logged in, no need to register
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
@@ -66,7 +69,8 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 
 	//check that nothing is empty and password match passwordConfirm
 	if name == "" || email == "" || password == "" || password != r.FormValue("passwordConfirm") { //login credentials cannot be empty
-		http.Redirect(w, r, "/", http.StatusBadRequest) //400 bad request
+		session.SaveMessageToSession("Passwords does not match or fields are empty!", w, r)
+		RegisterGET(w, r)
 		return
 	}
 
@@ -78,7 +82,8 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	user, err := model.RegisterUser(name, email, password) //register user in database
 	if err != nil {
 		log.Println(err.Error())
-		ErrorHandler(w, r, http.StatusInternalServerError) //change this one to like, email used already fuck off?
+		session.SaveMessageToSession("Email already in use!", w, r)
+		RegisterGET(w, r)
 		return
 	}
 

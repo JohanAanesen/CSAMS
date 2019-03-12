@@ -1,56 +1,81 @@
 {{define "title"}}Dashboard{{end}}
-{{define "head"}}{{end}}
+{{define "head"}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{{end}}
 {{define "content"}}
     <h2 class="display-4 mb-3">Courses <a href="/admin/course/create" class="btn btn-success btn-sm px-3">New</a></h2>
     <hr>
     <div class="row">
-        <!-- TODO Brede : only show active courses -->
-        {{ range .Courses }}
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h2 class="display-4">{{ .Code }}</h2>
-                        <h3 class="mb-3">{{ .Name }}</h3>
-                        <hr>
-                        <a href="/course/?id={{ .ID }}" class="btn btn-outline-dark">See Course</a>
-                        <a href="/admin/course/{{.ID}}/assignments" class="btn btn-outline-dark">See Assignments</a>
-                        <a href="/admin/course/update/{{.ID}}" class="btn btn-outline-dark">Edit Course</a>
-                    </div>
+    <!-- TODO Brede : only show active courses -->
+    {{ range .Courses }}
+        <div class="col-xl-4 col-md-6 col-sm-12 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="float-right text-secondary">ID: {{.ID}}</h5>
+                    <h2 class="display-4">{{ .Code }}</h2>
+                    <h3 class="mb-3">{{ .Name }}</h3>
+                    <h6><strong>Hash:</strong> {{ .Hash }}</h6>
+                    <hr>
+                    <a href="/course/?id={{ .ID }}" class="btn btn-outline-dark my-3">See Course</a>
+                    <a href="/admin/course/{{.ID}}/assignments" class="btn btn-outline-dark my-3">See
+                        Assignments</a>
+                    <a href="/admin/course/update/{{.ID}}" class="btn btn-outline-dark my-3">Edit Course</a>
+
+                    <!-- Hides on screens smaller than md -->
+                    <a onclick="copyLinks({{ .Hash }})"
+                       class="d-none btn btn-outline-dark fa fa-copy d-md-inline my-3"
+                       style="font-size:24px" data-toggle="tooltip" data-placement="bottom"
+                       title="Copy link for students to join class"></a>
+
+                    <!-- Hides on screens wider than md -->
+                    <a onclick="copyLinks({{ .Hash }})" class="d-md-none btn btn-outline-dark my-3"
+                       data-toggle="tooltip"
+                       data-placement="bottom" title="Copy link for students to join class">Copy join-course
+                        link</a>
                 </div>
             </div>
-        {{ end }}
+        </div>
+    {{ end }}
     </div>
 
     <h2 class="display-4 mb-3">Assignments <a href="/admin/assignment/create"
                                               class="btn btn-success btn-sm px-3">New</a></h2>
     <hr>
     <div class="row">
-        <!-- TODO Brede : only show active assignments -->
-        {{range .Assignments}}
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                <div class="card shadow-sm{{if DEADLINEDUE .Assignment.Deadline}} bg-secondary text-light{{end}}">
-                    <div class="card-body">
-                        <h2 class="display-5">{{.Assignment.Name}}</h2>
-                        <h5><span class="badge {{if DEADLINEDUE .Assignment.Deadline}}badge-dark{{ else}} badge-secondary{{end}}">{{.CourseCode}}</span>
-                        </h5>
-                        <p{{if DEADLINEDUE .Assignment.Deadline}} class="text-danger"{{end}}>
-                            <strong>Deadline: </strong> {{PRETTYTIME .Assignment.Deadline}}</p>
-                        <hr class="bg-light">
-                        <a href="/admin/assignment/{{.Assignment.ID}}"
-                           class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
-                            details</a>
-                        <a href="/admin/assignment/{{.Assignment.ID}}/submissions"
-                           class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
-                            submissions</a>
-                        <a href="/admin/assignment/update/{{.Assignment.ID}}"
-                           class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">Edit
-                            assignment
-                        </a>
-                    </div>
+    <!-- TODO Brede : only show active assignments -->
+    {{range .Assignments}}
+        <div class="col-xl-4 col-md-6 col-sm-12 mb-3">
+            <div class="card shadow-sm{{if DEADLINEDUE .Assignment.Deadline}} bg-secondary text-light{{end}}">
+                <div class="card-body">
+                    <h5 class="float-right text-secondary">ID: {{.Assignment.ID}}</h5>
+                    <h2 class="display-5">{{.Assignment.Name}}</h2>
+                    <h5>
+                        <span class="badge {{if DEADLINEDUE .Assignment.Deadline}}badge-dark{{ else}} badge-secondary{{end}}">{{.CourseCode}}</span>
+                    </h5>
+                    <p{{if DEADLINEDUE .Assignment.Deadline}} class="text-danger"{{end}}>
+                        <strong>Deadline: </strong> {{PRETTYTIME .Assignment.Deadline}}</p>
+                    <hr class="bg-light">
+                    <a href="/admin/assignment/{{.Assignment.ID}}"
+                       class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
+                        details</a>
+                    <a href="/admin/assignment/{{.Assignment.ID}}/submissions"
+                       class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
+                        submissions</a>
+                    <a href="/admin/assignment/update/{{.Assignment.ID}}"
+                       class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">Edit
+                        assignment
+                    </a>
                 </div>
             </div>
-        {{end}}
+        </div>
+    {{end}}
     </div>
 {{end}}
 {{define "foot"}}
+    <script src="/static/js/copyLinks.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
 {{end}}

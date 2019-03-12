@@ -242,7 +242,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute
+	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute  TODO time
 	if assID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(time.Now()) {
 
 		sched := scheduler.Scheduler{}
@@ -326,6 +326,14 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get number of Students that has delivered submission with specific submission form
+	submissionCount, err := submissionRepo.GetSubmissionsCountFromAssignment(assignment.ID, assignment.SubmissionID.Int64)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	//get courses to user
 	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 	if err != nil {
@@ -345,6 +353,7 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "admin/assignment/update"
 
 	v.Vars["Assignment"] = assignment
+	v.Vars["SubmissionCount"] = submissionCount
 	v.Vars["Publish"] = util.GoToHTMLDatetimeLocal(assignment.Publish)
 	v.Vars["Deadline"] = util.GoToHTMLDatetimeLocal(assignment.Deadline)
 	v.Vars["Courses"] = courses
@@ -404,9 +413,42 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
 	submissionID := sql.NullInt64{
 		Int64: int64(val),
 		Valid: val != 0,
+	}
+
+	// Delete former submissions if admin changes submission form
+	assignmentRepo := model.AssignmentRepository{}
+	submissionRepo := &model.SubmissionRepository{}
+	formerAssignment, err := assignmentRepo.GetSingle(id)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	var formerID int64
+	var newID int64
+	formerID = 0
+	newID = 0
+
+	if formerAssignment.SubmissionID.Valid {
+		formerID = formerAssignment.SubmissionID.Int64
+	}
+	if submissionID.Valid {
+		newID = submissionID.Int64
+	}
+
+	// If submission id has changed, and it wasn't 'None' before, delete former submissions
+	if formerID != newID && formerID != 0 {
+		err := submissionRepo.DeleteSubmissionsToAssignment(formerAssignment.ID, formerAssignment.SubmissionID.Int64)
+		if err != nil {
+			log.Println(err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 	}
 
 	val = 0
@@ -437,8 +479,6 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		Valid: val != 0,
 	}
 
-	assignmentRepo := model.AssignmentRepository{}
-
 	assignment := model.Assignment{
 		ID:           id,
 		Name:         r.FormValue("name"),
@@ -458,7 +498,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute
+	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute TODO time
 	if assignment.ID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(time.Now()) {
 
 		sched := scheduler.Scheduler{}
@@ -518,7 +558,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 
 	submissionRepo := &model.SubmissionRepository{}
 
-	submissionCount, err := submissionRepo.GetSubmissionsCountFromAssignment(assignment.ID)
+	submissionCount, err := submissionRepo.GetSubmissionsCountFromAssignment(assignment.ID, assignment.SubmissionID.Int64)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)

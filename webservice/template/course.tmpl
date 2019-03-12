@@ -12,7 +12,7 @@
         }
 
         /* link color in participant list */
-        tbody a{
+        tbody a {
             color: white;
         }
 
@@ -44,8 +44,8 @@
             border-color: black;
         }
     </style>
-    <link rel="stylesheet" href="/static/css/highlight.css">
-    <link rel="stylesheet" href="/static/css/highlight-Go.css">
+
+
 {{end}}
 {{define "content"}}
     <main role="main" class="container">
@@ -60,7 +60,7 @@
                                aria-controls="home" aria-selected="true">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="assignment-tab" data-toggle="tab" href="#assignments" role="tab"
+                            <a class="nav-link" id="assignment-tab" data-toggle="tab" href="#assignmentsTab" role="tab"
                                aria-controls="assignments" aria-selected="false">Assignments</a>
                         </li>
                         <li class="nav-item">
@@ -72,11 +72,11 @@
                 <div class="card-body">
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                            {{.Description}}
-                        </div>
-                        <div class="tab-pane fade" id="assignments" role="tabpanel" aria-labelledby="assignment-tab">
-                            <div class="row">
+                            <!-- Content loaded through JS -->
 
+                        </div>
+                        <div class="tab-pane fade" id="assignmentsTab" role="tabpanel" aria-labelledby="assignment-tab">
+                            <div class="row">
                                 <!-- TODO : theese should be longer -->
                                 {{$C := .Course}}
                                 {{range .Assignments}}
@@ -133,4 +133,18 @@
 
     </main>
 {{end}}
-{{define "foot"}}{{end}}
+{{define "foot"}}
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/darcula.min.css"> <!-- Darcula theme for syntax highlight -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script> <!-- Highlighting lib -->
+    <script charset="UTF-8"
+            src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script> <!-- Go Highlighting lib -->
+    <script src="https://cdn.rawgit.com/showdownjs/showdown/1.9.0/dist/showdown.min.js"></script>
+    <script src="https://raw.githubusercontent.com/obedm503/showdown-katex/master/src/showdown-katex.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad(); //init highlight js
+
+        var converter = new showdown.Converter(); //markdown converter
+        document.getElementById("home").innerHTML = converter.makeHtml({{.Course.Description}});
+    </script>
+{{end}}
