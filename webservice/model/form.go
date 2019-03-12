@@ -5,23 +5,23 @@ import (
 	"time"
 )
 
-// Form TODO (Svein): comment
+// Form struct
 type Form struct {
-	ID          int       `json:"id" db:"id"`
-	Prefix      string    `json:"prefix" db:"prefix"`
-	Name        string    `json:"name" db:"name"`
-	Description string    `json:"description" db:"description"`
-	Created     time.Time `json:"created" db:"created"`
-	Fields      []Field   `json:"fields"`
+	ID      int       `json:"id" db:"id"`
+	Prefix  string    `json:"prefix" db:"prefix"`
+	Name    string    `json:"name" db:"name"`
+	Created time.Time `json:"created" db:"created"`
+	Fields  []Field   `json:"fields"`
 }
 
-// Field TODO (Svein): comment
+// Field struct
 type Field struct {
 	ID          int    `json:"id" db:"id"`
 	Type        string `json:"type" db:"type"`
 	Name        string `json:"name" db:"name"`
-	Label       string `json:"label" db:"label"`
 	Description string `json:"description" db:"description"`
+	Label       string `json:"label" db:"label"`
+	HasComment  bool   `json:"hasComment" db:"hasComment"`
 	Order       int    `json:"order" db:"priority"`
 	Weight      int    `json:"weight" db:"weight"`
 	Choices     string `json:"choices,omitempty" db:"choices"`
@@ -34,16 +34,15 @@ type Answer struct {
 	Value string
 }
 
-// FormRepository ... TODO (Svein): comment
-type FormRepository struct {
-}
+// FormRepository struct
+type FormRepository struct{}
 
 // Insert form to database
 func (repo *FormRepository) Insert(form Form) (int, error) {
 	// Insertions Query
-	query := "INSERT INTO forms (prefix, name, description) VALUES (?, ?, ?);"
+	query := "INSERT INTO forms (prefix, name) VALUES (?, ?);"
 	// Execute query with parameters
-	rows, err := db.GetDB().Exec(query, form.Prefix, form.Name, form.Description)
+	rows, err := db.GetDB().Exec(query, form.Prefix, form.Name)
 	// Check for error
 	if err != nil {
 		return -1, err
@@ -64,7 +63,7 @@ func (repo *FormRepository) Get(id int) (Form, error) {
 	var result = Form{}
 
 	// Create query-string
-	query := "SELECT id, prefix, name, description, created FROM forms WHERE id = ?"
+	query := "SELECT id, prefix, name, created FROM forms WHERE id = ?"
 	// Perform query
 	rows, err := db.GetDB().Query(query, id)
 	// Check for error
@@ -75,14 +74,15 @@ func (repo *FormRepository) Get(id int) (Form, error) {
 	// Check if there is any rows
 	if rows.Next() {
 		// Scan
-		err = rows.Scan(&result.ID, &result.Prefix, &result.Name, &result.Description, &result.Created)
+		err = rows.Scan(&result.ID, &result.Prefix, &result.Name, &result.Created)
 		// Check for error
 		if err != nil {
 			return result, err
 		}
 	}
 	// Create new query for getting all the fields
-	query = "SELECT id, type, name, label, description, priority, weight, choices FROM fields WHERE form_id = ?"
+	query = "SELECT id, type, name, label, description, priority, weight, choices, hasComment " +
+		"FROM fields WHERE form_id = ?"
 	// Execute query
 	rows, err = db.GetDB().Query(query, id)
 	if err != nil {
@@ -92,11 +92,14 @@ func (repo *FormRepository) Get(id int) (Form, error) {
 	// Loop through all rows
 	for rows.Next() {
 		var temp Field
+		var hasComment int
 		// Get values
-		err = rows.Scan(&temp.ID, &temp.Type, &temp.Name, &temp.Label, &temp.Description, &temp.Order, &temp.Weight, &temp.Choices)
+		err = rows.Scan(&temp.ID, &temp.Type, &temp.Name, &temp.Label, &temp.Description, &temp.Order, &temp.Weight, &temp.Choices, &hasComment)
 		if err != nil {
 			return result, err
 		}
+
+		temp.HasComment = hasComment == 1
 		// Append field to slice in the result
 		result.Fields = append(result.Fields, temp)
 	}
@@ -106,102 +109,74 @@ func (repo *FormRepository) Get(id int) (Form, error) {
 
 // GetSubmissionFormFromAssignmentID get form from the assignment id key
 func (repo *FormRepository) GetSubmissionFormFromAssignmentID(assignmentID int) (Form, error) {
-
+	// Declare an empty Form
+	result := Form{}
 	// Create query-string
-	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM submissions AS s WHERE id IN (SELECT a.submission_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
-
+	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices, " +
+		"f.hasComment FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM submissions AS s " +
+		"WHERE id IN (SELECT a.submission_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
 	// Perform query
 	rows, err := db.GetDB().Query(query, assignmentID)
-
-	// Declare an empty Form
-	form := Form{}
-
 	// Check for error
 	if err != nil {
-		return form, err
+		return result, err
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		var formID int
-		var fieldID int
-		var fieldType string
-		var name string
-		var label string
-		var desc string
-		var priority int
-		var weight int
-		var choices string
-
+		var temp Field
+		var hasComment int
 		// Scan
-		err = rows.Scan(&formID, &fieldID, &fieldType, &name, &label, &desc, &priority, &weight, &choices)
+		err = rows.Scan(&formID, &temp.ID, &temp.Type, &temp.Name, &temp.Label, &temp.Description,
+			&temp.Order, &temp.Weight, &temp.Choices, &hasComment)
 		// Check for error
 		if err != nil {
-			return form, err
+			return result, err
 		}
 
-		form.Fields = append(form.Fields, Field{
-			ID:          formID,
-			Type:        fieldType,
-			Name:        name,
-			Label:       label,
-			Description: desc,
-			Order:       priority,
-			Weight:      weight,
-			Choices:     choices,
-		})
+		temp.HasComment = hasComment == 1
+		result.Fields = append(result.Fields, temp)
 	}
 
 	// TODO brede use sql.null<type>
 
-	return form, nil
+	return result, nil
 }
 
 // GetReviewFormFromAssignmentID get review-form from the assignment id key
 func (repo *FormRepository) GetReviewFormFromAssignmentID(assignmentID int) (Form, error) {
+	// Declare an empty Form
+	result := Form{}
 
 	// Create query-string
-	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM reviews AS s WHERE id IN (SELECT a.review_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
+	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices " +
+		"FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM reviews AS s WHERE id IN " +
+		"(SELECT a.review_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
 
 	// Perform query
 	rows, err := db.GetDB().Query(query, assignmentID)
 
-	// Declare an empty Form
-	form := Form{}
-
 	// Check for error
 	if err != nil {
-		return form, err
+		return result, err
 	}
 
 	for rows.Next() {
 		var formID int
-		var fieldID int
-		var fieldType string
-		var name string
-		var label string
-		var desc string
-		var priority int
-		var weight int
-		var choices string
-
+		var temp Field
+		var hasComment int
 		// Scan
-		err = rows.Scan(&formID, &fieldID, &fieldType, &name, &label, &desc, &priority, &weight, &choices)
+		err = rows.Scan(&formID, &temp.ID, &temp.Type, &temp.Name, &temp.Label, &temp.Description,
+			&temp.Order, &temp.Weight, &temp.Choices, &hasComment)
 		// Check for error
 		if err != nil {
-			return form, err
+			return result, err
 		}
 
-		form.Fields = append(form.Fields, Field{
-			ID:          formID,
-			Type:        fieldType,
-			Name:        name,
-			Label:       label,
-			Description: desc,
-			Order:       priority,
-			Weight:      weight,
-			Choices:     choices,
-		})
+		temp.HasComment = hasComment == 1
+		result.Fields = append(result.Fields, temp)
 	}
 
-	return form, err
+	return result, err
 }

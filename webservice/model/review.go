@@ -55,10 +55,17 @@ func (repo *ReviewRepository) Insert(form Form) error {
 
 	// Loop trough fields in the forms
 	for _, field := range form.Fields {
+		var hasComment = 0
+		if field.HasComment {
+			hasComment = 1
+		}
+
 		// Insertion query
-		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices, hasComment) " +
+			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
 		// Execute the query
-		rows, err := db.GetDB().Query(query, int(formID), field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
+		rows, err := db.GetDB().Query(query, int(formID), field.Type, field.Name, field.Label, field.Description,
+			field.Order, field.Weight, field.Choices, hasComment)
 		// Check for error
 		if err != nil {
 			return err
@@ -123,13 +130,13 @@ func (repo *ReviewRepository) GetAll() ([]Review, error) {
 // Update a form in the database
 // Deletes all fields, and recreates them
 func (repo *ReviewRepository) Update(form Form) error {
-	query := "UPDATE forms SET prefix=?, name=?, description=? WHERE id=?"
+	query := "UPDATE forms SET prefix=?, name=? WHERE id=?"
 	tx, err := db.GetDB().Begin()
 	if err != nil {
 		return err
 	}
 
-	_, err = db.GetDB().Exec(query, form.Prefix, form.Name, form.Description, form.ID)
+	_, err = db.GetDB().Exec(query, form.Prefix, form.Name, form.ID)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -149,10 +156,17 @@ func (repo *ReviewRepository) Update(form Form) error {
 
 	// Loop trough fields in the forms
 	for _, field := range form.Fields {
+		var hasComment = 0
+		if field.HasComment {
+			hasComment = 1
+		}
+
 		// Insertion query
-		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices, hasComment) " +
+			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
 		// Execute the query
-		rows, err := db.GetDB().Query(query, form.ID, field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
+		rows, err := db.GetDB().Query(query, form.ID, field.Type, field.Name, field.Label, field.Description,
+			field.Order, field.Weight, field.Choices, hasComment)
 		// Check for error
 		if err != nil {
 			return err
@@ -186,7 +200,9 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 
 	result.ID = reviewID
 
-	query = "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM reviews AS s WHERE id IN (SELECT a.review_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
+	query = "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices, f.hasComment " +
+		"FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM reviews AS s WHERE id IN " +
+		"(SELECT a.review_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
 	rows, err = db.GetDB().Query(query, assignmentID)
 	if err != nil {
 		return result, err
@@ -198,12 +214,15 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 
 	for rows.Next() {
 		var field Field
+		var hasComment int
 
-		err = rows.Scan(&formID, &field.ID, &field.Type, &field.Name, &field.Label, &field.Description, &field.Order, &field.Weight, &field.Choices)
+		err = rows.Scan(&formID, &field.ID, &field.Type, &field.Name, &field.Label, &field.Description,
+			&field.Order, &field.Weight, &field.Choices, &hasComment)
 		if err != nil {
 			return result, err
 		}
 
+		field.HasComment = hasComment == 1
 		form.Fields = append(form.Fields, field)
 	}
 

@@ -117,6 +117,19 @@ function Form(args) {
 
         form.appendChild(this.renderHeader());
 
+        let hidden = createElement({
+            type: 'input',
+            attributes: [
+                {
+                    name: 'type',
+                    value: 'hidden',
+                },
+            ],
+            id: 'form_data',
+        });
+
+        form.appendChild(hidden);
+
         let row = createElement({
             classList: ['row'],
         });
@@ -223,7 +236,7 @@ function Form(args) {
 
         let newButton = createElement({
             type: 'button',
-            classList: ['btn', 'btn-primary', 'btn-block'],
+            classList: ['btn', 'btn-primary', 'btn-block', 'btn-lg'],
             attributes: [
                 {
                     name: 'type',
@@ -244,14 +257,15 @@ function Form(args) {
 
         let submitButton = createElement({
             type: 'button',
-            classList: ['btn', 'btn-success', 'btn-block'],
+            classList: ['btn', 'btn-outline-success', 'btn-block'],
             attributes: [
                 {
                     name: 'type',
-                    value: 'submit',
+                    value: 'button',
                 },
             ],
             innerText: 'Submit',
+            id: 'submit_btn',
         });
 
         submitButton.onclick = function() {
@@ -315,6 +329,14 @@ function Form(args) {
         } else {
             formName.innerText = '';
         }
+
+        let submitButton = document.getElementById('submit_btn');
+
+        submitButton.addEventListener('click', () => {
+            let hidden = document.getElementById('form_data');
+            hidden.value = this.toJSON();
+            console.log(hidden.value);
+        });
     };
 
     /**

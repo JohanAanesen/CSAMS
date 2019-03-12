@@ -107,8 +107,9 @@ CREATE TABLE `fields`
   `form_id`     int(11)     NOT NULL,
   `type`        varchar(64) NOT NULL,
   `name`        varchar(64) NOT NULL,
-  `label`       varchar(64) DEFAULT NULL,
   `description` text        NOT NULL,
+  `label`       varchar(64) DEFAULT NULL,
+  `hasComment`  int(1)      NOT NULL,
   `priority`    int(11)     NOT NULL,
   `weight`      int(11)     DEFAULT NULL,
   `choices`     varchar(64) DEFAULT NULL
@@ -135,7 +136,6 @@ CREATE TABLE `forms`
   `id`          int(11)     NOT NULL,
   `prefix`      varchar(64) NOT NULL,
   `name`        varchar(64)      DEFAULT NULL,
-  `description` text,
   `created`     timestamp   NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
@@ -144,8 +144,8 @@ CREATE TABLE `forms`
 -- Dataark for tabell `forms`
 --
 
-INSERT INTO `forms` (`id`, `prefix`, `name`, `description`, `created`)
-VALUES (1, 'github_form', 'Github form', 'Form to Github', '2019-02-28 15:23:23');
+INSERT INTO `forms` (`id`, `prefix`, `name`, `created`)
+VALUES (1, 'github_form', 'Github form', '2019-02-28 15:23:23');
 
 -- --------------------------------------------------------
 
@@ -312,6 +312,7 @@ CREATE TABLE `user_reviews` (
   `name` varchar(64) NOT NULL,
   `label` varchar(64) NOT NULL,
   `answer` text NOT NULL,
+  `comment` text DEFAULT NULL,
   `submitted` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

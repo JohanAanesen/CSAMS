@@ -11,7 +11,7 @@ type Submission struct {
 	Form   Form `json:"form"`
 }
 
-// SubmissionRepository ... TODO (Svein): comment
+// SubmissionRepository struct
 type SubmissionRepository struct{}
 
 // Insert form and fields to database
@@ -45,10 +45,17 @@ func (repo *SubmissionRepository) Insert(form Form) error {
 	for _, field := range form.Fields {
 
 		// Insertion query
-		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices, hasComment) " +
+			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
+
+		var hasComment = 0
+		if field.HasComment {
+			hasComment = 1
+		}
 
 		//Execute query
-		_, err = tx.Exec(query, formID, field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
+		_, err = tx.Exec(query, formID, field.Type, field.Name, field.Label, field.Description,
+			field.Order, field.Weight, field.Choices, hasComment)
 		if err != nil {
 			tx.Rollback() //rollback if err
 			return err
@@ -145,13 +152,13 @@ func (repo *SubmissionRepository) GetSubmissionsCountFromAssignment(assID int) (
 // Update a form in the database
 // Deletes all fields, and recreates them
 func (repo *SubmissionRepository) Update(form Form) error {
-	query := "UPDATE forms SET prefix=?, name=?, description=? WHERE id=?"
+	query := "UPDATE forms SET prefix=?, name=? WHERE id=?"
 	tx, err := db.GetDB().Begin()
 	if err != nil {
 		return err
 	}
 
-	_, err = db.GetDB().Exec(query, form.Prefix, form.Name, form.Description, form.ID)
+	_, err = db.GetDB().Exec(query, form.Prefix, form.Name, form.ID)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -167,9 +174,16 @@ func (repo *SubmissionRepository) Update(form Form) error {
 	// Loop trough fields in the forms
 	for _, field := range form.Fields {
 		// Insertion query
-		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices, hasComment) " +
+			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
+
+		var hasComment = 0
+		if field.HasComment {
+			hasComment = 1
+		}
 		// Execute the query
-		_, err := db.GetDB().Exec(query, form.ID, field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
+		_, err := db.GetDB().Exec(query, form.ID, field.Type, field.Name, field.Label, field.Description,
+			field.Order, field.Weight, field.Choices, hasComment)
 		// Check for error
 		if err != nil {
 			tx.Rollback()
