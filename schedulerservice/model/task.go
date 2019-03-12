@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/db"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -53,8 +52,8 @@ func (peer PeerTask) Schedule(scheduledTime time.Time) bool {
 
 	payload := GetPayload(peer.SubmissionID, peer.AssignmentID)
 
-	// TODO norwegian-time
-	timeNow := util.GetTimeInNorwegian()   // Get norwegian time now
+	// TODO time-schedulerservice
+	timeNow := time.Now().UTC().Add(time.Hour)   // Get norwegian time now
 	Duration := scheduledTime.Sub(timeNow) // Subtract now's time from target time to get time until trigger
 
 	if Duration < 0 { //scheduled time has to be in the future
