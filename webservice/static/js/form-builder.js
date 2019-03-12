@@ -230,6 +230,10 @@ function Form(args) {
                     name: 'placeholder',
                     value: 'Form Name',
                 },
+                {
+                    name: 'required',
+                    value: '',
+                }
             ],
             value: this.name.trim(),
         });
@@ -397,7 +401,6 @@ function Form(args) {
         submitButton.addEventListener('click', () => {
             let hidden = document.getElementById('form_data');
             hidden.value = this.toJSON();
-            console.log(hidden.value);
         });
 
 
@@ -824,6 +827,10 @@ function Field(args) {
                 {
                     name: 'placeholder',
                     value: 'Label',
+                },
+                {
+                    name: 'required',
+                    value: '',
                 }
             ],
             id: `label_${this.id}`,
