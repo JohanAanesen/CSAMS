@@ -175,7 +175,7 @@
 
             // TODO time-norwegian
             publishNowButton.addEventListener('click', () => {
-                publish.value = getTimeNorwegian().toISOString().substring(0, 16);
+                publish.value = getTimeNorwegian().toNORString();
             });
         })();
     </script>

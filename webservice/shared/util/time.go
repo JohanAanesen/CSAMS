@@ -58,5 +58,8 @@ func GoToHTMLDatetimeLocal(t time.Time) string {
 
 // GetTimeInNorwegian returns the time in Norwegian time
 func GetTimeInNorwegian() time.Time {
-	return time.Now().UTC().Add(time.Hour)
+	//init the loc
+	loc, _ := time.LoadLocation("Europe/Oslo")
+
+	return time.Now().In(loc)
 }

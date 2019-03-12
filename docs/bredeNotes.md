@@ -233,7 +233,10 @@ _Merged following to master_
 * deleted unnecessary .sql files
 * fixed schedulerservice error, *I used an function from webservice before* 
 * I changed some data to be better testdata in .sql
-
+* Added two new functions
+    * one for padding numbers with 0
+    * and one for replacing [`toISOString()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString) so it doesn't alter the time before formatting.
+* Also changed go and js `getTimeNorwegian()` to use locale `"Europe/Oslo"` 
 
 
 
