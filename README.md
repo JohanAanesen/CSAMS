@@ -22,11 +22,29 @@
 ## Supervisor
 * [Ivar Farup](https://www.ntnu.no/ansatte/ivar.farup)
 
-## OBS!
-This project is in the norwegian timezone! At least the:
-* [`config/database.sql`](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/b74344a4a1673c4473442db99f965c17643d83c1/config/database.sql#L19) file at line `19`: `SET time_zone = "+01:00";`
-* [`model/adminfaq.go`](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/d4a2c5d1bce5a6f22c6d179a80351f1980fc55e6/model/adminfaq.go#L50) file at line `50`: `date := time.Now().UTC().Add(time.Hour)`
-* [`template/assignment/upload.tmpl`](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/18-Assignment-Delivery-Page/template/assignment/upload.tmpl) <!-- TODO change link when in master --> file at line `39`: `let now = new Date().getTime() + (1000 * 60 * 60);`
+## OBS - Timezones!
+This project is in the norwegian timezone!
+### SQL
+ [`config/database.sql`](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/b74344a4a1673c4473442db99f965c17643d83c1/config/database.sql#L19) file at line `19`: `SET time_zone = "+01:00";`
+### GO
+[`webservice/shared/util/time.go`](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/master/webservice/shared/util/time.go)
+```Go
+func GetTimeInNorwegian() time.Time {
+	//init the loc
+	loc, _ := time.LoadLocation("Europe/Oslo")
+
+	return time.Now().In(loc)
+}
+```
+### Javascript
+[`webservice/static/js/time.js`](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/master/webservice/static/js/time.js)
+```Js
+function getTimeNorwegian() {
+    let norTime = new Date().toLocaleString("no-no", {timeZone: "Europe/Oslo"});
+    return new Date(norTime);
+}
+```
+
 
 ## Commit messages guideline
 Start with the number `#42` where the number is the number to the `card` you're working on Trello followed by:
