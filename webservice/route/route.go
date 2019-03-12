@@ -91,6 +91,8 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/review/update/{id:[0-9]+}", controller.AdminReviewUpdateGET).Methods("GET")
 	adminrouter.HandleFunc("/review/update", controller.AdminReviewUpdatePOST).Methods("POST")
 
+	adminrouter.HandleFunc("/scheduler", controller.AdminSchedulerGET).Methods("GET")
+
 	adminrouter.HandleFunc("/faq", controller.AdminFaqGET).Methods("GET")
 	adminrouter.HandleFunc("/faq/edit", controller.AdminFaqEditGET).Methods("GET")
 	adminrouter.HandleFunc("/faq/update", controller.AdminFaqUpdatePOST).Methods("POST")
