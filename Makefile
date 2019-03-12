@@ -1,3 +1,5 @@
+default: build
+
 build:
     sudo docker-compose up --build
 
