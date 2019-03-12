@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 )
 
@@ -366,4 +367,45 @@ func (repo *ReviewRepository) GetReviewForUser(user, assignment int) ([]FullRevi
 	}
 
 	return result, err
+}
+
+// Delete a review form based on it's id
+func (repo *ReviewRepository) Delete(id int) error {
+	query := "DELETE FROM fields WHERE form_id=?"
+	tx, err := db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = db.GetDB().Exec(query, id)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("could not delete fields with form_id = " + string(id))
+	}
+
+	query = "DELETE FROM reviews WHERE form_id=?"
+	tx, err = db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = db.GetDB().Exec(query, id)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("could not delete reviews with form_id = " + string(id))
+	}
+
+	query = "DELETE FROM forms WHERE id=?"
+	tx, err = db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = db.GetDB().Exec(query, id)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("could not delete forms with id = " + string(id))
+	}
+
+	return nil
 }

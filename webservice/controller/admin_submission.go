@@ -204,7 +204,6 @@ func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/submission", http.StatusFound)
 }
 
-
 func AdminSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 	temp := struct {
 		ID int `json:"id"`
@@ -217,19 +216,26 @@ func AdminSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO (Svein): Delete submission
-
 	msg := struct {
-		Code    int    `json:"code"`
-		Message string `json:"message"`
+		Code     int    `json:"code"`
+		Message  string `json:"message"`
 		Location string `json:"location"`
-	}{
-		Code: http.StatusOK,
-		Message: "deletion successful!",
-		Location: "/admin/submission",
+	}{}
+
+	repo := model.SubmissionRepository{}
+	err = repo.Delete(temp.ID)
+	if err != nil {
+		msg.Code = http.StatusInternalServerError
+		msg.Message = err.Error()
+		msg.Location = "/admin/review"
+		return
+	} else {
+		msg.Code = http.StatusOK
+		msg.Message = "Deletion successful"
+		msg.Location = "/admin/review"
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(msg.Code)
 	w.Header().Set("Content-Type", "application/json")
 
 	err = json.NewEncoder(w).Encode(msg)

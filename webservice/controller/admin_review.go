@@ -217,19 +217,26 @@ func AdminReviewDELETE(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO (Svein): Delete review
-
 	msg := struct {
 		Code    int    `json:"code"`
 		Message string `json:"message"`
 		Location string `json:"location"`
-	}{
-		Code: http.StatusOK,
-		Message: "deletion successful!",
-		Location: "/admin/review",
+	}{}
+
+	repo := model.ReviewRepository{}
+	err = repo.Delete(temp.ID)
+	if err != nil {
+		msg.Code = http.StatusInternalServerError
+		msg.Message = err.Error()
+		msg.Location = "/admin/review"
+		return
+	} else {
+		msg.Code = http.StatusOK
+		msg.Message = "Deletion successful"
+		msg.Location = "/admin/review"
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(msg.Code)
 	w.Header().Set("Content-Type", "application/json")
 
 	err = json.NewEncoder(w).Encode(msg)
