@@ -229,6 +229,11 @@ _Merged following to master_
 * Go function for norwegian time is done
 * Bug on js function for norwegian time
 
+### Tuesday - 12/03/19
+* deleted unnecessary .sql files
+* fixed schedulerservice error, *I used an function from webservice before* 
+* I changed some data to be better testdata in .sql
+
 
 
 
