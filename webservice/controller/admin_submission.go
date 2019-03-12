@@ -144,7 +144,7 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 // AdminSubmissionUpdatePOST handles POST-request @ /admin/submission/update
 func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// Get data from the form
-	data := r.FormValue("data")
+	data := r.FormValue("form_data")
 
 	// Declare Form-struct
 	var form = model.Form{}

@@ -144,7 +144,7 @@ func AdminReviewUpdateGET(w http.ResponseWriter, r *http.Request) {
 // AdminReviewUpdatePOST handles POST-requests @ /admin/review/update
 func AdminReviewUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// Get data from the form
-	data := r.FormValue("data")
+	data := r.FormValue("form_data")
 
 	// Declare Form-struct
 	var form = model.Form{}
