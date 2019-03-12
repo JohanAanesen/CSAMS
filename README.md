@@ -39,7 +39,7 @@ func GetTimeInNorwegian() time.Time {
 ### Javascript
 [`webservice/static/js/time.js`](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/master/webservice/static/js/time.js)
 ```Js
-function getTimeNorwegian() {
+function getTimeInNorwegian() {
     let norTime = new Date().toLocaleString("no-no", {timeZone: "Europe/Oslo"});
     return new Date(norTime);
 }

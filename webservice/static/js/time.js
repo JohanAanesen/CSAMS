@@ -1,10 +1,10 @@
 /**
- * getTimeNorwegian
+ * getTimeInNorwegian
  * Returns a date in norwegian time
  *
  * @return date in norwegian time
  * */
-function getTimeNorwegian() {
+function getTimeInNorwegian() {
     let norTime = new Date().toLocaleString("no-no", {timeZone: "Europe/Oslo"});
     return new Date(norTime);
 }
