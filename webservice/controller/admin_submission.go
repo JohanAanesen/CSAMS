@@ -46,7 +46,7 @@ func AdminSubmissionCreateGET(w http.ResponseWriter, r *http.Request) {
 // AdminSubmissionCreatePOST handles POST-request to /admin/submission/create
 func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 	// Get data from the form
-	data := r.FormValue("data")
+	data := r.FormValue("form_data")
 	fmt.Println(data)
 	// Declare Form-struct
 	var form = model.Form{}

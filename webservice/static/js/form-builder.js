@@ -124,6 +124,10 @@ function Form(args) {
                     name: 'type',
                     value: 'hidden',
                 },
+                {
+                    name: 'name',
+                    value: 'form_data',
+                }
             ],
             id: 'form_data',
         });
@@ -261,16 +265,12 @@ function Form(args) {
             attributes: [
                 {
                     name: 'type',
-                    value: 'button',
+                    value: 'submit',
                 },
             ],
             innerText: 'Submit',
             id: 'submit_btn',
         });
-
-        submitButton.onclick = function() {
-            return window.confirm('Finally done?');
-        };
 
         hr = createElement({ type: 'hr' });
 
@@ -1019,7 +1019,7 @@ function Field(args) {
      * Handles all rendering that needs to happen at the end of rendering
      */
     this.postRender = function() {
-        // let totalWeight = localStorage.getItem('totalWeight'); // TODO (Svein): Fix this later
+        // let totalWeight = localStorage.getItem('totalWeight'); // TODO (Svein): Fix this later, storing the total weight, for using as calculation for showing percentage for each field with weights
     };
 
     /**

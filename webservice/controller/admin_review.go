@@ -46,7 +46,7 @@ func AdminReviewCreateGET(w http.ResponseWriter, r *http.Request) {
 // AdminReviewCreatePOST handles POST-requests @ /admin/review/create
 func AdminReviewCreatePOST(w http.ResponseWriter, r *http.Request) {
 	// Get data from the form
-	data := r.FormValue("data")
+	data := r.FormValue("form_data")
 	fmt.Println(data)
 	// Declare Form-struct
 	var form = model.Form{}
