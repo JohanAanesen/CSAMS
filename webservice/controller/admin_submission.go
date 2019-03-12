@@ -204,6 +204,7 @@ func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/submission", http.StatusFound)
 }
 
+// AdminSubmissionDELETE handles DELETE-request @ /admin/submission/delete
 func AdminSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 	temp := struct {
 		ID int `json:"id"`
@@ -229,11 +230,10 @@ func AdminSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 		msg.Message = err.Error()
 		msg.Location = "/admin/submission"
 		return
-	} else {
-		msg.Code = http.StatusOK
-		msg.Message = "Deletion successful"
-		msg.Location = "/admin/submission"
 	}
+	msg.Code = http.StatusOK
+	msg.Message = "Deletion successful"
+	msg.Location = "/admin/submission"
 
 	w.WriteHeader(msg.Code)
 	w.Header().Set("Content-Type", "application/json")

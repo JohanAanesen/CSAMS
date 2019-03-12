@@ -204,7 +204,7 @@ func AdminReviewUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/review", http.StatusFound)
 }
 
-// AdminReviewDELETE deletes a review
+// AdminReviewDELETE handles DELETE-request @ /admin/review/delete
 func AdminReviewDELETE(w http.ResponseWriter, r *http.Request) {
 	temp := struct {
 		ID int `json:"id"`
@@ -230,11 +230,11 @@ func AdminReviewDELETE(w http.ResponseWriter, r *http.Request) {
 		msg.Message = err.Error()
 		msg.Location = "/admin/review"
 		return
-	} else {
-		msg.Code = http.StatusOK
-		msg.Message = "Deletion successful"
-		msg.Location = "/admin/review"
 	}
+
+	msg.Code = http.StatusOK
+	msg.Message = "Deletion successful"
+	msg.Location = "/admin/review"
 
 	w.WriteHeader(msg.Code)
 	w.Header().Set("Content-Type", "application/json")
