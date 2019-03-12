@@ -74,6 +74,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
+	// TODO (Svein): Move this to front-end?
 	md := []byte(course.Description)
 	description := github_flavored_markdown.Markdown(md) //todo sanitize markdown
 

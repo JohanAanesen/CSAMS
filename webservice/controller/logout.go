@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
+	"log"
 	"net/http"
 )
 
@@ -10,8 +11,8 @@ import (
 func LogoutGET(w http.ResponseWriter, r *http.Request) {
 	sess, err := session.Instance(r) //get session
 	if err != nil {
+		log.Println("get session error: ", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
-		//todo log this event
 		return
 	}
 
@@ -25,8 +26,8 @@ func LogoutGET(w http.ResponseWriter, r *http.Request) {
 
 	err = sess.Save(r, w) //save 'empty' session
 	if err != nil {
+		log.Println("save session error: ", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
-		//todo log this event
 		return
 	}
 	http.Redirect(w, r, "/login", http.StatusFound)

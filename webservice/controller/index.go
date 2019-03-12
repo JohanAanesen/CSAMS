@@ -10,6 +10,7 @@ import (
 )
 
 // TODO : maybe remove/refactor global variable later :/
+// NOTE (Svein): this is a private global variable within the package 'controller', but can be accessed by other files in the package
 var joinedCourse = ""
 
 // IndexGET serves homepage to authenticated users, send anonymous to login

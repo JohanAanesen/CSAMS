@@ -606,8 +606,6 @@ func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(userID) // TODO brede : remove this
-
 	assignmentRepo := &model.AssignmentRepository{}
 
 	assignment, err := assignmentRepo.GetSingle(int(assignmentID))

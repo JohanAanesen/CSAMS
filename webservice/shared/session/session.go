@@ -92,7 +92,6 @@ func SaveUserToSession(user model.User, w http.ResponseWriter, r *http.Request) 
 	err = session.Save(r, w) //save session changes
 
 	if err != nil {
-		//todo log this event
 		log.Printf("ocould save session: %v", err)
 		//redirect somewhere
 		return false

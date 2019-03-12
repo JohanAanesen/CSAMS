@@ -4,7 +4,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 )
 
-// Submission .... TODO (Svein): comment
+// Submission struct
 type Submission struct {
 	ID     int  `json:"id" db:"id"`
 	FormID int  `json:"-" db:"form_id"`
