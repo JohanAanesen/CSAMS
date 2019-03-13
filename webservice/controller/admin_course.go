@@ -87,9 +87,10 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	course.ID = int(id)
 
 	// Log createCourse in the database and give error if something went wrong
-	lodData := model.Log{UserID: user.ID, Activity: model.CreatedCourse, CourseID: course.ID}
-	if !model.LogToDB(lodData) {
-		log.Fatal("Could not save createCourse log to database! (admin.go)")
+	logData := model.Log{UserID: user.ID, Activity: model.CreatedCourse, CourseID: course.ID}
+	err = model.LogToDB(logData)
+	if err != nil {
+		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -105,9 +106,10 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Log joinedCourse in the db and give error if something went wrong
-	lodData = model.Log{UserID: user.ID, Activity: model.JoinedCourse, CourseID: course.ID}
-	if !model.LogToDB(lodData) {
-		log.Fatal("Could not save createCourse log to database! (admin.go)")
+	logData = model.Log{UserID: user.ID, Activity: model.JoinedCourse, CourseID: course.ID}
+	err = model.LogToDB(logData)
+	if err != nil {
+		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}

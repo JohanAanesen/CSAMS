@@ -244,6 +244,8 @@ _Merged following to master_
 * Fixing assignment card
 * Added time zone on date formating
 * ALso added envar for the timezone so it's easier to change later
+* Changed to transaction some places in SQL queries
+* Changed logtodb to return error instead of boolean 
 
 
 

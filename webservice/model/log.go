@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"log"
@@ -37,11 +38,11 @@ type Log struct {
 }
 
 // LogToDB adds logs to the database when an user/admin does something noteworthy
-func LogToDB(payload Log) bool {
+func LogToDB(payload Log) error {
 
 	// UserID and Activity can not be nil
 	if payload.UserID <= 0 || payload.Activity == "" {
-		return false
+		return errors.New("error: userid and/or activity can not be nil (log.db)")
 	}
 
 	// Different sql queries to different log types belows
@@ -49,8 +50,7 @@ func LogToDB(payload Log) bool {
 
 	tx, err := db.GetDB().Begin() //start transaction
 	if err != nil {
-		log.Println(err.Error())
-		return false
+		return err
 	}
 
 	// Get current Norwegian time in string format TODO time-norwegian
@@ -77,24 +77,22 @@ func LogToDB(payload Log) bool {
 		err = joinCreateCourse(tx, payload, date)
 	default:
 		log.Println("Error: Wrong Log.Activity!")
-		return false
+		return errors.New("error: wrong log.activity type (log.db)")
 	}
 
 	// Handle possible error
 	if err != nil {
-		log.Fatal(err.Error())
 		tx.Rollback() //quit transaction if error
-		return false
+		return err
 	}
 
 	err = tx.Commit() //finish transaction
 	if err != nil {
-		log.Fatal(err.Error())
-		return false
+		return err
 	}
 
 	// Nothing went wrong -> return true
-	return true
+	return nil
 }
 
 func changeEmailUpdateFaq(tx *sql.Tx, data Log, date string) error {

@@ -3,7 +3,6 @@ package model
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
-	"log"
 	"time"
 )
 
@@ -101,7 +100,6 @@ func UploadUserSubmission(userSub UserSubmission) error {
 
 	tx, err := db.GetDB().Begin() //start transaction
 	if err != nil {
-		log.Println(err.Error())
 		return err
 	}
 
@@ -121,7 +119,6 @@ func UploadUserSubmission(userSub UserSubmission) error {
 
 	err = tx.Commit() //finish transaction
 	if err != nil {
-		log.Fatal(err.Error())
 		return err
 	}
 

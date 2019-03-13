@@ -154,7 +154,6 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 	ex, err := tx.Exec(query, assignment.Name, assignment.Description, assignment.Publish, assignment.Deadline, assignment.CourseID)
 	// Check for error
 	if err != nil {
-		log.Fatal(err.Error())
 		tx.Rollback() //quit transaction if error
 		return 0, err
 	}
@@ -163,7 +162,6 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 	id, err := ex.LastInsertId()
 	// Check for error
 	if err != nil {
-		log.Fatal(err.Error())
 		tx.Rollback() //quit transaction if error
 		return 0, err
 	}
@@ -176,7 +174,6 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 		_, err := tx.Exec(query, assignment.SubmissionID, id)
 		// Check for error
 		if err != nil {
-			log.Fatal(err.Error())
 			tx.Rollback() //quit transaction if error
 			return 0, err
 		}
@@ -190,7 +187,6 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 		_, err := tx.Exec(query, assignment.ReviewID, id)
 		// Check for error
 		if err != nil {
-			log.Fatal(err.Error())
 			tx.Rollback() //quit transaction if error
 			return 0, err
 		}
@@ -204,7 +200,6 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 		_, err := tx.Exec(query, assignment.Reviewers, id)
 		// Check for error
 		if err != nil {
-			log.Fatal(err.Error())
 			tx.Rollback() //quit transaction if error
 			return 0, err
 		}
@@ -216,14 +211,12 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 	_, err = tx.Exec(query, date, id)
 	// Check for error
 	if err != nil {
-		log.Fatal(err.Error())
 		tx.Rollback() //quit transaction if error
 		return 0, err
 	}
 
 	err = tx.Commit() //finish transaction
 	if err != nil {
-		log.Fatal(err.Error())
 		return 0, err
 	}
 

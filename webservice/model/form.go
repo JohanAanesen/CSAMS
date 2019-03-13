@@ -58,7 +58,6 @@ func (repo *FormRepository) Insert(form Form) (int, error) {
 	rows, err := tx.Exec(query, form.Prefix, form.Name, form.Description, date)
 	// Check for error
 	if err != nil {
-		log.Fatal(err.Error())
 		tx.Rollback() //quit transaction if error
 		return -1, err
 	}
@@ -67,14 +66,12 @@ func (repo *FormRepository) Insert(form Form) (int, error) {
 	id, err := rows.LastInsertId()
 	// Check for error
 	if err != nil {
-		log.Fatal(err.Error())
 		tx.Rollback() //quit transaction if error
 		return -1, err
 	}
 
 	err = tx.Commit() //finish transaction
 	if err != nil {
-		log.Fatal(err.Error())
 		return -1, err
 	}
 

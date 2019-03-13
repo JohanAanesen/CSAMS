@@ -56,7 +56,6 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-
 	// Set values
 	v := view.New(r)
 	v.Name = "index"
@@ -99,9 +98,11 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Log joinedCourse in the database and give error if something went wrong
-	lodData := model.Log{UserID: user.ID, Activity: model.JoinedCourse, CourseID: course.ID}
-	if !model.LogToDB(lodData) {
-		log.Fatal("Could not save JoinCourse log to database! (index.go)")
+	logData := model.Log{UserID: user.ID, Activity: model.JoinedCourse, CourseID: course.ID}
+	err := model.LogToDB(logData)
+
+	if err != nil {
+		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
