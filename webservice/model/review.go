@@ -230,7 +230,7 @@ func (repo *ReviewRepository) InsertReviewAnswers(fr FullReview) error {
 	}
 
 	for _, answer := range fr.Answers {
-		_, err := db.GetDB().Exec(query, fr.Reviewer, fr.Target, fr.ReviewID, fr.AssignmentID, answer.Type, answer.Name, answer.Label, answer.Answer, date)
+		_, err := tx.Exec(query, fr.Reviewer, fr.Target, fr.ReviewID, fr.AssignmentID, answer.Type, answer.Name, answer.Label, answer.Answer, date)
 		if err != nil {
 			tx.Rollback()
 			return err

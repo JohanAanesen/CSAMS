@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
+	"log"
 	"time"
 )
 
@@ -98,17 +99,30 @@ func UploadUserSubmission(userSub UserSubmission) error {
 	// Get current Norwegian time in string format TODO time-norwegian
 	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
+	tx, err := db.GetDB().Begin() //start transaction
+	if err != nil {
+		log.Println(err.Error())
+		return err
+	}
+
 	// Go through all answers
 	for _, answer := range userSub.Answers {
 
 		// Sql query
 		query := "INSERT INTO user_submissions (user_id, submission_id, assignment_id, type, answer, submitted) VALUES (?, ?, ?, ?, ?, ?)"
-		_, err := db.GetDB().Exec(query, userSub.UserID, userSub.SubmissionID, userSub.AssignmentID, answer.Type, answer.Value, date)
+		_, err := tx.Exec(query, userSub.UserID, userSub.SubmissionID, userSub.AssignmentID, answer.Type, answer.Value, date)
 
 		// Check if there was an error
 		if err != nil {
+			tx.Rollback() //quit transaction if error
 			return err
 		}
+	}
+
+	err = tx.Commit() //finish transaction
+	if err != nil {
+		log.Fatal(err.Error())
+		return err
 	}
 
 	// return nil if no errors

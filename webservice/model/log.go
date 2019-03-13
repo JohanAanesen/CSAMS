@@ -44,32 +44,37 @@ func LogToDB(payload Log) bool {
 		return false
 	}
 
+	// Different sql queries to different log types belows
+	var err error
+
+	tx, err := db.GetDB().Begin() //start transaction
+	if err != nil {
+		log.Println(err.Error())
+		return false
+	}
+
 	// Get current Norwegian time in string format TODO time-norwegian
 	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
-	// Different sql queries to different log types belows
-	var rows *sql.Rows
-	var err error
-
 	switch payload.Activity {
 	case ChangeEmail:
-		rows, err = changeEmailUpdateFaq(payload, date)
+		err = changeEmailUpdateFaq(tx, payload, date)
 	case UpdateAdminFAQ:
-		rows, err = changeEmailUpdateFaq(payload, date)
+		err = changeEmailUpdateFaq(tx, payload, date)
 	case ChangePassword:
-		rows, err = changePassword(payload, date)
+		err = changePassword(tx, payload, date)
 	case DeliveredAssignment:
-		rows, err = deliveredAssFinishedPeer(payload, date)
+		err = deliveredAssFinishedPeer(tx, payload, date)
 	case FinishedPeerReview:
-		rows, err = deliveredAssFinishedPeer(payload, date)
+		err = deliveredAssFinishedPeer(tx, payload, date)
 	case PeerReviewDone:
-		rows, err = deliveredAssFinishedPeer(payload, date)
+		err = deliveredAssFinishedPeer(tx, payload, date)
 	case CreatAssignment:
-		rows, err = createAssignment(payload, date)
+		err = createAssignment(tx, payload, date)
 	case JoinedCourse:
-		rows, err = joinCreateCourse(payload, date)
+		err = joinCreateCourse(tx, payload, date)
 	case CreatedCourse:
-		rows, err = joinCreateCourse(payload, date)
+		err = joinCreateCourse(tx, payload, date)
 	default:
 		log.Println("Error: Wrong Log.Activity!")
 		return false
@@ -78,47 +83,51 @@ func LogToDB(payload Log) bool {
 	// Handle possible error
 	if err != nil {
 		log.Fatal(err.Error())
+		tx.Rollback() //quit transaction if error
 		return false
 	}
 
-	// Close
-	defer rows.Close()
+	err = tx.Commit() //finish transaction
+	if err != nil {
+		log.Fatal(err.Error())
+		return false
+	}
 
 	// Nothing went wrong -> return true
 	return true
 }
 
-func changeEmailUpdateFaq(data Log, date string) (*sql.Rows, error) {
-	rows, err := db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`, `oldvalue`, `newvalue`) "+
+func changeEmailUpdateFaq(tx *sql.Tx, data Log, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`, `oldvalue`, `newvalue`) "+
 		"VALUES (?, ?, ?, ?, ?)", data.UserID, date, data.Activity, data.OldValue, data.NewValue)
 
-	return rows, err
+	return err
 }
 
-func changePassword(data Log, date string) (*sql.Rows, error) {
-	rows, err := db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`) "+
+func changePassword(tx *sql.Tx, data Log, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`) "+
 		"VALUES (?, ?, ?)", data.UserID, date, data.Activity)
 
-	return rows, err
+	return err
 }
 
-func deliveredAssFinishedPeer(data Log, date string) (*sql.Rows, error) {
-	rows, err := db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`,  `activity`, `assignmentid`,  `submissionid`) "+
+func deliveredAssFinishedPeer(tx *sql.Tx, data Log, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`,  `activity`, `assignmentid`,  `submissionid`) "+
 		"VALUES (?, ?, ?, ?, ?)", data.UserID, date, data.Activity, data.AssignmentID, data.SubmissionID)
 
-	return rows, err
+	return err
 }
 
-func createAssignment(data Log, date string) (*sql.Rows, error) {
-	rows, err := db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`, `assignmentid`) "+
+func createAssignment(tx *sql.Tx, data Log, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`, `assignmentid`) "+
 		"VALUES (?, ?, ?, ?)", data.UserID, date, data.Activity, data.AssignmentID)
 
-	return rows, err
+	return err
 }
 
-func joinCreateCourse(data Log, date string) (*sql.Rows, error) {
-	rows, err := db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`,  `activity`, `courseid`) "+
+func joinCreateCourse(tx *sql.Tx, data Log, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`,  `activity`, `courseid`) "+
 		"VALUES (?, ?, ?, ?)", data.UserID, date, data.Activity, data.CourseID)
 
-	return rows, err
+	return err
 }
