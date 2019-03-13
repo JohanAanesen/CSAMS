@@ -5,8 +5,7 @@ USE cs53;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
-SET time_zone = "+01:00";
--- Norwegian time zone!  TODO time --
+SET time_zone = "+01:00"; -- TODO time --
 
 --
 -- Database: `cs53`
@@ -21,7 +20,7 @@ SET time_zone = "+01:00";
 CREATE TABLE `adminfaq`
 (
   `id`        int(11)                     NOT NULL,
-  `timestamp` datetime                    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `timestamp` datetime                    NOT NULL DEFAULT CURRENT_TIMESTAMP, -- TODO time --
   `questions` text COLLATE utf8_danish_ci NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
@@ -45,7 +44,7 @@ CREATE TABLE `assignments`
   `id`            int(11)     NOT NULL,
   `name`          varchar(64) NOT NULL,
   `description`   text,
-  `created`       timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created`       timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP, -- TODO time --
   `publish`       datetime    NOT NULL,
   `deadline`      datetime    NOT NULL,
   `course_id`     int(11)     NOT NULL,
@@ -139,7 +138,7 @@ CREATE TABLE `forms`
   `prefix`      varchar(64) NOT NULL,
   `name`        varchar(64)      DEFAULT NULL,
   `description` text,
-  `created`     timestamp   NULL DEFAULT CURRENT_TIMESTAMP
+  `created`     timestamp   NULL DEFAULT CURRENT_TIMESTAMP -- TODO time --
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
@@ -160,7 +159,7 @@ VALUES (1, 'github_form', 'Github form', 'Form to Github', '2019-02-28 15:23:23'
 CREATE TABLE `logs`
 (
   `userid`       int(11)                            NOT NULL,
-  `timestamp`    datetime                           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `timestamp`    datetime                           NOT NULL DEFAULT CURRENT_TIMESTAMP, -- TODO time --
   `activity`     varchar(32) COLLATE utf8_danish_ci NOT NULL,
   `assignmentid` int(11)                                     DEFAULT NULL,
   `courseid`     int(11)                                     DEFAULT NULL,
@@ -317,7 +316,7 @@ CREATE TABLE `user_reviews`
   `name`          varchar(64) NOT NULL,
   `label`         varchar(64) NOT NULL,
   `answer`        text        NOT NULL,
-  `submitted`     datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `submitted`     datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP -- TODO time --
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
@@ -344,7 +343,7 @@ CREATE TABLE `user_submissions`
   `submission_id` int(11)     NOT NULL,
   `type`          varchar(64) NOT NULL,
   `answer`        mediumtext  NULL,
-  `submitted`     timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `submitted`     timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP -- TODO time --
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
@@ -368,9 +367,9 @@ CREATE TABLE `schedule_tasks`
 --
 
 INSERT INTO `user_submissions` (`id`, `user_id`, `assignment_id`, `submission_id`, `type`, `answer`, `submitted`)
-VALUES (1, 4, 1, 1, 'text', 'JohanKlausen', CURRENT_TIMESTAMP),
-       (2, 4, 1, 1, 'url', 'https://github.com/JohanKlausen/yeet', CURRENT_TIMESTAMP),
-       (3, 4, 1, 1, 'textarea', 'I did good!', CURRENT_TIMESTAMP),
+VALUES (1, 4, 1, 1, 'text', 'JohanKlausen', CURRENT_TIMESTAMP), -- TODO time --
+       (2, 4, 1, 1, 'url', 'https://github.com/JohanKlausen/yeet', CURRENT_TIMESTAMP), -- TODO time --
+       (3, 4, 1, 1, 'textarea', 'I did good!', CURRENT_TIMESTAMP), -- TODO time --
        (4, 5, 1, 1, 'text', 'StianFjerdingstad', '2019-03-01 23:59:59'),
        (5, 5, 1, 1, 'url', 'https://github.com/StianFjerdingstad/Sudoku', '2019-03-01 23:59:59'),
        (6, 5, 1, 1, 'textarea', 'I did sexy good!', '2019-03-01 23:59:59'),
