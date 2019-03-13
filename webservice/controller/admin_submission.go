@@ -16,7 +16,7 @@ func AdminSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	subRepo := model.SubmissionRepository{}
 	submissions, err := subRepo.GetAll()
 	if err != nil {
-		log.Println(err)
+		log.Println("get all submission", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -56,7 +56,8 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 	// Unmarshal the JSON-string sent from the form
 	err := json.Unmarshal([]byte(data), &form)
 	if err != nil {
-		log.Println(err)
+		log.Println("json unmarshal form", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 	// Declare empty slice for error messages
@@ -76,7 +77,7 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 	if len(errorMessages) != 0 {
 		formBytes, err := json.Marshal(&form)
 		if err != nil {
-			log.Println(err)
+			log.Println("json marshal form", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
@@ -100,7 +101,7 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 	// Insert data to database
 	err = repo.Insert(form)
 	if err != nil {
-		log.Println(err)
+		log.Println("insert submission", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -116,7 +117,7 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 	// Convert id string to int, check for errors
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		log.Println(err)
+		log.Println("strconv atoi id", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -125,7 +126,7 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 	formRepo := model.FormRepository{}
 	form, err := formRepo.Get(id)
 	if err != nil {
-		log.Println(err)
+		log.Println("get form", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -133,7 +134,7 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 	// Convert form to JSON
 	formBytes, err := json.Marshal(&form)
 	if err != nil {
-		log.Println(err)
+		log.Println("marshal form", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -164,20 +165,16 @@ func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-
 	// Declare empty slice for error messages
 	var errorMessages []string
-
 	// Check form name
 	if form.Name == "" {
 		errorMessages = append(errorMessages, "Form name cannot be blank.")
 	}
-
 	// Check number of fields
 	if len(form.Fields) == 0 {
 		errorMessages = append(errorMessages, "Form needs to have at least 1 field.")
 	}
-
 	// Check if any error messages has been appended
 	if len(errorMessages) != 0 {
 		formBytes, err := json.Marshal(&form)
