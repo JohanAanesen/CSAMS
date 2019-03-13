@@ -2,9 +2,12 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/scheduler"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
+	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -56,4 +59,40 @@ func AdminSchedulerGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Payloads"] = payloads
 
 	v.Render(w)
+}
+
+func AdminSchedulerDELETE(w http.ResponseWriter, r *http.Request){
+
+	assIDString := r.FormValue("assid")
+	subIDString := r.FormValue("subid")
+
+	if assIDString != "" && subIDString != ""{
+		log.Println("Either assid or subid was not provided")
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	assID, err := strconv.Atoi(assIDString)
+	if err != nil{
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	subID, err := strconv.Atoi(subIDString)
+	if err != nil{
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	sched := scheduler.Scheduler{}
+
+	if sched.SchedulerExists(subID, assID) {
+		err := sched.DeleteSchedule(subID, assID)
+		if err != nil{
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+	}
+
+	http.Redirect(w, r, "/admin/scheduler", http.StatusFound)
 }

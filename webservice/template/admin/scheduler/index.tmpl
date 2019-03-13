@@ -20,6 +20,11 @@
                 <hr class="bg-light">
                 <p>Payload: </p>
                 <code class="json">{{.Data}}</code>
+                <hr class="bg-light">
+                <p>
+                    <a href="/admin/scheduler/delete?assid={{.AssignmentID}}&subid={{.SubmissionID}}" class="btn btn-outline-danger">Edit</a>
+                </p>
+                <p>ps: to change reviewers or deadline, update this in assignment settings</p>
             </div>
         </div>
     </div>
