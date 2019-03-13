@@ -506,6 +506,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		if sched.SchedulerExists(int(assignment.SubmissionID.Int64), assignment.ID) {
 			err := sched.UpdateSchedule(int(assignment.SubmissionID.Int64),
 				assignment.ID, //assignment ID
+				int(assignment.Reviewers.Int64),
 				assignment.Deadline)
 			if err != nil {
 				log.Println(err)
