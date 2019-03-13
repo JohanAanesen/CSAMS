@@ -206,10 +206,12 @@ func AdminReviewUpdatePOST(w http.ResponseWriter, r *http.Request) {
 
 // AdminReviewDELETE handles DELETE-request @ /admin/review/delete
 func AdminReviewDELETE(w http.ResponseWriter, r *http.Request) {
+	// Make a temporary struct for retrieving the json data
 	temp := struct {
 		ID int `json:"id"`
 	}{}
 
+	// Decode JSON
 	err := json.NewDecoder(r.Body).Decode(&temp)
 	if err != nil {
 		log.Println("json decode error", err)
@@ -217,28 +219,31 @@ func AdminReviewDELETE(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Make a temporary struct for the response body
 	msg := struct {
 		Code     int    `json:"code"`
 		Message  string `json:"message"`
 		Location string `json:"location"`
 	}{}
 
+	// Delete the review from database, if error, set error messages, if ok, set success message
 	repo := model.ReviewRepository{}
 	err = repo.Delete(temp.ID)
 	if err != nil {
 		msg.Code = http.StatusInternalServerError
 		msg.Message = err.Error()
 		msg.Location = "/admin/review"
-		return
+	} else {
+		msg.Code = http.StatusOK
+		msg.Message = "Deletion successful"
+		msg.Location = "/admin/review"
 	}
 
-	msg.Code = http.StatusOK
-	msg.Message = "Deletion successful"
-	msg.Location = "/admin/review"
-
+	// Write response code to header, and content type to JSON
 	w.WriteHeader(msg.Code)
 	w.Header().Set("Content-Type", "application/json")
 
+	// Encode response
 	err = json.NewEncoder(w).Encode(msg)
 	if err != nil {
 		log.Println("json encode error", err)
