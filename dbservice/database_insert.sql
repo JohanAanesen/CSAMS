@@ -47,16 +47,16 @@ VALUES (1, 3),
        (9, 3),
        (10, 3);
 
-INSERT INTO `forms` (`id`, `prefix`, `name`, `description`, `created`)
-VALUES (1, 'github_form', 'Github form', 'Form to Github', '2019-02-28 15:23:23'),
-       (2, 'lab1', 'Lab1', 'Submission form for lab1', '2019-03-12 11:00:43');
+INSERT INTO `forms` (`id`, `prefix`, `name`, `created`)
+VALUES (1, 'github_form', 'Github form', '2019-02-28 15:23:23'),
+       (2, 'lab1', 'Lab1', '2019-03-12 11:00:43');
 
-INSERT INTO `fields` (`id`, `form_id`, `type`, `name`, `label`, `description`, `priority`, `weight`, `choices`)
-VALUES (1, 1, 'text', 'github_form_text_0', 'Github handle', 'Username on github', 0, 0, ''),
-       (2, 1, 'url', 'github_form_url_1', 'Github url', 'url to github', 1, 0, ''),
-       (3, 1, 'textarea', 'github_form_textarea_2', 'Comments', 'Comments about your work', 2, 0, ''),
-       (4, 2, 'radio', 'lab1_radio_0', 'Did the app have an MainActivity?', '', 0, 5, 'yes,no'),
-       (5, 2, 'textarea', 'lab1_textarea_1', 'What could have been done better?', '', 1, 5, '');
+INSERT INTO `fields` (`id`, `form_id`, `type`, `name`, `label`, `description`, `hasComment`, `priority`, `weight`, `choices`)
+VALUES (1, 1, 'text', 'github_form_text_0', 'Github handle', 'Username on github', 0, 0, 0, ''),
+       (2, 1, 'url', 'github_form_url_1', 'Github url', 'url to github', 0, 1, 0, ''),
+       (3, 1, 'textarea', 'github_form_textarea_2', 'Comments', 'Comments about your work', 0, 2, 0, ''),
+       (4, 2, 'radio', 'lab1_radio_0', 'Did the app have an MainActivity?', '', 0, 0, 5, 'yes,no'),
+       (5, 2, 'textarea', 'lab1_textarea_1', 'What could have been done better?', '', 0, 1, 5, '');
 
 INSERT INTO `reviews` (`id`, `form_id`)
 VALUES (1, 2);
