@@ -11,7 +11,7 @@ import (
 
 func TestPrettyTime(t *testing.T) {
 	const parse = `{{PRETTYTIME .}}`
-	const expected = "15:04 01/02/2019"
+	const expected = "15:04 02/01/2019"
 
 	input, err := time.Parse(time.RFC3339, "2019-01-02T15:04:05Z")
 	if err != nil {
