@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/gorilla/mux"
@@ -13,33 +12,37 @@ import (
 
 // AdminReviewGET handles GET-requests @ /admin/review
 func AdminReviewGET(w http.ResponseWriter, r *http.Request) {
+	// Set header content type and status code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-
-	var reviewRepo = model.ReviewRepository{}
-
+	// Get all reviews from database
+	reviewRepo := model.ReviewRepository{}
 	reviews, err := reviewRepo.GetAll()
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
+	// Create view
 	v := view.New(r)
+	// Set template file
 	v.Name = "admin/review/index"
-
+	// Set view variables
 	v.Vars["Reviews"] = reviews
-
+	// Render view
 	v.Render(w)
 }
 
 // AdminReviewCreateGET handles GET-requests @ /admin/review/create
 func AdminReviewCreateGET(w http.ResponseWriter, r *http.Request) {
+	// Set header content type and status code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-
+	// Create view
 	v := view.New(r)
+	// Set template file
 	v.Name = "admin/review/create"
-
+	// Render view
 	v.Render(w)
 }
 
@@ -47,7 +50,6 @@ func AdminReviewCreateGET(w http.ResponseWriter, r *http.Request) {
 func AdminReviewCreatePOST(w http.ResponseWriter, r *http.Request) {
 	// Get data from the form
 	data := r.FormValue("form_data")
-	fmt.Println(data)
 	// Declare Form-struct
 	var form = model.Form{}
 	// Unmarshal the JSON-string sent from the form
@@ -71,24 +73,25 @@ func AdminReviewCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Check if any error messages has been appended
 	if len(errorMessages) != 0 {
+		// Convert form to JSON, handle error if occurs
 		formBytes, err := json.Marshal(&form)
 		if err != nil {
 			log.Println(err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
-
+		// Set header content type and status code
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-
+		// Create view
 		v := view.New(r)
+		// Set template file
 		v.Name = "admin/review/create"
-
+		// Set view variables
 		v.Vars["Errors"] = errorMessages
 		v.Vars["formJSON"] = string(formBytes)
-
+		// Render view
 		v.Render(w)
-
 		return
 	}
 
@@ -97,7 +100,8 @@ func AdminReviewCreatePOST(w http.ResponseWriter, r *http.Request) {
 	// Insert data to database
 	err = repo.Insert(form)
 	if err != nil {
-		log.Println(err)
+		log.Println("review insert", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
@@ -107,14 +111,16 @@ func AdminReviewCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 // AdminReviewUpdateGET handles GET-requests @ /admin/review/update/{id:[0-9]+}
 func AdminReviewUpdateGET(w http.ResponseWriter, r *http.Request) {
+	// Get variables from the request
 	vars := mux.Vars(r)
+	// Convert id from string to id, and handle error
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
+	// Get a single form based on ID from the database
 	formRepo := model.FormRepository{}
 	form, err := formRepo.Get(id)
 	if err != nil {
@@ -122,22 +128,23 @@ func AdminReviewUpdateGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
+	// Convert form to JSON
 	formBytes, err := json.Marshal(&form)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
+	// Set header content type and status code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-
+	// Create view
 	v := view.New(r)
+	// Set template file
 	v.Name = "admin/review/update"
-
+	// Set view variables
 	v.Vars["formJSON"] = string(formBytes)
-
+	// Render view
 	v.Render(w)
 }
 
@@ -170,24 +177,25 @@ func AdminReviewUpdatePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Check if any error messages has been appended
 	if len(errorMessages) != 0 {
+		// Convert form to JSON
 		formBytes, err := json.Marshal(&form)
 		if err != nil {
 			log.Println(err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
-
+		// Set header content type and status code
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-
+		// Create view
 		v := view.New(r)
+		// Set template-file
 		v.Name = "admin/submission/update"
-
+		// Set view variables
 		v.Vars["Errors"] = errorMessages
 		v.Vars["formJSON"] = string(formBytes)
-
+		// Render view
 		v.Render(w)
-
 		return
 	}
 
@@ -197,6 +205,7 @@ func AdminReviewUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	err = repo.Update(form)
 	if err != nil {
 		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
