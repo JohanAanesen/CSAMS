@@ -23,7 +23,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 }
 
 // IndexSingleGET gets a single schedule from service
-func IndexSingleGET(w http.ResponseWriter, r *http.Request){
+func IndexSingleGET(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	subID, err := strconv.Atoi(vars["subid"])
 	if err != nil {
@@ -41,11 +41,10 @@ func IndexSingleGET(w http.ResponseWriter, r *http.Request){
 
 	payload := model.GetPayload(subID, assID)
 
-
-	if payload.ID != 0{
+	if payload.ID != 0 {
 		http.Header.Add(w.Header(), "content-type", "application/json")
 		err = json.NewEncoder(w).Encode(payload)
-		if err != nil{
+		if err != nil {
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
@@ -108,6 +107,7 @@ func IndexPUT(w http.ResponseWriter, r *http.Request) {
 		SubmissionID   int       `json:"submission_id"`
 		AssignmentID   int       `json:"assignment_id"`
 		ScheduledTime  time.Time `json:"scheduled_time"`
+		Reviewers      int       `json:"reviewers"`
 	}
 
 	//decode json request into struct
@@ -126,7 +126,7 @@ func IndexPUT(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	model.UpdateTimer(update.ScheduledTime, model.GetPayload(update.SubmissionID, update.AssignmentID))
+	model.UpdateTimer(update.Reviewers, update.ScheduledTime, model.GetPayload(update.SubmissionID, update.AssignmentID))
 
 	if err := json.NewEncoder(w).Encode(response{Success: true}); err != nil {
 		log.Println("Something went wrong encoding response") //todo real logger

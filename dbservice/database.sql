@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS cs53 COLLATE = utf8_general_ci;
+CREATE SCHEMA IF NOT EXISTS cs53 COLLATE = utf8_general_ci;
 
 USE cs53;
 
