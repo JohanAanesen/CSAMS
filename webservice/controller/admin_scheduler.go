@@ -62,7 +62,6 @@ func AdminSchedulerGET(w http.ResponseWriter, r *http.Request) {
 }
 
 func AdminSchedulerDELETE(w http.ResponseWriter, r *http.Request){
-
 	assIDString := r.FormValue("assid")
 	subIDString := r.FormValue("subid")
 
