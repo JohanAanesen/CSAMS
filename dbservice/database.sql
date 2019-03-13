@@ -337,7 +337,8 @@ CREATE TABLE `user_submissions`
   `assignment_id` int(11)     NOT NULL,
   `submission_id` int(11)     NOT NULL,
   `type`          varchar(64) NOT NULL,
-  `answer`        mediumtext  NULL,
+  `answer`        text        NULL,
+  `comment`       text        NULL,
   `submitted`     timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
