@@ -239,7 +239,9 @@ _Merged following to master_
 * Also changed go and js `getTimeNorwegian()` to use locale `"Europe/Oslo"` 
 
 ### Wednesday - 13/03/19
-* Removed timezone from sql and use golang instead, thi is so it's easier to change time later
+* Removed timezone from sql and use golang instead, this is so it's easier to change time later
+* Tried to remove go.mod/.sum but we needed them after all
+* Fixing assignment card
 
 
 
