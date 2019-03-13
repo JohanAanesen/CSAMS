@@ -14,12 +14,11 @@ type UserSubmission struct {
 	Submitted    time.Time
 }
 
-// TODO (Svein): Move this into some struct, or rename it to reflect it's actions
+// TODO (Svein): Move this into some struct as a method, or rename it to reflect it's actions
 // GetUserAnswers returns answers if it exists, empty if not
 func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
 	// Create an empty answers array
-	var answers []Answer
-
+	var result []Answer
 	// Create query string
 	query := "SELECT id, type, answer, comment FROM user_submissions WHERE user_id =? AND assignment_id=?;"
 	// Prepare and execute query
@@ -27,36 +26,23 @@ func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
 	if err != nil {
 
 		// Returns empty if it fails
-		return answers, err
+		return result, err
 	}
-
 	// Close connection
 	defer rows.Close()
-
 	// Loop through results
 	for rows.Next() {
-		var aID int
-		var aType string
-		var aValue string
-		var aComment string
-
+		var temp Answer
 		// Scan rows
-		err := rows.Scan(&aID, &aType, &aValue, &aComment)
-
+		err := rows.Scan(&temp.ID, &temp.Type, &temp.Value, &temp.Comment)
 		// Check for error
 		if err != nil {
-			return answers, err
+			return result, err
 		}
-
-		answers = append(answers, Answer{
-			ID:      aID,
-			Type:    aType,
-			Value:   aValue,
-			Comment: aComment,
-		})
+		result = append(result, temp)
 	}
 
-	return answers, nil
+	return result, nil
 }
 
 // GetSubmittedTime returns submitted time if it exists, empty if not
