@@ -22,8 +22,10 @@
                 <code class="json">{{.Data}}</code>
                 <hr class="bg-light">
                 <form action="/admin/scheduler/delete" method="post" id="deleteForm">
-                    <input type="hidden" form="deleteForm" id="assid" name="assid" value="{{.AssignmentID}}">
-                    <input type="hidden" form="deleteForm" id="subid" name="subid" value="{{.SubmissionID}}">
+                    <div class="form-group">
+                        <input type="hidden" form="deleteForm" id="assid" name="assid" value="{{.AssignmentID}}">
+                        <input type="hidden" form="deleteForm" id="subid" name="subid" value="{{.SubmissionID}}">
+                    </div>
                     <input type="submit" form="deleteForm" class="btn btn-outline-danger" value="Delete">
                 </form>
                 <p>ps: to change reviewers or deadline, update this in assignment settings</p>
