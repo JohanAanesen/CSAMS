@@ -21,7 +21,3 @@ out/*
 tls/
 /dbservice/data/*
 */vendor/*
-
-# Go Modules
-*.mod
-*.sum
