@@ -3,6 +3,7 @@ package model
 import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"log"
 )
 
@@ -49,31 +50,34 @@ func LogToDB(payload Log) bool {
 	var rows *sql.Rows
 	var err error
 
+	// Get current Norwegian time in string format TODO time-norwegian
+	date := util.ConvertTimeStampToString(util.GetTimeInNorwegian())
+
 	// TODO Brede : switch and new functions :)
 	// User changes name or email
 	if payload.Activity == ChangeEmail || payload.Activity == UpdateAdminFAQ {
-		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `activity`, `oldvalue`, `newvalue`) "+
-			"VALUES (?, ?, ?, ?)", payload.UserID, payload.Activity, payload.OldValue, payload.NewValue)
+		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`, `oldvalue`, `newvalue`) "+
+			"VALUES (?, ?, ?, ?, ?)", payload.UserID, date, payload.Activity, payload.OldValue, payload.NewValue)
 
 		// User changes password
 	} else if payload.Activity == ChangePassword {
-		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `activity`) "+
-			"VALUES (?, ?)", payload.UserID, payload.Activity)
+		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`) "+
+			"VALUES (?, ?, ?)", payload.UserID, date, payload.Activity)
 
 		// User has delivered assignment, finished peer reviewing or has an assignment that's done with peer-review
 	} else if payload.Activity == DeliveredAssignment || payload.Activity == FinishedPeerReview || payload.Activity == PeerReviewDone {
-		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `activity`, `assignmentid`,  `submissionid`) "+
-			"VALUES (?, ?, ?, ?)", payload.UserID, payload.Activity, payload.AssignmentID, payload.SubmissionID)
+		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`,  `activity`, `assignmentid`,  `submissionid`) "+
+			"VALUES (?, ?, ?, ?, ?)", payload.UserID, date, payload.Activity, payload.AssignmentID, payload.SubmissionID)
 
 		// Admin has created assignment
 	} else if payload.Activity == CreatAssignment {
-		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `activity`, `assignmentid`) "+
-			"VALUES (?, ?, ?)", payload.UserID, payload.Activity, payload.AssignmentID)
+		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`, `assignmentid`) "+
+			"VALUES (?, ?, ?, ?)", payload.UserID, date, payload.Activity, payload.AssignmentID)
 
 		// User has joined course or admin ahs created course
 	} else if payload.Activity == JoinedCourse || payload.Activity == CreatedCourse {
-		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `activity`, `courseid`) "+
-			"VALUES (?, ?, ?)", payload.UserID, payload.Activity, payload.CourseID)
+		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`,  `activity`, `courseid`) "+
+			"VALUES (?, ?, ?, ?)", payload.UserID, date, payload.Activity, payload.CourseID)
 
 		// Something is wrong
 	} else {

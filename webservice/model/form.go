@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"time"
 )
 
@@ -40,10 +41,14 @@ type FormRepository struct {
 
 // Insert form to database
 func (repo *FormRepository) Insert(form Form) (int, error) {
+
+	// Get current Norwegian time in string format TODO time-norwegian
+	date := util.ConvertTimeStampToString(util.GetTimeInNorwegian())
+
 	// Insertions Query
-	query := "INSERT INTO forms (prefix, name, description) VALUES (?, ?, ?);"
+	query := "INSERT INTO forms (prefix, name, description, created) VALUES (?, ?, ?, ?);"
 	// Execute query with parameters
-	rows, err := db.GetDB().Exec(query, form.Prefix, form.Name, form.Description)
+	rows, err := db.GetDB().Exec(query, form.Prefix, form.Name, form.Description, date)
 	// Check for error
 	if err != nil {
 		return -1, err

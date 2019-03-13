@@ -63,3 +63,10 @@ func GetTimeInNorwegian() time.Time {
 
 	return time.Now().In(loc)
 }
+
+// ConvertTimeStampToString converts date to string for inserting in db
+func ConvertTimeStampToString(timestamp time.Time) string {
+
+	// ex: 2019-03-13 10:14:40
+	return timestamp.Format("2006-01-02 15:04:05")
+}

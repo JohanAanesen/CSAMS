@@ -3,6 +3,7 @@ package model
 import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	_ "github.com/go-sql-driver/mysql" //database driver
 	"time"
 )
@@ -136,6 +137,10 @@ func (repo *AssignmentRepository) GetAllToUserSorted(UserID int) ([]Assignment, 
 
 // Insert a new assignment to the database
 func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
+
+	// Get current Norwegian time in string format TODO time-norwegian
+	date := util.ConvertTimeStampToString(util.GetTimeInNorwegian())
+
 	// Create query string
 	query := "INSERT INTO assignments (name, description, publish, deadline, course_id) VALUES (?, ?, ?, ?, ?);"
 	// Prepare and execute query
@@ -186,6 +191,15 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 		if err != nil {
 			return 0, err
 		}
+	}
+
+	// Set created date
+	query = "UPDATE assignments SET created = ? WHERE id = ?;"
+	// Prepare and execute query
+	_, err = db.GetDB().Exec(query, date, id)
+	// Check for error
+	if err != nil {
+		return 0, err
 	}
 
 	return int(id), nil

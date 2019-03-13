@@ -238,5 +238,8 @@ _Merged following to master_
     * and one for replacing [`toISOString()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString) so it doesn't alter the time before formatting.
 * Also changed go and js `getTimeNorwegian()` to use locale `"Europe/Oslo"` 
 
+### Wednesday - 13/03/19
+* Removed timezone from sql and use golang instead, thi is so it's easier to change time later
+
 
 

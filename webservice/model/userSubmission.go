@@ -95,12 +95,15 @@ func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
 // UploadUserSubmission uploads user submission to the db
 func UploadUserSubmission(userSub UserSubmission) error {
 
+	// Get current Norwegian time in string format TODO time-norwegian
+	date := util.ConvertTimeStampToString(util.GetTimeInNorwegian())
+
 	// Go through all answers
 	for _, answer := range userSub.Answers {
 
 		// Sql query
-		query := "INSERT INTO user_submissions (user_id, submission_id, assignment_id, type, answer) VALUES (?, ?, ?, ?, ?)"
-		_, err := db.GetDB().Exec(query, userSub.UserID, userSub.SubmissionID, userSub.AssignmentID, answer.Type, answer.Value)
+		query := "INSERT INTO user_submissions (user_id, submission_id, assignment_id, type, answer, submitted) VALUES (?, ?, ?, ?, ?, ?)"
+		_, err := db.GetDB().Exec(query, userSub.UserID, userSub.SubmissionID, userSub.AssignmentID, answer.Type, answer.Value, date)
 
 		// Check if there was an error
 		if err != nil {

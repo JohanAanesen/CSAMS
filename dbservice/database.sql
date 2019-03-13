@@ -5,7 +5,6 @@ USE cs53;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
-SET time_zone = "+01:00"; -- TODO time --
 
 --
 -- Database: `cs53`
@@ -20,7 +19,7 @@ SET time_zone = "+01:00"; -- TODO time --
 CREATE TABLE `adminfaq`
 (
   `id`        int(11)                     NOT NULL,
-  `timestamp` datetime                    NOT NULL DEFAULT CURRENT_TIMESTAMP, -- TODO time --
+  `timestamp` datetime                    NOT NULL,
   `questions` text COLLATE utf8_danish_ci NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
@@ -30,7 +29,7 @@ CREATE TABLE `adminfaq`
 --
 
 INSERT INTO `adminfaq` (`id`, `timestamp`, `questions`)
-VALUES (1, '2019-03-06 15:53:00',
+VALUES (1, '2018-07-21 17:45:00',
         'Q: How do I make a course?\n--------------------------------\n**A:** Dashboard -> Courses -> new. And create the course there\n\nQ: How do I invite students to course?\n--------------------------------\n**A:** You go to [admin/course](/admin/course) or [admin/](/admin) and on the course card, click the copy button to get the `join course through link` and send that to all students in preferred way (ex: email)\n\nQ: How do I make an assignment?\n--------------------------------\n**A:** Dashboard -> Assignments-> new. And create the assignment there');
 
 -- --------------------------------------------------------
@@ -44,12 +43,12 @@ CREATE TABLE `assignments`
   `id`            int(11)     NOT NULL,
   `name`          varchar(64) NOT NULL,
   `description`   text,
-  `created`       timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP, -- TODO time --
+  `created`       timestamp   NOT NULL,
   `publish`       datetime    NOT NULL,
   `deadline`      datetime    NOT NULL,
   `course_id`     int(11)     NOT NULL,
-  `submission_id` int(11)              DEFAULT NULL,
-  `review_id`     int(11)              DEFAULT NULL,
+  `submission_id` int(11) DEFAULT NULL,
+  `review_id`     int(11) DEFAULT NULL,
   `validation_id` int(11)     NULL,
   `reviewers`     int(11)     NULL
 ) ENGINE = InnoDB
@@ -136,9 +135,9 @@ CREATE TABLE `forms`
 (
   `id`          int(11)     NOT NULL,
   `prefix`      varchar(64) NOT NULL,
-  `name`        varchar(64)      DEFAULT NULL,
+  `name`        varchar(64) DEFAULT NULL,
   `description` text,
-  `created`     timestamp   NULL DEFAULT CURRENT_TIMESTAMP -- TODO time --
+  `created`     timestamp   NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
@@ -159,11 +158,11 @@ VALUES (1, 'github_form', 'Github form', 'Form to Github', '2019-02-28 15:23:23'
 CREATE TABLE `logs`
 (
   `userid`       int(11)                            NOT NULL,
-  `timestamp`    datetime                           NOT NULL DEFAULT CURRENT_TIMESTAMP, -- TODO time --
+  `timestamp`    datetime                           NOT NULL,
   `activity`     varchar(32) COLLATE utf8_danish_ci NOT NULL,
-  `assignmentid` int(11)                                     DEFAULT NULL,
-  `courseid`     int(11)                                     DEFAULT NULL,
-  `submissionid` int(11)                                     DEFAULT NULL,
+  `assignmentid` int(11) DEFAULT NULL,
+  `courseid`     int(11) DEFAULT NULL,
+  `submissionid` int(11) DEFAULT NULL,
   `oldvalue`     text COLLATE utf8_danish_ci,
   `newValue`     text COLLATE utf8_danish_ci
 ) ENGINE = InnoDB
@@ -316,7 +315,7 @@ CREATE TABLE `user_reviews`
   `name`          varchar(64) NOT NULL,
   `label`         varchar(64) NOT NULL,
   `answer`        text        NOT NULL,
-  `submitted`     datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP -- TODO time --
+  `submitted`     datetime    NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
@@ -343,7 +342,7 @@ CREATE TABLE `user_submissions`
   `submission_id` int(11)     NOT NULL,
   `type`          varchar(64) NOT NULL,
   `answer`        mediumtext  NULL,
-  `submitted`     timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP -- TODO time --
+  `submitted`     timestamp   NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
@@ -367,9 +366,9 @@ CREATE TABLE `schedule_tasks`
 --
 
 INSERT INTO `user_submissions` (`id`, `user_id`, `assignment_id`, `submission_id`, `type`, `answer`, `submitted`)
-VALUES (1, 4, 1, 1, 'text', 'JohanKlausen', CURRENT_TIMESTAMP), -- TODO time --
-       (2, 4, 1, 1, 'url', 'https://github.com/JohanKlausen/yeet', CURRENT_TIMESTAMP), -- TODO time --
-       (3, 4, 1, 1, 'textarea', 'I did good!', CURRENT_TIMESTAMP), -- TODO time --
+VALUES (1, 4, 1, 1, 'text', 'JohanKlausen', '2019-03-13 10:40:26'),
+       (2, 4, 1, 1, 'url', 'https://github.com/JohanKlausen/yeet', '2019-03-13 10:40:26'),
+       (3, 4, 1, 1, 'textarea', 'I did good!', '2019-03-13 10:40:26'),
        (4, 5, 1, 1, 'text', 'StianFjerdingstad', '2019-03-01 23:59:59'),
        (5, 5, 1, 1, 'url', 'https://github.com/StianFjerdingstad/Sudoku', '2019-03-01 23:59:59'),
        (6, 5, 1, 1, 'textarea', 'I did sexy good!', '2019-03-01 23:59:59'),
