@@ -123,7 +123,7 @@ func (repo *SubmissionRepository) GetAll() ([]Submission, error) {
 // DeleteSubmissionsToAssignment deletes specific submissions to assignmentID and SubmissionID
 func (repo *SubmissionRepository) DeleteSubmissionsToAssignment(assID int, subID int64) error {
 	// Create query-string
-	query := "DELETE  FROM user_submissions WHERE assignment_id = ? AND submission_id = ?"
+	query := "DELETE FROM user_submissions WHERE assignment_id = ? AND submission_id = ?"
 	// Perform query
 	rows, err := db.GetDB().Query(query, assID, subID)
 	// Check for error
@@ -141,7 +141,7 @@ func (repo *SubmissionRepository) GetSubmissionsCountFromAssignment(assID int, s
 	// Declare return slice
 	var result int
 	// Create query-string
-	query := "select count(distinct user_id) from user_submissions WHERE assignment_id LIKE ? AND submission_id LIKE ?"
+	query := "SELECT COUNT(DISTINCT user_id) FROM user_submissions WHERE assignment_id=? AND submission_id=?"
 	// Perform query
 	rows, err := db.GetDB().Query(query, assID, subID)
 	// Check for error
@@ -169,19 +169,38 @@ func (repo *SubmissionRepository) GetSubmissionsCountFromAssignment(assID int, s
 // Deletes all fields, and recreates them
 func (repo *SubmissionRepository) Update(form Form) error {
 	query := "UPDATE forms SET prefix=?, name=? WHERE id=?"
+	// Begin transaction
 	tx, err := db.GetDB().Begin()
 	if err != nil {
 		return err
 	}
-
-	_, err = db.GetDB().Exec(query, form.Prefix, form.Name, form.ID)
+	// Execute query
+	_, err = tx.Exec(query, form.Prefix, form.Name, form.ID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
 
 	query = "DELETE FROM fields WHERE form_id=?"
-	_, err = db.GetDB().Exec(query, form.ID)
+	// Begin transaction
+	tx, err = db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+	// Execute query
+	_, err = tx.Exec(query, form.ID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -197,23 +216,38 @@ func (repo *SubmissionRepository) Update(form Form) error {
 		if field.HasComment {
 			hasComment = 1
 		}
+
+		tx, err = db.GetDB().Begin()
+		if err != nil {
+			return err
+		}
+
 		// Execute the query
-		_, err := db.GetDB().Exec(query, form.ID, field.Type, field.Name, field.Label, field.Description,
+		_, err = tx.Exec(query, form.ID, field.Type, field.Name, field.Label, field.Description,
 			field.Order, field.Weight, field.Choices, hasComment)
 		// Check for error
 		if err != nil {
 			tx.Rollback()
 			return err
 		}
+
+		// Commit transaction
+		err = tx.Commit()
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
 	}
 
+	// Commit transaction
 	err = tx.Commit()
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
 	// Return no error
-	return nil
+	return err
 }
 
 // Delete a review form based on it's id
