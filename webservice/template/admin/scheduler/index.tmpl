@@ -3,7 +3,7 @@
 {{define "content"}}
 
 <h1>Scheduled tasks:</h1>
-
+<hr>
 <div class="row">
 {{range .Payloads}}
     <div class="col-xl-4 col-md-6 col-sm-12 mb-3">
@@ -18,9 +18,8 @@
                 <p><strong>Deadline: </strong> {{PRETTYTIME .ScheduledTime}}</p>
                 <p><strong>Reviewers: </strong> {{.Data.Reviewers}}</p>
                 <hr class="bg-light">
-                <pre>Payload: <code class="json">
-                {{.Data}}
-                </code></pre>
+                <p>Payload: </p>
+                <code class="json">{{.Data}}</code>
             </div>
         </div>
     </div>
