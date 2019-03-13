@@ -25,7 +25,7 @@
 ## OBS - Timezones!
 This project is in the norwegian timezone!
 ### SQL
- [`config/database.sql`](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/b74344a4a1673c4473442db99f965c17643d83c1/config/database.sql#L19) file at line `19`: `SET time_zone = "+01:00";`
+Uses the Go function below combined with `ConvertTimeStampToString(time.Time)`
 ### GO
 [`webservice/shared/util/time.go`](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/master/webservice/shared/util/time.go)
 ```Go
