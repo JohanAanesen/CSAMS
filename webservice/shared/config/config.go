@@ -80,6 +80,7 @@ func Initialize(configFile string) *Configuration {
 		plugin.MDConvert(),
 		plugin.Increment(),
 		plugin.SplitChoices(),
+		plugin.Atoi(),
 	)
 
 	return cfg
