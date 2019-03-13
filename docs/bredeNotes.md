@@ -242,6 +242,8 @@ _Merged following to master_
 * Removed timezone from sql and use golang instead, this is so it's easier to change time later
 * Tried to remove go.mod/.sum but we needed them after all
 * Fixing assignment card
+* Added time zone on date formating
+* ALso added envar for the timezone so it's easier to change later
 
 
 

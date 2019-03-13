@@ -220,7 +220,7 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 func (repo *ReviewRepository) InsertReviewAnswers(fr FullReview) error {
 
 	// Get current Norwegian time in string format TODO time-norwegian
-	date := util.ConvertTimeStampToString(util.GetTimeInNorwegian())
+	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
 	query := "INSERT user_reviews (user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, submitted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 

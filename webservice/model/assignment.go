@@ -139,7 +139,7 @@ func (repo *AssignmentRepository) GetAllToUserSorted(UserID int) ([]Assignment, 
 func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 
 	// Get current Norwegian time in string format TODO time-norwegian
-	date := util.ConvertTimeStampToString(util.GetTimeInNorwegian())
+	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
 	// Create query string
 	query := "INSERT INTO assignments (name, description, publish, deadline, course_id) VALUES (?, ?, ?, ?, ?);"

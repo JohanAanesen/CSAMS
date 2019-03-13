@@ -96,7 +96,7 @@ func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
 func UploadUserSubmission(userSub UserSubmission) error {
 
 	// Get current Norwegian time in string format TODO time-norwegian
-	date := util.ConvertTimeStampToString(util.GetTimeInNorwegian())
+	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
 	// Go through all answers
 	for _, answer := range userSub.Answers {
@@ -119,7 +119,7 @@ func UploadUserSubmission(userSub UserSubmission) error {
 func UpdateUserSubmission(userSub UserSubmission) error {
 
 	// Norwegian time TODO time-norwegian
-	now := util.GetTimeInNorwegian()
+	now := util.GetTimeInCorrectTimeZone()
 
 	// Go through all answers
 	for _, answer := range userSub.Answers {

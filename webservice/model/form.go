@@ -43,7 +43,7 @@ type FormRepository struct {
 func (repo *FormRepository) Insert(form Form) (int, error) {
 
 	// Get current Norwegian time in string format TODO time-norwegian
-	date := util.ConvertTimeStampToString(util.GetTimeInNorwegian())
+	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
 	// Insertions Query
 	query := "INSERT INTO forms (prefix, name, description, created) VALUES (?, ?, ?, ?);"

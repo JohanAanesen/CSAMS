@@ -88,7 +88,7 @@
                                                     <span class="badge {{if DEADLINEDUE .Deadline}}badge-dark{{ else}} badge-secondary{{end}}">{{$C.Code}}</span>
                                                 </h5>
                                                 <p{{if DEADLINEDUE .Deadline}} class="text-danger"{{end}}>
-                                                    <strong>Deadline: </strong> {{PRETTYTIME .Deadline}} <i>(Norwegian time!)</i></p> <!-- TODO time-norwegian -->
+                                                    <strong>Deadline: </strong> {{PRETTYTIME .Deadline}}</p>
                                                 <hr class="bg-light">
                                                 <a href="/assignment/{{.ID}}"
                                                    class="btn btn-outline-{{if DEADLINEDUE .Deadline}}light{{else}}dark{{end}} btn-sm">See

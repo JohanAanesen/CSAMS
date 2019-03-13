@@ -13,7 +13,7 @@ func DeadlineDue() template.FuncMap {
 
 	f["DEADLINEDUE"] = func(t time.Time) bool {
 		// TODO time-norwegian
-		return t.Before(util.GetTimeInNorwegian())
+		return t.Before(util.GetTimeInCorrectTimeZone())
 	}
 
 	return f

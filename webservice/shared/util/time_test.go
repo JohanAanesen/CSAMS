@@ -75,7 +75,7 @@ func TestDatetimeLocalToRFC33392(t *testing.T) {
 
 func TestGetTimeInNorwegian(t *testing.T) {
 	timeUTC := time.Now().UTC().Add(time.Hour)
-	norwegianTime := util.GetTimeInNorwegian()
+	norwegianTime := util.GetTimeInCorrectTimeZone()
 
 	diff := norwegianTime.Sub(timeUTC).Seconds()
 

@@ -46,7 +46,7 @@ func GetDateAndQuestionsFAQ() Faq {
 func UpdateFAQ(newFaq string) bool {
 
 	// Get current Norwegian time in string format TODO time-norwegian
-	date := util.ConvertTimeStampToString(util.GetTimeInNorwegian())
+	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
 	// Update to database
 	rows, err := db.GetDB().Query("UPDATE `adminfaq` SET `timestamp` = ?, `questions` = ? WHERE `id` = 1", date, newFaq)

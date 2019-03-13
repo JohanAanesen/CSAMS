@@ -3,6 +3,7 @@ package util
 import (
 	"errors"
 	"fmt"
+	"os"
 	"time"
 )
 
@@ -56,11 +57,13 @@ func GoToHTMLDatetimeLocal(t time.Time) string {
 	return fmt.Sprintf("%s-%s-%sT%s:%s", year, month, day, hour, minute)
 }
 
-// GetTimeInNorwegian returns the time in Norwegian time
-func GetTimeInNorwegian() time.Time {
+// GetTimeInCorrectTimeZone returns the time in "TIME_ZONE" time
+func GetTimeInCorrectTimeZone() time.Time {
 	//init the loc
-	loc, _ := time.LoadLocation("Europe/Oslo")
-
+	loc, err := time.LoadLocation(os.Getenv("TIME_ZONE"))
+	if err != nil {
+		panic(err.Error())
+	}
 	return time.Now().In(loc)
 }
 

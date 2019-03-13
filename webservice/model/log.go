@@ -44,43 +44,34 @@ func LogToDB(payload Log) bool {
 		return false
 	}
 
-	// TODO : Refactor the shit out of this function
+	// Get current Norwegian time in string format TODO time-norwegian
+	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
 	// Different sql queries to different log types belows
 	var rows *sql.Rows
 	var err error
 
-	// Get current Norwegian time in string format TODO time-norwegian
-	date := util.ConvertTimeStampToString(util.GetTimeInNorwegian())
-
-	// TODO Brede : switch and new functions :)
-	// User changes name or email
-	if payload.Activity == ChangeEmail || payload.Activity == UpdateAdminFAQ {
-		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`, `oldvalue`, `newvalue`) "+
-			"VALUES (?, ?, ?, ?, ?)", payload.UserID, date, payload.Activity, payload.OldValue, payload.NewValue)
-
-		// User changes password
-	} else if payload.Activity == ChangePassword {
-		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`) "+
-			"VALUES (?, ?, ?)", payload.UserID, date, payload.Activity)
-
-		// User has delivered assignment, finished peer reviewing or has an assignment that's done with peer-review
-	} else if payload.Activity == DeliveredAssignment || payload.Activity == FinishedPeerReview || payload.Activity == PeerReviewDone {
-		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`,  `activity`, `assignmentid`,  `submissionid`) "+
-			"VALUES (?, ?, ?, ?, ?)", payload.UserID, date, payload.Activity, payload.AssignmentID, payload.SubmissionID)
-
-		// Admin has created assignment
-	} else if payload.Activity == CreatAssignment {
-		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`, `assignmentid`) "+
-			"VALUES (?, ?, ?, ?)", payload.UserID, date, payload.Activity, payload.AssignmentID)
-
-		// User has joined course or admin ahs created course
-	} else if payload.Activity == JoinedCourse || payload.Activity == CreatedCourse {
-		rows, err = db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`,  `activity`, `courseid`) "+
-			"VALUES (?, ?, ?, ?)", payload.UserID, date, payload.Activity, payload.CourseID)
-
-		// Something is wrong
-	} else {
+	switch payload.Activity {
+	case ChangeEmail:
+		rows, err = changeEmailUpdateFaq(payload, date)
+	case UpdateAdminFAQ:
+		rows, err = changeEmailUpdateFaq(payload, date)
+	case ChangePassword:
+		rows, err = changePassword(payload, date)
+	case DeliveredAssignment:
+		rows, err = deliveredAssFinishedPeer(payload, date)
+	case FinishedPeerReview:
+		rows, err = deliveredAssFinishedPeer(payload, date)
+	case PeerReviewDone:
+		rows, err = deliveredAssFinishedPeer(payload, date)
+	case CreatAssignment:
+		rows, err = createAssignment(payload, date)
+	case JoinedCourse:
+		rows, err = joinCreateCourse(payload, date)
+	case CreatedCourse:
+		rows, err = joinCreateCourse(payload, date)
+	default:
+		log.Println("Error: Wrong Log.Activity!")
 		return false
 	}
 
@@ -95,4 +86,39 @@ func LogToDB(payload Log) bool {
 
 	// Nothing went wrong -> return true
 	return true
+}
+
+func changeEmailUpdateFaq(data Log, date string) (*sql.Rows, error) {
+	rows, err := db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`, `oldvalue`, `newvalue`) "+
+		"VALUES (?, ?, ?, ?, ?)", data.UserID, date, data.Activity, data.OldValue, data.NewValue)
+
+	return rows, err
+}
+
+func changePassword(data Log, date string) (*sql.Rows, error) {
+	rows, err := db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`) "+
+		"VALUES (?, ?, ?)", data.UserID, date, data.Activity)
+
+	return rows, err
+}
+
+func deliveredAssFinishedPeer(data Log, date string) (*sql.Rows, error) {
+	rows, err := db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`,  `activity`, `assignmentid`,  `submissionid`) "+
+		"VALUES (?, ?, ?, ?, ?)", data.UserID, date, data.Activity, data.AssignmentID, data.SubmissionID)
+
+	return rows, err
+}
+
+func createAssignment(data Log, date string) (*sql.Rows, error) {
+	rows, err := db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`, `assignmentid`) "+
+		"VALUES (?, ?, ?, ?)", data.UserID, date, data.Activity, data.AssignmentID)
+
+	return rows, err
+}
+
+func joinCreateCourse(data Log, date string) (*sql.Rows, error) {
+	rows, err := db.GetDB().Query("INSERT INTO `logs` (`userid`, `timestamp`,  `activity`, `courseid`) "+
+		"VALUES (?, ?, ?, ?)", data.UserID, date, data.Activity, data.CourseID)
+
+	return rows, err
 }

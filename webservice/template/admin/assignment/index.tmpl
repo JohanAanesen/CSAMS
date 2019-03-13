@@ -15,7 +15,7 @@
                             <span class="badge {{if DEADLINEDUE .Assignment.Deadline}}badge-dark{{ else}} badge-secondary{{end}}">{{.CourseCode}}</span>
                         </h5>
                         <p{{if DEADLINEDUE .Assignment.Deadline}} class="text-danger"{{end}}>
-                            <strong>Deadline: </strong> {{PRETTYTIME .Assignment.Deadline}} <i>(Norwegian time!)</i></p> <!-- TODO time-norwegian -->
+                            <strong>Deadline: </strong> {{PRETTYTIME .Assignment.Deadline}}</p>
                         <hr class="bg-light">
                         <a href="/admin/assignment/{{.Assignment.ID}}"
                            class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See

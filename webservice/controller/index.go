@@ -47,7 +47,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// TODO time-norwegian
-		timeNow := util.GetTimeInNorwegian()
+		timeNow := util.GetTimeInCorrectTimeZone()
 		for _, assignment := range assignments { //go through all it's assignments again
 			if timeNow.After(assignment.Publish) && timeNow.Before(assignment.Deadline) { //save all 'active' assignments
 				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: assignment, CourseCode: course.Code})
