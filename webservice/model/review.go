@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 )
 
@@ -324,46 +323,49 @@ func (repo *ReviewRepository) HasBeenReviewed(target, reviewer, assignment int) 
 
 // GetReviewForUser returns answered reviews for a single user at a given assignment
 func (repo *ReviewRepository) GetReviewForUser(user, assignment int) ([]FullReview, error) {
+	// Instantiate empty slice
 	result := make([]FullReview, 0)
-
+	// SQL Query
 	query := "SELECT DISTINCT user_reviewer FROM user_reviews WHERE user_target=? AND assignment_id=?"
+	// Perform query
 	rows, err := db.GetDB().Query(query, user, assignment)
 	if err != nil {
 		return result, err
 	}
-
+	// Close connection
 	defer rows.Close()
-
+	// Loop through results
 	for rows.Next() {
 		var tempID int
-
+		// Scan user_reviewer
 		err = rows.Scan(&tempID)
 		if err != nil {
 			return result, err
 		}
-
+		// SQL query
 		query = "SELECT type, name, label, answer FROM user_reviews WHERE user_target=? AND assignment_id=? AND user_reviewer=?"
+		// perform query
 		nextRows, err := db.GetDB().Query(query, user, assignment, tempID)
 		if err != nil {
 			return result, err
 		}
-
+		// Instantiate full review with empty answers slice
 		fullReview := FullReview{
 			Reviewer: tempID,
 			Answers:  make([]ReviewAnswer, 0),
 		}
-
+		// Loop through results
 		for nextRows.Next() {
 			var reviewAnswer ReviewAnswer
-
+			// Scan answer data
 			err = nextRows.Scan(&reviewAnswer.Type, &reviewAnswer.Name, &reviewAnswer.Label, &reviewAnswer.Answer)
 			if err != nil {
 				return result, err
 			}
-
+			// Append answers to full review
 			fullReview.Answers = append(fullReview.Answers, reviewAnswer)
 		}
-
+		// Append full review to result
 		result = append(result, fullReview)
 	}
 
@@ -372,41 +374,67 @@ func (repo *ReviewRepository) GetReviewForUser(user, assignment int) ([]FullRevi
 
 // Delete a review form based on it's id
 func (repo *ReviewRepository) Delete(id int) error {
+	// SQL query
 	query := "DELETE FROM fields WHERE form_id=?"
+	// Begin transaction
 	tx, err := db.GetDB().Begin()
 	if err != nil {
 		return err
 	}
-
-	_, err = db.GetDB().Exec(query, id)
+	// Execute query
+	_, err = tx.Exec(query, id)
 	if err != nil {
 		tx.Rollback()
-		return errors.New("could not delete fields with form_id = " + string(id))
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
 	}
 
+	// SQL query
 	query = "DELETE FROM reviews WHERE form_id=?"
+	// Begin transaction
 	tx, err = db.GetDB().Begin()
 	if err != nil {
 		return err
 	}
-
-	_, err = db.GetDB().Exec(query, id)
+	// Execute transaction
+	_, err = tx.Exec(query, id)
 	if err != nil {
 		tx.Rollback()
-		return errors.New("could not delete reviews with form_id = " + string(id))
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
 	}
 
+	// SQL query
 	query = "DELETE FROM forms WHERE id=?"
+	// Begin transaction
 	tx, err = db.GetDB().Begin()
 	if err != nil {
 		return err
 	}
-
-	_, err = db.GetDB().Exec(query, id)
+	// Execute transaction
+	_, err = tx.Exec(query, id)
 	if err != nil {
+		// Rollback transaction on error
 		tx.Rollback()
-		return errors.New("could not delete forms with id = " + string(id))
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		// Rollback transaction on error
+		tx.Rollback()
+		return err
 	}
 
-	return nil
+	return err
 }
