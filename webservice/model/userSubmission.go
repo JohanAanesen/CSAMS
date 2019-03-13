@@ -47,8 +47,7 @@ func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
 
 // GetSubmittedTime returns submitted time if it exists, empty if not
 func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
-
-	var submitted time.Time
+	result := time.Time{}
 
 	// Create query string
 	query := "SELECT DISTINCT submitted FROM user_submissions WHERE user_id=? AND assignment_id=?;"
@@ -57,7 +56,7 @@ func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
 	if err != nil {
 
 		// Returns empty if it fails
-		return submitted, false, err
+		return result, false, err
 	}
 
 	// Close connection
@@ -66,14 +65,13 @@ func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
 	// Loop through results
 	if rows.Next() {
 		// Scan rows
-		err := rows.Scan(&submitted)
-
+		err := rows.Scan(&result)
 		// Check for error
 		if err != nil {
 			return time.Time{}, false, err
 		}
 
-		return submitted, true, nil
+		return result, true, nil
 	}
 
 	return time.Time{}, false, nil
@@ -81,7 +79,7 @@ func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
 
 // UploadUserSubmission uploads user submission to the db
 func UploadUserSubmission(userSub UserSubmission) error {
-	// Qyery string
+	// Query string
 	query := "INSERT INTO user_submissions (user_id, submission_id, assignment_id, type, answer, comment) " +
 		"VALUES (?, ?, ?, ?, ?, ?)"
 	// Begin transaction with database
@@ -108,7 +106,7 @@ func UploadUserSubmission(userSub UserSubmission) error {
 // UpdateUserSubmission updates user submission to the db
 func UpdateUserSubmission(userSub UserSubmission) error {
 	// Sql query
-	query := "UPDATE `user_submissions` SET `answer` = ?, `submitted` = ?, comment=? WHERE `id` = ?"
+	query := "UPDATE user_submissions SET answer=?, submitted=?, comment=? WHERE id=?"
 	// Norwegian time TODO time
 	now := time.Now().UTC().Add(time.Hour)
 
