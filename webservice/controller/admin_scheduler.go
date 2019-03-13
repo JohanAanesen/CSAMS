@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+//AdminSchedulerGET handles GET requests to /admin/scheduler
 func AdminSchedulerGET(w http.ResponseWriter, r *http.Request) {
 	type PeerLoad struct {
 		Authentication string `json:"authentication"`
@@ -49,18 +50,12 @@ func AdminSchedulerGET(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	/*
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
-	*/
-
 	v.Vars["Payloads"] = payloads
 
 	v.Render(w)
 }
 
+//AdminSchedulerDELETE handles POST requests to the delete address
 func AdminSchedulerDELETE(w http.ResponseWriter, r *http.Request){
 	assIDString := r.FormValue("assid")
 	subIDString := r.FormValue("subid")
