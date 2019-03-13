@@ -55,7 +55,6 @@ CREATE TABLE `forms`
   `id`          int(11)     NOT NULL AUTO_INCREMENT,
   `prefix`      varchar(64) NOT NULL,
   `name`        varchar(64)      DEFAULT NULL,
-  `description` text             DEFAULT NULL,
   `created`     timestamp   NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 );
@@ -68,6 +67,7 @@ CREATE TABLE `fields`
   `name`        varchar(64) NOT NULL,
   `label`       varchar(64) DEFAULT NULL,
   `description` text        NOT NULL,
+  `hasComment`  int(1)      NOT NULL,
   `priority`    int(11)     NOT NULL,
   `weight`      int(11)     DEFAULT NULL,
   `choices`     varchar(64) DEFAULT NULL,
@@ -135,6 +135,7 @@ CREATE TABLE `user_reviews`
   `name`          varchar(64) NOT NULL,
   `label`         varchar(64) NOT NULL,
   `answer`        text        NOT NULL,
+  `comment`       text        DEFAULT NULL,
   `submitted`     datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`assignment_id`) REFERENCES assignments (`id`),
