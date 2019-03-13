@@ -461,6 +461,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
 	reviewID := sql.NullInt64{
 		Int64: int64(val),
 		Valid: val != 0,
