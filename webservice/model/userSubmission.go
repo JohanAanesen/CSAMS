@@ -21,7 +21,7 @@ func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
 	var answers []Answer
 
 	// Create query string
-	query := "SELECT id, user_submissions.type, user_submissions.answer FROM user_submissions WHERE user_id =? AND assignment_id=?;"
+	query := "SELECT id, type, answer, comment FROM user_submissions WHERE user_id =? AND assignment_id=?;"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query, userID, assignmentID)
 	if err != nil {
@@ -38,9 +38,10 @@ func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
 		var aID int
 		var aType string
 		var aValue string
+		var aComment string
 
 		// Scan rows
-		err := rows.Scan(&aID, &aType, &aValue)
+		err := rows.Scan(&aID, &aType, &aValue, &aComment)
 
 		// Check for error
 		if err != nil {
@@ -48,9 +49,10 @@ func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
 		}
 
 		answers = append(answers, Answer{
-			ID:    aID,
-			Type:  aType,
-			Value: aValue,
+			ID:      aID,
+			Type:    aType,
+			Value:   aValue,
+			Comment: aComment,
 		})
 	}
 
@@ -63,7 +65,7 @@ func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
 	var submitted time.Time
 
 	// Create query string
-	query := "select distinct submitted from user_submissions WHERE user_id =? AND assignment_id=?;"
+	query := "SELECT DISTINCT submitted FROM user_submissions WHERE user_id=? AND assignment_id=?;"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query, userID, assignmentID)
 	if err != nil {
@@ -93,39 +95,48 @@ func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
 
 // UploadUserSubmission uploads user submission to the db
 func UploadUserSubmission(userSub UserSubmission) error {
+	// Qyery string
+	query := "INSERT INTO user_submissions (user_id, submission_id, assignment_id, type, answer, comment) " +
+		"VALUES (?, ?, ?, ?, ?, ?)"
+	// Begin transaction with database
+	tx, err := db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
 
 	// Go through all answers
 	for _, answer := range userSub.Answers {
-
 		// Sql query
-		query := "INSERT INTO user_submissions (user_id, submission_id, assignment_id, type, answer) VALUES (?, ?, ?, ?, ?)"
-		_, err := db.GetDB().Exec(query, userSub.UserID, userSub.SubmissionID, userSub.AssignmentID, answer.Type, answer.Value)
-
+		_, err := db.GetDB().Exec(query, userSub.UserID, userSub.SubmissionID, userSub.AssignmentID,
+			answer.Type, answer.Value, answer.Comment)
 		// Check if there was an error
 		if err != nil {
+			tx.Rollback()
 			return err
 		}
 	}
-
 	// return nil if no errors
-	return nil
+	return err
 }
 
 // UpdateUserSubmission updates user submission to the db
 func UpdateUserSubmission(userSub UserSubmission) error {
-
+	// Sql query
+	query := "UPDATE `user_submissions` SET `answer` = ?, `submitted` = ?, comment=? WHERE `id` = ?"
 	// Norwegian time TODO time
 	now := time.Now().UTC().Add(time.Hour)
 
+	tx, err := db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+
 	// Go through all answers
 	for _, answer := range userSub.Answers {
-
-		// Sql query
-		query := "UPDATE `user_submissions` SET `answer` = ?, `submitted` = ? WHERE `id` = ?"
-		_, err := db.GetDB().Exec(query, answer.Value, now, answer.ID)
-
+		_, err := db.GetDB().Exec(query, answer.Value, now, answer.Comment, answer.ID)
 		// Check if there was an error
 		if err != nil {
+			tx.Rollback()
 			return err
 		}
 	}

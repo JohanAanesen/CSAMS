@@ -2,8 +2,8 @@
 {{define "head"}}{{end}}
 {{ define "content" }}
     <main role="main" class="container">
-        <div class="col my-2">
-            <a href="/assignment/{{ .Assignment.ID }}" class="btn btn-outline-dark">Go Back</a>
+        <div class="col my-3">
+            <a href="/assignment/{{ .Assignment.ID }}" class="btn btn-outline-dark mb-3">Go Back</a>
             <div class="col my-1 container pt-3 jumbotron">
 
 
@@ -29,8 +29,13 @@
                                     <textarea name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control"
                                               required>{{ .Answer.Value}}</textarea>
                                 {{ end }}
-
                             </div>
+                            {{if .Field.HasComment}}
+                                <div class="form-group">
+                                    <label for="{{.Field.Name}}_comment">Comment</label>
+                                    <textarea name="{{.Field.Name}}_comment" id="{{.Field.Name}}_comment" rows="3" class="form-control">{{.Answer.Comment}}</textarea>
+                                </div>
+                            {{end}}
                         {{ end }}
                     {{ else }}
                         {{ range .Fields }}
@@ -49,7 +54,7 @@
                             {{if .HasComment}}
                                 <div class="form-group">
                                     <label for="{{.Name}}_comment">Comment</label>
-                                    <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" class="form-control"></textarea>
+                                    <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3" class="form-control"></textarea>
                                 </div>
                             {{end}}
                         {{ end }}

@@ -29,9 +29,10 @@ type Field struct {
 
 // Answer struct used for storing answers from users in forms
 type Answer struct {
-	ID    int
-	Type  string
-	Value string
+	ID      int
+	Type    string
+	Value   string
+	Comment string
 }
 
 // FormRepository struct
@@ -150,7 +151,7 @@ func (repo *FormRepository) GetReviewFormFromAssignmentID(assignmentID int) (For
 	result := Form{}
 
 	// Create query-string
-	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices " +
+	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices, f.hasComment " +
 		"FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM reviews AS s WHERE id IN " +
 		"(SELECT a.review_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
 

@@ -403,17 +403,24 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Sanitize input
-		sanitizedValue := p.Sanitize(r.FormValue(field.Name))
+		// Initialize empty answer
+		answer := model.Answer{}
+		// Check if the field has comment enabled
+		if field.HasComment {
+			// Get comment content, sanitized
+			answer.Comment = p.Sanitize(r.FormValue(field.Name + "_comment"))
+		}
+
+		// Sanitize input, and get field type
+		answer.Value = p.Sanitize(r.FormValue(field.Name))
+		answer.Type = field.Type
+
 		// If delivered, only change the value
 		if delivered {
-			userSub.Answers[index].Value = sanitizedValue
+			userSub.Answers[index].Value = answer.Value
 		} else {
 			// Else, create new answers array
-			userSub.Answers = append(userSub.Answers, model.Answer{
-				Type:  field.Type,
-				Value: sanitizedValue,
-			})
+			userSub.Answers = append(userSub.Answers, answer)
 		}
 
 	}
@@ -627,7 +634,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 
 	hasBeenReviewed, err := reviewRepo.HasBeenReviewed(targetID, currentUser.ID, assignmentID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("has been reviewed", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -640,7 +647,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	// Parse form from the request
 	err = r.ParseForm()
 	if err != nil {
-		log.Println(err)
+		log.Println("parse form", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -649,7 +656,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	formRepo := model.FormRepository{}
 	form, err := formRepo.GetReviewFormFromAssignmentID(assignmentID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("get review form from assignment id", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}

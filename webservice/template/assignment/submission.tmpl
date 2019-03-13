@@ -70,7 +70,7 @@
                 </div>
             {{else}}
                 {{if not .Delivered}}
-                    <div class="col-12">
+                    <div class="col-12 pb-5">
                         <h2 class="display-4">Peer Review</h2>
                         <hr>
                         <form action="/assignment/{{.Assignment.ID}}/submission/{{.User.ID}}" method="post">
@@ -87,10 +87,11 @@
                                         </div>
                                         {{$V = INCREMENT $V}}
                                     {{end}}
+                                    <small class="form-text text-muted">{{.Description}}</small>
                                     </fieldset>
 
                                 {{else}}
-                                <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}}">
+                                <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
                                     {{if ne .Type "checkbox"}}<label for="{{ .Name }}">{{ .Label }}</label>{{end}}
                                     {{ if eq .Type "text" }}
                                         <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
@@ -104,11 +105,12 @@
                                         <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input">
                                         <label class="form-check-inline" for="{{ .Name }}">{{ .Label }}</label>
                                     {{ end }}
+                                    <small class="form-text text-muted">{{.Description}}</small>
                                 </div>
                                 {{end}}
                             {{ end }}
                             <input type="hidden" name="review_id" value="{{.Review.ID}}">
-                            <input type="submit" class="btn btn-success">
+                            <input type="submit" class="btn btn-success mt-5">
                         </form>
                     </div>
                 {{end}}

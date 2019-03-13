@@ -237,7 +237,8 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 
 // InsertReviewAnswers inserts answers from a review into the database
 func (repo *ReviewRepository) InsertReviewAnswers(fr FullReview) error {
-	query := "INSERT user_reviews (user_reviewer, user_target, review_id, assignment_id, type, name, label, answer) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+	query := "INSERT user_reviews (user_reviewer, user_target, review_id, assignment_id, type, name, label, answer) " +
+		"VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 
 	tx, err := db.GetDB().Begin()
 	if err != nil {
