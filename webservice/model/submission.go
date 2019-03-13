@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 )
 
@@ -219,41 +218,67 @@ func (repo *SubmissionRepository) Update(form Form) error {
 
 // Delete a review form based on it's id
 func (repo *SubmissionRepository) Delete(id int) error {
+	// SQL query
 	query := "DELETE FROM fields WHERE form_id=?"
+	// Begin transaction
 	tx, err := db.GetDB().Begin()
 	if err != nil {
 		return err
 	}
-
-	_, err = db.GetDB().Exec(query, id)
+	// Execute query
+	_, err = tx.Exec(query, id)
 	if err != nil {
 		tx.Rollback()
-		return errors.New("could not delete fields with form_id = " + string(id))
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
 	}
 
+	// SQL query
 	query = "DELETE FROM submissions WHERE form_id=?"
+	// Begin transaction
 	tx, err = db.GetDB().Begin()
 	if err != nil {
 		return err
 	}
-
-	_, err = db.GetDB().Exec(query, id)
+	// Execute transaction
+	_, err = tx.Exec(query, id)
 	if err != nil {
 		tx.Rollback()
-		return errors.New("could not delete submissions with form_id = " + string(id))
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
 	}
 
+	// SQL query
 	query = "DELETE FROM forms WHERE id=?"
+	// Begin transaction
 	tx, err = db.GetDB().Begin()
 	if err != nil {
 		return err
 	}
-
-	_, err = db.GetDB().Exec(query, id)
+	// Execute transaction
+	_, err = tx.Exec(query, id)
 	if err != nil {
+		// Rollback transaction on error
 		tx.Rollback()
-		return errors.New("could not delete forms with id = " + string(id))
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		// Rollback transaction on error
+		tx.Rollback()
+		return err
 	}
 
-	return nil
+	return err
 }
