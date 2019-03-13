@@ -45,16 +45,21 @@
                                     <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control"
                                               required></textarea>
                                 {{ end }}
-
                             </div>
+                            {{if .HasComment}}
+                                <div class="form-group">
+                                    <label for="{{.Name}}_comment">Comment</label>
+                                    <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" class="form-control"></textarea>
+                                </div>
+                            {{end}}
                         {{ end }}
                     {{ end }}
 
 
                     {{ if .Delivered }}
-                        <button id="uploadBtn" type="submit" class="btn btn-success">Update</button>
+                        <button id="uploadBtn" type="submit" class="btn btn-success mt-5">Update</button>
                     {{ else }}
-                        <button id="uploadBtn" type="submit" class="btn btn-primary">Upload</button>
+                        <button id="uploadBtn" type="submit" class="btn btn-primary mt-5">Upload</button>
                     {{ end }}
                 </form>
             </div>

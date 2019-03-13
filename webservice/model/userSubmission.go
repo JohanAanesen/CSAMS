@@ -14,9 +14,9 @@ type UserSubmission struct {
 	Submitted    time.Time
 }
 
+// TODO (Svein): Move this into some struct, or rename it to reflect it's actions
 // GetUserAnswers returns answers if it exists, empty if not
 func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
-
 	// Create an empty answers array
 	var answers []Answer
 

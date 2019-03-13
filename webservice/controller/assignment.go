@@ -210,7 +210,6 @@ func AssignmentPeerGET(w http.ResponseWriter, r *http.Request) {
 
 // AssignmentUploadGET serves the upload page
 func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
-
 	// Check for ID in url and give error if not
 	id := r.FormValue("id")
 	if id == "" {
@@ -309,7 +308,6 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 
 // AssignmentUploadPOST servers the
 func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
-
 	//XSS sanitizer
 	p := bluemonday.UGCPolicy()
 
@@ -324,7 +322,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	// Convert id from string to int
 	assignmentID, err := strconv.Atoi(p.Sanitize(id))
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("strconv atoi id", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -333,7 +331,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	assignmentRepo := model.AssignmentRepository{}
 	assignment, err := assignmentRepo.GetSingle(assignmentID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("get single assignment", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -369,8 +367,10 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	currentUser := session.GetUserFromSession(r)
+
 	// Check if user has uploaded already or not
-	delivered, err := assignmentRepo.HasUserSubmitted(assignmentID, session.GetUserFromSession(r).ID)
+	delivered, err := assignmentRepo.HasUserSubmitted(assignmentID, currentUser.ID)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -379,7 +379,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 
 	// Start to fill out user Submission struct
 	userSub := model.UserSubmission{
-		UserID:       session.GetUserFromSession(r).ID,
+		UserID:       currentUser.ID,
 		SubmissionID: assignment.SubmissionID.Int64,
 		AssignmentID: assignment.ID,
 	}
@@ -388,7 +388,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	if delivered {
 		userSub.Answers, err = model.GetUserAnswers(session.GetUserFromSession(r).ID, assignmentID)
 		if err != nil {
-			log.Println(err.Error())
+			log.Println("get user answers", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
@@ -396,7 +396,6 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 
 	// Check that every form is filled an give error if not
 	for index, field := range form.Fields {
-
 		// Check if they are empty and give error if they are
 		if r.FormValue(field.Name) == "" {
 			log.Println("Error: assignment with form name '" + field.Name + "' can not be empty! (assignment.go)")
@@ -404,14 +403,13 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Sanitize input
+		sanitizedValue := p.Sanitize(r.FormValue(field.Name))
 		// If delivered, only change the value
 		if delivered {
-			sanitizedValue := p.Sanitize(r.FormValue(field.Name)) //sanitize input
 			userSub.Answers[index].Value = sanitizedValue
 		} else {
 			// Else, create new answers array
-			sanitizedValue := p.Sanitize(r.FormValue(field.Name)) //sanitize input
-
 			userSub.Answers = append(userSub.Answers, model.Answer{
 				Type:  field.Type,
 				Value: sanitizedValue,
@@ -419,9 +417,6 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-
-	// Initiate error
-	err = nil
 
 	// Upload or update answers
 	if !delivered {
@@ -642,6 +637,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Parse form from the request
 	err = r.ParseForm()
 	if err != nil {
 		log.Println(err)
