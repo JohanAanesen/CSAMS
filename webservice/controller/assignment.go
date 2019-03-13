@@ -516,25 +516,25 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	// Get form and log possible error
 	form, err := formRepo.GetSubmissionFormFromAssignmentID(assignment.ID)
 	if err != nil {
-		log.Println("get submission from form assingment id", err.Error())
+		log.Println("get submission from form assignment id", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	// Get answers to user if he has delivered
-	answers, err := model.GetUserAnswers(userID, assignmentID)
+	// Get assignmentAnswers to user if he has delivered
+	assignmentAnswers, err := model.GetUserAnswers(userID, assignmentID)
 	if err != nil {
-		log.Println("get user answers", err.Error())
+		log.Println("get user assignmentAnswers", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	com := MergedAnswerField{}
 	// Only merge if user has delivered
-	if len(answers) > 0 {
-		// Make sure answers and fields are same length before merging
-		if len(answers) != len(form.Fields) {
-			log.Println("Error: answers(" + strconv.Itoa(len(answers)) + ") is not equal length as fields(" + strconv.Itoa(len(form.Fields)) + ")! (assignment.go)")
+	if len(assignmentAnswers) > 0 {
+		// Make sure assignmentAnswers and fields are same length before merging
+		if len(assignmentAnswers) != len(form.Fields) {
+			log.Println("Error: assignmentAnswers(" + strconv.Itoa(len(assignmentAnswers)) + ") is not equal length as fields(" + strconv.Itoa(len(form.Fields)) + ")! (assignment.go)")
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
@@ -542,7 +542,7 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		// Merge field and answer if assignment is delivered
 		for i := 0; i < len(form.Fields); i++ {
 			com.Items = append(com.Items, Combined{
-				Answer: answers[i],
+				Answer: assignmentAnswers[i],
 				Field:  form.Fields[i],
 			})
 		}
@@ -551,48 +551,33 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	// Get review form for the assignment
 	review, err := reviewRepo.GetSingle(assignmentID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("get single review", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
+	// Set header content-type and status code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
-	// Set values
+	// Create view
 	v := view.New(r)
-
+	// Set template file
 	v.Name = "assignment/submission"
-
+	// View variables
 	v.Vars["Assignment"] = assignment
 	v.Vars["User"] = user
 	v.Vars["Course"] = course
-
-	v.Vars["Delivered"] = len(answers)
-	v.Vars["IsTeacher"] = session.GetUserFromSession(r).Teacher
-
+	v.Vars["Delivered"] = len(assignmentAnswers)
+	v.Vars["IsTeacher"] = currentUser.Teacher
 	v.Vars["Fields"] = form.Fields
-
 	v.Vars["AnswersAndFields"] = com.Items
-
-	// TODO (Svein): move this futher up?
-	if session.GetUserFromSession(r).Teacher {
-		reviewRepo := model.ReviewRepository{}
-
-		myReviews, err := reviewRepo.GetReviewForUser(userID, assignmentID)
-		if err != nil {
-			log.Println("GetReviewFromUser", err)
-			ErrorHandler(w, r, http.StatusInternalServerError)
-			return
-		}
-
-		v.Vars["MyReviews"] = myReviews
-	}
-
 	if review.FormID != 0 {
 		v.Vars["Review"] = review
 	}
 
+
+	// Render view
 	v.Render(w)
 }
 

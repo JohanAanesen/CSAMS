@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 )
 
@@ -189,7 +190,7 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 		return result, err
 	}
 
-	var reviewID int
+	var reviewID sql.NullInt64
 
 	for rows.Next() {
 		err = rows.Scan(&reviewID)
@@ -198,7 +199,7 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 		}
 	}
 
-	result.ID = reviewID
+	result.ID = int(reviewID.Int64)
 
 	query = "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices, f.hasComment " +
 		"FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM reviews AS s WHERE id IN " +
