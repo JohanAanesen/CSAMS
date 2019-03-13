@@ -12,33 +12,38 @@ import (
 
 // AdminSubmissionGET handles GET-request to /admin/submission
 func AdminSubmissionGET(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-
-	var subRepo = model.SubmissionRepository{}
-
+	// Get all submissions from database
+	subRepo := model.SubmissionRepository{}
 	submissions, err := subRepo.GetAll()
 	if err != nil {
 		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
+	// Set header code and content type
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	// Create view
 	v := view.New(r)
+	// Set template file
 	v.Name = "admin/submission/index"
-
+	// Set view variables
 	v.Vars["Submissions"] = submissions
-
+	// Render view
 	v.Render(w)
 }
 
 // AdminSubmissionCreateGET handles GET-request to /admin/submission/create
 func AdminSubmissionCreateGET(w http.ResponseWriter, r *http.Request) {
+	// Set header code and content type
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-
+	// Create view
 	v := view.New(r)
+	// Set template file
 	v.Name = "admin/submission/create"
-
+	// Render view
 	v.Render(w)
 }
 
@@ -75,18 +80,18 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
-
+		// Set header content type and status code
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-
+		// Create new view
 		v := view.New(r)
+		// Set template file
 		v.Name = "admin/submission/create"
-
+		// Set view variables
 		v.Vars["Errors"] = errorMessages
 		v.Vars["formJSON"] = string(formBytes)
-
+		// Render view
 		v.Render(w)
-
 		return
 	}
 
@@ -96,6 +101,7 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 	err = repo.Insert(form)
 	if err != nil {
 		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
@@ -105,7 +111,9 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 // AdminSubmissionUpdateGET handles GET-request @ /admin/submission/update/{id:[0-9]+}
 func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
+	// Get variables from request
 	vars := mux.Vars(r)
+	// Convert id string to int, check for errors
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		log.Println(err)
@@ -113,6 +121,7 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get form from database, based on the id
 	formRepo := model.FormRepository{}
 	form, err := formRepo.Get(id)
 	if err != nil {
@@ -121,6 +130,7 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Convert form to JSON
 	formBytes, err := json.Marshal(&form)
 	if err != nil {
 		log.Println(err)
@@ -128,14 +138,16 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Set header content-type and code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-
+	// Create a view
 	v := view.New(r)
+	// Set template-file
 	v.Name = "admin/submission/update"
-
+	// View variables
 	v.Vars["formJSON"] = string(formBytes)
-
+	// Render view
 	v.Render(w)
 }
 
@@ -175,17 +187,19 @@ func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Set header content-type and code
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 
+		// Create a view
 		v := view.New(r)
+		// Set template file
 		v.Name = "admin/submission/update"
-
+		// Set view variables
 		v.Vars["Errors"] = errorMessages
 		v.Vars["formJSON"] = string(formBytes)
-
+		// Render view
 		v.Render(w)
-
 		return
 	}
 
@@ -194,7 +208,8 @@ func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// Insert data to database
 	err = repo.Update(form)
 	if err != nil {
-		log.Println(err)
+		log.Println("update submission", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
