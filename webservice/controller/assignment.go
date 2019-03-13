@@ -397,7 +397,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	// Check that every form is filled an give error if not
 	for index, field := range form.Fields {
 		// Check if they are empty and give error if they are
-		if r.FormValue(field.Name) == "" {
+		if r.FormValue(field.Name) == "" && field.Type != "checkbox" {
 			log.Println("Error: assignment with form name '" + field.Name + "' can not be empty! (assignment.go)")
 			ErrorHandler(w, r, http.StatusBadRequest)
 			return
