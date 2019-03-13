@@ -72,7 +72,7 @@
         <p class="lead"><strong>Deadline:</strong> {{PRETTYTIME .Assignment.Deadline}}</p>
         <div class="card mb-5">
             <div class="card-header">
-                <ul class="nav nav-pills card-header-tabs pull-right" id="myTab" role="tablist" style="float:left;">
+                <ul class="nav nav-pills card-header-tabs pull-right mb-0" id="myTab" role="tablist" style="float:left;">
                     <li class="nav-item">
                         <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
                            aria-controls="home" aria-selected="true">Assignment</a>
@@ -103,15 +103,17 @@
 
                 <ul class="nav nav-pills" style="float:right;">
                     <li>
-                        {{if not .Delivered}}
-                            <a style="float:right;" href="/assignment/submission?id={{ .Assignment.ID }}"
-                               class="btn btn-outline-light btn-success {{if .IsDeadlineOver}}disabled{{end}}">Deliver
-                                assignment</a>
-                        {{else}}
-                            <a href="/assignment/submission?id={{ .Assignment.ID }}"
-                               class="btn btn-outline-light btn-warning {{if .IsDeadlineOver}}disabled{{end}}">Change
-                                your
-                                submission</a>
+                        {{if not .IsTeacher}}
+                            {{if not .Delivered}}
+                                <a style="float:right;" href="/assignment/submission?id={{ .Assignment.ID }}"
+                                   class="btn btn-outline-light btn-success {{if .IsDeadlineOver}}disabled{{end}}">Deliver
+                                    assignment</a>
+                            {{else}}
+                                <a href="/assignment/submission?id={{ .Assignment.ID }}"
+                                   class="btn btn-outline-light btn-warning {{if .IsDeadlineOver}}disabled{{end}}">Change
+                                    your
+                                    submission</a>
+                            {{end}}
                         {{end}}
                     </li>
                 </ul>

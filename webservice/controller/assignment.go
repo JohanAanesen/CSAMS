@@ -149,6 +149,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Reviews"] = filteredSubmissionReviews
 	v.Vars["HasBeenValidated"] = hasBeenValidated
 	v.Vars["MyReviews"] = myReviews
+	v.Vars["IsTeacher"] = currentUser.Teacher
 
 	v.Render(w)
 }
@@ -478,14 +479,14 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	// Get relevant assignment
 	assignment, err := assignmentRepo.GetSingle(assignmentID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("get single assignment", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	hasBeenReviewed, err := reviewRepo.HasBeenReviewed(user.ID, currentUser.ID, assignment.ID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("has been reviewed", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -505,7 +506,7 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	// Get course and log possible error
 	course, err := courseRepo.GetSingle(assignment.CourseID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("course get single", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -513,7 +514,7 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	// Get form and log possible error
 	form, err := formRepo.GetSubmissionFormFromAssignmentID(assignment.ID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("get submission from form assingment id", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -521,7 +522,7 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	// Get answers to user if he has delivered
 	answers, err := model.GetUserAnswers(userID, assignmentID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("get user answers", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
