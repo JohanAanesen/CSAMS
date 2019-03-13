@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"log"
 	"time"
 )
@@ -23,9 +24,9 @@ func StopTimer(timerID int) {
 }
 
 //UpdateTimer should update the time of an existing timer (delete and create new timer)
-func UpdateTimer(newReviewers int, newTime time.Time, payload Payload) bool {
+func UpdateTimer(newData json.RawMessage, newTime time.Time, payload Payload) bool {
 
-	//payload.Reviewers = newReviewers
+	payload.Data = newData
 
 	//update time in payload object
 	payload.ScheduledTime = newTime

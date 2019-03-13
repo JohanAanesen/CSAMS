@@ -10,13 +10,13 @@ import (
 //Payload struct
 //https://stackoverflow.com/questions/28254102/how-to-unmarshal-json-into-interface-in-go
 type Payload struct {
-	ID             int       `json:"id"`
-	Authentication string    `json:"authentication"`
-	ScheduledTime  time.Time `json:"scheduled_time"`
-	Task           string    `json:"task"`
-	AssignmentID   int       `json:"assignment_id"`
-	SubmissionID   int       `json:"submission_id"`
-	Data           json.RawMessage
+	ID             int             `json:"id"`
+	Authentication string          `json:"authentication"`
+	ScheduledTime  time.Time       `json:"scheduled_time"`
+	Task           string          `json:"task"`
+	AssignmentID   int             `json:"assignment_id"`
+	SubmissionID   int             `json:"submission_id"`
+	Data           json.RawMessage `json:"data"`
 }
 
 //GetPeerTask withdraws a PeerTask object from the data column of a payload object
