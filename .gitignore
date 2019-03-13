@@ -23,5 +23,5 @@ tls/
 */vendor/*
 
 # Go Modules
-*/go.mod
-*/go.sum
+*.mod
+*.sum
