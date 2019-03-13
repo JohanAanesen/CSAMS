@@ -56,24 +56,24 @@ func AdminSchedulerGET(w http.ResponseWriter, r *http.Request) {
 }
 
 //AdminSchedulerDELETE handles POST requests to the delete address
-func AdminSchedulerDELETE(w http.ResponseWriter, r *http.Request){
+func AdminSchedulerDELETE(w http.ResponseWriter, r *http.Request) {
 	assIDString := r.FormValue("assid")
 	subIDString := r.FormValue("subid")
 
-	if assIDString == "" && subIDString == ""{
+	if assIDString == "" && subIDString == "" {
 		log.Println("Either assid or subid was not provided")
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
 
 	assID, err := strconv.Atoi(assIDString)
-	if err != nil{
+	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	subID, err := strconv.Atoi(subIDString)
-	if err != nil{
+	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -82,7 +82,7 @@ func AdminSchedulerDELETE(w http.ResponseWriter, r *http.Request){
 
 	if sched.SchedulerExists(subID, assID) {
 		err := sched.DeleteSchedule(subID, assID)
-		if err != nil{
+		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}

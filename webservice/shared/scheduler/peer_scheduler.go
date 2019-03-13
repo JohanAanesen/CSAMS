@@ -71,7 +71,7 @@ func (scheduler Scheduler) UpdateSchedule(subID int, assID int, reviewers int, s
 		"scheduled_time": scheduledTime,
 		"submission_id":  subID,
 		"assignment_id":  assID,
-		"data": peerTask,
+		"data":           peerTask,
 	}
 
 	//this is just sending the request

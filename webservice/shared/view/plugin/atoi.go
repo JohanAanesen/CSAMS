@@ -5,6 +5,7 @@ import (
 	"strconv"
 )
 
+//Atoi function
 func Atoi() template.FuncMap {
 	f := make(template.FuncMap)
 
