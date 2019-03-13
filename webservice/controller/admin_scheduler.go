@@ -65,7 +65,7 @@ func AdminSchedulerDELETE(w http.ResponseWriter, r *http.Request){
 	assIDString := r.FormValue("assid")
 	subIDString := r.FormValue("subid")
 
-	if assIDString != "" && subIDString != ""{
+	if assIDString == "" && subIDString == ""{
 		log.Println("Either assid or subid was not provided")
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
