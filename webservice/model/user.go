@@ -23,8 +23,7 @@ func UpdateUserName(userID int, newName string) bool {
 	rows, err := db.GetDB().Query("UPDATE users SET name = ? WHERE id = ?", newName, userID)
 
 	if err != nil {
-		//todo log error
-		log.Fatal(err.Error())
+		log.Println("update user name query error:", err)
 		return false
 	}
 
@@ -96,8 +95,7 @@ func UpdateUserEmail(userID int, email string) bool {
 	rows, err := db.GetDB().Query("UPDATE users SET email_private = ? WHERE id = ?", email, userID)
 
 	if err != nil {
-		//todo log error
-		log.Fatal(err.Error())
+		log.Println("update user email query error:", err)
 		return false
 	}
 
@@ -113,16 +111,14 @@ func UpdateUserPassword(userID int, password string) bool {
 	pass, err := hashPassword(password)
 
 	if err != nil {
-		//todo log error
-		log.Fatal(err.Error())
+		log.Println("hash password error: ", err)
 		return false
 	}
 
 	rows, err := db.GetDB().Query("UPDATE users SET password = ? WHERE id = ?", pass, userID)
 
 	if err != nil {
-		//todo log error
-		log.Fatal(err.Error())
+		log.Println("update user password query error: ", err)
 		return false
 	}
 

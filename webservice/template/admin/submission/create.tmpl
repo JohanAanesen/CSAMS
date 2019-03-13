@@ -9,14 +9,14 @@
     <div class="row" id="output"></div>
 {{end}}
 {{define "foot"}}
-    <script src="/static/js/form.js"></script>
-    <script>
-        let form = new Form();
-        form.Initialize({
-            output: '#output',
-            title: 'Create new Submission form',
-            request: '/admin/submission/create',
-            weighted: false,
-        });
-    </script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script src="/static/js/form-builder.js"></script>
+<script>
+    new FormBuilder({
+        title: 'Create new Submission Form',
+        description: '',
+        request: '/admin/submission/create',
+        output: document.getElementById('output'),
+    });
+</script>
 {{end}}

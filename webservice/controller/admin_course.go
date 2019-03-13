@@ -62,14 +62,13 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		Semester:    r.FormValue("semester"),
 	}
 
-	// TODO (Svein): Move this to model, in a function
+	// TODO (Svein): Move this to model, in a function/method
 	//insert into database
 	result, err := db.GetDB().Exec("INSERT INTO course(hash, coursecode, coursename, year, semester, description, teacher) VALUES(?, ?, ?, ?, ?, ?, ?)",
 		course.Hash, course.Code, course.Name, course.Year, course.Semester, course.Description, user.ID)
 
 	// Log error
 	if err != nil {
-		//todo log error
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return

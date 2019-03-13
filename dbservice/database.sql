@@ -1,4 +1,5 @@
-CREATE SCHEMA IF NOT EXISTS cs53 COLLATE = utf8_general_ci;
+CREATE SCHEMA IF NOT EXISTS cs53
+  COLLATE = utf8_general_ci;
 
 USE cs53;
 
@@ -20,24 +21,24 @@ CREATE TABLE `adminfaq`
 CREATE TABLE `users`
 (
   `id`            int(11)     NOT NULL AUTO_INCREMENT,
-  `name`          varchar(64) DEFAULT NULL,
+  `name`          varchar(64)          DEFAULT NULL,
   `email_student` varchar(64) NOT NULL,
   `teacher`       tinyint(1)  NOT NULL,
-  `email_private` varchar(64) DEFAULT NULL,
+  `email_private` varchar(64)          DEFAULT NULL,
   `password`      varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `course`
 (
-  `id`          int(11)                NOT NULL AUTO_INCREMENT,
-  `hash`        varchar(64)            NOT NULL,
-  `coursecode`  varchar(10)            NOT NULL,
-  `coursename`  varchar(64)            NOT NULL,
-  `teacher`     int(11)                NOT NULL,
-  `description` text                   NOT NULL,
-  `year`        int(11)                NOT NULL,
-  `semester`    enum ('fall','spring') NOT NULL,
+  `id`          int(11)                 NOT NULL AUTO_INCREMENT,
+  `hash`        varchar(64)             NOT NULL,
+  `coursecode`  varchar(10)             NOT NULL,
+  `coursename`  varchar(64)             NOT NULL,
+  `teacher`     int(11)                 NOT NULL,
+  `description` text                    NOT NULL,
+  `year`        int(11)                 NOT NULL,
+  `semester`    enum ('fall', 'spring') NOT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`teacher`) REFERENCES users (`id`)
 );
@@ -52,10 +53,10 @@ CREATE TABLE `usercourse`
 
 CREATE TABLE `forms`
 (
-  `id`          int(11)     NOT NULL AUTO_INCREMENT,
-  `prefix`      varchar(64) NOT NULL,
-  `name`        varchar(64)      DEFAULT NULL,
-  `created`     timestamp   NULL DEFAULT CURRENT_TIMESTAMP,
+  `id`      int(11)     NOT NULL AUTO_INCREMENT,
+  `prefix`  varchar(64) NOT NULL,
+  `name`    varchar(64)          DEFAULT NULL,
+  `created` timestamp   NULL     DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 );
 
@@ -65,12 +66,12 @@ CREATE TABLE `fields`
   `form_id`     int(11)     NOT NULL,
   `type`        varchar(64) NOT NULL,
   `name`        varchar(64) NOT NULL,
-  `label`       varchar(64) DEFAULT NULL,
   `description` text        NOT NULL,
+  `label`       varchar(64)          DEFAULT NULL,
   `hasComment`  int(1)      NOT NULL,
   `priority`    int(11)     NOT NULL,
-  `weight`      int(11)     DEFAULT NULL,
-  `choices`     varchar(64) DEFAULT NULL,
+  `weight`      int(11)              DEFAULT NULL,
+  `choices`     varchar(64)          DEFAULT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`form_id`) REFERENCES forms (`id`)
 );
@@ -135,7 +136,7 @@ CREATE TABLE `user_reviews`
   `name`          varchar(64) NOT NULL,
   `label`         varchar(64) NOT NULL,
   `answer`        text        NOT NULL,
-  `comment`       text        DEFAULT NULL,
+  `comment`       text                 DEFAULT NULL,
   `submitted`     datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`assignment_id`) REFERENCES assignments (`id`),

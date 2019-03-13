@@ -31,7 +31,10 @@ func GetDateAndQuestionsFAQ() Faq {
 		var timestamp time.Time
 		var questions string
 
-		rows.Scan(&timestamp, &questions)
+		err = rows.Scan(&timestamp, &questions)
+		if err != nil {
+			return Faq{}
+		}
 
 		content = Faq{
 			Date:      timestamp,

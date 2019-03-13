@@ -4,14 +4,14 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 )
 
-// Submission .... TODO (Svein): comment
+// Submission struct
 type Submission struct {
 	ID     int  `json:"id" db:"id"`
 	FormID int  `json:"-" db:"form_id"`
 	Form   Form `json:"form"`
 }
 
-// SubmissionRepository ... TODO (Svein): comment
+// SubmissionRepository struct
 type SubmissionRepository struct{}
 
 // Insert form and fields to database
@@ -45,10 +45,17 @@ func (repo *SubmissionRepository) Insert(form Form) error {
 	for _, field := range form.Fields {
 
 		// Insertion query
-		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices, hasComment) " +
+			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
+
+		var hasComment = 0
+		if field.HasComment {
+			hasComment = 1
+		}
 
 		//Execute query
-		_, err = tx.Exec(query, formID, field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
+		_, err = tx.Exec(query, formID, field.Type, field.Name, field.Label, field.Description,
+			field.Order, field.Weight, field.Choices, hasComment)
 		if err != nil {
 			tx.Rollback() //rollback if err
 			return err
@@ -116,7 +123,7 @@ func (repo *SubmissionRepository) GetAll() ([]Submission, error) {
 // DeleteSubmissionsToAssignment deletes specific submissions to assignmentID and SubmissionID
 func (repo *SubmissionRepository) DeleteSubmissionsToAssignment(assID int, subID int64) error {
 	// Create query-string
-	query := "DELETE  FROM user_submissions WHERE assignment_id = ? AND submission_id = ?"
+	query := "DELETE FROM user_submissions WHERE assignment_id = ? AND submission_id = ?"
 	// Perform query
 	rows, err := db.GetDB().Query(query, assID, subID)
 	// Check for error
@@ -134,7 +141,7 @@ func (repo *SubmissionRepository) GetSubmissionsCountFromAssignment(assID int, s
 	// Declare return slice
 	var result int
 	// Create query-string
-	query := "select count(distinct user_id) from user_submissions WHERE assignment_id LIKE ? AND submission_id LIKE ?"
+	query := "SELECT COUNT(DISTINCT user_id) FROM user_submissions WHERE assignment_id=? AND submission_id=?"
 	// Perform query
 	rows, err := db.GetDB().Query(query, assID, subID)
 	// Check for error
@@ -161,20 +168,39 @@ func (repo *SubmissionRepository) GetSubmissionsCountFromAssignment(assID int, s
 // Update a form in the database
 // Deletes all fields, and recreates them
 func (repo *SubmissionRepository) Update(form Form) error {
-	query := "UPDATE forms SET prefix=?, name=?, description=? WHERE id=?"
+	query := "UPDATE forms SET prefix=?, name=? WHERE id=?"
+	// Begin transaction
 	tx, err := db.GetDB().Begin()
 	if err != nil {
 		return err
 	}
-
-	_, err = db.GetDB().Exec(query, form.Prefix, form.Name, form.Description, form.ID)
+	// Execute query
+	_, err = tx.Exec(query, form.Prefix, form.Name, form.ID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
 
 	query = "DELETE FROM fields WHERE form_id=?"
-	_, err = db.GetDB().Exec(query, form.ID)
+	// Begin transaction
+	tx, err = db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+	// Execute query
+	_, err = tx.Exec(query, form.ID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -183,21 +209,110 @@ func (repo *SubmissionRepository) Update(form Form) error {
 	// Loop trough fields in the forms
 	for _, field := range form.Fields {
 		// Insertion query
-		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices, hasComment) " +
+			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
+
+		var hasComment = 0
+		if field.HasComment {
+			hasComment = 1
+		}
+
+		tx, err = db.GetDB().Begin()
+		if err != nil {
+			return err
+		}
+
 		// Execute the query
-		_, err := db.GetDB().Exec(query, form.ID, field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
+		_, err = tx.Exec(query, form.ID, field.Type, field.Name, field.Label, field.Description,
+			field.Order, field.Weight, field.Choices, hasComment)
 		// Check for error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		// Commit transaction
+		err = tx.Commit()
 		if err != nil {
 			tx.Rollback()
 			return err
 		}
 	}
 
+	// Commit transaction
 	err = tx.Commit()
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
 	// Return no error
-	return nil
+	return err
+}
+
+// Delete a review form based on it's id
+func (repo *SubmissionRepository) Delete(id int) error {
+	// SQL query
+	query := "DELETE FROM fields WHERE form_id=?"
+	// Begin transaction
+	tx, err := db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+	// Execute query
+	_, err = tx.Exec(query, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// SQL query
+	query = "DELETE FROM submissions WHERE form_id=?"
+	// Begin transaction
+	tx, err = db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+	// Execute transaction
+	_, err = tx.Exec(query, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// SQL query
+	query = "DELETE FROM forms WHERE id=?"
+	// Begin transaction
+	tx, err = db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+	// Execute transaction
+	_, err = tx.Exec(query, id)
+	if err != nil {
+		// Rollback transaction on error
+		tx.Rollback()
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		// Rollback transaction on error
+		tx.Rollback()
+		return err
+	}
+
+	return err
 }

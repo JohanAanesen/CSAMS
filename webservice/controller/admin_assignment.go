@@ -461,6 +461,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
 	reviewID := sql.NullInt64{
 		Int64: int64(val),
 		Valid: val != 0,
@@ -646,8 +647,6 @@ func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Println(userID) // TODO brede : remove this
 
 	assignmentRepo := &model.AssignmentRepository{}
 
