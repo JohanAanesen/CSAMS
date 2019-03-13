@@ -2,6 +2,8 @@
 {{define "head"}}{{end}}
 {{define "content"}}
 
+<h1>Scheduled tasks:</h1>
+
 <div class="row">
 {{range .Payloads}}
     <div class="col-xl-4 col-md-6 col-sm-12 mb-3">
@@ -11,14 +13,14 @@
                 <h2 class="display-5">Assignment ID: {{.AssignmentID}}</h2>
                 <h2 class="display-5">Submission ID: {{.SubmissionID}}</h2>
                 <h5>
-                    <span class="badge badge-secondary">{{.Task}}</span>
+                    <span class="badge badge-success">{{.Task}}</span>
                 </h5>
                 <p><strong>Deadline: </strong> {{PRETTYTIME .ScheduledTime}}</p>
                 <p><strong>Reviewers: </strong> {{.Data.Reviewers}}</p>
-                <code class="json">
-                    {{.Data}}
-                </code>
                 <hr class="bg-light">
+                <pre>Payload: <code class="json">
+                {{.Data}}
+                </code></pre>
             </div>
         </div>
     </div>
