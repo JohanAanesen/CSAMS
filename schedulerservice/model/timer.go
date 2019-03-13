@@ -25,7 +25,7 @@ func StopTimer(timerID int) {
 //UpdateTimer should update the time of an existing timer (delete and create new timer)
 func UpdateTimer(newReviewers int, newTime time.Time, payload Payload) bool {
 
-	payload.
+	//payload.Reviewers = newReviewers
 
 	//update time in payload object
 	payload.ScheduledTime = newTime
