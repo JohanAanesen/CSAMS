@@ -2,9 +2,28 @@
 {{define "head"}}{{end}}
 {{define "content"}}
 
-    <pre>
-        {{.Content}}
-    </pre>
+<div class="row">
+{{range .Payloads}}
+    <div class="col-xl-4 col-md-6 col-sm-12 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="float-right text-secondary">ID: {{.ID}}</h5>
+                <h2 class="display-5">Assignment ID: {{.AssignmentID}}</h2>
+                <h2 class="display-5">Submission ID: {{.SubmissionID}}</h2>
+                <h5>
+                    <span class="badge badge-secondary">{{.Task}}</span>
+                </h5>
+                <p><strong>Deadline: </strong> {{PRETTYTIME .ScheduledTime}}</p>
+                <p><strong>Reviewers: </strong> {{.Data.Reviewers}}</p>
+                <code class="json">
+                    {{.Data}}
+                </code>
+                <hr class="bg-light">
+            </div>
+        </div>
+    </div>
+{{end}}
+</div>
 
 {{end}}
 {{define "foot"}}{{end}}
