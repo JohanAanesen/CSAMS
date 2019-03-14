@@ -576,7 +576,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		v.Vars["Review"] = review
 	}
 
-
 	// Render view
 	v.Render(w)
 }
