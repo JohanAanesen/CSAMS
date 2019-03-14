@@ -1,5 +1,31 @@
 Svein's log
 ============
+## 14/03/2019
+#### Worked on
+* 
+#### Good
+* 
+#### Bad
+#### Decisions
+* Nothing
+
+## 13/03/2019
+#### Worked on
+Fixed things from feedback from the pull request
+#### Good
+* One step closer to a good alpha
+#### Bad
+#### Decisions
+* Changed time formatting to norwegian time
+
+## 12/03/2019
+#### Worked on
+
+#### Good
+* 
+#### Bad
+#### Decisions
+
 ## 11/03/2019
 #### Worked on
 Finished of  the alpha work for reviews, displaying, submitting them.
