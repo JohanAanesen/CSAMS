@@ -530,7 +530,7 @@ ALTER TABLE `peer_reviews`
 
 
 
-INSERT INTO cs53.adminfaq (id, timestamp, questions) VALUES (1, '1997-02-13 13:37:00', 'Q: How do I make a course + link?
+INSERT INTO adminfaq (id, timestamp, questions) VALUES (1, '1997-02-13 13:37:00', 'Q: How do I make a course + link?
 --------------------------------
 **A:** Dashboard -> Courses -> new. And create the course there
 
@@ -555,7 +555,7 @@ Q: How do I sign up?
 **A:** You go to `/register` and register a user there
 
 ![Reddit](https://external-preview.redd.it/lzcL5WbUuBr7pI9zIM9ZbUSrETZR1UNb-g6C5DehYss.jpg?width=960&crop=smart&auto=webp&s=4b483a024ac9103bfe6df2e98599043bbed29146)');
-INSERT INTO cs53.assignments (id, name, description, created, publish, deadline, course_id, submission_id, review_id, validation_id, reviewers) VALUES (2, 'Assignment 1', '# Assignment 1: in-memory IGC track viewer
+INSERT INTO assignments (id, name, description, created, publish, deadline, course_id, submission_id, review_id, validation_id, reviewers) VALUES (2, 'Assignment 1', '# Assignment 1: in-memory IGC track viewer
 
 ## About
 
@@ -703,7 +703,7 @@ The submission deadline is **Sunday, October 14th, 23:59**. No extensions will b
 [The form for peer-review](https://docs.google.com/spreadsheets/d/1Iat2up_Ra1hokvkZZYE0NJJ3JeB8iTcvd3zp0VS7SCQ/edit?usp=sharing)
 
 ', '2019-03-13 10:46:07', '2019-03-13 09:45:00', '2019-03-14 23:59:00', 4, 6, 3, null, 1);
-INSERT INTO cs53.course (id, hash, coursecode, coursename, teacher, description, year, semester) VALUES (4, 'bi4d2164gh0gbb7r94qg', 'IMT2681', 'Cloud Technologies', 3, '# IMT2681 Cloud Technologies
+INSERT INTO course (id, hash, coursecode, coursename, teacher, description, year, semester) VALUES (4, 'bi4d2164gh0gbb7r94qg', 'IMT2681', 'Cloud Technologies', 3, '# IMT2681 Cloud Technologies
 This page is the starting point for all lecture material of the course Cloud Technologies Course IMT2681, Autumn Semester 2018, taught at NTNU, Gjøvik.
 
 For general course and timetable information, please look [here](https://www.ntnu.edu/studies/courses/IMT2681#tab=omEmnet).
@@ -918,69 +918,69 @@ We will stream this course via Youtube using the on [GTL Youtube](https://www.yo
 * How to setup Go for Visual Studio Code (on windows) [answer](http://prod3.imt.hig.no/teaching/imt2681-2018/issues/2)
 * What are the benefits of using Go versus other more established languages? [answer](https://www.quora.com/What-are-the-benefits-of-using-GoLang-versus-other-more-established-languages)
 * Is Go better than C? [answer](https://www.quora.com/Is-Golang-better-than-C/answer/Richard-Kenneth-Eng)', 2019, 'fall');
-INSERT INTO cs53.fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (42, 8, 'url', 'git_repository_w_comment_url_35', 'Git Repository', 1, 'Make sure the repository is public before delivering!', 0, 0, '');
-INSERT INTO cs53.fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (43, 8, 'textarea', 'git_repository_w_comment_textarea_0', 'textarea', 0, '', 1, 0, '');
-INSERT INTO cs53.fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (44, 8, 'url', 'git_repository_w_comment_url_1', 'url', 0, '', 2, 0, '');
-INSERT INTO cs53.fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (45, 8, 'number', 'git_repository_w_comment_number_2', 'number', 0, '', 3, 0, '');
-INSERT INTO cs53.fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (46, 8, 'checkbox', 'git_repository_w_comment_checkbox_3', 'checkbox', 0, '', 4, 0, '');
-INSERT INTO cs53.fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (47, 8, 'radio', 'git_repository_w_comment_radio_4', 'radio', 0, '', 5, 0, 'a,b,c');
-INSERT INTO cs53.fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (48, 9, 'text', 'test_all_fields_text_36', 'Text', 1, 'This is a text field', 0, 0, '');
-INSERT INTO cs53.fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (49, 9, 'textarea', 'test_all_fields_textarea_37', 'Textarea', 0, 'This is a long text field', 1, 0, '');
-INSERT INTO cs53.fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (50, 9, 'url', 'test_all_fields_url_38', 'URL', 0, 'This is a URL field', 2, 0, '');
-INSERT INTO cs53.fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (51, 9, 'number', 'test_all_fields_number_39', 'Number', 0, 'This is a number field', 3, 0, '');
-INSERT INTO cs53.fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (52, 9, 'checkbox', 'test_all_fields_checkbox_40', 'Checkbox', 0, 'This is a checkbox field', 4, 0, '');
-INSERT INTO cs53.fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (53, 9, 'radio', 'test_all_fields_radio_41', 'Radio', 0, 'This is a radio field', 5, 0, 'a,b,c');
-INSERT INTO cs53.forms (id, prefix, name, created) VALUES (8, 'git_repository_w_comment', 'Git Repository w/Comment', '2019-03-13 10:52:52');
-INSERT INTO cs53.forms (id, prefix, name, created) VALUES (9, 'test_all_fields', 'TEST: All fields', '2019-03-13 10:54:02');
-INSERT INTO cs53.logs (userid, timestamp, activity, assignmentid, courseid, submissionid, oldvalue, newValue) VALUES (3, '2019-03-13 10:44:36', 'COURSE-CREATED', null, 4, null, null, null);
-INSERT INTO cs53.logs (userid, timestamp, activity, assignmentid, courseid, submissionid, oldvalue, newValue) VALUES (3, '2019-03-13 10:44:36', 'JOINED-COURSE', null, 4, null, null, null);
-INSERT INTO cs53.peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (4, 6, 2, 4, 5);
-INSERT INTO cs53.peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (5, 6, 2, 4, 6);
-INSERT INTO cs53.peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (6, 6, 2, 5, 4);
-INSERT INTO cs53.peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (7, 6, 2, 5, 6);
-INSERT INTO cs53.peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (8, 6, 2, 6, 4);
-INSERT INTO cs53.peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (9, 6, 2, 6, 5);
-INSERT INTO cs53.reviews (id, form_id) VALUES (3, 9);
-INSERT INTO cs53.submissions (id, form_id) VALUES (6, 8);
-INSERT INTO cs53.user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (5, 4, 5, 3, 2, 'text', 'test_all_fields_text_0', 'Text', 'input text', null, '2019-03-13 12:25:49');
-INSERT INTO cs53.user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (6, 4, 5, 3, 2, 'textarea', 'test_all_fields_textarea_1', 'Textarea', 'input textarea', null, '2019-03-13 12:25:49');
-INSERT INTO cs53.user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (7, 4, 5, 3, 2, 'url', 'test_all_fields_url_2', 'URL', 'http://vg.no', null, '2019-03-13 12:25:49');
-INSERT INTO cs53.user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (8, 4, 5, 3, 2, 'number', 'test_all_fields_number_3', 'Number', '1337', null, '2019-03-13 12:25:49');
-INSERT INTO cs53.user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (9, 4, 5, 3, 2, 'checkbox', 'test_all_fields_checkbox_4', 'Checkbox', 'on', null, '2019-03-13 12:25:49');
-INSERT INTO cs53.user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (10, 4, 5, 3, 2, 'radio', 'test_all_fields_radio_5', 'Radio', '2', null, '2019-03-13 12:25:49');
-INSERT INTO cs53.user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (11, 4, 6, 3, 2, 'text', 'test_all_fields_text_36', 'Text', 'a', null, '2019-03-14 13:44:34');
-INSERT INTO cs53.user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (12, 4, 6, 3, 2, 'textarea', 'test_all_fields_textarea_37', 'Textarea', 'b', null, '2019-03-14 13:44:34');
-INSERT INTO cs53.user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (13, 4, 6, 3, 2, 'url', 'test_all_fields_url_38', 'URL', 'http://vg.no', null, '2019-03-14 13:44:34');
-INSERT INTO cs53.user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (14, 4, 6, 3, 2, 'number', 'test_all_fields_number_39', 'Number', '1', null, '2019-03-14 13:44:34');
-INSERT INTO cs53.user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (15, 4, 6, 3, 2, 'checkbox', 'test_all_fields_checkbox_40', 'Checkbox', '', null, '2019-03-14 13:44:34');
-INSERT INTO cs53.user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (16, 4, 6, 3, 2, 'radio', 'test_all_fields_radio_41', 'Radio', '', null, '2019-03-14 13:44:34');
-INSERT INTO cs53.user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (13, 5, 2, 6, 'url', 'http://www.go.no', 'asdf', '2019-03-13 16:32:43');
-INSERT INTO cs53.user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (14, 5, 2, 6, 'textarea', 'asdf', '', '2019-03-13 16:32:43');
-INSERT INTO cs53.user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (15, 5, 2, 6, 'url', 'http://www.go.no', '', '2019-03-13 16:32:43');
-INSERT INTO cs53.user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (16, 5, 2, 6, 'number', '1332', '', '2019-03-13 16:32:43');
-INSERT INTO cs53.user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (17, 5, 2, 6, 'checkbox', '', '', '2019-03-13 16:32:43');
-INSERT INTO cs53.user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (18, 5, 2, 6, 'radio', '1', '', '2019-03-13 16:32:43');
-INSERT INTO cs53.user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (19, 4, 2, 6, 'url', 'http://github.com', '', '2019-03-14 13:46:12');
-INSERT INTO cs53.user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (20, 4, 2, 6, 'textarea', 'lorem upsum', '', '2019-03-14 13:46:12');
-INSERT INTO cs53.user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (21, 4, 2, 6, 'url', 'http://vg.no', '', '2019-03-14 13:46:12');
-INSERT INTO cs53.user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (22, 4, 2, 6, 'number', '42', '', '2019-03-14 13:46:12');
-INSERT INTO cs53.user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (23, 4, 2, 6, 'checkbox', 'on', '', '2019-03-14 13:46:12');
-INSERT INTO cs53.user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (24, 4, 2, 6, 'radio', '1', '', '2019-03-14 13:46:12');
-INSERT INTO cs53.usercourse (userid, courseid) VALUES (3, 4);
-INSERT INTO cs53.usercourse (userid, courseid) VALUES (4, 4);
-INSERT INTO cs53.usercourse (userid, courseid) VALUES (5, 4);
-INSERT INTO cs53.usercourse (userid, courseid) VALUES (6, 4);
-INSERT INTO cs53.usercourse (userid, courseid) VALUES (7, 4);
-INSERT INTO cs53.usercourse (userid, courseid) VALUES (8, 4);
-INSERT INTO cs53.usercourse (userid, courseid) VALUES (9, 4);
-INSERT INTO cs53.usercourse (userid, courseid) VALUES (10, 4);
-INSERT INTO cs53.users (id, name, email_student, teacher, email_private, password) VALUES (1, 'Ken Thompson', 'hei@gmail.com', 1, 'mannen@harmannenfalt.no', '$2a$14$MZj24p41j2NNGn6JDsQi0OsDb56.0LcfrIdgjE6WmZzp58O6V/VhK');
-INSERT INTO cs53.users (id, name, email_student, teacher, email_private, password) VALUES (2, 'Frode Haug', 'frodehg@teach.ntnu.no', 1, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
-INSERT INTO cs53.users (id, name, email_student, teacher, email_private, password) VALUES (3, 'Ola Nordmann', 'olanor@stud.ntnu.no', 1, 'swag-meister69@ggmail.com', '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
-INSERT INTO cs53.users (id, name, email_student, teacher, email_private, password) VALUES (4, 'Johan Klausen', 'johkl@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
-INSERT INTO cs53.users (id, name, email_student, teacher, email_private, password) VALUES (5, 'Stian Fjerdingstad', 'stianfj@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
-INSERT INTO cs53.users (id, name, email_student, teacher, email_private, password) VALUES (6, 'Svein Nilsen', 'sveini@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
-INSERT INTO cs53.users (id, name, email_student, teacher, email_private, password) VALUES (7, 'Kjell Are-Kjelterud', 'kjellak@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
-INSERT INTO cs53.users (id, name, email_student, teacher, email_private, password) VALUES (8, 'Marius Lillevik', 'mariuslil@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
-INSERT INTO cs53.users (id, name, email_student, teacher, email_private, password) VALUES (9, 'Jorun Skaalnes', 'jorunska@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
-INSERT INTO cs53.users (id, name, email_student, teacher, email_private, password) VALUES (10, 'Klaus Aanesen', 'klausaa@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (42, 8, 'url', 'git_repository_w_comment_url_35', 'Git Repository', 1, 'Make sure the repository is public before delivering!', 0, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (43, 8, 'textarea', 'git_repository_w_comment_textarea_0', 'textarea', 0, '', 1, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (44, 8, 'url', 'git_repository_w_comment_url_1', 'url', 0, '', 2, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (45, 8, 'number', 'git_repository_w_comment_number_2', 'number', 0, '', 3, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (46, 8, 'checkbox', 'git_repository_w_comment_checkbox_3', 'checkbox', 0, '', 4, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (47, 8, 'radio', 'git_repository_w_comment_radio_4', 'radio', 0, '', 5, 0, 'a,b,c');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (48, 9, 'text', 'test_all_fields_text_36', 'Text', 1, 'This is a text field', 0, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (49, 9, 'textarea', 'test_all_fields_textarea_37', 'Textarea', 0, 'This is a long text field', 1, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (50, 9, 'url', 'test_all_fields_url_38', 'URL', 0, 'This is a URL field', 2, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (51, 9, 'number', 'test_all_fields_number_39', 'Number', 0, 'This is a number field', 3, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (52, 9, 'checkbox', 'test_all_fields_checkbox_40', 'Checkbox', 0, 'This is a checkbox field', 4, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (53, 9, 'radio', 'test_all_fields_radio_41', 'Radio', 0, 'This is a radio field', 5, 0, 'a,b,c');
+INSERT INTO forms (id, prefix, name, created) VALUES (8, 'git_repository_w_comment', 'Git Repository w/Comment', '2019-03-13 10:52:52');
+INSERT INTO forms (id, prefix, name, created) VALUES (9, 'test_all_fields', 'TEST: All fields', '2019-03-13 10:54:02');
+INSERT INTO logs (userid, timestamp, activity, assignmentid, courseid, submissionid, oldvalue, newValue) VALUES (3, '2019-03-13 10:44:36', 'COURSE-CREATED', null, 4, null, null, null);
+INSERT INTO logs (userid, timestamp, activity, assignmentid, courseid, submissionid, oldvalue, newValue) VALUES (3, '2019-03-13 10:44:36', 'JOINED-COURSE', null, 4, null, null, null);
+INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (4, 6, 2, 4, 5);
+INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (5, 6, 2, 4, 6);
+INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (6, 6, 2, 5, 4);
+INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (7, 6, 2, 5, 6);
+INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (8, 6, 2, 6, 4);
+INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (9, 6, 2, 6, 5);
+INSERT INTO reviews (id, form_id) VALUES (3, 9);
+INSERT INTO submissions (id, form_id) VALUES (6, 8);
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (5, 4, 5, 3, 2, 'text', 'test_all_fields_text_0', 'Text', 'input text', null, '2019-03-13 12:25:49');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (6, 4, 5, 3, 2, 'textarea', 'test_all_fields_textarea_1', 'Textarea', 'input textarea', null, '2019-03-13 12:25:49');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (7, 4, 5, 3, 2, 'url', 'test_all_fields_url_2', 'URL', 'http://vg.no', null, '2019-03-13 12:25:49');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (8, 4, 5, 3, 2, 'number', 'test_all_fields_number_3', 'Number', '1337', null, '2019-03-13 12:25:49');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (9, 4, 5, 3, 2, 'checkbox', 'test_all_fields_checkbox_4', 'Checkbox', 'on', null, '2019-03-13 12:25:49');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (10, 4, 5, 3, 2, 'radio', 'test_all_fields_radio_5', 'Radio', '2', null, '2019-03-13 12:25:49');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (11, 4, 6, 3, 2, 'text', 'test_all_fields_text_36', 'Text', 'a', null, '2019-03-14 13:44:34');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (12, 4, 6, 3, 2, 'textarea', 'test_all_fields_textarea_37', 'Textarea', 'b', null, '2019-03-14 13:44:34');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (13, 4, 6, 3, 2, 'url', 'test_all_fields_url_38', 'URL', 'http://vg.no', null, '2019-03-14 13:44:34');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (14, 4, 6, 3, 2, 'number', 'test_all_fields_number_39', 'Number', '1', null, '2019-03-14 13:44:34');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (15, 4, 6, 3, 2, 'checkbox', 'test_all_fields_checkbox_40', 'Checkbox', '', null, '2019-03-14 13:44:34');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (16, 4, 6, 3, 2, 'radio', 'test_all_fields_radio_41', 'Radio', '', null, '2019-03-14 13:44:34');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (13, 5, 2, 6, 'url', 'http://www.go.no', 'asdf', '2019-03-13 16:32:43');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (14, 5, 2, 6, 'textarea', 'asdf', '', '2019-03-13 16:32:43');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (15, 5, 2, 6, 'url', 'http://www.go.no', '', '2019-03-13 16:32:43');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (16, 5, 2, 6, 'number', '1332', '', '2019-03-13 16:32:43');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (17, 5, 2, 6, 'checkbox', '', '', '2019-03-13 16:32:43');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (18, 5, 2, 6, 'radio', '1', '', '2019-03-13 16:32:43');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (19, 4, 2, 6, 'url', 'http://github.com', '', '2019-03-14 13:46:12');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (20, 4, 2, 6, 'textarea', 'lorem upsum', '', '2019-03-14 13:46:12');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (21, 4, 2, 6, 'url', 'http://vg.no', '', '2019-03-14 13:46:12');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (22, 4, 2, 6, 'number', '42', '', '2019-03-14 13:46:12');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (23, 4, 2, 6, 'checkbox', 'on', '', '2019-03-14 13:46:12');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (24, 4, 2, 6, 'radio', '1', '', '2019-03-14 13:46:12');
+INSERT INTO usercourse (userid, courseid) VALUES (3, 4);
+INSERT INTO usercourse (userid, courseid) VALUES (4, 4);
+INSERT INTO usercourse (userid, courseid) VALUES (5, 4);
+INSERT INTO usercourse (userid, courseid) VALUES (6, 4);
+INSERT INTO usercourse (userid, courseid) VALUES (7, 4);
+INSERT INTO usercourse (userid, courseid) VALUES (8, 4);
+INSERT INTO usercourse (userid, courseid) VALUES (9, 4);
+INSERT INTO usercourse (userid, courseid) VALUES (10, 4);
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (1, 'Ken Thompson', 'hei@gmail.com', 1, 'mannen@harmannenfalt.no', '$2a$14$MZj24p41j2NNGn6JDsQi0OsDb56.0LcfrIdgjE6WmZzp58O6V/VhK');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (2, 'Frode Haug', 'frodehg@teach.ntnu.no', 1, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (3, 'Ola Nordmann', 'olanor@stud.ntnu.no', 1, 'swag-meister69@ggmail.com', '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (4, 'Johan Klausen', 'johkl@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (5, 'Stian Fjerdingstad', 'stianfj@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (6, 'Svein Nilsen', 'sveini@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (7, 'Kjell Are-Kjelterud', 'kjellak@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (8, 'Marius Lillevik', 'mariuslil@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (9, 'Jorun Skaalnes', 'jorunska@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (10, 'Klaus Aanesen', 'klausaa@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
