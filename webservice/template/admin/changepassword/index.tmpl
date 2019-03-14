@@ -40,7 +40,12 @@
                         <th scope="row">{{ .ID }}</th>
                         <td>{{ .Name }}</td>
                         <td><a href="mailto:{{ .EmailStudent }}">{{ .EmailStudent }}</a></td>
-                        <td><a onclick="changePass({{.Name}}, {{.ID}})">Change Password</a></td>
+                        <td>
+                            <button class="btn btn-outline-success btn-small" onclick="changePass({{.Name}}, {{.ID}})"
+                                    style="font-size:12px">
+                                Change Password
+                            </button>
+                        </td>
                     </tr>
                 {{ end }}
             {{ end }}
