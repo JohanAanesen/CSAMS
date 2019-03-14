@@ -12,6 +12,7 @@ import (
 	"time"
 )
 
+// AdminChangePassGET serves the change password for students page and changes password if it's variables in the url
 func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 
 	// Get form value
@@ -68,6 +69,7 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 }
 
+// AdminGetUsersPOST serves the same page as above, but with the list of all students in a course
 func AdminGetUsersPOST(w http.ResponseWriter, r *http.Request) {
 
 	// Get form value

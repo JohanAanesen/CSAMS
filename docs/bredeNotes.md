@@ -252,5 +252,5 @@ _Merged following to master_
 * Starting on forgotten password
 * Finished on forgotten password
 * Not the best code, but it works for the alpha :D
-
+* Also finished `dont'show-review-name`
 
