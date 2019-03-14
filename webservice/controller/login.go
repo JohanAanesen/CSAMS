@@ -119,5 +119,15 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage //todo change redirection
 	//IndexGET(w, r) //redirect to homepage
+}
 
+func ForgottenGET(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "forgotten"
+
+	v.Render(w)
 }

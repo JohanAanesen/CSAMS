@@ -247,5 +247,8 @@ _Merged following to master_
 * Changed to transaction some places in SQL queries
 * Changed logtodb to return error instead of boolean 
 
+### Thursday - 14/03/19
+* I'm waiting for 3 pull request to be passed *wohoo*
+* Starting on forgotten password
 
 
