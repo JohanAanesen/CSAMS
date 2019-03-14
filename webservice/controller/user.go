@@ -62,22 +62,27 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// Users Email
 	// If secondary-email input isn't blank it has changed
 	if secondaryEmail != "" && secondaryEmail != user.EmailPrivate {
-		if model.UpdateUserEmail(user.ID, secondaryEmail) {
 
-			// Save information to log struct
-			logData := model.Log{UserID: user.ID, Activity: model.ChangeEmail, OldValue: user.EmailPrivate, NewValue: secondaryEmail}
+		err := model.UpdateUserEmail(user.ID, secondaryEmail)
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 
-			//update session
-			user.EmailPrivate = secondaryEmail
-			session.SaveUserToSession(user, w, r)
+		// Save information to log struct
+		logData := model.Log{UserID: user.ID, Activity: model.ChangeEmail, OldValue: user.EmailPrivate, NewValue: secondaryEmail}
 
-			// Log email change in the database and give error if something went wrong
-			err := model.LogToDB(logData)
-			if err != nil {
-				log.Println(err.Error())
-				ErrorHandler(w, r, http.StatusInternalServerError)
-				return
-			}
+		//update session
+		user.EmailPrivate = secondaryEmail
+		session.SaveUserToSession(user, w, r)
+
+		// Log email change in the database and give error if something went wrong
+		err = model.LogToDB(logData)
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
 		}
 	}
 
