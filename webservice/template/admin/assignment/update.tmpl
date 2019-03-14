@@ -162,6 +162,7 @@
         </div>
     </div>
 
+    <script src="/static/js/time.js"></script>
     <script src="/static/js/simplemde.min.js"></script>
     <script>
         (function () {
@@ -175,8 +176,9 @@
             let publish = document.getElementById('publish');
             let deadline = document.getElementById('deadline');
 
+            // TODO time-norwegian
             publishNowButton.addEventListener('click', () => {
-                publish.value = new Date().toISOString().substring(0, 16);
+                publish.value = getTimeInNorwegian().toNORString();
             });
         })();
 

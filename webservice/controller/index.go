@@ -3,10 +3,10 @@ package controller
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"log"
 	"net/http"
-	"time"
 )
 
 // IndexGET serves homepage to authenticated users, send anonymous to login
@@ -46,15 +46,15 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// TODO time-norwegian
+		timeNow := util.GetTimeInCorrectTimeZone()
 		for _, assignment := range assignments { //go through all it's assignments again
-			// TODO time
-			if time.Now().After(assignment.Publish) && time.Now().Before(assignment.Deadline) { //save all 'active' assignments
+			if timeNow.After(assignment.Publish) && timeNow.Before(assignment.Deadline) { //save all 'active' assignments
 				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: assignment, CourseCode: course.Code})
 			}
 		}
 
 	}
-
 
 	// Set values
 	v := view.New(r)
@@ -98,9 +98,11 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Log joinedCourse in the database and give error if something went wrong
-	lodData := model.Log{UserID: user.ID, Activity: model.JoinedCourse, CourseID: course.ID}
-	if !model.LogToDB(lodData) {
-		log.Fatal("Could not save JoinCourse log to database! (index.go)")
+	logData := model.Log{UserID: user.ID, Activity: model.JoinedCourse, CourseID: course.ID}
+	err := model.LogToDB(logData)
+
+	if err != nil {
+		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}

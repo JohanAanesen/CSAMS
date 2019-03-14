@@ -3,6 +3,7 @@ package util
 import (
 	"errors"
 	"fmt"
+	"os"
 	"time"
 )
 
@@ -54,4 +55,21 @@ func GoToHTMLDatetimeLocal(t time.Time) string {
 	}
 
 	return fmt.Sprintf("%s-%s-%sT%s:%s", year, month, day, hour, minute)
+}
+
+// GetTimeInCorrectTimeZone returns the time in "TIME_ZONE" time
+func GetTimeInCorrectTimeZone() time.Time {
+	//init the loc
+	loc, err := time.LoadLocation(os.Getenv("TIME_ZONE"))
+	if err != nil {
+		panic(err.Error())
+	}
+	return time.Now().In(loc)
+}
+
+// ConvertTimeStampToString converts date to string for inserting in db
+func ConvertTimeStampToString(timestamp time.Time) string {
+
+	// ex: 2019-03-13 10:14:40
+	return timestamp.Format("2006-01-02 15:04:05")
 }

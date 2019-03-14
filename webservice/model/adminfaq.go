@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"log"
 	"time"
 )
@@ -15,8 +16,6 @@ type Faq struct {
 // GetDateAndQuestionsFAQ returns the date and question from the faq
 func GetDateAndQuestionsFAQ() Faq {
 	content := Faq{Questions: "-1"}
-
-	// TODO : it feels wrong to have this here, but I think this is correct :S
 
 	//insert into database
 	rows, err := db.GetDB().Query("SELECT timestamp, questions FROM `adminfaq` WHERE id = 1") // OBS! ID is always 1 since it's only one entry in the table
@@ -46,8 +45,8 @@ func GetDateAndQuestionsFAQ() Faq {
 // UpdateFAQ updates the questions and date in FAQ
 func UpdateFAQ(newFaq string) bool {
 
-	// Get current Norwegian time TODO time
-	date := time.Now().UTC().Add(time.Hour)
+	// Get current Norwegian time in string format TODO time-norwegian
+	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
 	// Update to database
 	rows, err := db.GetDB().Query("UPDATE `adminfaq` SET `timestamp` = ?, `questions` = ? WHERE `id` = 1", date, newFaq)

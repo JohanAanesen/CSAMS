@@ -65,7 +65,8 @@
                 <div class="col">
                     <h3>Peer Review</h3>
                     <div class="form-group">
-                        <label for="reviewers">How many submissions should every student review on this assignment:</label>
+                        <label for="reviewers">How many submissions should every student review on this
+                            assignment:</label>
                         <select name="reviewers" id="reviewers" class="form-control" required>
                             option
                             <script>
@@ -158,6 +159,7 @@
     </div>
 
     <script src="/static/js/simplemde.min.js"></script>
+    <script src="/static/js/time.js"></script>
     <script>
         (function () {
             // Enable the SmpleMDE
@@ -170,8 +172,10 @@
             let publish = document.getElementById('publish');
             let deadline = document.getElementById('deadline');
 
+
+            // TODO time-norwegian
             publishNowButton.addEventListener('click', () => {
-                publish.value = new Date().toISOString().substring(0, 16);
+                publish.value = getTimeInNorwegian().toNORString();
             });
         })();
     </script>

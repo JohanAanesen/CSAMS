@@ -3,7 +3,9 @@ package model
 import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	_ "github.com/go-sql-driver/mysql" //database driver
+	"log"
 	"time"
 )
 
@@ -136,12 +138,23 @@ func (repo *AssignmentRepository) GetAllToUserSorted(UserID int) ([]Assignment, 
 
 // Insert a new assignment to the database
 func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
+
+	tx, err := db.GetDB().Begin() //start transaction
+	if err != nil {
+		log.Println(err.Error())
+		return 0, err
+	}
+
+	// Get current Norwegian time in string format TODO time-norwegian
+	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
+
 	// Create query string
 	query := "INSERT INTO assignments (name, description, publish, deadline, course_id) VALUES (?, ?, ?, ?, ?);"
 	// Prepare and execute query
-	ex, err := db.GetDB().Exec(query, assignment.Name, assignment.Description, assignment.Publish, assignment.Deadline, assignment.CourseID)
+	ex, err := tx.Exec(query, assignment.Name, assignment.Description, assignment.Publish, assignment.Deadline, assignment.CourseID)
 	// Check for error
 	if err != nil {
+		tx.Rollback() //quit transaction if error
 		return 0, err
 	}
 
@@ -149,6 +162,7 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 	id, err := ex.LastInsertId()
 	// Check for error
 	if err != nil {
+		tx.Rollback() //quit transaction if error
 		return 0, err
 	}
 
@@ -157,9 +171,10 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 		// Create query string
 		query := "UPDATE assignments SET submission_id = ? WHERE id = ?;"
 		// Prepare and execute query
-		_, err := db.GetDB().Exec(query, assignment.SubmissionID, id)
+		_, err := tx.Exec(query, assignment.SubmissionID, id)
 		// Check for error
 		if err != nil {
+			tx.Rollback() //quit transaction if error
 			return 0, err
 		}
 	}
@@ -169,9 +184,10 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 		// Create query string
 		query := "UPDATE assignments SET review_id = ? WHERE id = ?;"
 		// Prepare and execute query
-		_, err := db.GetDB().Exec(query, assignment.ReviewID, id)
+		_, err := tx.Exec(query, assignment.ReviewID, id)
 		// Check for error
 		if err != nil {
+			tx.Rollback() //quit transaction if error
 			return 0, err
 		}
 	}
@@ -181,11 +197,27 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 		// Create query string
 		query := "UPDATE assignments SET reviewers = ? WHERE id = ?;"
 		// Prepare and execute query
-		_, err := db.GetDB().Exec(query, assignment.Reviewers, id)
+		_, err := tx.Exec(query, assignment.Reviewers, id)
 		// Check for error
 		if err != nil {
+			tx.Rollback() //quit transaction if error
 			return 0, err
 		}
+	}
+
+	// Set created date
+	query = "UPDATE assignments SET created = ? WHERE id = ?;"
+	// Prepare and execute query
+	_, err = tx.Exec(query, date, id)
+	// Check for error
+	if err != nil {
+		tx.Rollback() //quit transaction if error
+		return 0, err
+	}
+
+	err = tx.Commit() //finish transaction
+	if err != nil {
+		return 0, err
 	}
 
 	return int(id), nil
