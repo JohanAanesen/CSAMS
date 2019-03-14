@@ -3,6 +3,7 @@ package model
 import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 )
 
 // Review struct
@@ -237,8 +238,9 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 
 // InsertReviewAnswers inserts answers from a review into the database
 func (repo *ReviewRepository) InsertReviewAnswers(fr FullReview) error {
-	query := "INSERT user_reviews (user_reviewer, user_target, review_id, assignment_id, type, name, label, answer) " +
-		"VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+	// Get current Norwegian time in string format TODO time-norwegian
+	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
+	query := "INSERT user_reviews (user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, submitted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
 	tx, err := db.GetDB().Begin()
 	if err != nil {
@@ -246,7 +248,7 @@ func (repo *ReviewRepository) InsertReviewAnswers(fr FullReview) error {
 	}
 
 	for _, answer := range fr.Answers {
-		_, err := db.GetDB().Exec(query, fr.Reviewer, fr.Target, fr.ReviewID, fr.AssignmentID, answer.Type, answer.Name, answer.Label, answer.Answer)
+		_, err := tx.Exec(query, fr.Reviewer, fr.Target, fr.ReviewID, fr.AssignmentID, answer.Type, answer.Name, answer.Label, answer.Answer, date)
 		if err != nil {
 			tx.Rollback()
 			return err

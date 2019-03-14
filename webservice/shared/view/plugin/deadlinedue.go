@@ -1,6 +1,7 @@
 package plugin
 
 import (
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"html/template"
 	"time"
 )
@@ -11,8 +12,8 @@ func DeadlineDue() template.FuncMap {
 	f := make(template.FuncMap)
 
 	f["DEADLINEDUE"] = func(t time.Time) bool {
-		// TODO time
-		return t.Before(time.Now().UTC().Add(time.Hour))
+		// TODO time-norwegian
+		return t.Before(util.GetTimeInCorrectTimeZone())
 	}
 
 	return f

@@ -36,7 +36,8 @@
                                     {{ if eq .Field.Type "text" }}
                                         <input type="text" class="form-control" value="{{ .Answer.Value}}" disabled>
                                     {{ else if eq .Field.Type "url" }}
-                                        <a href="{{.Answer.Value}}" class="form-control disabled" target="_blank" disabled>{{.Answer.Value}}</a>
+                                        <br>
+                                        <a href="{{.Answer.Value}}" target="_blank">{{.Answer.Value}}</a>
                                     {{ else if eq .Field.Type "textarea" }}
                                         <textarea class="form-control" disabled>{{ .Answer.Value}}</textarea>
                                     {{ else if eq .Field.Type "number" }}

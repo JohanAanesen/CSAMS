@@ -101,9 +101,9 @@
 
 
                     {{ if .Delivered }}
-                        <button id="uploadBtn" type="submit" class="btn btn-success mt-5">Update</button>
+                        <button id="uploadBtn" type="submit" class="btn btn-success mt-5">Re-deliver assignment</button>
                     {{ else }}
-                        <button id="uploadBtn" type="submit" class="btn btn-primary mt-5">Upload</button>
+                        <button id="uploadBtn" type="submit" class="btn btn-primary mt-5">Deliver assignment<</button>
                     {{ end }}
                 </form>
             </div>
@@ -112,6 +112,7 @@
 
 {{ end }}
 {{define "foot"}}
+    <script src="/static/js/time.js"></script>
     <script>
         // Source: https://www.w3schools.com/howto/howto_js_countdown.asp
 
@@ -123,7 +124,7 @@
         let x = setInterval(function () {
 
             // Get todays date and time
-            let now = new Date().getTime() + (1000 * 60 * 60); // Plus one hour (Norwegian time) TODO time
+            let now = getTimeInNorwegian(); // TODO time-norwegian
 
             // Find the distance between now and the count down date
             let distance = countDownDate - now;

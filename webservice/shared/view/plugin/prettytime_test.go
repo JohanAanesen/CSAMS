@@ -2,9 +2,11 @@ package plugin_test
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view/plugin"
 	"html/template"
 	"log"
+	"regexp"
 	"testing"
 	"time"
 )
@@ -32,7 +34,14 @@ func TestPrettyTime(t *testing.T) {
 
 	result := buffer.String()
 
+<<<<<<< HEAD
 	if result != expected {
+=======
+	// TODO time-norwegian +0100 CET or +0200 CEST
+	expected := regexp.MustCompile("^15:04 02/01/2019 &#43;0[1|2]00 CE[|S]?T$")
+	fmt.Println(result)
+	if !expected.Match([]byte(result)) {
+>>>>>>> caaf252d695e273c0fc54d36bf9f72831ba3ca0c
 		t.Fail()
 	}
 }
