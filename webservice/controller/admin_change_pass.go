@@ -73,6 +73,7 @@ func AdminChangePassPOST(w http.ResponseWriter, r *http.Request) {
 	v.Name = "admin/changepassword/index"
 	v.Vars["Courses"] = courses
 	v.Vars["Students"] = students
+	v.Vars["SelectedCourse"] = courseID
 
 	v.Render(w)
 

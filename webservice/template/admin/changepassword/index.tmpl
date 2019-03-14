@@ -10,8 +10,9 @@
             <label for="course_id">Select Course</label>
             <select name="course_id" id="course_id" class="form-control" required>
                 <option value="-1">None</option>
-                {{range .Courses }}
-                    <option value="{{.ID}}">{{.Code}} {{.Name}}</option>
+                {{$ID := .SelectedCourse}}
+                {{range $C := .Courses }}
+                    <option value="{{$C.ID}}" {{if eq $C.ID $ID}} selected{{end}}>{{$C.Code}} {{$C.Name}}</option>
                 {{end}}
             </select>
             <button class="btn btn-success my-3" type="submit">Get student list</button>
