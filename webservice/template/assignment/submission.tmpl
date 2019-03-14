@@ -8,10 +8,11 @@
                 <a href="{{ if .IsTeacher }}/admin/assignment/{{ .Assignment.ID }}/submissions {{ else }}/assignment/{{.Assignment.ID}}{{ end}}"
                    class="btn btn-outline-dark mb-3">Go Back</a>
                 <div class="col my-1 container pt-3 jumbotron">
-                    <h1 class="display-4">{{ .Course.Code }} {{ .Course.Name }}</h1>
-                    <h2 class="display-5">{{ .Assignment.Name }} - {{ .User.Name }}</h2>
-
                     {{ if .Delivered }}
+
+                        <h1 class="display-4">{{ .Course.Code }} {{ .Course.Name }}</h1>
+                        <h2 class="display-5">{{ .Assignment.Name }} - {{ .User.Name }}</h2>
+
                         {{ range .AnswersAndFields }}
                             {{if eq .Field.Type "radio"}}
                                 {{$F := .Field}}
@@ -58,46 +59,8 @@
 
                     {{ else }}
 
-                        {{ range .Fields }}
-                            {{if eq .Type "radio"}}
-                                {{$R := .}}
-                                {{$V := 1}}
-                                <fieldset>
-                                    <legend>{{$R.Label}}</legend>
-                                    {{range SPLIT_CHOICES .Choices}}
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="{{$R.Name}}" id="{{$R.Name}}_{{$V}}" value="{{$V}}">
-                                            <label class="form-check-label" for="{{$R.Name}}_{{$V}}">{{.}}</label>
-                                        </div>
-                                        {{$V = INCREMENT $V}}
-                                    {{end}}
-                                    <small class="form-text text-muted">{{.Description}}</small>
-                                </fieldset>
-                            {{else}}
-                                <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
-                                    {{if ne .Type "checkbox"}}<label for="{{ .Name }}">{{ .Label }}</label>{{end}}
-                                    {{ if eq .Type "text" }}
-                                        <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
-                                    {{ else if eq .Type "url" }}
-                                        <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
-                                    {{ else if eq .Type "textarea" }}
-                                        <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control" required></textarea>
-                                    {{ else if eq .Type "number" }}
-                                        <input type="number" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
-                                    {{ else if eq .Type "checkbox" }}
-                                        <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input">
-                                        <label class="form-check-inline" for="{{ .Name }}">{{ .Label }}</label>
-                                    {{ end }}
-                                    <small class="form-text text-muted">{{.Description}}</small>
-                                </div>
-                            {{end}}
-                            {{if .HasComment}}
-                                <div class="form-group form-check">
-                                    <label for="{{.Name}}_comment">Comment <em>({{.Label}})</em></label>
-                                    <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3" class="form-control"></textarea>
-                                </div>
-                            {{end}}
-                        {{ end }}
+                        <h1 class="display-4">This assignment has not yet been submitted.</h1>
+
                     {{ end }}
 
                 </div>
@@ -200,6 +163,7 @@
                         </form>
                     </div>
                 {{end}}
+
             {{end}}
         </div>
     </main>
