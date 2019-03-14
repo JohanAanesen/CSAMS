@@ -107,7 +107,7 @@ func UpdateUserEmail(userID int, email string) bool {
 }
 
 //UpdateUserPassword updates the users password in the db
-func UpdateUserPassword(userID int, password string) bool {
+func UpdateUserPassword(userID int, password string) error {
 
 	// Hash the password first
 	pass, err := hashPassword(password)
@@ -115,7 +115,7 @@ func UpdateUserPassword(userID int, password string) bool {
 	if err != nil {
 		//todo log error
 		log.Fatal(err.Error())
-		return false
+		return err
 	}
 
 	rows, err := db.GetDB().Query("UPDATE users SET password = ? WHERE id = ?", pass, userID)
@@ -123,12 +123,12 @@ func UpdateUserPassword(userID int, password string) bool {
 	if err != nil {
 		//todo log error
 		log.Fatal(err.Error())
-		return false
+		return err
 	}
 
 	defer rows.Close()
 
-	return true
+	return nil
 }
 
 //GetUser retrieves an user from DB through userID

@@ -250,5 +250,7 @@ _Merged following to master_
 ### Thursday - 14/03/19
 * I'm waiting for 3 pull request to be passed *wohoo*
 * Starting on forgotten password
+* Finished on forgotten password
+* Not the best code, but it works for the alpha :D
 
 

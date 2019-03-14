@@ -88,22 +88,25 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 
 	// If there's no problem with passwords and the password is changed
 	if passwordIsOkay && model.CheckPasswordHash(oldPass, hash) {
-		if model.UpdateUserPassword(user.ID, newPass) {
 
-			// Save information to log struct
-			logData := model.Log{UserID: user.ID, Activity: model.ChangePassword}
-
-			// Log password change in the database and give error if something went wrong
-			err := model.LogToDB(logData)
-			if err != nil {
-				log.Println(err.Error())
-				ErrorHandler(w, r, http.StatusInternalServerError)
-				return
-			}
-		} else {
+		err := model.UpdateUserPassword(user.ID, newPass)
+		if err != nil {
+			log.Println(err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
+
+		// Save information to log struct
+		logData := model.Log{UserID: user.ID, Activity: model.ChangePassword}
+
+		// Log password change in the database and give error if something went wrong
+		err = model.LogToDB(logData)
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
 	}
 
 	//UserGET(w, r)

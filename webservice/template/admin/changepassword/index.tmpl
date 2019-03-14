@@ -10,10 +10,16 @@
             <label for="course_id">Select Course</label>
             <select name="course_id" id="course_id" class="form-control" required>
                 <option value="-1">None</option>
-                {{$ID := .SelectedCourse}}
-                {{range $C := .Courses }}
-                    <option value="{{$C.ID}}" {{if eq $C.ID $ID}} selected{{end}}>{{$C.Code}} {{$C.Name}}</option>
-                {{end}}
+                {{ if .SelectedCourse }}
+                    {{$ID := .SelectedCourse}}
+                    {{range $C := .Courses }}
+                        <option value="{{$C.ID}}" {{if eq $C.ID $ID}} selected{{end}}>{{$C.Code}} {{$C.Name}}</option>
+                    {{end}}
+                {{ else }}
+                    {{range $C := .Courses }}
+                        <option value="{{$C.ID}}">{{$C.Code}} {{$C.Name}}</option>
+                    {{end}}
+                {{ end}}
             </select>
             <button class="btn btn-success my-3" type="submit">Get student list</button>
         </form>
@@ -34,7 +40,7 @@
                         <th scope="row">{{ .ID }}</th>
                         <td>{{ .Name }}</td>
                         <td><a href="mailto:{{ .EmailStudent }}">{{ .EmailStudent }}</a></td>
-                        <td><a href="#">Change Password</a></td>
+                        <td><a onclick="changePass({{.Name}}, {{.ID}})">Change Password</a></td>
                     </tr>
                 {{ end }}
             {{ end }}
@@ -44,4 +50,28 @@
 
 {{ end }}
 {{define "foot"}}
+
+    <script>
+
+        /**
+         * changePass
+         *
+         * Asks if teacher wants to change name, lets teacher change it himself and copy it
+         * and sends the teacher to the correct url
+         *
+         * @var studentName
+         * @var id
+         * */
+        function changePass(studentName, id) {
+
+            let ans = prompt("You are about to change " + studentName + "'s password to " + {{ .NewPass }} +"\nYou may also change the password yourself below.\nREMEMBER: Copy and send this password to the student!\nConfirm?", {{ .NewPass }});
+            if (ans) {
+                window.alert("Changing password to " + ans);
+                window.location.href = window.location.origin + "/admin/changepass?vars=" + ans + '§' + id;
+            } else {
+                window.alert("Not changing the password!");
+                window.location.href = window.location.origin + "/admin/changepass";
+            }
+        }
+    </script>
 {{end}}
