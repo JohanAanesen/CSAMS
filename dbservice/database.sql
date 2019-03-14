@@ -210,6 +210,7 @@ CREATE TABLE `user_reviews`
   `name`          varchar(64) NOT NULL,
   `label`         varchar(64) NOT NULL,
   `answer`        text        NOT NULL,
+  `comment`       text        NULL,
   `submitted`     datetime    NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
@@ -765,6 +766,25 @@ INSERT INTO usercourse (userid, courseid) VALUES (8, 4);
 INSERT INTO usercourse (userid, courseid) VALUES (9, 4);
 INSERT INTO usercourse (userid, courseid) VALUES (10, 4);
 
+INSERT INTO forms (id, prefix, name, created) VALUES (8, 'git_repository_w_comment', 'Git Repository w/Comment', '2019-03-13 10:52:52');
+INSERT INTO forms (id, prefix, name, created) VALUES (9, 'test_all_fields', 'TEST: All fields', '2019-03-13 10:54:02');
+
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (42, 8, 'url', 'git_repository_w_comment_url_35', 'Git Repository', 1, 'Make sure the repository is public before delivering!', 0, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (43, 8, 'textarea', 'git_repository_w_comment_textarea_0', 'textarea', 0, '', 1, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (44, 8, 'url', 'git_repository_w_comment_url_1', 'url', 0, '', 2, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (45, 8, 'number', 'git_repository_w_comment_number_2', 'number', 0, '', 3, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (46, 8, 'checkbox', 'git_repository_w_comment_checkbox_3', 'checkbox', 0, '', 4, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (47, 8, 'radio', 'git_repository_w_comment_radio_4', 'radio', 0, '', 5, 0, 'a,b,c');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (48, 9, 'text', 'test_all_fields_text_36', 'Text', 1, 'This is a text field', 0, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (49, 9, 'textarea', 'test_all_fields_textarea_37', 'Textarea', 0, 'This is a long text field', 1, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (50, 9, 'url', 'test_all_fields_url_38', 'URL', 0, 'This is a URL field', 2, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (51, 9, 'number', 'test_all_fields_number_39', 'Number', 0, 'This is a number field', 3, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (52, 9, 'checkbox', 'test_all_fields_checkbox_40', 'Checkbox', 0, 'This is a checkbox field', 4, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (53, 9, 'radio', 'test_all_fields_radio_41', 'Radio', 0, 'This is a radio field', 5, 0, 'a,b,c');
+
+INSERT INTO reviews (id, form_id) VALUES (3, 9);
+INSERT INTO submissions (id, form_id) VALUES (6, 8);
+
 INSERT INTO assignments (id, name, description, created, publish, deadline, course_id, submission_id, review_id, validation_id, reviewers) VALUES (2, 'Assignment 1', '# Assignment 1: in-memory IGC track viewer
 
 ## About
@@ -913,25 +933,6 @@ The submission deadline is **Sunday, October 14th, 23:59**. No extensions will b
 [The form for peer-review](https://docs.google.com/spreadsheets/d/1Iat2up_Ra1hokvkZZYE0NJJ3JeB8iTcvd3zp0VS7SCQ/edit?usp=sharing)
 
 ', '2019-03-13 10:46:07', '2019-03-13 09:45:00', '2019-03-14 23:59:00', 4, 6, 3, null, 1);
-
-INSERT INTO forms (id, prefix, name, created) VALUES (8, 'git_repository_w_comment', 'Git Repository w/Comment', '2019-03-13 10:52:52');
-INSERT INTO forms (id, prefix, name, created) VALUES (9, 'test_all_fields', 'TEST: All fields', '2019-03-13 10:54:02');
-
-INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (42, 8, 'url', 'git_repository_w_comment_url_35', 'Git Repository', 1, 'Make sure the repository is public before delivering!', 0, 0, '');
-INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (43, 8, 'textarea', 'git_repository_w_comment_textarea_0', 'textarea', 0, '', 1, 0, '');
-INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (44, 8, 'url', 'git_repository_w_comment_url_1', 'url', 0, '', 2, 0, '');
-INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (45, 8, 'number', 'git_repository_w_comment_number_2', 'number', 0, '', 3, 0, '');
-INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (46, 8, 'checkbox', 'git_repository_w_comment_checkbox_3', 'checkbox', 0, '', 4, 0, '');
-INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (47, 8, 'radio', 'git_repository_w_comment_radio_4', 'radio', 0, '', 5, 0, 'a,b,c');
-INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (48, 9, 'text', 'test_all_fields_text_36', 'Text', 1, 'This is a text field', 0, 0, '');
-INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (49, 9, 'textarea', 'test_all_fields_textarea_37', 'Textarea', 0, 'This is a long text field', 1, 0, '');
-INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (50, 9, 'url', 'test_all_fields_url_38', 'URL', 0, 'This is a URL field', 2, 0, '');
-INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (51, 9, 'number', 'test_all_fields_number_39', 'Number', 0, 'This is a number field', 3, 0, '');
-INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (52, 9, 'checkbox', 'test_all_fields_checkbox_40', 'Checkbox', 0, 'This is a checkbox field', 4, 0, '');
-INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (53, 9, 'radio', 'test_all_fields_radio_41', 'Radio', 0, 'This is a radio field', 5, 0, 'a,b,c');
-
-INSERT INTO reviews (id, form_id) VALUES (3, 9);
-INSERT INTO submissions (id, form_id) VALUES (6, 8);
 
 INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (4, 6, 2, 4, 5);
 INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (5, 6, 2, 4, 6);
