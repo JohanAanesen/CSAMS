@@ -267,6 +267,9 @@ func RegisterUser(name string, email string, password string) (User, error) {
 	}
 
 	userID, err := ex.LastInsertId() //get ID
+	if err != nil {
+		return User{}, err
+	}
 
 	user := GetUser(int(userID)) //get user from ID
 

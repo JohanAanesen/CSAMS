@@ -100,6 +100,7 @@ func SaveUserToSession(user model.User, w http.ResponseWriter, r *http.Request) 
 	return true
 }
 
+// SaveMessageToSession saves a message to the session
 func SaveMessageToSession(msg string, w http.ResponseWriter, r *http.Request) bool {
 	session, err := Instance(r) //get session
 
@@ -122,6 +123,7 @@ func SaveMessageToSession(msg string, w http.ResponseWriter, r *http.Request) bo
 	return true
 }
 
+// GetAndDeleteMessageFromSession retrieves and a message from the session, then deletes it
 func GetAndDeleteMessageFromSession(w http.ResponseWriter, r *http.Request) string {
 	session, err := Instance(r) // get session
 
@@ -145,8 +147,14 @@ func GetAndDeleteMessageFromSession(w http.ResponseWriter, r *http.Request) stri
 	return msg
 }
 
+// DeleteMessageFromSession deletes a message from the session
 func DeleteMessageFromSession(w http.ResponseWriter, r *http.Request) bool {
 	session, err := Instance(r) // get session
+
+	if err != nil {
+		log.Printf("Could not get instance of session: %v", err)
+		return false
+	}
 
 	session.Values["Message"] = ""
 
