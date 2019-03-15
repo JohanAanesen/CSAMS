@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/db"
 	"encoding/json"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/db"
 	"log"
 	"time"
 )

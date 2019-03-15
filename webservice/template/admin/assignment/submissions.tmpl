@@ -12,6 +12,7 @@
             <th scope="col">Email</th>
             <th scope="col">Submitted</th>
             <th scope="col">Submission</th>
+            <th scope="col">Reviews</th>
         </tr>
         </thead>
         <tbody>
@@ -24,6 +25,7 @@
                     <td><a href="mailto:{{ .User.EmailStudent }}">{{ .User.EmailStudent }}</a></td>
                     <td>{{if .Submitted}}{{PRETTYTIME .SubmittedTime }}{{end}}</td>
                     <td>{{if .Submitted}}<a href="/assignment/{{ $A.ID }}/submission/{{ .User.ID }}">See submission</a>{{end}}</td>
+                    <td><span class="badge badge-warning">COMING</span></td>
                 </tr>
             {{ end }}
         {{ end }}

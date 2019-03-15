@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"time"
 )
 
@@ -79,48 +80,51 @@ func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
 
 // UploadUserSubmission uploads user submission to the db
 func UploadUserSubmission(userSub UserSubmission) error {
-	// Query string
-	query := "INSERT INTO user_submissions (user_id, submission_id, assignment_id, type, answer, comment) " +
-		"VALUES (?, ?, ?, ?, ?, ?)"
-	// Begin transaction with database
-	tx, err := db.GetDB().Begin()
+	// Get current Norwegian time in string format TODO time-norwegian
+	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
+
+	tx, err := db.GetDB().Begin() //start transaction
 	if err != nil {
 		return err
 	}
 
 	// Go through all answers
 	for _, answer := range userSub.Answers {
+
 		// Sql query
-		_, err := db.GetDB().Exec(query, userSub.UserID, userSub.SubmissionID, userSub.AssignmentID,
-			answer.Type, answer.Value, answer.Comment)
+		query := "INSERT INTO user_submissions (user_id, submission_id, assignment_id, type, answer, submitted) VALUES (?, ?, ?, ?, ?, ?)"
+		_, err := tx.Exec(query, userSub.UserID, userSub.SubmissionID, userSub.AssignmentID, answer.Type, answer.Value, date)
+
 		// Check if there was an error
 		if err != nil {
-			tx.Rollback()
+			tx.Rollback() //quit transaction if error
 			return err
 		}
 	}
+
+	err = tx.Commit() //finish transaction
+	if err != nil {
+		return err
+	}
+
 	// return nil if no errors
-	return err
+	return nil
 }
 
 // UpdateUserSubmission updates user submission to the db
 func UpdateUserSubmission(userSub UserSubmission) error {
-	// Sql query
-	query := "UPDATE user_submissions SET answer=?, submitted=?, comment=? WHERE id=?"
-	// Norwegian time TODO time
-	now := time.Now().UTC().Add(time.Hour)
-
-	tx, err := db.GetDB().Begin()
-	if err != nil {
-		return err
-	}
+	// Norwegian time TODO time-norwegian
+	now := util.GetTimeInCorrectTimeZone()
 
 	// Go through all answers
 	for _, answer := range userSub.Answers {
-		_, err := db.GetDB().Exec(query, answer.Value, now, answer.Comment, answer.ID)
+
+		// Sql query
+		query := "UPDATE `user_submissions` SET `answer` = ?, `submitted` = ? WHERE `id` = ?"
+		_, err := db.GetDB().Exec(query, answer.Value, now, answer.ID)
+
 		// Check if there was an error
 		if err != nil {
-			tx.Rollback()
 			return err
 		}
 	}

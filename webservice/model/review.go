@@ -1,7 +1,9 @@
 package model
 
 import (
+	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 )
 
 // Review struct
@@ -189,7 +191,7 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 		return result, err
 	}
 
-	var reviewID int
+	var reviewID sql.NullInt64
 
 	for rows.Next() {
 		err = rows.Scan(&reviewID)
@@ -198,7 +200,7 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 		}
 	}
 
-	result.ID = reviewID
+	result.ID = int(reviewID.Int64)
 
 	query = "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices, f.hasComment " +
 		"FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM reviews AS s WHERE id IN " +
@@ -236,8 +238,9 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 
 // InsertReviewAnswers inserts answers from a review into the database
 func (repo *ReviewRepository) InsertReviewAnswers(fr FullReview) error {
-	query := "INSERT user_reviews (user_reviewer, user_target, review_id, assignment_id, type, name, label, answer) " +
-		"VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+	// Get current Norwegian time in string format TODO time-norwegian
+	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
+	query := "INSERT user_reviews (user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, submitted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
 	tx, err := db.GetDB().Begin()
 	if err != nil {
@@ -245,7 +248,7 @@ func (repo *ReviewRepository) InsertReviewAnswers(fr FullReview) error {
 	}
 
 	for _, answer := range fr.Answers {
-		_, err := db.GetDB().Exec(query, fr.Reviewer, fr.Target, fr.ReviewID, fr.AssignmentID, answer.Type, answer.Name, answer.Label, answer.Answer)
+		_, err := tx.Exec(query, fr.Reviewer, fr.Target, fr.ReviewID, fr.AssignmentID, answer.Type, answer.Name, answer.Label, answer.Answer, date)
 		if err != nil {
 			tx.Rollback()
 			return err

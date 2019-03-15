@@ -147,9 +147,14 @@ func GetAndDeleteMessageFromSession(w http.ResponseWriter, r *http.Request) stri
 	return msg
 }
 
-// DeleteMessageFromSession deletes a message from session
+// DeleteMessageFromSession deletes a message from the session
 func DeleteMessageFromSession(w http.ResponseWriter, r *http.Request) bool {
 	session, err := Instance(r) // get session
+
+	if err != nil {
+		log.Printf("Could not get instance of session: %v", err)
+		return false
+	}
 
 	session.Values["Message"] = ""
 

@@ -62,19 +62,27 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// Users Email
 	// If secondary-email input isn't blank it has changed
 	if secondaryEmail != "" && secondaryEmail != user.EmailPrivate {
-		if model.UpdateUserEmail(user.ID, secondaryEmail) {
 
-			// Save information to log struct
-			logData := model.Log{UserID: user.ID, Activity: model.ChangeEmail, OldValue: user.EmailPrivate, NewValue: secondaryEmail}
+		err := model.UpdateUserEmail(user.ID, secondaryEmail)
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 
-			//update session
-			user.EmailPrivate = secondaryEmail
-			session.SaveUserToSession(user, w, r)
+		// Save information to log struct
+		logData := model.Log{UserID: user.ID, Activity: model.ChangeEmail, OldValue: user.EmailPrivate, NewValue: secondaryEmail}
 
-			// Log email change in the database and give error if something went wrong
-			if !model.LogToDB(logData) {
-				log.Println("Could not save email log to database! (user.go)")
-			}
+		//update session
+		user.EmailPrivate = secondaryEmail
+		session.SaveUserToSession(user, w, r)
+
+		// Log email change in the database and give error if something went wrong
+		err = model.LogToDB(logData)
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
 		}
 	}
 
@@ -83,21 +91,27 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// and the new password can't be the same as the old password
 	passwordIsOkay := oldPass != "" && newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass
 
-	// If there's no problem with passwords and teh password is changed
+	// If there's no problem with passwords and the password is changed
 	if passwordIsOkay && model.CheckPasswordHash(oldPass, hash) {
-		if model.UpdateUserPassword(user.ID, newPass) {
 
-			// Save information to log struct
-			logData := model.Log{UserID: user.ID, Activity: model.ChangePassword}
-
-			// Log password change in the database and give error if something went wrong
-			if !model.LogToDB(logData) {
-				log.Println("Could not save password log to database! (user.go)")
-			}
-		} else {
+		err := model.UpdateUserPassword(user.ID, newPass)
+		if err != nil {
+			log.Println(err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
+
+		// Save information to log struct
+		logData := model.Log{UserID: user.ID, Activity: model.ChangePassword}
+
+		// Log password change in the database and give error if something went wrong
+		err = model.LogToDB(logData)
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
 	}
 
 	//UserGET(w, r)

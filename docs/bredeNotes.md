@@ -191,27 +191,69 @@ this was mostly because I use ca. 7h all together to get the project starting.
     * Gets the links to the submissions user is going to review
 
 ## Week Five
-### Monday 04/03/19
+### Monday - 04/03/19
 * Had some meetings
 * Started on [Alpha fix functionallity Req](https://trello.com/c/kv8MfMcv) with Svein and Johan
 
-### Tuesday 05/03/19
+### Tuesday - 05/03/19
 * Fixed joined course bug
 
-### Wednesday 06/03/19
+### Wednesday - 06/03/19
 * Course hash is now displayed to Admin
 * It's only one link for joining course now
 * Admin can copy the one join course link
 * Changed name to Full name and made it unchangeable
 * Switched to PRETTYTIME in faq and updated the faq 
 
-## Thursday 07/03/19 
+## Thursday - 07/03/19 
 * **Hafjell**
 
-### Friday 08/03/19
+### Friday - 08/03/19
 * Added confirm to user if admin wants to delete submission form or not.
 * Updates submission_id in assignment even if it's nil now (That's good)
 * Former submissions will now be deleted if submission form is changed
 
+## Week Six
+### Monday  - 11/03/19
+_Merged following to master_ 
+```
+* Fixed join class bug
+* Fixed submission/review bug
+* Updated faq to be more professional
+* Fixed it so it's only one join course link now
+* When a user updates an assignment, the submitted time is updated too
+* Also added TODO : time on places that used time, for later refactoring
+```
+* Starting on `Hardcode in norwegian timezone- alpha` and `Display PRETTYTIME in Norwegian format`
+* Prettytime is fixed
+* Go function for norwegian time is done
+* Bug on js function for norwegian time
 
+### Tuesday - 12/03/19
+* deleted unnecessary .sql files
+* fixed schedulerservice error, *I used an function from webservice before* 
+* I changed some data to be better testdata in .sql
+* Added two new functions
+    * one for padding numbers with 0
+    * and one for replacing [`toISOString()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString) so it doesn't alter the time before formatting.
+* Also changed go and js `getTimeNorwegian()` to use locale `"Europe/Oslo"` 
+
+### Wednesday - 13/03/19
+* Removed timezone from sql and use golang instead, this is so it's easier to change time later
+* Tried to remove go.mod/.sum but we needed them after all
+* Fixing assignment card
+* Added time zone on date formating
+* ALso added envar for the timezone so it's easier to change later
+* Changed to transaction some places in SQL queries
+* Changed logtodb to return error instead of boolean 
+
+### Thursday - 14/03/19
+* I'm waiting for 3 pull request to be passed *wohoo*
+* Starting on forgotten password
+* Finished on forgotten password
+* Not the best code, but it works for the alpha :D
+* Also finished `dont'show-review-name`
+
+### Friday 15/03/19
+* Merged shit together
 

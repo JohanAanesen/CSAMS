@@ -79,8 +79,9 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check that it went okay to add new faq to db
-	if !model.UpdateFAQ(updatedFAQ) {
-		log.Println("Something went wrong with updating the faq! (admin.go)")
+	err := model.UpdateFAQ(updatedFAQ)
+	if err != nil {
+		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -97,8 +98,9 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Log that a teacher has changed the faq
-	if !model.LogToDB(logData) {
-		log.Println("Something went wrong with logging the new faq! (admin.go)")
+	err = model.LogToDB(logData)
+	if err != nil {
+		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}

@@ -242,8 +242,8 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute  TODO time
-	if assID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(time.Now()) {
+	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute  TODO time-norwegian
+	if assID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInCorrectTimeZone()) {
 
 		sched := scheduler.Scheduler{}
 
@@ -499,8 +499,8 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute TODO time
-	if assignment.ID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(time.Now()) {
+	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute TODO time-norwegian
+	if assignment.ID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInCorrectTimeZone()) {
 
 		sched := scheduler.Scheduler{}
 
@@ -567,7 +567,6 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO brede : sort by user delivered and not + show if delivered or not in table
 	students := model.GetUsersToCourse(assignment.CourseID)
 	if len(students) < 0 {
 		log.Println("Error: could not get students from course! (admin_assignment.go)")
