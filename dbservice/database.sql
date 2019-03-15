@@ -137,7 +137,7 @@ CREATE TABLE `user_reviews`
   `label`         varchar(64) NOT NULL,
   `answer`        text        NOT NULL,
   `comment`       text                 DEFAULT NULL,
-  `submitted`     datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `submitted`     datetime    NOT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`assignment_id`) REFERENCES assignments (`id`),
   FOREIGN KEY (`review_id`) REFERENCES reviews (`id`),
@@ -154,7 +154,7 @@ CREATE TABLE `user_submissions`
   `type`          varchar(64) NOT NULL,
   `answer`        mediumtext  NULL,
   `comment`       text                 DEFAULT NULL,
-  `submitted`     timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `submitted`     timestamp   NOT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`assignment_id`) REFERENCES assignments (`id`),
   FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`)

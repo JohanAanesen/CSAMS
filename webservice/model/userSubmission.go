@@ -114,7 +114,7 @@ func UploadUserSubmission(userSub UserSubmission) error {
 // UpdateUserSubmission updates user submission to the db
 func UpdateUserSubmission(userSub UserSubmission) error {
 	// Norwegian time TODO time-norwegian
-	now := util.GetTimeInCorrectTimeZone()
+	now := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
 	// Go through all answers
 	for _, answer := range userSub.Answers {
