@@ -717,3 +717,80 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 	// Render view
 	v.Render(w)
 }
+
+// AdminAssignmentSingleSubmissionGET handles GET-request at /admin/assignment/{id}/submission/{id}
+func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) {
+		// Get URL variables
+	vars := mux.Vars(r)
+	// Get assignment id
+	assignmentID, err := strconv.Atoi(vars["assignmentID"])
+	if err != nil {
+		log.Println("string convert assignment id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get user id
+	userID, err := strconv.Atoi(vars["userID"])
+	if err != nil {
+		log.Println("string convert user id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	user := model.GetUser(userID)
+
+	// Get form and log possible error
+	formRepo := model.FormRepository{}
+	form, err := formRepo.GetSubmissionFormFromAssignmentID(assignmentID)
+	if err != nil {
+		log.Println("get submission form from assignment id", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get answers to user if he has delivered
+	answers, err := model.GetUserAnswers(user.ID, assignmentID)
+	if err != nil {
+		log.Println("get user answers", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	com := MergedAnswerField{}
+	// Only merge if user has delivered
+	if len(answers) > 0 {
+
+		// Make sure answers and fields are same length before merging
+		if len(answers) != len(form.Fields) {
+			log.Println("Error: answers(" + strconv.Itoa(len(answers)) + ") is not equal length as fields(" + strconv.Itoa(len(form.Fields)) + ")! (assignment.go)")
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+		// Merge field and answer if assignment is delivered
+
+		for i := 0; i < len(form.Fields); i++ {
+			com.Items = append(com.Items, Combined{
+				Answer: answers[i],
+				Field:  form.Fields[i],
+			})
+		}
+	}
+
+	// Set header content-type and status code
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	// Create view
+	v := view.New(r)
+	// Set template
+	v.Name = "admin/assignment/singlesubmission"
+
+	// View variables
+	v.Vars["AssignmentID"] = assignmentID
+	v.Vars["User"] = user
+	v.Vars["AnswersAndFields"] = com.Items
+
+	// Render view
+	v.Render(w)
+}

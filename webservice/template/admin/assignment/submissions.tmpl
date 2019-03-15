@@ -24,7 +24,7 @@
                     <td>{{ .User.Name }}</td>
                     <td><a href="mailto:{{ .User.EmailStudent }}">{{ .User.EmailStudent }}</a></td>
                     <td>{{if .Submitted}}{{PRETTYTIME .SubmittedTime }}{{end}}</td>
-                    <td>{{if .Submitted}}<a href="/assignment/{{ $A.ID }}/submission/{{ .User.ID }}">See submission</a>{{end}}</td>
+                    <td>{{if .Submitted}}<a href="/admin/assignment/{{ $A.ID }}/submission/{{ .User.ID }}">See submission</a>{{end}}</td>
                     <td><a href="/admin/assignment/{{$A.ID}}/review/{{.User.ID}}">See review(s)</a></td>
                 </tr>
             {{ end }}
