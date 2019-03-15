@@ -53,8 +53,8 @@ func (peer PeerTask) Schedule(scheduledTime time.Time) bool {
 	payload := GetPayload(peer.SubmissionID, peer.AssignmentID)
 
 	// TODO time-schedulerservice
-	timeNow := time.Now().UTC().Add(time.Hour)   // Get norwegian time now
-	Duration := scheduledTime.Sub(timeNow) // Subtract now's time from target time to get time until trigger
+	timeNow := time.Now().UTC().Add(time.Hour) // Get norwegian time now
+	Duration := scheduledTime.Sub(timeNow)     // Subtract now's time from target time to get time until trigger
 
 	if Duration < 0 { //scheduled time has to be in the future
 		log.Printf("Could not schedule timer for submissionID: %v", peer.SubmissionID)

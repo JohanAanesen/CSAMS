@@ -11,7 +11,7 @@ import (
 //Configuration struct
 type Configuration struct {
 	Database *db.MySQLInfo `json:"database"`
-	Server   *Server    `json:"server"`
+	Server   *Server       `json:"server"`
 }
 
 //LoadConfig loads configuration from config.json

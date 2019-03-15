@@ -2,7 +2,6 @@ package plugin_test
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view/plugin"
 	"html/template"
 	"log"
@@ -12,36 +11,32 @@ import (
 )
 
 func TestPrettyTime(t *testing.T) {
-	const parse = `{{PRETTYTIME .}}`
-	const expected = "15:04 02/01/2019"
+	const foo = `{{PRETTYTIME .}}`
 
-	input, err := time.Parse(time.RFC3339, "2019-01-02T15:04:05Z")
+	data, err := time.Parse(time.RFC3339, "2019-01-02T15:04:05Z")
 	if err != nil {
 		log.Fatalf("time parsing: %s", err)
 	}
 
-	tmpl, err := template.New("deadlineDueTest").Funcs(plugin.PrettyTime()).Parse(parse)
+	tmpl, err := template.New("deadlineDueTest").Funcs(plugin.PrettyTime()).Parse(foo)
 	if err != nil {
 		log.Fatalf("parsing: %s", err)
 	}
 
 	buffer := new(bytes.Buffer)
 
-	err = tmpl.Execute(buffer, input)
+	err = tmpl.Execute(buffer, data)
 	if err != nil {
 		log.Fatalf("execution: %s", err)
 	}
 
 	result := buffer.String()
 
-<<<<<<< HEAD
-	if result != expected {
-=======
 	// TODO time-norwegian +0100 CET or +0200 CEST
 	expected := regexp.MustCompile("^15:04 02/01/2019 &#43;0[1|2]00 CE[|S]?T$")
-	fmt.Println(result)
 	if !expected.Match([]byte(result)) {
->>>>>>> caaf252d695e273c0fc54d36bf9f72831ba3ca0c
+		t.Errorf("\nexpected:\t%v\ngot:\t\t%v", expected.String(), result)
 		t.Fail()
 	}
 }
+

@@ -249,7 +249,6 @@ func (repo *AssignmentRepository) Update(id int, assignment Assignment) error {
 
 	query = "UPDATE assignments SET review_id=? WHERE id=?"
 
-
 	tx, err = db.GetDB().Begin()
 	if err != nil {
 		return err
