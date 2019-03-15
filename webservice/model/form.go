@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"log"
@@ -34,7 +35,7 @@ type Answer struct {
 	ID      int
 	Type    string
 	Value   string
-	Comment string
+	Comment sql.NullString
 }
 
 // FormRepository struct

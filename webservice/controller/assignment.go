@@ -221,7 +221,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	// Convert id from string to int
 	assignmentID, err := strconv.Atoi(id)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("string convert atoi id", err.Error())
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
@@ -230,7 +230,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	assignmentRepo := model.AssignmentRepository{}
 	assignment, err := assignmentRepo.GetSingle(assignmentID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("get single assignment", err.Error())
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
@@ -246,7 +246,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	formRepo := model.FormRepository{}
 	form, err := formRepo.GetSubmissionFormFromAssignmentID(assignment.ID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("get submission form from assignment id", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -257,7 +257,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	// Get course and log possible error
 	course, err := courseRepo.GetSingle(assignment.CourseID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("get single course", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -265,7 +265,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	// Get answers to user if he has delivered
 	answers, err := model.GetUserAnswers(session.GetUserFromSession(r).ID, assignmentID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("get user answers", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -408,7 +408,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		// Check if the field has comment enabled
 		if field.HasComment {
 			// Get comment content, sanitized
-			answer.Comment = p.Sanitize(r.FormValue(field.Name + "_comment"))
+			answer.Comment.String = p.Sanitize(r.FormValue(field.Name + "_comment"))
 		}
 
 		// Sanitize input, and get field type
