@@ -46,7 +46,7 @@ func GetDateAndQuestionsFAQ() Faq {
 }
 
 // UpdateFAQ updates the questions and date in FAQ
-func UpdateFAQ(newFaq string) bool {
+func UpdateFAQ(newFaq string) error {
 
 	// Get current Norwegian time in string format TODO time-norwegian
 	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
@@ -56,12 +56,11 @@ func UpdateFAQ(newFaq string) bool {
 
 	// Log error if it exists
 	if err != nil {
-		log.Fatal(err.Error())
-		return false
+		return err
 	}
 
 	defer rows.Close()
 
-	return true
+	return nil
 
 }

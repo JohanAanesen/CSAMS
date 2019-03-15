@@ -93,6 +93,9 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/review/update", controller.AdminReviewUpdatePOST).Methods("POST")
 	adminrouter.HandleFunc("/review/delete", controller.AdminReviewDELETE).Methods("DELETE")
 
+	adminrouter.HandleFunc("/changepass", controller.AdminChangePassGET).Methods("GET")
+	adminrouter.HandleFunc("/changepass/list", controller.AdminGetUsersPOST).Methods("POST")
+
 	adminrouter.HandleFunc("/faq", controller.AdminFaqGET).Methods("GET")
 	adminrouter.HandleFunc("/faq/edit", controller.AdminFaqEditGET).Methods("GET")
 	adminrouter.HandleFunc("/faq/update", controller.AdminFaqUpdatePOST).Methods("POST")
@@ -108,6 +111,9 @@ func routes() http.Handler {
 	router.HandleFunc("/register", controller.RegisterGET).Methods("GET")
 	router.HandleFunc("/register", controller.RegisterPOST).Methods("POST")
 	router.HandleFunc("/logout", controller.LogoutGET).Methods("GET")
+
+	// Login forgotten password handler
+	router.HandleFunc("/forgottenpass", controller.ForgottenGET).Methods("GET")
 
 	// Set path prefix for the static-folder
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))

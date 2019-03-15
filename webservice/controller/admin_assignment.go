@@ -566,7 +566,6 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO brede : sort by user delivered and not + show if delivered or not in table
 	students := model.GetUsersToCourse(assignment.CourseID)
 	if len(students) < 0 {
 		log.Println("Error: could not get students from course! (admin_assignment.go)")
