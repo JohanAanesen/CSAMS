@@ -1,0 +1,82 @@
+{{define "title"}}Change students password{{end}}
+{{define "head"}}{{end}}
+{{ define "content" }}
+    <div class="alert alert-info"><strong>Note:</strong> This is a temporary solution for the alpha version!
+    </div>
+    <h1 class="display-4">Change a students password</h1>
+
+    <div class="form-group col-lg-8 col-md-10 col-sm-12">
+        <form action="/admin/changepass/list" method="post">
+            <label for="course_id">Select Course</label>
+            <select name="course_id" id="course_id" class="form-control" required>
+                <option value="-1">None</option>
+                {{ if .SelectedCourse }}
+                    {{$ID := .SelectedCourse}}
+                    {{range $C := .Courses }}
+                        <option value="{{$C.ID}}" {{if eq $C.ID $ID}} selected{{end}}>{{$C.Code}} {{$C.Name}}</option>
+                    {{end}}
+                {{ else }}
+                    {{range $C := .Courses }}
+                        <option value="{{$C.ID}}">{{$C.Code}} {{$C.Name}}</option>
+                    {{end}}
+                {{ end}}
+            </select>
+            <button class="btn btn-success my-3" type="submit">Get student list</button>
+        </form>
+
+        <table class="table table-striped table-sm">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Change Passwords</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{ range .Students }}
+                {{ if not .Teacher }}
+                    <tr class="clickable-row">
+                        <th scope="row">{{ .ID }}</th>
+                        <td>{{ .Name }}</td>
+                        <td><a href="mailto:{{ .EmailStudent }}">{{ .EmailStudent }}</a></td>
+                        <td>
+                            <button class="btn btn-outline-success btn-small" onclick="changePass({{.Name}}, {{.ID}})"
+                                    style="font-size:12px">
+                                Change Password
+                            </button>
+                        </td>
+                    </tr>
+                {{ end }}
+            {{ end }}
+            </tbody>
+        </table>
+    </div>
+
+{{ end }}
+{{define "foot"}}
+
+    <script>
+
+        /**
+         * changePass
+         *
+         * Asks if teacher wants to change name, lets teacher change it himself and copy it
+         * and sends the teacher to the correct url
+         *
+         * @var studentName
+         * @var id
+         * */
+        function changePass(studentName, id) {
+
+            let ans = prompt("You are about to change " + studentName + "'s password to " + {{ .NewPass }} +"\nYou may also change the password yourself below.\nREMEMBER: Copy and send this password to the student!\nConfirm?", {{ .NewPass }});
+            if (ans) {
+                window.alert("Changing password to " + ans);
+                window.location.href = window.location.origin + "/admin/changepass?vars=" + ans + '§' + id;
+            } else {
+                window.alert("Not changing the password!");
+                window.location.href = window.location.origin + "/admin/changepass";
+            }
+        }
+    </script>
+{{end}}

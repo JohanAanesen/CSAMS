@@ -17,22 +17,6 @@ type User struct {
 	Authenticated bool   `json:"authenticated"`
 }
 
-// UpdateUserName updates the users name in the db
-func UpdateUserName(userID int, newName string) bool {
-
-	rows, err := db.GetDB().Query("UPDATE users SET name = ? WHERE id = ?", newName, userID)
-
-	if err != nil {
-		//todo log error
-		log.Fatal(err.Error())
-		return false
-	}
-
-	defer rows.Close()
-
-	return true
-}
-
 // UserIsReviewer Checks if the user (userID) can review another user(reviewUserID)
 func UserIsReviewer(userID int, assignmentID int, submissionID int64, reviewUserID int) bool {
 
@@ -92,43 +76,37 @@ func GetReviewUserIDs(userID int, assignmentID int) []User {
 }
 
 //UpdateUserEmail updates the users email in the db
-func UpdateUserEmail(userID int, email string) bool {
+func UpdateUserEmail(userID int, email string) error {
 	rows, err := db.GetDB().Query("UPDATE users SET email_private = ? WHERE id = ?", email, userID)
 
 	if err != nil {
-		//todo log error
-		log.Fatal(err.Error())
-		return false
+		return err
 	}
 
 	defer rows.Close()
 
-	return true
+	return nil
 }
 
 //UpdateUserPassword updates the users password in the db
-func UpdateUserPassword(userID int, password string) bool {
+func UpdateUserPassword(userID int, password string) error {
 
 	// Hash the password first
 	pass, err := hashPassword(password)
 
 	if err != nil {
-		//todo log error
-		log.Fatal(err.Error())
-		return false
+		return err
 	}
 
 	rows, err := db.GetDB().Query("UPDATE users SET password = ? WHERE id = ?", pass, userID)
 
 	if err != nil {
-		//todo log error
-		log.Fatal(err.Error())
-		return false
+		return err
 	}
 
 	defer rows.Close()
 
-	return true
+	return nil
 }
 
 //GetUser retrieves an user from DB through userID
