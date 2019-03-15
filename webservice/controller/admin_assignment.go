@@ -669,3 +669,51 @@ func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
 
 }
 */
+
+// AdminAssignmentReviewsGET handles request to /admin/assignment/{id}/review/{id}
+func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
+	// Get URL variables
+	vars := mux.Vars(r)
+	// Get assignment id
+	assignmentID, err := strconv.Atoi(vars["assignmentID"])
+	if err != nil {
+		log.Println("string convert assignment id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get user id
+	userID, err := strconv.Atoi(vars["userID"])
+	if err != nil {
+		log.Println("string convert user id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	reviewRepo := model.ReviewRepository{}
+	reviews, err := reviewRepo.GetReviewForUser(userID, assignmentID)
+	if err != nil {
+		log.Println("GetReviewFromUser", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get user data
+	user := model.GetUser(userID)
+
+	// Set header content-type and status code
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	// Create view
+	v := view.New(r)
+	// Set template
+	v.Name = "admin/assignment/reviews"
+
+	// View variables
+	v.Vars["User"] = user
+	v.Vars["Reviews"] = reviews
+
+	// Render view
+	v.Render(w)
+}

@@ -1,0 +1,50 @@
+{{define "title"}}Reviews{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+    <h1 class="display-4">
+        Reviews for {{GET_USERNAME .User.ID}}
+    </h1>
+    <hr>
+
+    {{$i := 1}}
+    {{range .Reviews}}
+        <div class="card mb-3">
+            <div class="card-header bg-secondary">
+                <h5 class="card-title mb-0">Review by {{GET_USERNAME .Reviewer}}</h5>{{$i = INCREMENT $i}}
+            </div>
+            <div class="card-body">
+                <!-- TODO (Svein): Get the other field types -->
+                {{range .Answers}}
+                    {{if eq .Type "radio"}}
+                        <label for="">{{.Label}}</label>
+                        <input type="text" class="form-control" value="{{.Answer}}" disabled>
+                    {{else}}
+                        <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}}">
+                            {{if ne .Type "checkbox"}}<label for="">{{.Label}}</label>{{end}}
+                            {{if eq .Type "text"}}
+                                <input type="text" class="form-control" value="{{.Answer}}"
+                                       disabled>
+                            {{ else if eq .Type "url" }}
+                                <input type="url" class="form-control" value="{{.Answer}}" disabled>
+                            {{ else if eq .Type "textarea" }}
+                                <textarea class="form-control" disabled>{{.Answer}}</textarea>
+                            {{ else if eq .Type "number" }}
+                                <input type="number" class="form-control" value="{{.Answer}}"
+                                       disabled>
+                            {{ else if eq .Type "checkbox" }}
+                                <input type="checkbox"
+                                       class="form-check-input"{{if eq .Answer "on"}} checked{{end}}
+                                       disabled>
+                                <label class="form-check-inline">{{ .Label }}</label>
+                            {{ end }}
+                        </div>
+                    {{end}}
+                {{end}}
+            </div>
+        </div>
+    {{end}}
+    {{if eq $i 1}}
+        <h3>This assignment has not been reviewed yet.</h3>
+    {{end}}
+{{end}}
+{{define "foot"}}{{end}}
