@@ -93,11 +93,11 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/review/update", controller.AdminReviewUpdatePOST).Methods("POST")
 	adminrouter.HandleFunc("/review/delete", controller.AdminReviewDELETE).Methods("DELETE")
 
-	adminrouter.HandleFunc("/changepass", controller.AdminChangePassGET).Methods("GET")
-	adminrouter.HandleFunc("/changepass/list", controller.AdminGetUsersPOST).Methods("POST")
-
 	adminrouter.HandleFunc("/scheduler", controller.AdminSchedulerGET).Methods("GET")
 	adminrouter.HandleFunc("/scheduler/delete", controller.AdminSchedulerDELETE).Methods("POST")
+
+	adminrouter.HandleFunc("/changepass", controller.AdminChangePassGET).Methods("GET")
+	adminrouter.HandleFunc("/changepass/list", controller.AdminGetUsersPOST).Methods("POST")
 
 	adminrouter.HandleFunc("/faq", controller.AdminFaqGET).Methods("GET")
 	adminrouter.HandleFunc("/faq/edit", controller.AdminFaqEditGET).Methods("GET")

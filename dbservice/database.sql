@@ -13,7 +13,7 @@ SET time_zone = "+01:00";
 CREATE TABLE `adminfaq`
 (
   `id`        int(11)  NOT NULL AUTO_INCREMENT,
-  `timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `timestamp` datetime NOT NULL,
   `questions` text     NOT NULL,
   PRIMARY KEY (`id`)
 );
@@ -21,10 +21,10 @@ CREATE TABLE `adminfaq`
 CREATE TABLE `users`
 (
   `id`            int(11)     NOT NULL AUTO_INCREMENT,
-  `name`          varchar(64)          DEFAULT NULL,
+  `name`          varchar(64) DEFAULT NULL,
   `email_student` varchar(64) NOT NULL,
   `teacher`       tinyint(1)  NOT NULL,
-  `email_private` varchar(64)          DEFAULT NULL,
+  `email_private` varchar(64) DEFAULT NULL,
   `password`      varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
 );
@@ -55,8 +55,8 @@ CREATE TABLE `forms`
 (
   `id`      int(11)     NOT NULL AUTO_INCREMENT,
   `prefix`  varchar(64) NOT NULL,
-  `name`    varchar(64)          DEFAULT NULL,
-  `created` timestamp   NULL     DEFAULT CURRENT_TIMESTAMP,
+  `name`    varchar(64) DEFAULT NULL,
+  `created` timestamp   NULL,
   PRIMARY KEY (`id`)
 );
 
@@ -67,11 +67,11 @@ CREATE TABLE `fields`
   `type`        varchar(64) NOT NULL,
   `name`        varchar(64) NOT NULL,
   `description` text        NOT NULL,
-  `label`       varchar(64)          DEFAULT NULL,
+  `label`       varchar(64) DEFAULT NULL,
   `hasComment`  int(1)      NOT NULL,
   `priority`    int(11)     NOT NULL,
-  `weight`      int(11)              DEFAULT NULL,
-  `choices`     varchar(64)          DEFAULT NULL,
+  `weight`      int(11)     DEFAULT NULL,
+  `choices`     varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`form_id`) REFERENCES forms (`id`)
 );
@@ -97,14 +97,14 @@ CREATE TABLE `assignments`
   `id`            int(11)     NOT NULL AUTO_INCREMENT,
   `name`          varchar(64) NOT NULL,
   `description`   text,
-  `created`       timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created`       timestamp   NOT NULL,
   `publish`       datetime    NOT NULL,
   `deadline`      datetime    NOT NULL,
   `course_id`     int(11)     NOT NULL,
-  `submission_id` int(11)              DEFAULT NULL,
-  `review_id`     int(11)              DEFAULT NULL,
-  `validation_id` int(11)              DEFAULT NULL,
-  `reviewers`     int(11)              DEFAULT NULL,
+  `submission_id` int(11) DEFAULT NULL,
+  `review_id`     int(11) DEFAULT NULL,
+  `validation_id` int(11) DEFAULT NULL,
+  `reviewers`     int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`course_id`) REFERENCES course (`id`),
   FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`),
@@ -177,11 +177,11 @@ CREATE TABLE `schedule_tasks`
 CREATE TABLE `logs`
 (
   `userid`       int(11)                            NOT NULL,
-  `timestamp`    datetime                           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `timestamp`    datetime                           NOT NULL,
   `activity`     varchar(32) COLLATE utf8_danish_ci NOT NULL,
-  `assignmentid` int(11)                                     DEFAULT NULL,
-  `courseid`     int(11)                                     DEFAULT NULL,
-  `submissionid` int(11)                                     DEFAULT NULL,
-  `oldvalue`     text                                        DEFAULT NULL,
-  `newValue`     text                                        DEFAULT NULL
+  `assignmentid` int(11) DEFAULT NULL,
+  `courseid`     int(11) DEFAULT NULL,
+  `submissionid` int(11) DEFAULT NULL,
+  `oldvalue`     text    DEFAULT NULL,
+  `newValue`     text    DEFAULT NULL
 );

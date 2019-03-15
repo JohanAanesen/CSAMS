@@ -167,9 +167,9 @@ VALUES (3, 3, 4, 1, 1, 'text', 'test_text_0', 'A', 'good', '2019-03-08 01:08:43'
        (4, 3, 4, 1, 1, 'text', 'test_text_1', 'B', 'bad', '2019-03-08 01:08:43');
 
 INSERT INTO `user_submissions` (`id`, `user_id`, `assignment_id`, `submission_id`, `type`, `answer`, `submitted`)
-VALUES (1, 4, 1, 1, 'text', 'JohanKlausen', CURRENT_TIMESTAMP),
-       (2, 4, 1, 1, 'url', 'https://github.com/JohanKlausen/yeet', CURRENT_TIMESTAMP),
-       (3, 4, 1, 1, 'textarea', 'I did good!', CURRENT_TIMESTAMP),
+VALUES (1, 4, 1, 1, 'text', 'JohanKlausen', '2019-03-15 13:52:43'),
+       (2, 4, 1, 1, 'url', 'https://github.com/JohanKlausen/yeet', '2019-03-15 13:52:43'),
+       (3, 4, 1, 1, 'textarea', 'I did good!', '2019-03-15 13:52:43'),
        (4, 5, 1, 1, 'text', 'StianFjerdingstad', '2019-03-01 23:59:59'),
        (5, 5, 1, 1, 'url', 'https://github.com/StianFjerdingstad/Sudoku', '2019-03-01 23:59:59'),
        (6, 5, 1, 1, 'textarea', 'I did sexy good!', '2019-03-01 23:59:59'),

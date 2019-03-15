@@ -254,3 +254,6 @@ _Merged following to master_
 * Not the best code, but it works for the alpha :D
 * Also finished `dont'show-review-name`
 
+### Friday 15/03/19
+* Merged shit together
+
