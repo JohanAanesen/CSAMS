@@ -1,11 +1,15 @@
 default: build
 
 build:
-	sudo docker-compose up --build
+	sudo docker-compose up --build -d
 
 run:
-	sudo docker-compose up
+	sudo docker-compose up -d
 
 clean:
 	sudo rm -r -f dbservice/data
-	sudo docker-compose up --build
+	git pull
+	sudo docker-compose up --build -d
+
+stop:
+	sudo docker-compose down
