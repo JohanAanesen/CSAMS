@@ -18,6 +18,7 @@
         request: '/admin/submission/update',
         output: document.getElementById('output'),
         deleteRequest: '/admin/submission/delete',
+        weighted: true, // TODO (Svein): Make this a option for the whole form
     });
 
     formBuilder.import({{.formJSON}})
