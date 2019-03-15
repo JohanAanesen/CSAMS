@@ -23,7 +23,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 }
 
 // IndexSingleGET gets a single schedule from service
-func IndexSingleGET(w http.ResponseWriter, r *http.Request){
+func IndexSingleGET(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	subID, err := strconv.Atoi(vars["subid"])
 	if err != nil {
@@ -41,11 +41,10 @@ func IndexSingleGET(w http.ResponseWriter, r *http.Request){
 
 	payload := model.GetPayload(subID, assID)
 
-
-	if payload.ID != 0{
+	if payload.ID != 0 {
 		http.Header.Add(w.Header(), "content-type", "application/json")
 		err = json.NewEncoder(w).Encode(payload)
-		if err != nil{
+		if err != nil {
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}

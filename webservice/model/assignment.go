@@ -247,23 +247,30 @@ func (repo *AssignmentRepository) Update(id int, assignment Assignment) error {
 		return err
 	}
 
-	if assignment.ReviewID.Valid {
-		query = "UPDATE assignments SET review_id=? WHERE id=?"
-		tx, err = db.GetDB().Begin()
-		if err != nil {
-			return err
-		}
+	query = "UPDATE assignments SET review_id=? WHERE id=?"
 
+	tx, err = db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+
+	if assignment.ReviewID.Valid {
 		_, err = tx.Exec(query, assignment.ReviewID, id)
 		if err != nil {
 			tx.Rollback()
 			return err
 		}
-
-		err = tx.Commit()
+	} else {
+		_, err = tx.Exec(query, nil, id)
 		if err != nil {
+			tx.Rollback()
 			return err
 		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
 	}
 
 	return err

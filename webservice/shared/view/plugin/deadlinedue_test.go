@@ -10,40 +10,45 @@ import (
 )
 
 func TestDeadlineDue(t *testing.T) {
+	// TODO time
+	const parse = `{{DEADLINEDUE .}}`
+	var input = time.Now().UTC().Add(-time.Hour)
+	var expected = "true"
 
-	then := time.Now().UTC().Add(-time.Hour)
-
-	const foo = `{{DEADLINEDUE .}}`
-
-	tmpl, err := template.New("deadlineDueTest").Funcs(plugin.DeadlineDue()).Parse(foo)
+	tmpl, err := template.New("deadlineDueTest").Funcs(plugin.DeadlineDue()).Parse(parse)
 	if err != nil {
 		log.Fatalf("parsing: %s", err)
 	}
 
 	buffer := new(bytes.Buffer)
 
-	err = tmpl.Execute(buffer, then)
+	err = tmpl.Execute(buffer, input)
 	if err != nil {
 		log.Fatalf("execution: %s", err)
 	}
 
 	result := buffer.String()
 
-	if result != "true" {
+	if result != expected {
+		t.Logf("expected: %v, got: %v", expected, result)
 		t.Fail()
 	}
 
-	then = time.Now().UTC().Add(+2 * time.Hour)
+	// TODO time
+	input = time.Now().UTC().Add(+2 * time.Hour)
+	expected = "false"
+
 
 	buffer = new(bytes.Buffer)
 
-	err = tmpl.Execute(buffer, then)
+	err = tmpl.Execute(buffer, input)
 	if err != nil {
 		log.Fatalf("execution: %s", err)
 	}
 
 	result = buffer.String()
-	if result != "false" {
+	if result != expected {
+		t.Logf("expected: %v, got: %v", expected, result)
 		t.Fail()
 	}
 }

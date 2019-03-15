@@ -24,14 +24,6 @@ CREATE TABLE `adminfaq`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
---
--- Dataark for tabell `adminfaq`
---
-
-INSERT INTO `adminfaq` (`id`, `timestamp`, `questions`)
-VALUES (1, '2018-07-21 17:45:00',
-        'Q: How do I make a course?\n--------------------------------\n**A:** Dashboard -> Courses -> new. And create the course there\n\nQ: How do I invite students to course?\n--------------------------------\n**A:** You go to [admin/course](/admin/course) or [admin/](/admin) and on the course card, click the copy button to get the `join course through link` and send that to all students in preferred way (ex: email)\n\nQ: How do I make an assignment?\n--------------------------------\n**A:** Dashboard -> Assignments-> new. And create the assignment there');
-
 -- --------------------------------------------------------
 
 --
@@ -54,15 +46,6 @@ CREATE TABLE `assignments`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
---
--- Dataark for tabell `assignments`
---
-
-INSERT INTO `assignments` (`id`, `name`, `description`, `created`, `publish`, `deadline`, `course_id`, `submission_id`,
-                           `review_id`, `validation_id`, `reviewers`)
-VALUES (1, 'Lab 1: in-memory banking app',
-        '# Lab 1: in-memory banking app\r\n\r\nFor this lab, we will create an application that mocks a simple mobile banking app. The app consists of 3 activities, that allow a user to check current account balance, make a payment to a friend, and see the list of recent transactions. Note: the app is in-memory stateful, but, it **should not** use persistence or any networking facilities. All the data within the app is mocked. When the app is started, the app stores the internal state in-memory, until the app is \"restarted\" afresh, ie. killed by the Android OS and re-initialized upon requesting the entry-level Activity. \r\n\r\n\r\n## MainActivity\r\n\r\nThe first, entry activity will be called MainActivity. It will be the main entry point for the app, and the \"main menu\" for the app. It will consist of:\r\n\r\n* A fixed label with text: \"Balance [EUR]\"\r\n* Another fixed label with a text representing the actual account balance. The activity should generate a random integer that represents the current account balance, and it should be between 90 and 110. We will refer to this field as `lbl_balance`\r\n* A button with the label: \"Transactions\", referred as `btn_transactions`\r\n* A button with the label \"Transfer\", referred as `btn_transfer`\r\n\r\nBehaviour:\r\n* upon starting up the activity, the field `lbl_balance` should have the newly generated random value between 90..110 euros. \r\n* pressing btn_transfer moves the user to the `TransferActivity`\r\n* pressing btn_transactions moves the user to the `TransactionsActivity`\r\n* pressing the normal android \"back button\", quits the app.\r\n\r\n\r\n## TransferActivity\r\n\r\nThis activity will have the following UI elements:\r\n\r\n* A fixed text label \"Recipient\" \r\n* A drop-down list with names of your friends, e.g. \"Alice, Bob, Charlie, Dawn, Elvis, Frode\". The list must consist of at least 6 names. \r\n* A fixed label with text: \"Amount [EUR]\"\r\n* A single editable text field referred as: `txt_amount`\r\n* A single label with no text, referred as `lbl_amount_check`\r\n* A button with label \"Pay\", referred as: `btn_pay`, that is disabled by default\r\n\r\nBehaviour:\r\n* The `btn_pay` should not be enabled unless the recipient and amount are correctly selected. If the amount is provided and it is within correct bounds, and when the recipient is selected, then `btn_pay` is enabled.\r\n* Pressing `btn_pay` when enabled triggers the payment, which means, that the value from `txt_amount` is subtracted from the user total balance; a new transaction is made to the recipient selected from the drop-down. This new transaction is added to the list, subsequently visible in the `TransactionsActivity`. After the payment is triggered the user is moved back to the `MainActivity`.\r\n* When the amount is entered, and it is less or equal to 0, or, if the amount is greater then the current user balance, then `btn_pay` continues to be disabled, and the `lbl_amount_check` will display to the user the error, eg. \"Amount is outside of bounds\" or something similar. \r\n* pressing the normal android \"back button\" takes the user back to the `MainActivity` and no new transaction is made.\r\n\r\n\r\n## TransactionsActivity\r\n\r\nThis activity will communicate to the user all the historical transactions.  The first transaction should be the \"founding\" transaction with the total amount of the initial user balance. Therefore, for example, if the random number generated as the initial balance for the user account is 95.43 Euros, then, the very first transaction recorded should be the one on the very moment the number was generated, and it should be, for example: \r\n```\r\n15:30:21    |   Angel    |   95.43   |  95.43\r\n```\r\nwhich means, that at 15:30:21 (when the clock was at 3.30pm with 21 secs) the amount 95.43 Euros have been transferred to the user account, and the final balance on the account is 95.43 (the last column is the final balance on the account). Any subsequent payments, will be listed later as \"payments\" and the balance will be appropriately updated, eg:\r\n```\r\n15:30:21    |   Angel    |   95.43   |  95.43\r\n15:31:14    |   Alice    |   15.43   |  80.00\r\n15:32:18    |   Charlie  |   60.00   |  20.00\r\n```\r\n\r\nThe list items formatting is up to the implementation, but, it needs to communicate those 4 fields: exact time (hours:mins:sec of the time of payment), recipient, amount, final account balance.  Use your creativity to format the list items accordingly. \r\n\r\n\r\nBehaviour:\r\n* selecting (short-click) on the list items has no effect, but, user should be allowed to select a single item from the list\r\n* long-click on the list item displays a Toast that says \"XXX YYY\" where XXX is the name of the recipient from this particular transfer, and YYY is the amount.\r\n* pressing the normal android \"back button\" takes the user back to the `MainActivity` \r\n\r\n\r\n# Notes\r\n\r\n* You do not need to control for the app \"restarts\" - this should be left to Android. \r\n* You should not program the handling of the Android\'s \"back button\" presses - the behaviour should be the standard Android behaviour - in other words, to not code any back-button handling in your code. \r\n* You should use XML-based UI designs for your Activities, with the exception of programmatically populating the \"Recipients\" drop-down list. \r\n* You should also use XML-based view template for the Transaction list items.\r\n* The app should work in both, portrait and landscape modes.\r\n\r\n\r\n# Questions to consider\r\n\r\nWhen implementing the application with the above specification, not everything is precisely defined. Some things require you to think about the implementation details. This list of questions guides you through the process of clarifying the actual implementation details not covered in the SPEC. \r\n\r\n* Why do we represent the account balance as Integer? EURO has cents, and therefore it is a float with two decimal places, so why it is a bad idea to represent it as float for example? \r\n* How will you convert back-and-forth from Integer to a currency that has two decimal places in the UI for the user?\r\n* How will you represent the Transactions? Should it be a struct? Or class? \r\n* How will you represent the Recipients? \r\n* Where to store the application state in-memory, such as user account balance, and the list of transactions?\r\n* How will the Activities communicate data between themselves? \r\n* Who will be responsible for actually making the transfer: MainActivity or TransferActivity? Why?\r\n\r\n\r\n# Marking \r\n\r\nMarking/testing/scoring of the implementation is based on the form specified below. The total score is based on the sum of the individual items tested. The test either \"Fails\" or \"Passes\" - the task cannot be \"Partial\", ie. partial means \"Fail\". Each test case has a score associated with it - most are worth 1 point, but some are worth more. The marking schedule is based on ticking the appropriate test cases and then summing up those that have been ticked. \r\n\r\n* [ ] (1pt) The app has a custom icon (not the default Android one).\r\n* [ ] (1pt) The app `MainActivity` loads.\r\n* [ ] (1pt) The app\'s `MainActivity` contains all required UI elements as per SPEC.\r\n* [ ] (1pt) Pressing Android\'s \"back button\" on the `MainActivity` always quits the app, AND, this behaviour is not hardcoded in the code, ie. the code does not handle the Android back button presses, but instead, relies on the default Android behaviour.\r\n* [ ] (1pt) Pressing `btn_transactions` moves the user to TransactionsActivity.\r\n* [ ] (1pt) The default founding transaction from Angel is done correctly and visible in the `TransactionsActivity`. The user balance in `lbl_balance` matches the funding transaction.\r\n* [ ] (1pt) TransactionsActivity shows new payments correctly.\r\n* [ ] (1pt) TransactionsActivity moves the user back to MainActivity on \"back botton\" press.\r\n* [ ] (1pt) Pressing btn_transfer moves the user to TransferActivity.\r\n* [ ] (5pts) The `TransferActivity` has all required UI, the balance amount handling is working correctly with the appropriate lbl_amount_check error messages, and the btn_pay is enabled/disabled when appropriate. Pressing the `btn_pay` creates the new transaction, visible in TransactionsActivity, and updates the user balance accordingly.\r\n* [ ] (1pt) The app never crashes. In particular, changing from landscape to portrait and vice-versa does not crash the app.\r\n\r\n**Bonus tasks**\r\n\r\n* [ ] (2pts) The app UI elements are all well laid-out, look appealing and tidy, and the app has a solid/professional feel, ie. buttons properly centred, UI elements well-arranged, colour schemes appealing, and so on. The app works well in both, portrait and landscape modes. \r\n* [ ] (1pt) The app codebase is well-structured, readable, and follows professional Java and Android practices.\r\n* [ ] (1pt) The Recipient list for the drop-down is done programmatically such that the list source of names is provided as a string array from MainActivity, eg. `list = String[]{\"Alice\", \"Bob\", \"Charlie\", \"Dawn\", \"Elvis\", \"Frode\"};` This requires to dynamically update the TransferActivity UI based on the data passed to it from `MainActivity`. \r\n* [ ] (1pt) An extra bonus point for something outside of scope. \r\n\r\n\r\n**Total: 20**',
-        '2019-02-28 14:25:10', '2019-02-28 16:24:00', '2019-03-24 23:59:00', 3, 1, 1, NULL, 2);
 -- --------------------------------------------------------
 
 --
@@ -83,20 +66,6 @@ CREATE TABLE `course`
   DEFAULT CHARSET = utf8;
 
 --
--- Dataark for tabell `course`
---
-
-INSERT INTO `course` (`id`, `hash`, `coursecode`, `coursename`, `teacher`, `description`, `year`, `semester`)
-VALUES (1, '3876438629b786', 'IMT1031', 'Grunnleggende Programmering', 2, 'Write hello, world in C++', 2019, 'fall'),
-       (2, '12387teg817eg18', 'IMT1082', 'Objekt-orientert programmering', 2, 'Write Wazz up world in Python', 2019,
-        'fall'),
-       (3, '12e612eg1e17ge1', 'IMT3673', 'Mobile/Wearable Programming', 2,
-        '# Lectures video recordings\r\n\r\nThe lecture videos are under the [Mobile Development playlist](https://www.youtube.com/playlist?list=PL17KQCa8hhvB1gKYcCH5MBi5Thc8gjnG5), on [GTL Youtube](https://www.youtube.com/channel/UCoChi3eU2ThtVkhIpq_F20Q) channel. [This year (2019) playlist](https://www.youtube.com/playlist?list=PL17KQCa8hhvA1kYaqG7Psxdx4RpHbWweQ) contains this year videos (for ease of access).\r\n\r\n# Dates\r\n\r\n* Labs submission deadline. Labs 1/2 **March 24**. Labs 3/4: **April 7th**.\r\n* Project submission deadline: **May 2nd**\r\n* Project presentations will start Thursday, 10:00, on May 2nd. \r\n* Written exam: **May 28**.\r\n\r\n\r\n# Lectures\r\n\r\n* Lecture 1, January 8: Introduction to the course. Logistics. Expectations.\r\n\r\n* Lecture 2, January 10: Background\r\n	* [lecture video](https://www.youtube.com/watch?v=1GVIUJESd20)\r\n   * Tutorial session, 2018, video lecture: [part1](https://youtu.be/c_qYJ1ovtjg) (Java, conventions) [part2](https://www.youtube.com/watch?v=bTeDFA-NU-8) (Android Studio, debugging)\r\n   * [web lecture: Java for C++ developers](http://pages.cs.wisc.edu/~hasti/cs368/JavaTutorial/)\r\n   * [pdf: Java programming for C/C++ developer](https://www.seas.upenn.edu/~cis1xx/resources/JavaForCppProgrammers/j-javac-cpp-ltr.pdf)\r\n   * [Java programming, code conventions and rules](https://docs.google.com/presentation/d/19shHLM6Co5vvxBQ43TH58LxjvhPY2p9IHreWBEIMvjQ/edit?usp=sharing)\r\n\r\n* Lecture 3, January 15: Background to mobile technologies\r\n   * [lecture slides](https://docs.google.com/presentation/d/1AEwES01hEf3-QY4YghovXsh4bprn8H_ry0e_8T1UXpo/edit?usp=sharing)\r\n   * 2019 [video lecture](https://www.youtube.com/watch?v=gHNlk6gZo-4&index=35&list=PL17KQCa8hhvB1gKYcCH5MBi5Thc8gjnG5)\r\n   * 2018 video lecture: [part1](https://youtu.be/dKzLDLmiG-4), [part2](https://youtu.be/0PPHHWIdhMA)\r\n\r\n* Lecture 4, January 16: Introduction to Android\r\n   * [lecture slides](https://docs.google.com/presentation/d/1vFysyTckSz8UzhEgN3NKB-tjbmLtEgCx8gT8uSDyMNU/edit?usp=sharing)\r\n   * 2019 [video lecture](https://www.youtube.com/watch?v=EGBqMsajRiY)\r\n   * 2018 video lecture: [part1](https://www.youtube.com/watch?v=cfuXPbTngdM), [part2](https://www.youtube.com/watch?v=nrzW8laKHTc)\r\n\r\n* [Practical session, January 17th](Android Studio Basics)\r\n\r\n* Lecture 5, January 22: Java and Android concurrency.\r\n   * [lecture video](https://youtu.be/9gke5NW951w)\r\n   * code example\r\n\r\n* Lecture 6, January 24: Android UI Development. XML format for UI. iOS and Apple ecosystem overview.\r\n   * [Projects, Course logistics, intro to Bundles, data passing](https://youtu.be/ARRVZzf-6YI), 2019 video\r\n   * [How to pass data between activities](https://youtu.be/v8BDxh7vxUg), 2019 video\r\n   * UI development [slides](https://docs.google.com/presentation/d/1Awc5h5IP37wyPETiUbEym4uYnYILF2B8tOxaY0k2WM0/edit#usp=sharing)\r\n   * [2018 video lecture](https://youtu.be/FxC61ktETrw)\r\n\r\n* Lecture 7, January 29: Background lecture on Mobility. Telephony systems and Mobile Communication.\r\n   * **Q&A session**\r\n   * [slides](https://docs.google.com/presentation/d/16xaadWxzgCd5-lXKypuF1nJQUYIM5nmOg3hhCkbmQhw/edit?usp=sharing)\r\n   * [2018 video lecture](https://www.youtube.com/watch?v=b7tiFXCRIM4)\r\n\r\n* Practical session, January 30, [Android Preferences (local, global)](https://developer.android.com/training/data-storage/shared-preferences)\r\n\r\n* Lecture 8, January 31\r\n   * [2019 lecture video](https://youtu.be/f7QjznjQQtY) Lab 1 and Lab 2. Discussion. Architecture and software design. [OO Design patterns](https://en.wikipedia.org/wiki/Design_Patterns) (Gang-of-Four). [SOLID principles](https://en.wikipedia.org/wiki/SOLID). MVC, [model-view-controller pattern](https://en.wikipedia.org/wiki/Model–view–controller).\r\n   * [2018 lecture video](https://youtu.be/fH0Ridp7M9o) Android concurrency. Android UI thread, main thread, and UI updating.\r\n   * [code example](https://gist.github.com/anonymous/a18004afd5a94f4130a1952092aa0e52)\r\n\r\n* Lecture 9, February 5: Android Persistence. Android file system. Internal storage. SQLite.\r\n  * [Slides](https://drive.google.com/file/d/1xB2_aWWRU8i2oy9VUMZ5-y4kkepX2e-s/view?usp=sharing)\r\n  * [Video lecture, part 1](https://youtu.be/v4LxCMWr7V8)\r\n  * [Video lecture, part 2](https://youtu.be/eSdZ0nFJEXs)\r\n\r\n\r\n* Lecture 10, February 6: Services, Service life-cycle.\r\n  * [Slides](https://drive.google.com/file/d/1_ABcudp0uI7xPfaoDOki_zExlwI6TwXB/view?usp=sharing)\r\n  * [Video lecture, part 1](https://youtu.be/Le8isG5xeiM)\r\n  * [Video lecture, part 2](https://youtu.be/Jdp34l16qK8)\r\n\r\n\r\n* Practical session, February 7: SQLite through [Room](https://developer.android.com/training/data-storage/room/)\r\n\r\n\r\n* Lecture 11, February 12: Notifications. Notification management\r\n  * [Slides](https://drive.google.com/file/d/1EJJyZgvA9um8LZlyp9dQyoXAGfWZPq47/view?usp=sharing)\r\n  * [Video lecture, part 1](https://youtu.be/FODyg5B8V1M)\r\n  * [Video lecture, part 2](https://youtu.be/W-ySUk4fOX4)\r\n  \r\n* Lecture 12, February 13: Intents and Broadcast Receivers\r\n  * [Slides](https://drive.google.com/file/d/1AnFElOctDlvC183GgK98pmowoiQtNo-e/view?usp=sharing)\r\n  * [Video lecture, part 1](https://youtu.be/VH7rGMDV4Kw)\r\n  * [Video lecture, part 2](https://youtu.be/JlCipnK20Bs)\r\n\r\n* Practical session, February 14: RecyclerView\r\n\r\n* Lecture 13, February 19: Sensors\r\n  * [Slides](https://docs.google.com/presentation/d/1COe-sOGtZBlMEeDgU6F7UeYRmw24Iq47t8ULnieoe9k/edit?usp=sharing)\r\n  * [Lecture video](https://youtu.be/E2asXLlsKo0)\r\n\r\n\r\n* Lecture 14, February 20: Android Networking: NFC & Wifi; Introduction to Volley\r\n   * [Slides](https://drive.google.com/file/d/12vHAqZXv6GhGHf3huObSIrMAelltz0eg/view?usp=sharing)\r\n   * [How to parse XML in Java](https://www.quora.com/What-is-the-best-way-to-parse-XML-in-Java-without-external-libraries?__nsrc__=4) - Quora answer.\r\n\r\n* Lecture 15, February 26: Build Tools\r\n   * [Slides](https://drive.google.com/file/d/1OdcyXQj53iik-oWVjrUa7bd1m2K9QrOa/view?usp=sharing)\r\n\r\n* Lecture 16, February 27: [Testing](https://drive.google.com/file/d/1a3UXdIV8rlVd0WBMX-QADjhYkDvHLYUH/view?usp=sharing)\r\n\r\n* Practical session, February 28: [Junit testing in android](https://developer.android.com/training/testing/junit-rules)\r\n\r\n* Lecture 17, March 5: [Advanced Testing](https://drive.google.com/file/d/1rdhFMuyxYpEtUiZhr1BJ3lsO5wn1Q6MR/view?usp=sharing)\r\n\r\n* Lecture 18, March 6: [Data Formats for Serialisation and Transmission](https://drive.google.com/file/d/1ird35rTS6H1OTOVa4iQWTzHGQ2XNLYl2/view?usp=sharing)\r\n\r\n# Labs\r\n\r\n* [Lab 1](lab_1)\r\n* [Lab 2](lab_2)\r\n* [Lab 3](lab_3)\r\n* Lab 4: TBA\r\n\r\n\r\n# Projects 2019\r\n\r\n* [Project IDEAS](Project Ideas) This is the list of potential projects that groups can pick from. We will have \"first-come-first-served\" policy on projects with external stakeholders, such that there is only one group per project stakeholder (this is to ease the communication with the idea providers).\r\n* [Projects 2019](Project Groups) This page shall contain the list of groups and associated projects.\r\n\r\n\r\n\r\n# Practical Exercises\r\n\r\n* [Basic Java](Exercise Basic Java)\r\n* [Advanced Java](Exercise Java)\r\n* [Playing with Basic Android UI](Exercise Basic Android UI)\r\n* [Android Sensors](Exercise Sensors)\r\n\r\n\r\n# [FAQ](faq)\r\n\r\n# Code examples\r\n\r\n* [Android project setup](project-setup)\r\n* [Code repository](https://bitbucket.org/gtl-hig/imt3662-mobile-labs/overview) \r\n* [Android project .gitignore](android-gitignore)\r\n* [Shared Preferences](shared-preferences)\r\n* [Using Camera2 API](https://github.com/googlesamples/android-Camera2Basic)\r\n\r\n\r\n\r\n# Tutorials\r\n\r\n* [Android Programming at Stanford](http://web.stanford.edu/class/cs193a/videos.shtml)\r\n* [Preferences - tutorial by Bjorn](https://docs.google.com/presentation/d/1OQHiPIzIjhAUS6Txl4QMjIeUNR_Xw-1mSBrr5ukSLZ4/edit?usp=sharing)\r\n* [Content Providers](https://developer.android.com/guide/topics/providers/content-providers.html)\r\n* [Setting up GoMobile](gomobile-setup)\r\n* [Kalman filter tutorial](https://home.wlu.edu/~levys/kalman_tutorial/)\r\n\r\n\r\n## News, articles, blog posts\r\n\r\n* [Material Motion](https://www.youtube.com/watch?v=aZ5V5e-phR8) youtube \r\n* [Angular 5.0](https://appinventiv.com/blog/angular-5-0-means-mobile-app-development/)\r\n* [10 years of Android](https://www.theverge.com/2011/12/7/2585779/android-10th-anniversary-google-history-pie-oreo-nougat-cupcake)\r\n\r\n\r\n## Security\r\n\r\n* [Forgetful Keystore](https://doridori.github.io/android-security-the-forgetful-keystore/)\r\n* [Pixel\'s security, investments paying off](https://android-developers.googleblog.com/2018/01/android-security-ecosystem-investments.html)\r\n\r\n## Announcements\r\n\r\n* [Announcement 1, January 8th](announcement-1)\r\n* [Announcement 2, January 15th](announcement-2)\r\n* [Announcement 3, January 27th](announcement-3)\r\n\r\n\r\n\r\n## Reference group meetings\r\n\r\n## [[Course rules]]',
-        2019, 'spring');
-
--- --------------------------------------------------------
-
---
 -- Tabellstruktur for tabell `fields`
 --
 
@@ -106,24 +75,14 @@ CREATE TABLE `fields`
   `form_id`     int(11)     NOT NULL,
   `type`        varchar(64) NOT NULL,
   `name`        varchar(64) NOT NULL,
-  `label`       varchar(64) DEFAULT NULL,
   `description` text        NOT NULL,
+  `label`       varchar(64) DEFAULT NULL,
+  `hasComment`  int(1)      NOT NULL,
   `priority`    int(11)     NOT NULL,
   `weight`      int(11)     DEFAULT NULL,
   `choices`     varchar(64) DEFAULT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
-
---
--- Dataark for tabell `fields`
---
-
-INSERT INTO `fields` (`id`, `form_id`, `type`, `name`, `label`, `description`, `priority`, `weight`, `choices`)
-VALUES (1, 1, 'text', 'github_form_text_0', 'Github handle', 'Username on github', 0, 0, ''),
-       (2, 1, 'url', 'github_form_url_1', 'Github url', 'url to github', 1, 0, ''),
-       (3, 1, 'textarea', 'github_form_textarea_2', 'Comments', 'Comments about your work', 2, 0, ''),
-       (4, 2, 'radio', 'lab1_radio_0', 'Did the app have an MainActivity?', '', 0, 5, 'yes,no'),
-       (5, 2, 'textarea', 'lab1_textarea_1', 'What could have been done better?', '', 1, 5, '');
 
 -- --------------------------------------------------------
 
@@ -135,19 +94,10 @@ CREATE TABLE `forms`
 (
   `id`          int(11)     NOT NULL,
   `prefix`      varchar(64) NOT NULL,
-  `name`        varchar(64) DEFAULT NULL,
-  `description` text,
-  `created`     timestamp   NULL
+  `name`        varchar(64)      DEFAULT NULL,
+  `created`     timestamp   NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
-
---
--- Dataark for tabell `forms`
---
-
-INSERT INTO `forms` (`id`, `prefix`, `name`, `description`, `created`)
-VALUES (1, 'github_form', 'Github form', 'Form to Github', '2019-02-28 15:23:23'),
-       (2, 'lab1', 'Lab1', 'Submission form for lab1', '2019-03-12 11:00:43');
 
 -- --------------------------------------------------------
 
@@ -197,13 +147,6 @@ CREATE TABLE `reviews`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
---
--- Dumping data for table `reviews`
---
-
-INSERT INTO `reviews` (`id`, `form_id`)
-VALUES (1, 2);
-
 -- --------------------------------------------------------
 
 --
@@ -217,12 +160,6 @@ CREATE TABLE `submissions`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
---
--- Dataark for tabell `submissions`
---
-
-INSERT INTO `submissions` (`id`, `form_id`)
-VALUES (1, 1);
 
 -- --------------------------------------------------------
 
@@ -237,23 +174,6 @@ CREATE TABLE `usercourse`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
---
--- Dataark for tabell `usercourse`
---
-
-INSERT INTO `usercourse` (`userid`, `courseid`)
-VALUES (1, 3),
-       (2, 3),
-       (3, 1),
-       (3, 3),
-       (4, 2),
-       (4, 3),
-       (5, 3),
-       (6, 3),
-       (7, 3),
-       (8, 3),
-       (9, 3),
-       (10, 3);
 
 -- --------------------------------------------------------
 
@@ -272,31 +192,6 @@ CREATE TABLE `users`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
---
--- Dataark for tabell `users`
---
-
-INSERT INTO `users` (`id`, `name`, `email_student`, `teacher`, `email_private`, `password`)
-VALUES (1, 'Test User', 'hei@gmail.com', 1, 'test@yahoo.com',
-        '$2a$14$MZj24p41j2NNGn6JDsQi0OsDb56.0LcfrIdgjE6WmZzp58O6V/VhK'),
-       (2, 'Frode Haug', 'frodehg@teach.ntnu.no', 1, NULL,
-        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
-       (3, 'Ola Nordmann', 'olanor@stud.ntnu.no', 1, 'swag-meister69@ggmail.com',
-        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
-       (4, 'Johan Klausen', 'johkl@stu.ntnu.no', 0, NULL,
-        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
-       (5, 'Stian Fjerdingstad', 'stianfj@stu.ntnu.no', 0, NULL,
-        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
-       (6, 'Svein Nilsen', 'sveini@stu.ntnu.no', 0, NULL,
-        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
-       (7, 'Kjell Are-Kjelterud', 'kjellak@stu.ntnu.no', 0, NULL,
-        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
-       (8, 'Marius Lillevik', 'mariuslil@stu.ntnu.no', 0, NULL,
-        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
-       (9, 'Jorun Skaalnes', 'jorunska@stu.ntnu.no', 0, NULL,
-        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC'),
-       (10, 'Klaus Aanesen', 'klausaa@stu.ntnu.no', 0, NULL,
-        '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
 
 -- --------------------------------------------------------
 
@@ -315,18 +210,10 @@ CREATE TABLE `user_reviews`
   `name`          varchar(64) NOT NULL,
   `label`         varchar(64) NOT NULL,
   `answer`        text        NOT NULL,
+  `comment`       text        NULL,
   `submitted`     datetime    NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
-
---
--- Dumping data for table `user_reviews`
---
-
-INSERT INTO `user_reviews` (`id`, `user_reviewer`, `user_target`, `review_id`, `assignment_id`, `type`, `name`, `label`,
-                            `answer`, `submitted`)
-VALUES (3, 3, 4, 1, 1, 'text', 'test_text_0', 'A', 'good', '2019-03-08 01:08:43'),
-       (4, 3, 4, 1, 1, 'text', 'test_text_1', 'B', 'bad', '2019-03-08 01:08:43');
 
 -- --------------------------------------------------------
 
@@ -341,7 +228,8 @@ CREATE TABLE `user_submissions`
   `assignment_id` int(11)     NOT NULL,
   `submission_id` int(11)     NOT NULL,
   `type`          varchar(64) NOT NULL,
-  `answer`        mediumtext  NULL,
+  `answer`        text        NULL,
+  `comment`       text        NULL,
   `submitted`     timestamp   NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
@@ -360,26 +248,6 @@ CREATE TABLE `schedule_tasks`
   `data`           blob        not null
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
-
---
--- Dataark for tabell `user_submissions`
---
-
-INSERT INTO `user_submissions` (`id`, `user_id`, `assignment_id`, `submission_id`, `type`, `answer`, `submitted`)
-VALUES (1, 4, 1, 1, 'text', 'JohanKlausen', '2019-03-13 10:40:26'),
-       (2, 4, 1, 1, 'url', 'https://github.com/JohanKlausen/yeet', '2019-03-13 10:40:26'),
-       (3, 4, 1, 1, 'textarea', 'I did good!', '2019-03-13 10:40:26'),
-       (4, 5, 1, 1, 'text', 'StianFjerdingstad', '2019-03-01 23:59:59'),
-       (5, 5, 1, 1, 'url', 'https://github.com/StianFjerdingstad/Sudoku', '2019-03-01 23:59:59'),
-       (6, 5, 1, 1, 'textarea', 'I did sexy good!', '2019-03-01 23:59:59'),
-       (7, 10, 1, 1, 'text', 'KlausAanesen', '2019-02-28 15:23:23'),
-       (8, 10, 1, 1, 'url', 'https://github.com/KlausAanesen/1337yeet420', '2019-02-28 15:23:23'),
-       (9, 10, 1, 1, 'textarea', 'I did bad :(', '2019-02-28 15:23:23');
-
-INSERT INTO `peer_reviews` (`id`, `submission_id`, `assignment_id`, `user_id`, `review_user_id`)
-VALUES (1, 1, 1, 3, 4),
-       (2, 1, 1, 3, 5),
-       (3, 1, 2, 9, 4);
 
 --
 -- Indexes for dumped tables
@@ -661,3 +529,466 @@ ALTER TABLE `peer_reviews`
   ADD CONSTRAINT `peer_reviews_assignment_id_fk` FOREIGN KEY (`assignment_id`) REFERENCES `assignments` (`id`),
   ADD CONSTRAINT `peer_reviews_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
+
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (1, 'Ken Thompson', 'hei@gmail.com', 1, 'mannen@harmannenfalt.no', '$2a$14$MZj24p41j2NNGn6JDsQi0OsDb56.0LcfrIdgjE6WmZzp58O6V/VhK');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (2, 'Frode Haug', 'frodehg@teach.ntnu.no', 1, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (3, 'Ola Nordmann', 'olanor@stud.ntnu.no', 1, 'swag-meister69@ggmail.com', '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (4, 'Johan Klausen', 'johkl@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (5, 'Stian Fjerdingstad', 'stianfj@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (6, 'Svein Nilsen', 'sveini@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (7, 'Kjell Are-Kjelterud', 'kjellak@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (8, 'Marius Lillevik', 'mariuslil@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (9, 'Jorun Skaalnes', 'jorunska@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (10, 'Klaus Aanesen', 'klausaa@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+
+INSERT INTO course (id, hash, coursecode, coursename, teacher, description, year, semester) VALUES (4, 'bi4d2164gh0gbb7r94qg', 'IMT2681', 'Cloud Technologies', 3, '# IMT2681 Cloud Technologies
+This page is the starting point for all lecture material of the course Cloud Technologies Course IMT2681, Autumn Semester 2018, taught at NTNU, Gjøvik.
+
+For general course and timetable information, please look [here](https://www.ntnu.edu/studies/courses/IMT2681#tab=omEmnet).
+
+Please check this page frequently, as all updated materials will be posted here.
+
+# Dates
+* October 14th, Sunday, 23:59. Deadline for [Assignment 1](assignment-1)
+* October 29th, Monday, 23:59. Deadline for [Assignment 2](assignment-2)
+* November 20th, Tuesday, 13:00. Deadline for [Assignment 3](assignment-3)
+
+15% of the internal portfolio marks (i.e., 6% of the total marks) are reserved for feedback and participation.
+
+# Video recordings
+We will stream this course via Youtube using the on [GTL Youtube](https://www.youtube.com/channel/UCoChi3eU2ThtVkhIpq_F20Q) channel. The videos are further organized and archived in an [IMT2681 Cloud Computing playlist](https://www.youtube.com/playlist?list=PL17KQCa8hhvA57JlDGpIv0604rK5ToP0e).
+
+# Assignments
+* [Assignment 1](assignment-1). Submission deadline: October 14th, Sunday, 23:59.
+* [Assignment 2](assignment-2). Submission deadline: October 29th, Monday, 23:59.
+* [Assignment 3](assignment-3). Deadline for being **peer-reviewed**: November 20th, Tuesday, 13:00.
+
+* [Coding challenge 1](code-challenge-1) [OPTIONAL] - results: October 23rd, Tuesday. Please submit your entry to Mariusz prior to the lecture, as a git repo URL, via email or DM on Discord.
+* [Coding challenge 2](code-challenge-2) [OPTIONAL] - results: November 13th, Tuesday. Please submit your entries as pull-requests to [the exchange-demo repo](http://prod3.imt.hig.no/teaching/imt2681-2018/tree/master/exchange-demo)
+
+# Evaluation Group
+* [Course feedback](course_feedback_2018)
+
+# Lectures
+* August 21, Lecture 1: Introduction
+   * [Lecture video](https://youtu.be/7tMLQ0Xk7R8)
+   * [Lecture slides](https://docs.google.com/presentation/d/1F9RLAVeqw0W3P12kG4-KQ6jKGMiyslO5tYMVnwmPVH0/edit?usp=sharing)
+   * [Survey URL](https://goo.gl/forms/gU3R0wMNdHH0sJp43)
+   * [Short video intro to cloud computing](https://youtu.be/36zducUX16w)
+
+* August 24, Lecture 2: Iaas, PaaS, SaaS, Intro to Linux and CLI part 1/2
+   * [Lecture video](https://youtu.be/OHCBwyIcc-0)
+   * [Lecture slides](https://docs.google.com/presentation/d/1T0G6JNu5_A2deWaeufegffTmn03MEb1w6zf5i3Z4T60/edit?usp=sharing)
+   * Environment [setup notes](https://docs.google.com/presentation/d/1xHEp0No5mE4buKd-fzMhNJjV26M8SlkzP2yPe18x6AE/edit?usp=sharing)
+
+* August 28, Practical session
+   * Setting up the environment. No stream, no lecture.
+
+* August 31, Lecture 3: Programming with Go, Introduction, part 1/3. Motivation, toolchain, modules, and basic syntax.
+
+   * [Setting up Vim for programming in Go](https://youtu.be/p8rFBiDzhnM)
+   * [Setting up IntelliJ for Go (2017)](https://youtu.be/amaW0jJM9Us)
+   * [Setting up IntelliJ for Go (updated, 2018)](https://youtu.be/vP7Fkq6l9BI)
+   * [[Go Programming Tasks 1]]
+   * [Lecture video 2017](https://youtu.be/6ewYPDC4HmQ)
+   * [Lecture video 2018](https://youtu.be/eJXNRD6DzmQ)
+   * [Lecture slides](https://docs.google.com/presentation/d/1Pbu47nD-XG4owUejkTioNNyhQOqgQcMXHDYynuVADR8/edit?usp=sharing)
+
+
+* September 4th, Lecture 4: Programming with Go, Introduction, part 2 and 3/3. Data types, functions, parameters, value vs. pointer, lambda functions, higher order functions.
+
+   * [Lecture video 2017](https://youtu.be/L9KObCRp9PU)
+   * [Lecture video 2018](https://youtu.be/wnBYx1XwPaY)
+   * [Lecture slides](https://docs.google.com/presentation/d/1Pbu47nD-XG4owUejkTioNNyhQOqgQcMXHDYynuVADR8/edit?usp=sharing)
+
+
+* September 7th, Lecture 5: Programming with Go, Introduction, part 3/3. Interfaces, concurrency, and intro to JSON and error handling.
+
+   * [Lecture video 2017](https://youtu.be/L9KObCRp9PU) (Same as last week)
+   * [Lecture video 2018](https://youtu.be/wFRgoRcQjJk)
+   * [Tutorial on Go error handling](https://youtu.be/m3imnk1ZVLY)
+
+* September 11th, Lecture 6: Introduction to Linux, part 2/2
+
+   * [Lecture slides](https://docs.google.com/presentation/d/1T0G6JNu5_A2deWaeufegffTmn03MEb1w6zf5i3Z4T60/edit?usp=sharing)
+   * [Lecture Video Part 1](https://youtu.be/oZXwmHVEfCg) [Lecture Video Part 2](https://youtu.be/R44FfvnZbIo)
+   * [Vim Cheat Sheet](https://github.com/chrfrantz/vim-cheatsheet/blob/master/vimCheatSheet.pdf)
+
+* September 14th, Lecture 7: Linux ctd. (Processes, Software Installation), REST
+   * [Lecture Slides Software Installation on Linux](https://drive.google.com/file/d/1R0Vd9yY_YmoLULRgtQ9g_xluDYPgE6Kx/view?usp=sharing)
+   * [Lecture Slides REST](https://drive.google.com/file/d/12S_f5JRLXA_uHPynW3K5SNtwPvubh8It/view?usp=sharing)
+   * [Lecture Video Part 1](https://youtu.be/TtEgYY7RPBc)
+   * [Lecture Video Part 2](https://youtu.be/IE4c8AAGT4E)
+
+* September 18th, Lecture 8: Testing, Testing strategies, TDD. Testing in Golang.
+   * [Lecture video, part 1](https://youtu.be/osgufr4r29s) - simple funcs and Testing.
+   * [Lecture video, part 2](https://youtu.be/eDuXMXXETeY) - simple GET request.
+   * [Programming tasks 2](Go-Programming-Tasks-2)
+
+* September 21st, NO CLASS. Video Lecture(s) 9: Programming in Go, REST, Client-Server.
+   * [Lecture video, part 1](https://youtu.be/ohiuGGWVzPI)
+   * [Lecture video, part 2](https://youtu.be/bL8-YNEkPR0)
+   * [Lecture video, part 3](https://youtu.be/iyR9A0wImfI)
+
+* September 25th, TUTORIAL. Programming in Go, REST, Client-Server. JSON parsing. Semantic versioning and Golang modules.
+   * [Programming tasks 3](Go-Programming-Tasks-3)
+   * [Lecture video](https://www.youtube.com/watch?v=MyQdzQo380Q)
+   * Note: `go mod init <name_of_your_module>`
+
+* September 28th, No class. Video Lecture(s) 10: Regular Expressions
+   * [Lecture video 1: Regular Expressions Overview](https://youtu.be/MiEqkque2bc)
+   * [Slides](https://drive.google.com/file/d/1NceKJqXfN9gRNI5Sz6Sew6DRb36q_tmz/view?usp=sharing)
+
+   * Note: This video contains some exercises to explore regular expressions.
+   * Example use cases (interest-based)
+     * [Video: Web Server Request Routing in Go using Regular Expressions](https://youtu.be/qumPl10DnN4)
+
+      * Note: This video contains some tasks to practice the use of regular expressions in Golang.
+
+      * [Video: Performance comparison string search vs. regex](https://youtu.be/2_sq-38v4ZM?t=11m14s)
+      * Videos: Regex-based validation in web service [Part 1](https://youtu.be/2_sq-38v4ZM?t=28m12s) (server-side in Go), [Part 2](https://youtu.be/f9V15HSmcpk) (Client-side using JavaScript & HTML 5)
+
+* October 2nd: Lecture: Networking Fundamentals (ISO OSI Model, Layers)
+  * [Slides](https://drive.google.com/file/d/1aXdXPQ7ZAMdr6hFW1PKPyAHi8MIqQ0_q/view?usp=sharing)
+  * Videos: [Part 1](https://youtu.be/UTPe3qcOZ5k) [Part 2](https://youtu.be/qeJYJieKaRA)
+  * Network Trace [Download](https://drive.google.com/file/d/1dXr_T83yCnmTBnbHHMcRvx4cxdRxaSzC/view?usp=sharing)
+
+* October 5th: Lecture: Networking Fundamentals ctd. (Network Addressing, Subnetting)
+  * [Slides](https://drive.google.com/file/d/1N1i3nGMKMxfTV_8O6lcVBuj3dwvRpMeH/view?usp=sharing)
+  * Videos: [Part 1](https://youtu.be/v3EZTZDSdis) [Part 2](https://youtu.be/spq6OdxIeaw)
+  * For links to OpenStack, VPN connection, putty, key conversion, etc. see Resources, Tools and Services sections below
+
+* October 9th: Lecture: IaaS
+  * Videos: [Part 1](https://youtu.be/4qgRAeGFsRg), [Part 2](https://youtu.be/pzKmfb8XKKg)
+  * [Slides](https://drive.google.com/file/d/1cLf6B6oWBv-dt1wsJyf5M_MrL364nCAT/view?usp=sharing)
+
+* October 12th: Virtualisation
+  * Videos: [Virtualisation Introduction](https://youtu.be/mt4FUaqVSfk)
+
+   * Note to everyone that couldn''t make it to class. This is a recording of the lecture, since the internet connection in A255 failed during the stream. The lecture was shorter since the remainder of the class time was used for assignment support.
+
+  * [Slides](https://drive.google.com/file/d/1j2MJGzaZMBdt2KVBXD2012grByUuz9dd/view?usp=sharing)
+
+  * Additional Video (from last year): Dockerising your applications [Part 1](https://youtu.be/OB5WViLQRz4) [Part 2](https://youtu.be/yllsZf6Hkdo)
+
+
+* October 16th: WebHooks, Introduction to MongoDB
+
+  * [WebHooks slides](https://docs.google.com/presentation/d/1Tl2uk4A20wKTU9mPTrPVloiwh11epKeGt2W2ogiiX3o/edit#slide=id.p1)
+  * [MongoDB intro](https://docs.google.com/presentation/d/109t8q6YzRBLv4iTBKkI-whTRlXe41wG1TR4j6_cfCuo/edit#slide=id.p)
+  * [Lecture video](https://youtu.be/qXrEmBpUxKk)
+
+
+* October 19th: MongoDB plus Go interfaces (video lectures). Peer review explained. Q and A session.
+
+   * [more MongoDB explanations](https://www.youtube.com/watch?v=WmQcIKR2s2U&index=32&list=PL17KQCa8hhvA57JlDGpIv0604rK5ToP0e&t=0s)
+   * [Go interfaces](https://www.youtube.com/watch?v=FI4glTiNR6U&index=33&list=PL17KQCa8hhvA57JlDGpIv0604rK5ToP0e&t=0s)
+   * [Peer Review explained]() -- coming soon
+
+
+* October 23rd: Coding Challenge 1, discussion. Introduction to AWS.
+
+   * [Lecture slides](https://docs.google.com/presentation/d/17ltaVfTnUy9-LdFYMx2fffmkQcJgjBdJYsplLJnTPoc/edit?usp=sharing)
+   * [Lecture video](https://youtu.be/CXfUm5BCEj4)
+
+
+* October 26th:  AWS
+
+   * [AWS](https://aws.amazon.com) The actual AWS portal, describing all the available services.
+   * [Introduction to Amazon Web Services by Jeff Barr](https://www.youtube.com/watch?v=CaJCmoGIW24) This is a lecture, with more general intro to Cloud computing. Worth a watch, but, limited detailed know-how on AWS.
+   * [AWS services overview](https://www.sumologic.com/aws/) This provides more details on AWS architecture and services in form of videos and tutorial.
+   * There is a large number of online resources and courses on AWS. If you find something really good, please post it here or on the issue tracker.
+
+
+* October 30th: AWS Lambda
+
+   * [Lecture slides](https://docs.google.com/presentation/d/17ltaVfTnUy9-LdFYMx2fffmkQcJgjBdJYsplLJnTPoc/edit?usp=sharing)
+   * [Lecture video](https://youtu.be/sSZaeT2uDMU)
+   * [AWS](https://aws.amazon.com)
+   * [API Gateway Proxy](https://github.com/aws/aws-lambda-go/blob/master/events/apigw.go)
+
+* November 2nd: Docker compose
+   * [Lecture Slides](https://drive.google.com/file/d/1ucGxhJg-oTI4V3GgB9FNlbcXbS_3iC1l/view?usp=sharing)
+   * [Slides from previous docker lecture (related to discussion)](https://drive.google.com/file/d/1j2MJGzaZMBdt2KVBXD2012grByUuz9dd/view?usp=sharing)
+   * [Lecture video, part 1](https://youtu.be/xliynkcOJOc)
+   * [Lecture video, part 2](https://youtu.be/rTGGwyEizvk)
+
+* November 6th, Docker compose and Multi-stage builds
+   * [Lecture video, part 1 (docker compose example)](https://youtu.be/o7yzPnhZyoo)
+   * [Lecture video, part 2 (multi-stage builds)](https://youtu.be/8Zhcqn-mpaY)
+
+* November 9th, SLAs and Scalability
+   * [Lecture video, part 1](https://youtu.be/oyxyJvqHybE)
+   * [Lecture video, part 2](https://youtu.be/4bQq14BxwgA)
+   * [Lecture slides](https://drive.google.com/file/d/1AlQHGuH3YpiwfGrn4HWzPagp_522Nyw-/view?usp=sharing)
+
+# Resources
+* [Code examples: client/server, DB, testing](https://github.com/marni/imt2681_cloud)
+* [Conversion of .pem file to .ppk file for access using putty under Windows](https://stackoverflow.com/questions/3190667/convert-pem-to-ppk-file-format) Note: Yes, it is StackOverflow. But the description is pretty good. Start at point 3 of the instructions; the stuff before refers to generation of .pem files in vCloud (VMware''s private cloud solution, which we don''t use).
+
+# Tools
+* [putty, puttyGen, pscp, Pageant, etc.](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
+* Docker:
+  * [Documentation](https://docs.docker.com/)
+  * [Dockerfile examples](https://docs.docker.com/samples/)
+  * [Dockerfile Best Practices](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/)
+  * [Docker Book](https://www.dockerbook.com/) If you are looking for a textbook on docker, this one is a great option.
+
+# Services
+* [OpenStack Login (SkyHIGh)](https://skyhigh.iik.ntnu.no/horizon/auth/login/?next=/horizon/project/)
+  * [General Documentation](https://www.ntnu.no/wiki/display/skyhigh/Openstack+documentation)
+  * [Starting point for setting up first OpenStack configuration](https://www.ntnu.no/wiki/display/skyhigh/Initial+setup%2C+using+the+webinterface?src=contextnavpagetreemode)
+  * Note: For the use outside of the NTNU network, you will need to connect via VPN first. More information on how to do that can be found [here](https://innsida.ntnu.no/wiki/-/wiki/English/Install+VPN).
+* Serverless Computing
+   * AWS alternative: [Serverless.com](https://serverless.com)
+   * Emulated AWS Lambda environment for local installation (based on Docker): [Docker-Lambda](https://github.com/lambci/docker-lambda)
+
+# External talks
+* [Short talk about TDD](https://www.youtube.com/watch?v=a6oP24CSdUg)
+* [Good and Bad points of Go](https://www.quora.com/What-are-the-strengths-and-weaknesses-of-Golang/answer/Roman-Scharkov) - pretty detailed and accurate discussion on strengths and weaknesses of Go.
+
+# On learning
+* [Struggle means learning](https://www.kqed.org/mindshift/24944/struggle-means-learning-difference-in-eastern-and-western-cultures)
+* [Growth vs. Fixed mindset](https://www.youtube.com/watch?v=KUWn_TJTrnU)
+* [On Challenging Learning](https://www.youtube.com/watch?v=KUWn_TJTrnU) - stepping outside the comfort zone, throwing oneself into challenging tasks, learning from errors
+
+# Q & A
+* How to setup Go for Visual Studio Code (on windows) [answer](http://prod3.imt.hig.no/teaching/imt2681-2018/issues/2)
+* What are the benefits of using Go versus other more established languages? [answer](https://www.quora.com/What-are-the-benefits-of-using-GoLang-versus-other-more-established-languages)
+* Is Go better than C? [answer](https://www.quora.com/Is-Golang-better-than-C/answer/Richard-Kenneth-Eng)', 2019, 'fall');
+
+INSERT INTO usercourse (userid, courseid) VALUES (3, 4);
+INSERT INTO usercourse (userid, courseid) VALUES (4, 4);
+INSERT INTO usercourse (userid, courseid) VALUES (5, 4);
+INSERT INTO usercourse (userid, courseid) VALUES (6, 4);
+INSERT INTO usercourse (userid, courseid) VALUES (7, 4);
+INSERT INTO usercourse (userid, courseid) VALUES (8, 4);
+INSERT INTO usercourse (userid, courseid) VALUES (9, 4);
+INSERT INTO usercourse (userid, courseid) VALUES (10, 4);
+
+INSERT INTO forms (id, prefix, name, created) VALUES (8, 'git_repository_w_comment', 'Git Repository w/Comment', '2019-03-13 10:52:52');
+INSERT INTO forms (id, prefix, name, created) VALUES (9, 'test_all_fields', 'TEST: All fields', '2019-03-13 10:54:02');
+
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (42, 8, 'url', 'git_repository_w_comment_url_35', 'Git Repository', 1, 'Make sure the repository is public before delivering!', 0, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (43, 8, 'textarea', 'git_repository_w_comment_textarea_0', 'textarea', 0, '', 1, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (44, 8, 'url', 'git_repository_w_comment_url_1', 'url', 0, '', 2, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (45, 8, 'number', 'git_repository_w_comment_number_2', 'number', 0, '', 3, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (46, 8, 'checkbox', 'git_repository_w_comment_checkbox_3', 'checkbox', 0, '', 4, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (47, 8, 'radio', 'git_repository_w_comment_radio_4', 'radio', 0, '', 5, 0, 'a,b,c');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (48, 9, 'text', 'test_all_fields_text_36', 'Text', 1, 'This is a text field', 0, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (49, 9, 'textarea', 'test_all_fields_textarea_37', 'Textarea', 0, 'This is a long text field', 1, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (50, 9, 'url', 'test_all_fields_url_38', 'URL', 0, 'This is a URL field', 2, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (51, 9, 'number', 'test_all_fields_number_39', 'Number', 0, 'This is a number field', 3, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (52, 9, 'checkbox', 'test_all_fields_checkbox_40', 'Checkbox', 0, 'This is a checkbox field', 4, 0, '');
+INSERT INTO fields (id, form_id, type, name, label, hasComment, description, priority, weight, choices) VALUES (53, 9, 'radio', 'test_all_fields_radio_41', 'Radio', 0, 'This is a radio field', 5, 0, 'a,b,c');
+
+INSERT INTO reviews (id, form_id) VALUES (3, 9);
+INSERT INTO submissions (id, form_id) VALUES (6, 8);
+
+INSERT INTO assignments (id, name, description, created, publish, deadline, course_id, submission_id, review_id, validation_id, reviewers) VALUES (2, 'Assignment 1', '# Assignment 1: in-memory IGC track viewer
+
+## About
+
+Develop an online service that will allow users to browse information about IGC files. IGC is an international file format for soaring track files that are used by paragliders and gliders. The program will not store anything in a persistent storage. Ie. no information will be stored on the server side on a disk or database. Instead, it will store submitted tracks in memory. Subsequent API calls will allow the user to browse and inspect stored IGC files.
+
+For the development of the IGC processing, you will use an open source IGC library for Go: [goigc](https://github.com/marni/goigc)
+
+The system must be deployed on either Heroku or Google App Engine, and the Go source code must be available for inspection by the teaching staff (read-only access is sufficient).
+
+## Specification
+
+### General rules
+
+The **igcinfo** should be the root of the URL API. The package and the project repo name can be arbitrary, yet the name must be meaningful. If it is called assignment1 or assignment_1 or variation of this name, we will not mark it.
+
+The server should respond with 404 when asked about the root. The API should be mounted on the **api** path. All the REST verbs will be subsequently attached to the /igcinfo/api/* root.
+
+```
+http://localhost:8080/igcinfo/               -> 404
+http://localhost:8080/<rubbish>              -> 404
+http://localhost:8080/igcinfo/api/<rubbish>  -> 404
+```
+
+**Note:** the use of `http://localhost:8080` serves only a demonstration purposes. You will have your own URL from the provider, such as Heroku. `<rubbish>` represents any sequence of letters and digits that are not described in this specification.
+
+
+### GET /api
+
+* What: meta information about the API
+* Response type: application/json
+* Response code: 200
+* Body template
+
+```
+{
+  "uptime": <uptime>
+  "info": "Service for IGC tracks."
+  "version": "v1"
+}
+```
+
+* where: `<uptime>` is the current uptime of the service formatted according to [Duration format as specified by ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Durations).
+
+
+
+
+### POST /api/igc
+
+* What: track registration
+* Response type: application/json
+* Response code: 200 if everything is OK, appropriate error code otherwise, eg. when provided body content, is malformed or URL does not point to a proper IGC file, etc. Handle all errors gracefully.
+* Request body template
+
+```
+{
+  "url": "<url>"
+}
+```
+
+* Response body template
+
+```
+{
+  "id": "<id>"
+}
+```
+
+* where: `<url>` represents a normal URL, that would work in a browser, eg: `http://skypolaris.org/wp-content/uploads/IGS%20Files/Madrid%20to%20Jerez.igc` and `<id>` represents an ID of the track, according to your internal management system. You can choose what format <id> should be in your system. The only restriction is that it needs to be easily used in URLs and it must be unique. It is used in subsequent API calls to uniquely identify a track, see below.
+
+
+### GET /api/igc
+
+* What: returns the array of all tracks ids
+* Response type: application/json
+* Response code: 200 if everything is OK, appropriate error code otherwise.
+* Response: the array of IDs, or an empty array if no tracks have been stored yet.
+
+```
+[<id1>, <id2>, ...]
+```
+
+### GET /api/igc/`<id>`
+
+* What: returns the meta information about a given track with the provided `<id>`, or NOT FOUND response code with an empty body.
+* Response type: application/json
+* Response code: 200 if everything is OK, appropriate error code otherwise.
+* Response:
+
+```
+{
+"H_date": <date from File Header, H-record>,
+"pilot": <pilot>,
+"glider": <glider>,
+"glider_id": <glider_id>,
+"track_length": <calculated total track length>
+}
+```
+
+### GET /api/igc/`<id>`/`<field>`
+
+* What: returns the single detailed meta information about a given track with the provided `<id>`, or NOT FOUND response code with an empty body. The response should always be a string, with the exception of the calculated track length, that should be a number.
+* Response type: text/plain
+* Response code: 200 if everything is OK, appropriate error code otherwise.
+* Response
+   * `<pilot>` for `pilot`
+   * `<glider>` for `glider`
+   * `<glider_id>` for `glider_id`
+   * `<calculated total track length>` for `track_length`
+   * `<H_date>` for `H_date`
+
+
+## Resources
+
+* [Go IGC library](https://github.com/marni/goigc)
+
+
+## Formal aspects
+Teaching staff Git usernames
+
+| name | github | bitbucket | prod3 | gitlab.com | other |
+| ---- | ------ | --------- | ----- | ----- | ---- |
+| GTL  |  gtl-hig | gtl-gjovik |  gtl | gtl-hig | ask |
+| Mariusz | marni | nowostawski | mariusz | marni   | ask |
+| Christopher | chrfrantz  | cfrantz | frantz | frantz | ask |
+| Thomas | tholok97 | tholok97 | tholok | N/A | ask |
+| Bjorn  | bjornkau   | BkAune | bjornkau | N/A | ask |
+
+This assignment is worth 10% of 100% for the course. Note, the internal portfolio is worth 40%, thus this assignment is worth 25% of the internal portfolio.
+
+# Submission
+
+The submission deadline is **Sunday, October 14th, 23:59**. No extensions will be given for late submissions.
+
+**[Please use this form for your submission](https://goo.gl/forms/kz90umHAJd6Bru1W2)**  <br>Note - in case of repeated submissions we take only the last one into account.
+
+
+# Peer Review
+
+* All submissions must have their peer-review entry in the spreadsheet.
+* All students are expected to peer-review (at least) 2 other submissions.
+* Do not mess up with the spreadsheet - do not delete, modify, or manipulate the data.
+* Everyone should check the integrity of the data - any violations, please report to staff.
+* Deadline: Friday, 26th of October, 06:00 (6am), morning. Extended to Tuesday, November 20th, 13:00.
+
+[The form for peer-review](https://docs.google.com/spreadsheets/d/1Iat2up_Ra1hokvkZZYE0NJJ3JeB8iTcvd3zp0VS7SCQ/edit?usp=sharing)
+
+', '2019-03-13 10:46:07', '2019-03-13 09:45:00', '2019-03-14 23:59:00', 4, 6, 3, null, 1);
+
+INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (4, 6, 2, 4, 5);
+INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (5, 6, 2, 4, 6);
+INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (6, 6, 2, 5, 4);
+INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (7, 6, 2, 5, 6);
+INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (8, 6, 2, 6, 4);
+INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (9, 6, 2, 6, 5);
+
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (5, 4, 5, 3, 2, 'text', 'test_all_fields_text_0', 'Text', 'input text', null, '2019-03-13 12:25:49');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (6, 4, 5, 3, 2, 'textarea', 'test_all_fields_textarea_1', 'Textarea', 'input textarea', null, '2019-03-13 12:25:49');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (7, 4, 5, 3, 2, 'url', 'test_all_fields_url_2', 'URL', 'http://vg.no', null, '2019-03-13 12:25:49');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (8, 4, 5, 3, 2, 'number', 'test_all_fields_number_3', 'Number', '1337', null, '2019-03-13 12:25:49');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (9, 4, 5, 3, 2, 'checkbox', 'test_all_fields_checkbox_4', 'Checkbox', 'on', null, '2019-03-13 12:25:49');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (10, 4, 5, 3, 2, 'radio', 'test_all_fields_radio_5', 'Radio', '2', null, '2019-03-13 12:25:49');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (11, 4, 6, 3, 2, 'text', 'test_all_fields_text_36', 'Text', 'a', null, '2019-03-14 13:44:34');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (12, 4, 6, 3, 2, 'textarea', 'test_all_fields_textarea_37', 'Textarea', 'b', null, '2019-03-14 13:44:34');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (13, 4, 6, 3, 2, 'url', 'test_all_fields_url_38', 'URL', 'http://vg.no', null, '2019-03-14 13:44:34');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (14, 4, 6, 3, 2, 'number', 'test_all_fields_number_39', 'Number', '1', null, '2019-03-14 13:44:34');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (15, 4, 6, 3, 2, 'checkbox', 'test_all_fields_checkbox_40', 'Checkbox', '', null, '2019-03-14 13:44:34');
+INSERT INTO user_reviews (id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted) VALUES (16, 4, 6, 3, 2, 'radio', 'test_all_fields_radio_41', 'Radio', '', null, '2019-03-14 13:44:34');
+
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (13, 5, 2, 6, 'url', 'http://www.go.no', 'asdf', '2019-03-13 16:32:43');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (14, 5, 2, 6, 'textarea', 'asdf', '', '2019-03-13 16:32:43');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (15, 5, 2, 6, 'url', 'http://www.go.no', '', '2019-03-13 16:32:43');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (16, 5, 2, 6, 'number', '1332', '', '2019-03-13 16:32:43');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (17, 5, 2, 6, 'checkbox', '', '', '2019-03-13 16:32:43');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (18, 5, 2, 6, 'radio', '1', '', '2019-03-13 16:32:43');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (19, 4, 2, 6, 'url', 'http://github.com', '', '2019-03-14 13:46:12');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (20, 4, 2, 6, 'textarea', 'lorem upsum', '', '2019-03-14 13:46:12');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (21, 4, 2, 6, 'url', 'http://vg.no', '', '2019-03-14 13:46:12');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (22, 4, 2, 6, 'number', '42', '', '2019-03-14 13:46:12');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (23, 4, 2, 6, 'checkbox', 'on', '', '2019-03-14 13:46:12');
+INSERT INTO user_submissions (id, user_id, assignment_id, submission_id, type, answer, comment, submitted) VALUES (24, 4, 2, 6, 'radio', '1', '', '2019-03-14 13:46:12');
+
+INSERT INTO adminfaq (id, timestamp, questions) VALUES (1, '1997-02-13 13:37:00', 'Q: How do I make a course + link?
+--------------------------------
+**A:** Dashboard -> Courses -> new. And create the course there
+
+Q: How do I make an assignment?
+--------------------------------
+**A:** Dashboard -> Assignments-> new. And create the assignment there
+
+Q: How do I invite students to the course?
+--------------------------------
+**A:** Create a link for the course and email the students the link
+
+Q: How do I import database?
+--------------------------------
+**A:** Start xampp and go to import in phpmyadmin
+
+Q: How do I export database?
+--------------------------------
+**A:** Start xampp and go to export in phpmyadmin
+
+Q: How do I sign up?
+--------------------------------
+**A:** You go to `/register` and register a user there
+
+![Reddit](https://external-preview.redd.it/lzcL5WbUuBr7pI9zIM9ZbUSrETZR1UNb-g6C5DehYss.jpg?width=960&crop=smart&auto=webp&s=4b483a024ac9103bfe6df2e98599043bbed29146)');

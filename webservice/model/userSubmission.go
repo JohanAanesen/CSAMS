@@ -16,61 +16,48 @@ type UserSubmission struct {
 }
 
 // GetUserAnswers returns answers if it exists, empty if not
+// TODO (Svein): Move this into some struct as a method, or rename it to reflect it's actions
 func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
-
 	// Create an empty answers array
-	var answers []Answer
-
+	var result []Answer
 	// Create query string
-	query := "SELECT id, user_submissions.type, user_submissions.answer FROM user_submissions WHERE user_id =? AND assignment_id=?;"
+	query := "SELECT id, type, answer, comment FROM user_submissions WHERE user_id =? AND assignment_id=?;"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query, userID, assignmentID)
 	if err != nil {
 
 		// Returns empty if it fails
-		return answers, err
+		return result, err
 	}
-
 	// Close connection
 	defer rows.Close()
-
 	// Loop through results
 	for rows.Next() {
-		var aID int
-		var aType string
-		var aValue string
-
+		var temp Answer
 		// Scan rows
-		err := rows.Scan(&aID, &aType, &aValue)
-
+		err := rows.Scan(&temp.ID, &temp.Type, &temp.Value, &temp.Comment)
 		// Check for error
 		if err != nil {
-			return answers, err
+			return result, err
 		}
-
-		answers = append(answers, Answer{
-			ID:    aID,
-			Type:  aType,
-			Value: aValue,
-		})
+		result = append(result, temp)
 	}
 
-	return answers, nil
+	return result, nil
 }
 
 // GetSubmittedTime returns submitted time if it exists, empty if not
 func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
-
-	var submitted time.Time
+	result := time.Time{}
 
 	// Create query string
-	query := "select distinct submitted from user_submissions WHERE user_id =? AND assignment_id=?;"
+	query := "SELECT DISTINCT submitted FROM user_submissions WHERE user_id=? AND assignment_id=?;"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query, userID, assignmentID)
 	if err != nil {
 
 		// Returns empty if it fails
-		return submitted, false, err
+		return result, false, err
 	}
 
 	// Close connection
@@ -79,14 +66,13 @@ func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
 	// Loop through results
 	if rows.Next() {
 		// Scan rows
-		err := rows.Scan(&submitted)
-
+		err := rows.Scan(&result)
 		// Check for error
 		if err != nil {
 			return time.Time{}, false, err
 		}
 
-		return submitted, true, nil
+		return result, true, nil
 	}
 
 	return time.Time{}, false, nil
@@ -94,7 +80,6 @@ func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
 
 // UploadUserSubmission uploads user submission to the db
 func UploadUserSubmission(userSub UserSubmission) error {
-
 	// Get current Norwegian time in string format TODO time-norwegian
 	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
@@ -128,7 +113,6 @@ func UploadUserSubmission(userSub UserSubmission) error {
 
 // UpdateUserSubmission updates user submission to the db
 func UpdateUserSubmission(userSub UserSubmission) error {
-
 	// Norwegian time TODO time-norwegian
 	now := util.GetTimeInCorrectTimeZone()
 

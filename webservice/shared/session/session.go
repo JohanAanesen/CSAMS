@@ -92,7 +92,6 @@ func SaveUserToSession(user model.User, w http.ResponseWriter, r *http.Request) 
 	err = session.Save(r, w) //save session changes
 
 	if err != nil {
-		//todo log this event
 		log.Printf("ocould save session: %v", err)
 		//redirect somewhere
 		return false
@@ -101,7 +100,7 @@ func SaveUserToSession(user model.User, w http.ResponseWriter, r *http.Request) 
 	return true
 }
 
-
+// SaveMessageToSession saves a message to the session
 func SaveMessageToSession(msg string, w http.ResponseWriter, r *http.Request) bool {
 	session, err := Instance(r) //get session
 
@@ -124,7 +123,8 @@ func SaveMessageToSession(msg string, w http.ResponseWriter, r *http.Request) bo
 	return true
 }
 
-func GetAndDeleteMessageFromSession(w http.ResponseWriter, r *http.Request)string{
+// GetAndDeleteMessageFromSession retrieves and a message from the session, then deletes it
+func GetAndDeleteMessageFromSession(w http.ResponseWriter, r *http.Request) string {
 	session, err := Instance(r) // get session
 
 	if err != nil {
@@ -135,20 +135,26 @@ func GetAndDeleteMessageFromSession(w http.ResponseWriter, r *http.Request)strin
 	val := session.Values["Message"]
 	var msg string
 	msg, ok := val.(string)
-	if !ok{
+	if !ok {
 		return ""
 	}
 
 	ok = DeleteMessageFromSession(w, r)
-	if !ok{
+	if !ok {
 		return ""
 	}
 
 	return msg
 }
 
-func DeleteMessageFromSession(w http.ResponseWriter, r *http.Request) bool{
+// DeleteMessageFromSession deletes a message from the session
+func DeleteMessageFromSession(w http.ResponseWriter, r *http.Request) bool {
 	session, err := Instance(r) // get session
+
+	if err != nil {
+		log.Printf("Could not get instance of session: %v", err)
+		return false
+	}
 
 	session.Values["Message"] = ""
 

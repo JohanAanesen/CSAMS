@@ -13,7 +13,6 @@ import (
 
 //CourseGET serves class page to users
 func CourseGET(w http.ResponseWriter, r *http.Request) {
-
 	var course model.Course
 
 	//check if request has an classID

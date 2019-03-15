@@ -12,7 +12,6 @@ func PrettyTime() template.FuncMap {
 	f := make(template.FuncMap)
 
 	f["PRETTYTIME"] = func(t time.Time) string {
-
 		// Get correct timezone. When date is stored in the database, only the date and time is stored, not the timezone.
 		timeZone := util.GetTimeInCorrectTimeZone()
 

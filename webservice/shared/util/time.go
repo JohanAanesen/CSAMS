@@ -9,7 +9,6 @@ import (
 
 // DatetimeLocalToRFC3339 converts a string from datetime-local HTML input-field to time.Time object
 func DatetimeLocalToRFC3339(str string) (time.Time, error) {
-	// TODO (Svein): Move this to a utils.go or something
 	if str == "" {
 		return time.Time{}, errors.New("error: could not parse empty datetime-string")
 	}

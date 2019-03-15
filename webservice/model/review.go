@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 )
@@ -56,10 +57,17 @@ func (repo *ReviewRepository) Insert(form Form) error {
 
 	// Loop trough fields in the forms
 	for _, field := range form.Fields {
+		var hasComment = 0
+		if field.HasComment {
+			hasComment = 1
+		}
+
 		// Insertion query
-		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices, hasComment) " +
+			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
 		// Execute the query
-		rows, err := db.GetDB().Query(query, int(formID), field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
+		rows, err := db.GetDB().Query(query, int(formID), field.Type, field.Name, field.Label, field.Description,
+			field.Order, field.Weight, field.Choices, hasComment)
 		// Check for error
 		if err != nil {
 			return err
@@ -124,13 +132,13 @@ func (repo *ReviewRepository) GetAll() ([]Review, error) {
 // Update a form in the database
 // Deletes all fields, and recreates them
 func (repo *ReviewRepository) Update(form Form) error {
-	query := "UPDATE forms SET prefix=?, name=?, description=? WHERE id=?"
+	query := "UPDATE forms SET prefix=?, name=? WHERE id=?"
 	tx, err := db.GetDB().Begin()
 	if err != nil {
 		return err
 	}
 
-	_, err = db.GetDB().Exec(query, form.Prefix, form.Name, form.Description, form.ID)
+	_, err = db.GetDB().Exec(query, form.Prefix, form.Name, form.ID)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -150,10 +158,17 @@ func (repo *ReviewRepository) Update(form Form) error {
 
 	// Loop trough fields in the forms
 	for _, field := range form.Fields {
+		var hasComment = 0
+		if field.HasComment {
+			hasComment = 1
+		}
+
 		// Insertion query
-		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+		query := "INSERT INTO fields (form_id, type, name, label, description, priority, weight, choices, hasComment) " +
+			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
 		// Execute the query
-		rows, err := db.GetDB().Query(query, form.ID, field.Type, field.Name, field.Label, field.Description, field.Order, field.Weight, field.Choices)
+		rows, err := db.GetDB().Query(query, form.ID, field.Type, field.Name, field.Label, field.Description,
+			field.Order, field.Weight, field.Choices, hasComment)
 		// Check for error
 		if err != nil {
 			return err
@@ -176,7 +191,7 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 		return result, err
 	}
 
-	var reviewID int
+	var reviewID sql.NullInt64
 
 	for rows.Next() {
 		err = rows.Scan(&reviewID)
@@ -185,9 +200,11 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 		}
 	}
 
-	result.ID = reviewID
+	result.ID = int(reviewID.Int64)
 
-	query = "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM reviews AS s WHERE id IN (SELECT a.review_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
+	query = "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices, f.hasComment " +
+		"FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM reviews AS s WHERE id IN " +
+		"(SELECT a.review_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
 	rows, err = db.GetDB().Query(query, assignmentID)
 	if err != nil {
 		return result, err
@@ -199,12 +216,15 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 
 	for rows.Next() {
 		var field Field
+		var hasComment int
 
-		err = rows.Scan(&formID, &field.ID, &field.Type, &field.Name, &field.Label, &field.Description, &field.Order, &field.Weight, &field.Choices)
+		err = rows.Scan(&formID, &field.ID, &field.Type, &field.Name, &field.Label, &field.Description,
+			&field.Order, &field.Weight, &field.Choices, &hasComment)
 		if err != nil {
 			return result, err
 		}
 
+		field.HasComment = hasComment == 1
 		form.Fields = append(form.Fields, field)
 	}
 
@@ -218,10 +238,8 @@ func (repo *ReviewRepository) GetSingle(assignmentID int) (Review, error) {
 
 // InsertReviewAnswers inserts answers from a review into the database
 func (repo *ReviewRepository) InsertReviewAnswers(fr FullReview) error {
-
 	// Get current Norwegian time in string format TODO time-norwegian
 	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
-
 	query := "INSERT user_reviews (user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, submitted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
 	tx, err := db.GetDB().Begin()
@@ -308,48 +326,118 @@ func (repo *ReviewRepository) HasBeenReviewed(target, reviewer, assignment int) 
 
 // GetReviewForUser returns answered reviews for a single user at a given assignment
 func (repo *ReviewRepository) GetReviewForUser(user, assignment int) ([]FullReview, error) {
+	// Instantiate empty slice
 	result := make([]FullReview, 0)
-
+	// SQL Query
 	query := "SELECT DISTINCT user_reviewer FROM user_reviews WHERE user_target=? AND assignment_id=?"
+	// Perform query
 	rows, err := db.GetDB().Query(query, user, assignment)
 	if err != nil {
 		return result, err
 	}
-
+	// Close connection
 	defer rows.Close()
-
+	// Loop through results
 	for rows.Next() {
 		var tempID int
-
+		// Scan user_reviewer
 		err = rows.Scan(&tempID)
 		if err != nil {
 			return result, err
 		}
-
+		// SQL query
 		query = "SELECT type, name, label, answer FROM user_reviews WHERE user_target=? AND assignment_id=? AND user_reviewer=?"
+		// perform query
 		nextRows, err := db.GetDB().Query(query, user, assignment, tempID)
 		if err != nil {
 			return result, err
 		}
-
+		// Instantiate full review with empty answers slice
 		fullReview := FullReview{
 			Reviewer: tempID,
 			Answers:  make([]ReviewAnswer, 0),
 		}
-
+		// Loop through results
 		for nextRows.Next() {
 			var reviewAnswer ReviewAnswer
-
+			// Scan answer data
 			err = nextRows.Scan(&reviewAnswer.Type, &reviewAnswer.Name, &reviewAnswer.Label, &reviewAnswer.Answer)
 			if err != nil {
 				return result, err
 			}
-
+			// Append answers to full review
 			fullReview.Answers = append(fullReview.Answers, reviewAnswer)
 		}
-
+		// Append full review to result
 		result = append(result, fullReview)
 	}
 
 	return result, err
+}
+
+// Delete a review form based on it's id
+func (repo *ReviewRepository) Delete(id int) error {
+	// SQL query
+	query := "DELETE FROM fields WHERE form_id=?"
+	// Begin transaction
+	tx, err := db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+	// Execute query
+	_, err = tx.Exec(query, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// SQL query
+	query = "DELETE FROM reviews WHERE form_id=?"
+	// Begin transaction
+	tx, err = db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+	// Execute transaction
+	_, err = tx.Exec(query, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// SQL query
+	query = "DELETE FROM forms WHERE id=?"
+	// Begin transaction
+	tx, err = db.GetDB().Begin()
+	if err != nil {
+		return err
+	}
+	// Execute transaction
+	_, err = tx.Exec(query, id)
+	if err != nil {
+		// Rollback transaction on error
+		tx.Rollback()
+		return err
+	}
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		// Rollback transaction on error
+		tx.Rollback()
+		return err
+	}
+
+	return err
 }

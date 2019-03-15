@@ -35,7 +35,7 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 		// Get id and convert to int
 		id, err := strconv.Atoi(array[1])
 		if err != nil {
-			log.Printf(err.Error())
+			log.Println("string convert atoi array[1]", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
@@ -43,7 +43,7 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 		// Update users password
 		err = model.UpdateUserPassword(id, pass)
 		if err != nil {
-			log.Printf(err.Error())
+			log.Println("update user password", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
@@ -54,8 +54,8 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 	courseRepo := &model.CourseRepository{}
 	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 	if err != nil {
+		log.Println("get all courses to user sorted", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
-		log.Println(err)
 		return
 	}
 
@@ -85,7 +85,7 @@ func AdminGetUsersPOST(w http.ResponseWriter, r *http.Request) {
 	// Convert courseID to int
 	courseID, err := strconv.Atoi(formVal)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Println("string convert atoi form value", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
