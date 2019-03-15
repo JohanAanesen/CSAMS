@@ -103,10 +103,11 @@ func IndexPOST(w http.ResponseWriter, r *http.Request) {
 // IndexPUT handles PUT requests
 func IndexPUT(w http.ResponseWriter, r *http.Request) {
 	var update struct {
-		Authentication string    `json:"authentication"`
-		SubmissionID   int       `json:"submission_id"`
-		AssignmentID   int       `json:"assignment_id"`
-		ScheduledTime  time.Time `json:"scheduled_time"`
+		Authentication string          `json:"authentication"`
+		SubmissionID   int             `json:"submission_id"`
+		AssignmentID   int             `json:"assignment_id"`
+		ScheduledTime  time.Time       `json:"scheduled_time"`
+		Data           json.RawMessage `json:"data"`
 	}
 
 	//decode json request into struct
@@ -125,7 +126,7 @@ func IndexPUT(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	model.UpdateTimer(update.ScheduledTime, model.GetPayload(update.SubmissionID, update.AssignmentID))
+	model.UpdateTimer(update.Data, update.ScheduledTime, model.GetPayload(update.SubmissionID, update.AssignmentID))
 
 	if err := json.NewEncoder(w).Encode(response{Success: true}); err != nil {
 		log.Println("Something went wrong encoding response") //todo real logger

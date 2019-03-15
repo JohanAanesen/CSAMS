@@ -56,7 +56,14 @@ func (scheduler Scheduler) SchedulePeerReview(subID int, assID int, reviewers in
 }
 
 // UpdateSchedule updates a schedule task on service
-func (scheduler Scheduler) UpdateSchedule(subID int, assID int, scheduledTime time.Time) error {
+func (scheduler Scheduler) UpdateSchedule(subID int, assID int, reviewers int, scheduledTime time.Time) error {
+
+	var peerTask = PeerTask{
+		Authentication: os.Getenv("PEER_AUTH"),
+		SubmissionID:   subID,
+		AssignmentID:   assID,
+		Reviewers:      reviewers,
+	}
 
 	//this is what is being sent to the scheduler service
 	jsonData := map[string]interface{}{
@@ -64,6 +71,7 @@ func (scheduler Scheduler) UpdateSchedule(subID int, assID int, scheduledTime ti
 		"scheduled_time": scheduledTime,
 		"submission_id":  subID,
 		"assignment_id":  assID,
+		"data":           peerTask,
 	}
 
 	//this is just sending the request
