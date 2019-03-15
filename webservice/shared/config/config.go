@@ -81,6 +81,7 @@ func Initialize(configFile string) *Configuration {
 		plugin.Increment(),
 		plugin.SplitChoices(),
 		plugin.Atoi(),
+		plugin.GetUsername(),
 	)
 
 	return cfg
