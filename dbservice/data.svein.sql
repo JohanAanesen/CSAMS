@@ -400,7 +400,7 @@ The submission deadline is **Sunday, October 14th, 23:59**. No extensions will b
 
 [The form for peer-review](https://docs.google.com/spreadsheets/d/1Iat2up_Ra1hokvkZZYE0NJJ3JeB8iTcvd3zp0VS7SCQ/edit?usp=sharing)
 
-', '2019-03-13 10:46:07', '2019-03-13 09:45:00', '2019-03-14 23:59:00', 4, 6, 3, null, 1);
+', '2019-03-13 10:46:07', '2019-03-13 09:45:00', '2019-03-30 23:59:00', 4, 6, 3, null, 1);
 
 INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (4, 6, 2, 4, 5);
 INSERT INTO peer_reviews (id, submission_id, assignment_id, user_id, review_user_id) VALUES (5, 6, 2, 4, 6);
