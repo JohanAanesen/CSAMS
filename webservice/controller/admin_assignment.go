@@ -711,6 +711,7 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "admin/assignment/reviews"
 
 	// View variables
+	v.Vars["AssignmentID"] = assignmentID
 	v.Vars["User"] = user
 	v.Vars["Reviews"] = reviews
 

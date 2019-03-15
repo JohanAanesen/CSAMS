@@ -46,5 +46,8 @@
     {{if eq $i 1}}
         <h3>This assignment has not been reviewed yet.</h3>
     {{end}}
+
+    <hr>
+    <a href="/admin/assignment/{{.AssignmentID}}/submissions" class="btn btn-outline-dark">Go back</a>
 {{end}}
 {{define "foot"}}{{end}}
