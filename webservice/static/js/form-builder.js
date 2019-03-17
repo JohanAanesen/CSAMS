@@ -492,6 +492,10 @@ function Form(args) {
             weighted: this.weighted,
         }));
 
+        this.fields.forEach(e => {
+            e.expanded = e.id === (this.lastId - 1);
+        });
+
         this.render();
     };
 
