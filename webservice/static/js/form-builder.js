@@ -250,6 +250,54 @@ function Form(args) {
 
         leftCol.appendChild(formGroup);
 
+        let customControl = createElement({
+            classList: ['custom-control', 'custom-checkbox'],
+        });
+
+        let customCheckbox = createElement({
+            type: 'input',
+            classList: ['custom-control-input'],
+            attributes: [
+                {
+                    name: 'type',
+                    value: 'checkbox'
+                },
+                {
+                    name: 'name',
+                    value: 'form_weighted',
+                }
+            ],
+            id: 'form_weighted',
+        });
+
+        customCheckbox.checked = this.weighted;
+
+        customCheckbox.addEventListener('change', () => {
+            this.weighted = customCheckbox.checked;
+            this.fields.forEach(e => {
+                e.weighted = this.weighted;
+            });
+
+            this.render();
+        });
+
+        let customLabel = createElement({
+            type: 'label',
+            classList: ['custom-control-label'],
+            attributes: [
+                {
+                    name: 'for',
+                    value: 'form_weighted',
+                }
+            ],
+            innerText: 'Enable weights',
+        });
+
+        customControl.appendChild(customCheckbox);
+        customControl.appendChild(customLabel);
+
+        leftCol.appendChild(customControl);
+
         let hr = createElement({ type: 'hr' });
 
         leftCol.appendChild(hr);
