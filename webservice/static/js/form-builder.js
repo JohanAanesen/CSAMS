@@ -381,7 +381,7 @@ function Form(args) {
                         })
                         .catch((error) => {
                             console.error(error);
-                        })
+                        });
                 }
             });
 
