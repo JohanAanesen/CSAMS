@@ -54,7 +54,7 @@ func (repo *FormRepository) Insert(form Form) (int, error) {
 	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
 	// Insertions Query
-	query := "INSERT INTO forms (prefix, name, created) VALUES (?, ?, ?, ?);"
+	query := "INSERT INTO forms (prefix, name, created) VALUES (?, ?, ?);"
 	// Execute query with parameters
 	rows, err := tx.Exec(query, form.Prefix, form.Name, date)
 	// Check for error
