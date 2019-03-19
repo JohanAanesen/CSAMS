@@ -180,27 +180,10 @@ func (repo *SubmissionRepository) Update(form Form) error {
 		tx.Rollback()
 		return err
 	}
-	// Commit transaction
-	err = tx.Commit()
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
 
 	query = "DELETE FROM fields WHERE form_id=?"
-	// Begin transaction
-	tx, err = db.GetDB().Begin()
-	if err != nil {
-		return err
-	}
 	// Execute query
 	_, err = tx.Exec(query, form.ID)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	// Commit transaction
-	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -217,22 +200,10 @@ func (repo *SubmissionRepository) Update(form Form) error {
 			hasComment = 1
 		}
 
-		tx, err = db.GetDB().Begin()
-		if err != nil {
-			return err
-		}
-
 		// Execute the query
 		_, err = tx.Exec(query, form.ID, field.Type, field.Name, field.Label, field.Description,
 			field.Order, field.Weight, field.Choices, hasComment)
 		// Check for error
-		if err != nil {
-			tx.Rollback()
-			return err
-		}
-
-		// Commit transaction
-		err = tx.Commit()
 		if err != nil {
 			tx.Rollback()
 			return err
