@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/gorilla/mux"
@@ -53,6 +54,7 @@ func AdminReviewCreatePOST(w http.ResponseWriter, r *http.Request) {
 	data := r.FormValue("form_data")
 	// Declare Form-struct
 	var form = model.Form{}
+	fmt.Println(data)
 	// Unmarshal the JSON-string sent from the form
 	err := json.Unmarshal([]byte(data), &form)
 	if err != nil {

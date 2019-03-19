@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 // Combined holds answer and field
@@ -394,6 +395,13 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	err = r.ParseForm()
+	if err != nil {
+		log.Println("request parse form", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	// Check that every form is filled an give error if not
 	for index, field := range form.Fields {
 		// Check if they are empty and give error if they are
@@ -411,8 +419,14 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 			answer.Comment.String = p.Sanitize(r.FormValue(field.Name + "_comment"))
 		}
 
-		// Sanitize input, and get field type
-		answer.Value = p.Sanitize(r.FormValue(field.Name))
+		if field.Type == "multi-checkbox" {
+			val := r.Form[field.Name]
+			answer.Value = p.Sanitize(strings.Join(val, ","))
+		} else {
+			// Sanitize input
+			answer.Value = p.Sanitize(r.FormValue(field.Name))
+		}
+		// Get field type
 		answer.Type = field.Type
 
 		// If delivered, only change the value

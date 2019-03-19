@@ -66,6 +66,8 @@ const TYPES = {
     NUMBER: 'number',
     CHECKBOX: 'checkbox',
     RADIO: 'radio',
+    MULTI_CHECKBOX: 'multi-checkbox',
+    PARAGRAPH: 'paragraph',
 };
 
 /**
@@ -278,6 +280,13 @@ function Form(args) {
                 e.weighted = this.weighted;
             });
 
+            // Set all fields weights to 0 if weighted is unchecked
+            if (!this.weighted) {
+                this.fields.forEach(e => {
+                    e.weight = 0;
+                });
+            }
+
             this.render();
         });
 
@@ -461,6 +470,8 @@ function Form(args) {
                 });
                 this.render();
             });
+
+            e.postRender();
         });
     };
 
@@ -569,6 +580,7 @@ function Form(args) {
                 type: field.type,
                 weight: field.weight,
                 order: field.order,
+                choices: field.choices,
             });
 
             if (json.weighted) {
@@ -826,12 +838,17 @@ function Field(args) {
 
         select.addEventListener('change', e => {
             this.type = e.target.value;
-            this.displayChoices = this.type === TYPES.RADIO;
+            this.displayChoices = this.type === TYPES.RADIO
+                || this.type === TYPES.MULTI_CHECKBOX;
+
+            let choicesDisplay = document.getElementById(`choices_display_${this.id}`);
+            let choices = document.getElementById(`choices_${this.id}`);
 
             if (this.displayChoices) {
-                document.getElementById(`choices_display_${this.id}`).classList.remove('sr-only');
+                choicesDisplay.classList.remove('sr-only');
             } else {
-                document.getElementById(`choices_display_${this.id}`).classList.add('sr-only');
+                choices.value = '';
+                choicesDisplay.classList.add('sr-only');
             }
         });
 
@@ -1182,6 +1199,12 @@ function Field(args) {
         // TODO (Svein): Fix this later, storing the total weight,
         //  for using as calculation for showing percentage for each field with weights
         // let totalWeight = localStorage.getItem('totalWeight');
+        if (this.type === TYPES.RADIO || this.type === TYPES.MULTI_CHECKBOX) {
+            document.getElementById(`choices_display_${this.id}`).classList.remove('sr-only');
+            let val = this.choices.split(',');
+            val = val.join('\n');
+            document.getElementById(`choices_${this.id}`).value = val;
+        }
     };
 
     /**
@@ -1196,7 +1219,7 @@ function Field(args) {
             hasComment:     this.hasComment,
             label:          this.label,
             order:          this.order,
-            weight:         this.weight,
+            weight:         parseInt(this.weight),
             choices:        this.getChoices(),
         }
     };
