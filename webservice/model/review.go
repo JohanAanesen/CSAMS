@@ -390,40 +390,18 @@ func (repo *ReviewRepository) Delete(id int) error {
 		tx.Rollback()
 		return err
 	}
-	// Commit transaction
-	err = tx.Commit()
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
 
 	// SQL query
 	query = "DELETE FROM reviews WHERE form_id=?"
-	// Begin transaction
-	tx, err = db.GetDB().Begin()
-	if err != nil {
-		return err
-	}
+
 	// Execute transaction
 	_, err = tx.Exec(query, id)
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
-	// Commit transaction
-	err = tx.Commit()
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
 	// SQL query
 	query = "DELETE FROM forms WHERE id=?"
-	// Begin transaction
-	tx, err = db.GetDB().Begin()
-	if err != nil {
-		return err
-	}
 	// Execute transaction
 	_, err = tx.Exec(query, id)
 	if err != nil {
