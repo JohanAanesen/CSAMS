@@ -721,7 +721,7 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminAssignmentSingleSubmissionGET handles GET-request at /admin/assignment/{id}/submission/{id}
 func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) {
-		// Get URL variables
+	// Get URL variables
 	vars := mux.Vars(r)
 	// Get assignment id
 	assignmentID, err := strconv.Atoi(vars["assignmentID"])

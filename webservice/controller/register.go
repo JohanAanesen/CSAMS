@@ -14,8 +14,8 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 	//course repo
 	courseRepo := &model.CourseRepository{}
 
-	name := r.FormValue("name")         // get form value name
-	email := r.FormValue("email")       // get form value email
+	name := r.FormValue("name")   // get form value name
+	email := r.FormValue("email") // get form value email
 
 	// Check if request has an courseID and it's not empty
 	hash := r.FormValue("courseid")
