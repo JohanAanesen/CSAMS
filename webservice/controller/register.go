@@ -11,9 +11,11 @@ import (
 
 //RegisterGET serves register page to users
 func RegisterGET(w http.ResponseWriter, r *http.Request) {
-
 	//course repo
 	courseRepo := &model.CourseRepository{}
+
+	name := r.FormValue("name")         // get form value name
+	email := r.FormValue("email")       // get form value email
 
 	// Check if request has an courseID and it's not empty
 	hash := r.FormValue("courseid")
@@ -41,6 +43,9 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 		v.Vars["Action"] = "?courseid=" + hash
 	}
 
+	v.Vars["Name"] = name
+	v.Vars["Email"] = email
+
 	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
 
 	v.Render(w)
@@ -51,7 +56,6 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 
 //RegisterPOST validates register requests from users
 func RegisterPOST(w http.ResponseWriter, r *http.Request) {
-
 	//XSS sanitizer
 	p := bluemonday.UGCPolicy()
 
