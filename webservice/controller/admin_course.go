@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
@@ -15,21 +16,23 @@ import (
 
 // AdminCourseGET handles GET-request at /admin/course
 func AdminCourseGET(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
+	currentUser := session.GetUserFromSession(r)
 
-	v := view.New(r)
-	v.Name = "admin/course/index"
+	// Services
+	courseService := service.NewCourseService(db.GetDB())
 
-	//course repo
-	courseRepo := &model.CourseRepository{}
-
-	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
+	courses, err := courseService.FetchAllForUser(currentUser.ID)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println(err)
 		return
 	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/course/index"
 
 	v.Vars["Courses"] = courses
 
