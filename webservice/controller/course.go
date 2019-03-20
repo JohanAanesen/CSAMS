@@ -42,7 +42,6 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	assignmentRepo := model.AssignmentRepository{}
 
 	//get info from db
-	//course, err = courseRepo.GetSingle(courseID)
 	course, err = courseService.Fetch(courseID)
 	if err != nil {
 		log.Println("course service fetch", err)
@@ -58,8 +57,8 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if user is an participant of said class or a teacher
-	err = courseService.UserInCourse(currentUser.ID, courseID)
-	if err != nil || !currentUser.Teacher {
+	inCourse := courseService.UserInCourse(currentUser.ID, courseID)
+	if !inCourse || !currentUser.Teacher {
 		log.Println("user not participant of class", err)
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
