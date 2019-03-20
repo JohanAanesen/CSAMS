@@ -3,6 +3,8 @@ package controller
 import (
 	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"html/template"
@@ -13,7 +15,10 @@ import (
 
 //CourseGET serves class page to users
 func CourseGET(w http.ResponseWriter, r *http.Request) {
-	var course model.Course
+	//get user
+	currentUser := session.GetUserFromSession(r)
+
+	var course *model.Course
 
 	//check if request has an classID
 	id := r.FormValue("id")
@@ -33,22 +38,22 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//check if user is logged in
-	if !session.GetUserFromSession(r).Authenticated {
+	if !currentUser.Authenticated {
 		LoginGET(w, r)
 		return
 	}
 
-	//get user
-	user := session.GetUserFromSession(r)
+	// Services
+	courseService := service.NewCourseService(db.GetDB())
 
 	//repo's
-	courseRepo := &model.CourseRepository{}
 	assignmentRepo := model.AssignmentRepository{}
 
 	//get info from db
-	course, err = courseRepo.GetSingle(courseID)
+	//course, err = courseRepo.GetSingle(courseID)
+	course, err = courseService.Fetch(courseID)
 	if err != nil {
-		log.Println(err)
+		log.Println("course service fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -56,11 +61,14 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	assignments, err := assignmentRepo.GetAllFromCourse(courseID)
 	if err != nil {
 		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	//check if user is an participant of said class or a teacher
-	participant := courseRepo.UserExistsInCourse(user.ID, courseID) || user.ID == course.Teacher
-	if !participant {
+	//participant := courseRepo.UserExistsInCourse(currentUser.ID, courseID) || currentUser.ID == course.Teacher
+	err = courseService.UserInCourse(currentUser.ID, courseID)
+	if err != nil || currentUser.ID == course.Teacher {
 		log.Println("user not participant of class")
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
@@ -76,7 +84,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "course"
 
 	v.Vars["Course"] = course
-	v.Vars["User"] = user
+	v.Vars["User"] = currentUser
 	v.Vars["Classmates"] = classmates
 	v.Vars["Assignments"] = assignments
 
