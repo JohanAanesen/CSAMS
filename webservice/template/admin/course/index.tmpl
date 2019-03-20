@@ -16,7 +16,7 @@
                         <h3 class="mb-3">{{ .Name }}</h3>
                         <h6><strong>Hash:</strong> {{ .Hash }}</h6>
                         <hr>
-                        <a href="/course/?id={{ .ID }}" class="btn btn-outline-dark my-3">See Course</a>
+                        <a href="/course/{{ .ID }}" class="btn btn-outline-dark my-3">See Course</a>
                         <a href="/admin/course/{{.ID}}/assignments" class="btn btn-outline-dark my-3">See
                             Assignments</a>
                         <a href="/admin/course/update/{{.ID}}" class="btn btn-outline-dark my-3">Edit Course</a>
