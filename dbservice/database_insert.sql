@@ -54,7 +54,7 @@ INSERT INTO `usercourse` (`userid`, `courseid`) VALUES
 INSERT INTO `users` (`id`, `name`, `email_student`, `teacher`, `email_private`, `password`) VALUES
 (1,	'Svein Are Danielsen',	'sveiad@stud.ntnu.no',	1,	NULL,	'$2a$14$ZiThiqRkYDj9wS5wyJjbl.jtpB8JLeN2Zztl6Kudhr.2e.bPdmk9W'),
 (2,	'Christopher Frantz',	'christopher.frantz@ntnu.no',	1,	NULL,	'$2a$14$flEKp.4Q136bdgTopw.9wOg2JQ2Jp.rdMYyrDr4Fxwfa0X26DTHrq'),
-(3,	'Brede Fritjof Klausen',	'bredefk@stud.ntnu.no',	1,	NULL,	'$2a$14$CUQPJwmIxm1oCM3w/pt5IOFjx5tIXWz8GXJTPJXDoH.0RXVcl6oj2');
+(3,	'Brede Fritjof Klausen',	'bredefk@stud.ntnu.no',	1,	NULL,	'$2a$14$rVyqyofcButdQhTB1gABtOlZj6YC8Y27wt6nR.9J/McPba1hCJ7oS');
 
 
 

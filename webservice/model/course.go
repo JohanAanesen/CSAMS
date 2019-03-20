@@ -151,6 +151,24 @@ func (repo *CourseRepository) Update(id int, course Course) error {
 	return err
 }
 
+// RemoveUser removes a user from a course
+func (repo *CourseRepository) RemoveUser(courseID int, userID int) error {
+
+	// Create query string
+	query := "DELETE from usercourse WHERE userid = ? AND courseid = ?"
+	// Prepare and execute query
+	rows, err := db.GetDB().Query(query, userID, courseID)
+
+	// Check for error
+	if err != nil {
+		return err
+	}
+	// Close connection
+	defer rows.Close()
+
+	return nil
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // TODO Brede : Change ex `var courseCOde string` to only use `course.Code`
