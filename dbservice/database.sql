@@ -71,7 +71,7 @@ CREATE TABLE `fields`
   `hasComment`  int(1)      NOT NULL,
   `priority`    int(11)     NOT NULL,
   `weight`      int(11)     DEFAULT NULL,
-  `choices`     varchar(256) DEFAULT NULL,
+  `choices`     text DEFAULT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`form_id`) REFERENCES forms (`id`)
 );
