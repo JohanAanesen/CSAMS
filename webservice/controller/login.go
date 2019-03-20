@@ -3,6 +3,8 @@ package controller
 import (
 	"encoding/gob"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/microcosm-cc/bluemonday"
@@ -17,20 +19,20 @@ func init() {
 
 //LoginGET serves login page to users
 func LoginGET(w http.ResponseWriter, r *http.Request) {
+	// Services
+	courseService := service.NewCourseService(db.GetDB())
 
+	// Models
 	course := model.Course{}
-
-	//course repo
-	courseRepo := &model.CourseRepository{}
 
 	// Check if request has an courseID and it's not empty
 	hash := r.FormValue("courseid")
 	if hash != "" {
-
-		course = courseRepo.CourseExists(hash)
-
+		// Check if course exists based on hash, and return it
+		course = *courseService.Exists(hash)
 		// Check if the hash is a valid hash
 		if course.ID == -1 {
+			log.Println("course id is -1")
 			ErrorHandler(w, r, http.StatusBadRequest)
 			hash = ""
 			return
@@ -38,20 +40,29 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if user is already logged in
-	user := session.GetUserFromSession(r)
-	if user.Authenticated { //already logged in, redirect to homepage
-
+	currentUser := session.GetUserFromSession(r)
+	if currentUser.Authenticated { //already logged in, redirect to homepage
 		// If hash was valid, add user isn't in the course, then add user to course
-		if hash != "" && !courseRepo.UserExistsInCourse(user.ID, course.ID) {
-			courseRepo.AddUserToCourse(user.ID, course.ID)
+		userInCourse := courseService.UserInCourse(currentUser.ID, course.ID)
+		// Check if user is not in course nad that hash is not blank
+		if !userInCourse && hash != "" {
+			// Add user to course
+			err := courseService.AddUser(currentUser.ID, course.ID)
+			// Check for errors
+			if err != nil {
+				log.Println("add user to course", err)
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
 		}
 
+		// Redirect to homepage
 		http.Redirect(w, r, "/", http.StatusFound) //redirect
 		return
 	}
 
-	//w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	//w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
 	v.Name = "login"
@@ -70,16 +81,19 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 
 //LoginPOST validates login requests
 func LoginPOST(w http.ResponseWriter, r *http.Request) {
-
-	//sanitizer
+	// Sanitizer
 	p := bluemonday.UGCPolicy()
+	// Get current user from session
+	currentUser := session.GetUserFromSession(r)
 
-	user := session.GetUserFromSession(r)
-
-	if user.Authenticated { //already logged in, redirect to home page
+	if currentUser.Authenticated { //already logged in, redirect to home page
 		http.Redirect(w, r, "/", http.StatusFound) //todo redirect without 302
 		return
 	}
+
+	// Services
+	userService := service.NewUserService(db.GetDB())
+	courseService := service.NewCourseService(db.GetDB())
 
 	email := r.FormValue("email")       // email
 	password := r.FormValue("password") // password
@@ -91,30 +105,30 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := model.UserAuth(p.Sanitize(email), p.Sanitize(password)) //authenticate user
-
-	//course repo
-	courseRepo := &model.CourseRepository{}
-
-	if ok {
-		//save user to session values
-		user.Authenticated = true
-		session.SaveUserToSession(user, w, r)
-
-		// Add new user to course, if he's not in the course
-		if hash != "" {
-			if id := courseRepo.CourseExists(hash).ID; id != -1 && !courseRepo.UserExistsInCourse(user.ID, id) {
-				courseRepo.AddUserToCourse(user.ID, id)
-			}
-		}
-
-	} else {
-		//redirect to errorhandler //todo return message to user and let them login again
+	user, err := userService.Authenticate(p.Sanitize(email), p.Sanitize(password))
+	if err != nil {
+		log.Println("user service authenticate", err)
 		session.SaveMessageToSession("Wrong credentials!", w, r)
 		LoginGET(w, r) //try again
-		//todo log this event
-		log.Println("LoginPOST error")
 		return
+	}
+
+	//save user to session values
+	user.Authenticated = true
+	session.SaveUserToSession(user, w, r)
+
+	// Add new user to course, if he's not in the course
+	if hash != "" {
+		course := courseService.Exists(hash)
+		userInCourse := courseService.UserInCourse(user.ID, course.ID)
+		if course.ID != -1 && !userInCourse {
+			err := courseService.AddUser(user.ID, course.ID)
+			if err != nil {
+				log.Println("add user to course", err)
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
+		}
 	}
 
 	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage //todo change redirection
