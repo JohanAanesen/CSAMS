@@ -512,6 +512,8 @@ function Form(args) {
         });
 
         this.render();
+
+        this.focusNewField();
     };
 
     /**
@@ -617,6 +619,13 @@ function Form(args) {
                 return 0;
             }
         });
+    };
+
+    /**
+     * Focus on the newest field
+     */
+    this.focusNewField = function() {
+        document.getElementById(`label_${this.lastId - 1}`).focus();
     };
 }
 
