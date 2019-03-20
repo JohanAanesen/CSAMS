@@ -92,8 +92,8 @@ func UploadUserSubmission(userSub UserSubmission) error {
 	for _, answer := range userSub.Answers {
 
 		// Sql query
-		query := "INSERT INTO user_submissions (user_id, submission_id, assignment_id, type, answer, submitted) VALUES (?, ?, ?, ?, ?, ?)"
-		_, err := tx.Exec(query, userSub.UserID, userSub.SubmissionID, userSub.AssignmentID, answer.Type, answer.Value, date)
+		query := "INSERT INTO user_submissions (user_id, submission_id, assignment_id, type, answer, comment, submitted) VALUES (?, ?, ?, ?, ?, ?)"
+		_, err := tx.Exec(query, userSub.UserID, userSub.SubmissionID, userSub.AssignmentID, answer.Type, answer.Value, answer.Comment, date)
 
 		// Check if there was an error
 		if err != nil {
@@ -120,8 +120,8 @@ func UpdateUserSubmission(userSub UserSubmission) error {
 	for _, answer := range userSub.Answers {
 
 		// Sql query
-		query := "UPDATE `user_submissions` SET `answer` = ?, `submitted` = ? WHERE `id` = ?"
-		_, err := db.GetDB().Exec(query, answer.Value, now, answer.ID)
+		query := "UPDATE `user_submissions` SET `answer` = ?, `comment` = ? `submitted` = ? WHERE `id` = ?"
+		_, err := db.GetDB().Exec(query, answer.Value, answer.Comment.String, now, answer.ID)
 
 		// Check if there was an error
 		if err != nil {
