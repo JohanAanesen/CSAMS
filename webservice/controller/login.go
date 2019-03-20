@@ -137,7 +137,6 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 // ForgottenGET serves the forgotten password page to students
 func ForgottenGET(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
