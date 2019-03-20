@@ -230,7 +230,7 @@ func (repo *CourseRepository) RemoveUser(userID, courseID int) error {
 func (repo *CourseRepository) FetchAllForUser(userID int) ([]*model.Course, error) {
 	result := make([]*model.Course, 0)
 
-	query := "SELECT c.id, c.hash, c.coursecode, c.coursename, c.teacher, c.description, c.year, c.semester FROM course AS c INNER JOIN usercourse AS uc ON c.id = uc.courseid WHERE uc.userid = ? ORDER BY c.year DESC, course.semester ASC, c.coursename ASC"
+	query := "SELECT c.id, c.hash, c.coursecode, c.coursename, c.teacher, c.description, c.year, c.semester FROM course AS c INNER JOIN usercourse AS uc ON c.id = uc.courseid WHERE uc.userid = ? ORDER BY c.year DESC, c.semester ASC, c.coursename ASC"
 
 	rows, err := repo.db.Query(query, userID)
 	if err != nil {
