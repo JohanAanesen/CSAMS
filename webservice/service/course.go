@@ -35,9 +35,13 @@ func (s *CourseService) FetchAllForUser(userID int) ([]*model.Course, error) {
 
 // Exists func
 func (s *CourseService) Exists(hash string) *model.Course {
+	result := model.Course{
+		ID: -1,
+	}
+
 	courses, err := s.courseRepo.FetchAll()
 	if err != nil {
-		return nil
+		return &result
 	}
 
 	for _, course := range courses {
@@ -46,17 +50,17 @@ func (s *CourseService) Exists(hash string) *model.Course {
 		}
 	}
 
-	return nil
+	return &result
 }
 
 // UserInCourse checks if user is in given course
-func (s *CourseService) UserInCourse(userID, courseID int) error {
+func (s *CourseService) UserInCourse(userID, courseID int) bool {
 	err := s.courseRepo.UserInCourse(userID, courseID)
 	if err != nil {
-		return err
+		return true
 	}
 
-	return err
+	return false
 }
 
 // AddUser to a single course

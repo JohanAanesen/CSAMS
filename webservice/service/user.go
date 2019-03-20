@@ -64,7 +64,7 @@ func (s *UserService) Authenticate(email, password string) (model.User, error) {
 	// Loop through all users
 	for _, u := range users {
 		// Check if any if it's emails match
-		if u.EmailStudent == email || u.EmailPrivate == email {
+		if u.EmailStudent == email || u.EmailPrivate.String == email {
 			// Set user, and found to true
 			result = *u
 			found = true
