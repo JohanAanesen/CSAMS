@@ -32,7 +32,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	courseID, err := strconv.Atoi(id)
 	if err != nil {
 		//redirect to error pageinfo
-		log.Println(err.Error())
+		log.Println("string convert id", err)
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
@@ -60,7 +60,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 
 	assignments, err := assignmentRepo.GetAllFromCourse(courseID)
 	if err != nil {
-		log.Println(err)
+		log.Println("get all assignments from course", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -69,7 +69,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	//participant := courseRepo.UserExistsInCourse(currentUser.ID, courseID) || currentUser.ID == course.Teacher
 	err = courseService.UserInCourse(currentUser.ID, courseID)
 	if err != nil || currentUser.ID == course.Teacher {
-		log.Println("user not participant of class")
+		log.Println("user not participant of class", err)
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
