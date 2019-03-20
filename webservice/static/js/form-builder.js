@@ -898,9 +898,13 @@ function Field(args) {
                     value: 'Label',
                 },
                 {
+                    name: 'maxlength',
+                    value: '512',
+                },
+                {
                     name: 'required',
                     value: '',
-                }
+                },
             ],
             id: `label_${this.id}`,
             value: this.label,
@@ -917,7 +921,20 @@ function Field(args) {
             }
         });
 
+        let helperText = createElement({
+            type: 'small',
+            classList: ['form-text', 'text-muted'],
+            attributes: [
+                {
+                    name: 'for',
+                    value: `label_${this.id}`,
+                },
+            ],
+            innerHTML: 'Max length: 256 characters.',
+        });
+
         rightSide.appendChild(input);
+        rightSide.appendChild(helperText);
         formGroup.appendChild(rightSide);
 
         return formGroup;
