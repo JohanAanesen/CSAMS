@@ -423,26 +423,27 @@ function Form(args) {
 
         //noinspection JSUnresolvedVariable
         if (Sortable !== null) {
-            let fields = this.fields;
+            let self = this;
 
             //noinspection JSUnresolvedVariable,JSUnresolvedFunction
             Sortable.create(rightCol, {
                 handle: '.card-header',
-                onEnd: function(e) {
-                    let oldIndex = e.oldIndex;
-                    let newIndex = e.newIndex;
-
-                    let temp = fields[oldIndex].order;
-                    fields[oldIndex].order = fields[newIndex].order;
-                    fields[newIndex].order = temp;
-                },
+                onEnd: (e) => self.onEnd(e),
             });
-
-            this.fields = fields;
-            //this.sortFields(); // TODO (Svein): This cause some bug
         }
 
         return rightCol;
+    };
+
+    this.onEnd = function(e) {
+        let oldIndex = e.oldIndex;
+        let newIndex = e.newIndex;
+
+        let temp = this.fields[oldIndex].order;
+        this.fields[oldIndex].order = this.fields[newIndex].order;
+        this.fields[newIndex].order = temp;
+
+        this.sortFields();
     };
 
     /**
@@ -545,16 +546,18 @@ function Form(args) {
 
         for (let i = 0; i < this.fields.length; i++) {
             let f = this.fields[i];
+
             f.name = `${this.getPrefix()}_${f.id}`;
+
             fields.push(f.get());
         }
 
         return JSON.stringify({
-            id:         this.id,
-            prefix:     this.getPrefix(),
-            name:       this.name,
-            weighted:   this.weighted,
-            fields:     fields,
+            id: this.id,
+            prefix: this.getPrefix(),
+            name: this.name,
+            weighted: this.weighted,
+            fields: fields,
         });
     };
 
@@ -572,6 +575,9 @@ function Form(args) {
 
         for (let i = 0; i < json.fields.length; i++) {
             let field = json.fields[i];
+
+            field.id = i;
+            field.order = i;
 
             if (field.weight !== 0) {
                 this.weighted = true;
@@ -596,6 +602,8 @@ function Form(args) {
             this.fields.push(temp);
         }
 
+        this.lastId = json.fields.length;
+
         if (this.weighted) {
             this.fields.forEach(e => {
                 e.weighted = true;
@@ -611,13 +619,13 @@ function Form(args) {
      */
     this.sortFields = function() {
         this.fields.sort((a, b) => {
-            if (a.order > b.order) {
-                return 1;
-            } else if (a.order < b.order) {
+            if (a.order < b.order) {
                 return -1;
-            } else {
-                return 0;
+            } else if (a.order > b.order) {
+                return 1;
             }
+
+            return 0;
         });
     };
 
@@ -644,7 +652,7 @@ function Field(args) {
     this.order = (args.order !== undefined) ? args.order : 0;
     this.weighted = (args.weighted !== undefined) ? args.weighted : false;
     this.weight = (args.weight !== undefined) ? args.weight : 0;
-    this.choices = (args.choices !== undefined) ? args.choices : '';
+    this.choices = (args.choices !== undefined) ? args.choices : [];
     this.expanded = false;
     this.displayChoices = false;
 
@@ -1129,7 +1137,7 @@ function Field(args) {
                 },
             ],
             id: `choices_${this.id}`,
-            value: this.choices,
+            value: this.choices.join('\n'),
         });
 
         input.addEventListener('keyup', () => {
@@ -1231,9 +1239,7 @@ function Field(args) {
         // let totalWeight = localStorage.getItem('totalWeight');
         if (this.type === TYPES.RADIO || this.type === TYPES.MULTI_CHECKBOX) {
             document.getElementById(`choices_display_${this.id}`).classList.remove('sr-only');
-            let val = this.choices.split(',');
-            val = val.join('\n');
-            document.getElementById(`choices_${this.id}`).value = val;
+            document.getElementById(`choices_${this.id}`).value = this.choices.join('\n');
         }
     };
 
@@ -1256,11 +1262,18 @@ function Field(args) {
 
     /**
      * Return choices as a single string, with values separated by a comma
-     * @return {string}
+     * @return {Array}
      */
     this.getChoices = function() {
-        let val = this.choices.split('\n');
-        return val.join(',');
+        let val = document.getElementById(`choices_${this.id}`).value;
+
+        if (val === '') {
+            this.choices = [];
+        } else {
+            this.choices = val.split('\n');
+        }
+
+        return this.choices;
     };
 }
 
