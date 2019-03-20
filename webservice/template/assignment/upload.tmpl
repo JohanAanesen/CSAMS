@@ -73,7 +73,7 @@
                             {{if .Field.HasComment}}
                                 <div class="form-group form-check">
                                     <label for="{{.Field.Name}}_comment">Comment <em>({{.Field.Label}})</em></label>
-                                    <textarea name="{{.Field.Name}}_comment" id="{{.Field.Name}}_comment" rows="3" class="form-control">{{.Answer.Comment}}</textarea>
+                                    <textarea name="{{.Field.Name}}_comment" id="{{.Field.Name}}_comment" rows="3" class="form-control">{{.Answer.Comment.String}}</textarea>
                                 </div>
                             {{end}}
                         {{ end }}
