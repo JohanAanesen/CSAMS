@@ -54,8 +54,8 @@ CREATE TABLE `usercourse`
 CREATE TABLE `forms`
 (
   `id`      int(11)     NOT NULL AUTO_INCREMENT,
-  `prefix`  varchar(64) NOT NULL,
-  `name`    varchar(64) DEFAULT NULL,
+  `prefix`  varchar(256) NOT NULL,
+  `name`    varchar(256) DEFAULT NULL,
   `created` timestamp   NULL,
   PRIMARY KEY (`id`)
 );
@@ -65,13 +65,13 @@ CREATE TABLE `fields`
   `id`          int(11)     NOT NULL AUTO_INCREMENT,
   `form_id`     int(11)     NOT NULL,
   `type`        varchar(64) NOT NULL,
-  `name`        varchar(64) NOT NULL,
+  `name`        varchar(256) NOT NULL,
   `description` text        NOT NULL,
-  `label`       varchar(64) DEFAULT NULL,
+  `label`       varchar(256) DEFAULT NULL,
   `hasComment`  int(1)      NOT NULL,
   `priority`    int(11)     NOT NULL,
   `weight`      int(11)     DEFAULT NULL,
-  `choices`     varchar(64) DEFAULT NULL,
+  `choices`     varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`form_id`) REFERENCES forms (`id`)
 );
@@ -133,8 +133,8 @@ CREATE TABLE `user_reviews`
   `review_id`     int(11)     NOT NULL,
   `assignment_id` int(11)     NOT NULL,
   `type`          varchar(64) NOT NULL,
-  `name`          varchar(64) NOT NULL,
-  `label`         varchar(64) NOT NULL,
+  `name`          varchar(256) NOT NULL,
+  `label`         varchar(256) NOT NULL,
   `answer`        text        NOT NULL,
   `comment`       text                 DEFAULT NULL,
   `submitted`     datetime    NOT NULL,
