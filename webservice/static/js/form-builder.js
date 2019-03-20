@@ -1145,7 +1145,7 @@ function Field(args) {
                     value: `choices_${this.id}`,
                 },
             ],
-            innerHTML: 'Enter each choice on a new line.',
+            innerHTML: 'Enter each choice on a new line. (Known bug: \",\" (comma) may make some strange behaviour at this moment, try to avoid it in a sentence.)',
         });
 
         rightSide.appendChild(input);
