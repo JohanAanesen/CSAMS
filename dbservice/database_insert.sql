@@ -18,8 +18,15 @@ INSERT INTO `course` (`id`, `hash`, `coursecode`, `coursename`, `teacher`, `desc
 
 INSERT INTO `fields` (`id`, `form_id`, `type`, `name`, `description`, `label`, `hasComment`, `priority`, `weight`, `choices`) VALUES
 (3,	1,	'url',	'testing_svein_gitrepo_w_comment_url_2',	'',	'Git Repository',	1,	0,	0,	''),
-(5,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_4',	'',	'The app has a custom icon (not the default Android one).',	0,	0,	1,	''),
-(6,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_0',	'',	'The app MainActivity loads.',	0,	1,	1,	'');
+(38,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_29',	'',	'The app has a custom icon (not the default Android one).',	0,	0,	1,	''),
+(39,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_30',	'',	'The app MainActivity loads.',	0,	1,	1,	''),
+(40,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_31',	'',	'The app\'s MainActivity contains all required UI elements as per SPEC.',	0,	2,	1,	''),
+(41,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_32',	'Pressing Android\'s \"back button\" on the MainActivity always quits the app, AND, this behaviour is not hardcoded in the code, ie. the code does not handle the Android back button presses, but instead, relies on the default Android behaviour.',	'\"Back button\"',	0,	3,	1,	''),
+(42,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_33',	'',	'Pressing btn_transactions moves the user to TransactionsActivity.',	0,	4,	1,	''),
+(43,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_34',	'',	'The default founding transaction from Angel is done correctly and visible in the TransactionsActivity. The user balance in lbl_balance matches the funding transaction.',	0,	5,	1,	''),
+(44,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_35',	'',	'TransactionsActivity shows new payments correctly.',	0,	6,	1,	''),
+(45,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_36',	'',	'TransactionsActivity moves the user back to MainActivity on \"back botton\" press.',	0,	7,	1,	''),
+(46,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_37',	'',	'Pressing btn_transfer moves the user to TransferActivity.',	0,	8,	1,	'');
 
 INSERT INTO `forms` (`id`, `prefix`, `name`, `created`) VALUES
 (1,	'testing_svein_gitrepo_w_comment',	'Testing (Svein) GitRepo w/Comment',	'2019-03-19 09:27:55'),
@@ -51,4 +58,4 @@ INSERT INTO `users` (`id`, `name`, `email_student`, `teacher`, `email_private`, 
 
 
 
--- 2019-03-20 09:28:45
+-- 2019-03-20 10:42:23
