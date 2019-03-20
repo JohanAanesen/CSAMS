@@ -138,6 +138,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
+	// Create view
 	v := view.New(r)
 	v.Name = "assignment/index"
 
@@ -244,7 +245,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get form and log possible error
-	formRepo := model.FormRepository{}
+	formRepo := model.FormRepositoryOld{}
 	form, err := formRepo.GetSubmissionFormFromAssignmentID(assignment.ID)
 	if err != nil {
 		log.Println("get submission form from assignment id", err.Error())
@@ -294,7 +295,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
-	// Set values
+	// Create view
 	v := view.New(r)
 	v.Name = "assignment/upload"
 
@@ -353,7 +354,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get form and log possible error
-	formRepo := model.FormRepository{}
+	formRepo := model.FormRepositoryOld{}
 	form, err := formRepo.GetSubmissionFormFromAssignmentID(assignment.ID)
 	if err != nil {
 		log.Println(err.Error())
@@ -487,7 +488,7 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	// Initialize repositories
 	assignmentRepo := &model.AssignmentRepository{}
 	courseRepo := &model.CourseRepository{}
-	formRepo := model.FormRepository{}
+	formRepo := model.FormRepositoryOld{}
 	reviewRepo := model.ReviewRepository{}
 
 	currentUser := session.GetUserFromSession(r)
@@ -651,7 +652,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get form and log possible error
-	formRepo := model.FormRepository{}
+	formRepo := model.FormRepositoryOld{}
 	form, err := formRepo.GetReviewFormFromAssignmentID(assignmentID)
 	if err != nil {
 		log.Println("get review form from assignment id", err.Error())
