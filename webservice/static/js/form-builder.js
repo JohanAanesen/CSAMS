@@ -545,7 +545,7 @@ function Form(args) {
 
         for (let i = 0; i < this.fields.length; i++) {
             let f = this.fields[i];
-            f.name = `${this.getPrefix()}_${f.type}_${f.id}`;
+            f.name = `${this.getPrefix()}_${f.id}`;
             fields.push(f.get());
         }
 
