@@ -175,6 +175,10 @@ function Form(args) {
             classList: ['col'],
         });
 
+        let alertContainer = createElement({
+            id: 'alert_container',
+        });
+
         let title = createElement({
             type: 'h1',
             classList: ['display-4'],
@@ -189,6 +193,7 @@ function Form(args) {
 
         let hr = createElement({type:'hr'});
 
+        col.appendChild(alertContainer);
         col.appendChild(title);
         col.appendChild(description);
         col.appendChild(hr);
@@ -380,6 +385,21 @@ function Form(args) {
                             if (response.status === 200) {
                                 return response.json();
                             } else {
+                                let dom = document.getElementById('alert_container');
+                                dom.innerHTML = '';
+                                let alert = createElement({
+                                    classList: ['alert', 'alert-danger'],
+                                    attributes: [
+                                        {
+                                            name: 'role',
+                                            value: 'alert'
+                                        },
+                                    ],
+                                    innerHTML: `<strong>Error</strong> Could not delete this form.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>`,
+                                });
+
+                                dom.appendChild(alert);
+
                                 return {};
                             }
                         })
@@ -389,7 +409,7 @@ function Form(args) {
                             }
                         })
                         .catch((error) => {
-                            console.error(error);
+                            window.alert('Error: ' + error);
                         });
                 }
             });
