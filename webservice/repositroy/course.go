@@ -146,7 +146,7 @@ func (repo *CourseRepository) UserInCourse(userID, courseID int) error {
 		}
 
 		if temp != 0 {
-			 return nil
+			return nil
 		}
 	}
 
