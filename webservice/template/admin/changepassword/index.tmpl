@@ -3,7 +3,7 @@
 {{ define "content" }}
     <div class="alert alert-info"><strong>Note:</strong> This is a temporary solution for the alpha version!
     </div>
-    <h1 class="display-4">Change a students password</h1>
+    <h1 class="display-4">Manage Students</h1> <!-- TODO brede : refactor names -->
 
     <div class="form-group col-lg-8 col-md-10 col-sm-12">
         <form action="/admin/changepass/list" method="post">
@@ -30,7 +30,8 @@
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
-                <th scope="col">Change Passwords</th>
+                <th scope="col">Change Password</th>
+                <th scope="col">Remove from course</th>
             </tr>
             </thead>
             <tbody>
@@ -44,6 +45,12 @@
                             <button class="btn btn-outline-success btn-small" onclick="changePass({{.Name}}, {{.ID}})"
                                     style="font-size:12px">
                                 Change Password
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-outline-danger btn-small" onclick="removeUser({{.Name}}, {{.ID}})"
+                                    style="font-size:12px">
+                                Remove from course
                             </button>
                         </td>
                     </tr>
@@ -75,6 +82,26 @@
                 window.location.href = window.location.origin + "/admin/changepass?vars=" + ans + '§' + id;
             } else {
                 window.alert("Not changing the password!");
+                window.location.href = window.location.origin + "/admin/changepass";
+            }
+        }
+
+        /**
+         * removeUser
+         *
+         * Ask if teacher wants to remove user from course and then removes the user if yes
+         *
+         * @var studentName
+         * @var id
+         *
+         * */
+        function removeUser(studentName, id) {
+            let ans = confirm("Warning! You are about to remove " + studentName + " from course with id: " + {{ .SelectedCourse}} +"\nConfirm?");
+            if (ans) {
+                window.alert("Removing " + studentName + " from course!");
+                window.location.href = window.location.origin + "/admin/changepass?removeVars=" + id + '§' + {{ .SelectedCourse }};
+            } else {
+                window.alert("Not removing " + studentName + " from course!");
                 window.location.href = window.location.origin + "/admin/changepass";
             }
         }

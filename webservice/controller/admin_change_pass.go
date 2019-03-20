@@ -18,6 +18,40 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 	// Get form value
 	vars := r.FormValue("vars")
 
+	// Remove user from course
+	userid := r.FormValue("removeVars")
+	if userid != "" {
+		array := strings.Split(userid, "§")
+		if len(array) != 2 {
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			log.Println("error: not enough arguments in url!")
+			return
+		}
+
+		// Get userid and convert to int
+		uid, err := strconv.Atoi(array[0])
+		if err != nil {
+			log.Println("string convert atoi array[1]", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		// Get courseid and convert to int
+		cid, err := strconv.Atoi(array[1])
+		if err != nil {
+			log.Println("string convert atoi array[1]", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		err = removeUserFromCourse(uid, cid)
+		if err != nil {
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			log.Println(err.Error())
+			return
+		}
+	}
+
 	// Only change password if vars is not empty
 	if vars != "" {
 		array := strings.Split(vars, "§")
@@ -67,6 +101,19 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Courses"] = courses
 
 	v.Render(w)
+}
+
+// removeUserFromCourse removes user from course
+func removeUserFromCourse(userID int, courseID int) error {
+
+	// Try to remove user from course
+	courseRepo := &model.CourseRepository{}
+	err := courseRepo.RemoveUser(courseID, userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // AdminGetUsersPOST serves the same page as above, but with the list of all students in a course
