@@ -91,7 +91,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	password = p.Sanitize(password)
 
 	userData := model.User{
-		Name: name,
+		Name:         name,
 		EmailStudent: email,
 	}
 

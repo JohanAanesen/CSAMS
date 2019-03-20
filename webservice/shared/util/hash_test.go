@@ -17,11 +17,11 @@ func TestHash(t *testing.T) {
 		},
 		{
 			input: "123",
-			hash: "$2y$14$06c1yJiqV4TUL.DaR4inUuGq8pI2LxGuRTL4hfGwZalJz1gTbNuSK",
+			hash:  "$2y$14$06c1yJiqV4TUL.DaR4inUuGq8pI2LxGuRTL4hfGwZalJz1gTbNuSK",
 		},
 		{
 			input: "password",
-			hash: "$2y$14$ojBn3OiufwDYwwMyqf3vreGOB2ed3/RHG5.GlHnE/7KNRwGerYUtW",
+			hash:  "$2y$14$ojBn3OiufwDYwwMyqf3vreGOB2ed3/RHG5.GlHnE/7KNRwGerYUtW",
 		},
 	}
 
