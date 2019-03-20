@@ -61,7 +61,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Users Email
 	// If secondary-email input isn't blank it has changed
-	if secondaryEmail != "" && secondaryEmail != user.EmailPrivate {
+	if secondaryEmail != "" && secondaryEmail != user.EmailPrivate.String {
 
 		err := model.UpdateUserEmail(user.ID, secondaryEmail)
 		if err != nil {
@@ -71,10 +71,10 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Save information to log struct
-		logData := model.Log{UserID: user.ID, Activity: model.ChangeEmail, OldValue: user.EmailPrivate, NewValue: secondaryEmail}
+		logData := model.Log{UserID: user.ID, Activity: model.ChangeEmail, OldValue: user.EmailPrivate.String, NewValue: secondaryEmail}
 
 		//update session
-		user.EmailPrivate = secondaryEmail
+		user.EmailPrivate.String = secondaryEmail
 		session.SaveUserToSession(user, w, r)
 
 		// Log email change in the database and give error if something went wrong
