@@ -7,6 +7,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
+	"github.com/gorilla/mux"
 	"html/template"
 	"log"
 	"net/http"
@@ -20,20 +21,11 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 
 	var course *model.Course
 
-	//check if request has an classID
-	id := r.FormValue("id")
-	if id == "" {
-		//redirect to error pageinfo
-		ErrorHandler(w, r, http.StatusBadRequest)
-		return
-	}
-
-	//check that id is a number
-	courseID, err := strconv.Atoi(id)
+	vars := mux.Vars(r)
+	courseID, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		//redirect to error pageinfo
-		log.Println("string convert id", err)
-		ErrorHandler(w, r, http.StatusBadRequest)
+		log.Printf("id: %v", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
@@ -65,10 +57,9 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//check if user is an participant of said class or a teacher
-	//participant := courseRepo.UserExistsInCourse(currentUser.ID, courseID) || currentUser.ID == course.Teacher
+	// Check if user is an participant of said class or a teacher
 	err = courseService.UserInCourse(currentUser.ID, courseID)
-	if err != nil || currentUser.ID == course.Teacher {
+	if err != nil || !currentUser.Teacher {
 		log.Println("user not participant of class", err)
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return

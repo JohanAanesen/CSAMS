@@ -35,7 +35,7 @@ func routes() http.Handler {
 	router.HandleFunc("/", controller.JoinCoursePOST).Methods("POST")
 
 	// Course-page Handlers
-	router.HandleFunc("/course", controller.CourseGET).Methods("GET")
+	router.HandleFunc("/course/{id:[0-9]+}", controller.CourseGET).Methods("GET")
 	router.HandleFunc("/course/list", controller.CourseListGET).Methods("GET")
 
 	// Assignment-page Handlers
