@@ -45,6 +45,7 @@ CREATE TABLE `course`
 
 CREATE TABLE `usercourse`
 (
+  `id`        int(11)  NOT NULL AUTO_INCREMENT,
   `userid`   int(11) NOT NULL,
   `courseid` int(11) NOT NULL,
   FOREIGN KEY (`userid`) REFERENCES users (`id`),
@@ -176,6 +177,7 @@ CREATE TABLE `schedule_tasks`
 -- not attaching any foreign keys to log because we always want it to log something even if some of the data is missing
 CREATE TABLE `logs`
 (
+  `id`        int(11)  NOT NULL AUTO_INCREMENT,
   `userid`       int(11)                            NOT NULL,
   `timestamp`    datetime                           NOT NULL,
   `activity`     varchar(32) COLLATE utf8_danish_ci NOT NULL,
