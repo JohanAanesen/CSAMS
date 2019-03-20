@@ -742,7 +742,7 @@ func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) 
 	user := model.GetUser(userID)
 
 	// Get form and log possible error
-	formRepo := model.FormRepository{}
+	formRepo := model.FormRepositoryOld{}
 	form, err := formRepo.GetSubmissionFormFromAssignmentID(assignmentID)
 	if err != nil {
 		log.Println("get submission form from assignment id", err.Error())
