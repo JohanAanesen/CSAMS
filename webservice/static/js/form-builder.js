@@ -409,9 +409,13 @@ function Form(args) {
      */
     this.renderRightColumn = function() {
         let rightCol = createElement({
-            classList: ['col-md-9'],
+            classList: ['col-md-9', 'overflow-auto'],
             id: 'sort_me',
         });
+
+        if (window.innerWidth > 1000) {
+            rightCol.style.maxHeight = (window.innerHeight - 200) + 'px';
+        }
 
         this.fields.forEach((element, index) => {
             rightCol.appendChild(element.render(index));
