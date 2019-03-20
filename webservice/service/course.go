@@ -56,11 +56,7 @@ func (s *CourseService) Exists(hash string) *model.Course {
 // UserInCourse checks if user is in given course
 func (s *CourseService) UserInCourse(userID, courseID int) bool {
 	err := s.courseRepo.UserInCourse(userID, courseID)
-	if err != nil {
-		return true
-	}
-
-	return false
+	return err != nil
 }
 
 // AddUser to a single course

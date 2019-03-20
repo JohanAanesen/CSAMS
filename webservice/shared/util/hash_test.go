@@ -9,7 +9,6 @@ func TestHash(t *testing.T) {
 	tests := []struct {
 		input string
 		hash  string
-		match bool
 	}{
 		{
 			input: "abc",

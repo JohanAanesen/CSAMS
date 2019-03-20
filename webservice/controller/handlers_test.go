@@ -1,6 +1,7 @@
 package controller_test
 
 import (
+	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/controller"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/config"
@@ -405,7 +406,10 @@ func TestUserUpdateRequest(t *testing.T) {
 		ID:            1,
 		Name:          "Test User",
 		EmailStudent:  "hei@gmail.com",
-		EmailPrivate:  "test@yahoo.com",
+		EmailPrivate:  sql.NullString{
+			String: "test@yahoo.com",
+			Valid: true,
+		},
 		Authenticated: true,
 		Teacher:       true,
 	}
