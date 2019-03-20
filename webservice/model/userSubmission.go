@@ -20,7 +20,7 @@ type UserSubmission struct {
 func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
 	// Create an empty answers array
 	var result []Answer
-	// Create query string
+	// Select query string
 	query := "SELECT id, type, answer, comment FROM user_submissions WHERE user_id =? AND assignment_id=?;"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query, userID, assignmentID)
@@ -50,7 +50,7 @@ func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
 func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
 	result := time.Time{}
 
-	// Create query string
+	// Select query string
 	query := "SELECT DISTINCT submitted FROM user_submissions WHERE user_id=? AND assignment_id=?;"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query, userID, assignmentID)
