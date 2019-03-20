@@ -64,6 +64,11 @@ func (s *CourseService) AddUser(userID, courseID int) error {
 	return s.courseRepo.InsertUser(userID, courseID)
 }
 
+// RemoveUser from a course
+func (s *CourseService) RemoveUser(userID, courseID int) error {
+	return s.courseRepo.RemoveUser(userID, courseID)
+}
+
 // Insert course into the database
 func (s *CourseService) Insert(course model.Course) (int, error) {
 	return s.courseRepo.Insert(course)

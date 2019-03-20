@@ -201,6 +201,30 @@ func (repo *CourseRepository) Delete(id int) error {
 	return err
 }
 
+// RemoveUser func
+func (repo *CourseRepository) RemoveUser(userID, courseID int) error {
+	query := "DELETE FROM usercourse WHERE userid = ? AND courseid = ?"
+
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, userID, courseID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return err
+}
+
 // FetchAllForUser func
 func (repo *CourseRepository) FetchAllForUser(userID int) ([]*model.Course, error) {
 	result := make([]*model.Course, 0)
