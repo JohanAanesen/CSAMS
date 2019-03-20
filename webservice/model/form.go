@@ -17,19 +17,6 @@ type Form struct {
 	Fields  []Field   `json:"fields"`
 }
 
-// Field struct
-type Field struct {
-	ID          int    `json:"id" db:"id"`
-	Type        string `json:"type" db:"type"`
-	Name        string `json:"name" db:"name"`
-	Description string `json:"description" db:"description"`
-	Label       string `json:"label" db:"label"`
-	HasComment  bool   `json:"hasComment" db:"hasComment"`
-	Order       int    `json:"order" db:"priority"`
-	Weight      int    `json:"weight" db:"weight"`
-	Choices     string `json:"choices,omitempty" db:"choices"`
-}
-
 // Answer struct used for storing answers from users in forms
 type Answer struct {
 	ID      int
@@ -38,11 +25,11 @@ type Answer struct {
 	Comment sql.NullString
 }
 
-// FormRepository struct
-type FormRepository struct{}
+// FormRepositoryOld struct
+type FormRepositoryOld struct{}
 
 // Insert form to database
-func (repo *FormRepository) Insert(form Form) (int, error) {
+func (repo *FormRepositoryOld) Insert(form Form) (int, error) {
 
 	tx, err := db.GetDB().Begin() //start transaction
 	if err != nil {
@@ -80,10 +67,10 @@ func (repo *FormRepository) Insert(form Form) (int, error) {
 }
 
 // Get a single form based on the Primary Key, 'id'
-func (repo *FormRepository) Get(id int) (Form, error) {
+func (repo *FormRepositoryOld) Get(id int) (Form, error) {
 	var result = Form{}
 
-	// Create query-string
+	// Select query-string
 	query := "SELECT id, prefix, name, created FROM forms WHERE id = ?"
 	// Perform query
 	rows, err := db.GetDB().Query(query, id)
@@ -129,10 +116,10 @@ func (repo *FormRepository) Get(id int) (Form, error) {
 }
 
 // GetSubmissionFormFromAssignmentID get form from the assignment id key
-func (repo *FormRepository) GetSubmissionFormFromAssignmentID(assignmentID int) (Form, error) {
+func (repo *FormRepositoryOld) GetSubmissionFormFromAssignmentID(assignmentID int) (Form, error) {
 	// Declare an empty Form
 	result := Form{}
-	// Create query-string
+	// Select query-string
 	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices, " +
 		"f.hasComment FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM submissions AS s " +
 		"WHERE id IN (SELECT a.submission_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"
@@ -166,11 +153,11 @@ func (repo *FormRepository) GetSubmissionFormFromAssignmentID(assignmentID int) 
 }
 
 // GetReviewFormFromAssignmentID get review-form from the assignment id key
-func (repo *FormRepository) GetReviewFormFromAssignmentID(assignmentID int) (Form, error) {
+func (repo *FormRepositoryOld) GetReviewFormFromAssignmentID(assignmentID int) (Form, error) {
 	// Declare an empty Form
 	result := Form{}
 
-	// Create query-string
+	// Select query-string
 	query := "SELECT f.form_id, f.id, f.type, f.name, f.label, f.description, f.priority, f.weight, f.choices, f.hasComment " +
 		"FROM fields AS f WHERE f.form_id IN (SELECT s.form_id FROM reviews AS s WHERE id IN " +
 		"(SELECT a.review_id FROM assignments AS a WHERE id=?)) ORDER BY f.priority"

@@ -35,8 +35,8 @@ type ReviewRepository struct{}
 
 // Insert a form into the database
 func (repo *ReviewRepository) Insert(form Form) error {
-	// Declare FormRepository
-	var formRepo = FormRepository{}
+	// Declare FormRepositoryOld
+	var formRepo = FormRepositoryOld{}
 
 	// Insert form to database, and get last inserted Id from it
 	formID, err := formRepo.Insert(form)
@@ -84,7 +84,7 @@ func (repo *ReviewRepository) Insert(form Form) error {
 func (repo *ReviewRepository) GetAll() ([]Review, error) {
 	// Declare return slice
 	var result []Review
-	// Create query-string
+	// Select query-string
 	query := "SELECT id, form_id FROM reviews"
 	// Perform query
 	rows, err := db.GetDB().Query(query)
@@ -110,8 +110,8 @@ func (repo *ReviewRepository) GetAll() ([]Review, error) {
 		result = append(result, review)
 	}
 
-	// Declare a FormRepository
-	var formRepo = FormRepository{}
+	// Declare a FormRepositoryOld
+	var formRepo = FormRepositoryOld{}
 	// Loop through all submissions
 	for index, review := range result {
 		// Get form from database
