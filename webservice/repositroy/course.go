@@ -129,6 +129,7 @@ func (repo *CourseRepository) InsertUser(userID, courseID int) error {
 	return err
 }
 
+// UserInCourse func
 func (repo *CourseRepository) UserInCourse(userID, courseID int) error {
 	query := "SELECT courseid FROM usercourse WHERE userid = ? AND courseid = ?"
 
