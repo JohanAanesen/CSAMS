@@ -99,6 +99,12 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 
 	// Filter out the reviews that the current user already has done
 	reviewUsers, err := services.Review.FetchReviewUsers(currentUser.ID, assignment.ID)
+	if err != nil {
+		log.Println("services, review, fetch review users", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	filteredSubmissionReviews := make([]model.User, 0)
 	for _, user := range reviewUsers {
 		check, err := services.ReviewAnswer.HasBeenReviewed(user.ID, currentUser.ID, assignmentID)
