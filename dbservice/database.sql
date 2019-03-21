@@ -48,6 +48,7 @@ CREATE TABLE `usercourse`
   `id`        int(11)  NOT NULL AUTO_INCREMENT,
   `userid`   int(11) NOT NULL,
   `courseid` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
   FOREIGN KEY (`userid`) REFERENCES users (`id`),
   FOREIGN KEY (`courseid`) REFERENCES course (`id`)
 );
@@ -185,5 +186,6 @@ CREATE TABLE `logs`
   `courseid`     int(11) DEFAULT NULL,
   `submissionid` int(11) DEFAULT NULL,
   `oldvalue`     text    DEFAULT NULL,
-  `newValue`     text    DEFAULT NULL
+  `newValue`     text    DEFAULT NULL,
+  PRIMARY KEY (`id`)
 );
