@@ -3,6 +3,8 @@ package controller
 import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/scheduler"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
@@ -19,15 +21,21 @@ import (
 
 // AdminAssignmentGET handles GET-request at /admin/assignment
 func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
+	currentUser := session.GetUserFromSession(r)
+
+	// Services
+	courseService := service.NewCourseService(db.GetDB())
+	assignmentService := service.NewAssignmentService(db.GetDB())
 
 	// repo's
-	courseRepo := &model.CourseRepository{}
-	assignmentRepo := model.AssignmentRepository{}
+	//courseRepo := &model.CourseRepository{}
+	//assignmentRepo := model.AssignmentRepository{}
 
 	//get courses to user/teacher
-	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
+	courses, err := courseService.FetchAllForUserOrdered(currentUser.ID)
+	//courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 	if err != nil {
-		log.Println(err)
+		log.Println("course service fetch all for user ordered", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -41,15 +49,16 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	var activeAssignments []ActiveAssignment
 
 	for _, course := range courses { //iterate all courses
-		assignments, err := assignmentRepo.GetAllFromCourse(course.ID) //get assignments from course
+		assignments, err := assignmentService.FetchFromCourse(course.ID)
+		//assignments, err := assignmentRepo.GetAllFromCourse(course.ID) //get assignments from course
 		if err != nil {
-			log.Println(err)
+			log.Println("fetch from course", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
 
 		for _, assignment := range assignments { //go through all it's assignments again
-			activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: assignment, CourseCode: course.Code})
+			activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: *assignment, CourseCode: course.Code})
 		}
 
 	}
