@@ -816,8 +816,8 @@ func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) 
 		} else if item.Type == "radio" {
 			for k := range item.Choices {
 				ans, _ := strconv.Atoi(item.Answer)
-				if ans == k {
-					K := float32(k)
+				if ans == (k + 1) {
+					K := float32(k + 1)
 					L := float32(len(item.Choices))
 					V := float32(item.Weight) * (K / L)
 					weightScore += V
