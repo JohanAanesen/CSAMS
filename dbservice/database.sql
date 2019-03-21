@@ -154,6 +154,8 @@ CREATE TABLE `user_submissions`
   `assignment_id` int(11)     NOT NULL,
   `submission_id` int(11)     NOT NULL,
   `type`          varchar(64) NOT NULL,
+  `name`          text NOT NULL,
+  `label`         text NOT NULL,
   `answer`        text  NULL,
   `comment`       text                 DEFAULT NULL,
   `submitted`     timestamp   NOT NULL,
