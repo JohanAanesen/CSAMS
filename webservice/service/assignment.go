@@ -46,6 +46,26 @@ func (s *AssignmentService) FetchFromCourse(courseID int) ([]*model.Assignment, 
 	return result, err
 }
 
+// HasReview func
+func (s *AssignmentService) HasReview(assignmentID int) (bool, error) {
+	assignment, err := s.assignmentRepo.Fetch(assignmentID)
+	if err != nil {
+		return false, err
+	}
+
+	return assignment.ReviewID.Valid, err
+}
+
+// HasAutoValidation func
+func (s *AssignmentService) HasAutoValidation(assignmentID int) (bool, error) {
+	assignment, err := s.assignmentRepo.Fetch(assignmentID)
+	if err != nil {
+		return false, err
+	}
+
+	return assignment.ValidationID.Valid, err
+}
+
 // Insert func
 func (s *AssignmentService) Insert(assignment model.Assignment) (int, error) {
 	return s.assignmentRepo.Insert(assignment)
