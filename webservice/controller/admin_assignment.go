@@ -50,7 +50,6 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 	for _, course := range courses { //iterate all courses
 		assignments, err := assignmentService.FetchFromCourse(course.ID)
-		//assignments, err := assignmentRepo.GetAllFromCourse(course.ID) //get assignments from course
 		if err != nil {
 			log.Println("fetch from course", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
@@ -120,6 +119,7 @@ func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminAssignmentCreatePOST handles POST-request from /admin/assigment/create
 func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
+	currentUser := session.GetUserFromSession(r)
 
 	// Declare empty slice of strings
 	var errorMessages []string
@@ -151,21 +151,26 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		errorMessages = append(errorMessages, "Error: Deadline cannot be before Publish.")
 	}
 
+	// Services
+	courseService := service.NewCourseService(db.GetDB())
+	assignmentService := service.NewAssignmentService(db.GetDB())
+
 	// Check if there are any error messages
 	if len(errorMessages) != 0 {
 		// TODO (Svein): Keep data from the previous submit
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
-
 		//course repo
-		courseRepo := &model.CourseRepository{}
+		//courseRepo := &model.CourseRepository{}
 
-		courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
+		courses, err := courseService.FetchAllForUserOrdered(currentUser.ID)
+		//courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 		if err != nil {
+			log.Println("course service, fetch all for user ordered", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
-			log.Println(err)
 			return
 		}
+
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
 
 		v := view.New(r)
 		v.Name = "admin/assignment/create"
@@ -179,7 +184,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	assignmentRepository := model.AssignmentRepository{}
+	//assignmentRepository := model.AssignmentRepository{}
 	// Get form values
 	var val int
 
@@ -245,19 +250,20 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insert data to database
-	assID, err := assignmentRepository.Insert(assignment)
+	lastID, err := assignmentService.Insert(assignment)
+	//assID, err := assignmentRepository.Insert(assignment)
 	if err != nil {
-		log.Println(err)
+		log.Println("assignment service, insert", err)
 		return
 	}
 
 	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute  TODO time-norwegian
-	if assID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInCorrectTimeZone()) {
+	if lastID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInCorrectTimeZone()) {
 
 		sched := scheduler.Scheduler{}
 
 		err := sched.SchedulePeerReview(int(assignment.SubmissionID.Int64),
-			assID, //assignment ID
+			lastID, //assignment ID
 			int(assignment.Reviewers.Int64),
 			assignment.Deadline)
 		if err != nil {
