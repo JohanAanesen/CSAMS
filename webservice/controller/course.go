@@ -57,9 +57,17 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if user is an participant of said class or a teacher
-	inCourse := courseService.UserInCourse(currentUser.ID, courseID)
-	if !inCourse || !currentUser.Teacher {
-		log.Println("user not participant of class", err)
+	inCourse, err := courseService.UserInCourse(currentUser.ID, courseID)
+	if err != nil {
+		log.Println("course service, user in course", err)
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
+
+	fmt.Println("incourse", inCourse)
+
+	if !inCourse || (!inCourse && !currentUser.Teacher) {
+		log.Println("user not participant of class")
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}

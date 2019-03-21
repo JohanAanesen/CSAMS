@@ -43,7 +43,12 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 	currentUser := session.GetUserFromSession(r)
 	if currentUser.Authenticated { //already logged in, redirect to homepage
 		// If hash was valid, add user isn't in the course, then add user to course
-		userInCourse := courseService.UserInCourse(currentUser.ID, course.ID)
+		userInCourse, err := courseService.UserInCourse(currentUser.ID, course.ID)
+		if err != nil {
+			log.Println("course service, user in course", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 		// Check if user is not in course nad that hash is not blank
 		if !userInCourse && hash != "" {
 			// Add user to course
@@ -120,7 +125,12 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 	// Add new user to course, if he's not in the course
 	if hash != "" {
 		course := courseService.Exists(hash)
-		userInCourse := courseService.UserInCourse(user.ID, course.ID)
+		userInCourse, err := courseService.UserInCourse(currentUser.ID, course.ID)
+		if err != nil {
+			log.Println("course service, user in course", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 		if course.ID != -1 && !userInCourse {
 			err := courseService.AddUser(user.ID, course.ID)
 			if err != nil {

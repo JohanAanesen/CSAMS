@@ -159,12 +159,12 @@ func (repo *CourseRepository) InsertUser(userID, courseID int) error {
 }
 
 // UserInCourse func
-func (repo *CourseRepository) UserInCourse(userID, courseID int) error {
+func (repo *CourseRepository) UserInCourse(userID, courseID int) (bool, error) {
 	query := "SELECT courseid FROM usercourse WHERE userid = ? AND courseid = ?"
 
 	rows, err := repo.db.Query(query, userID, courseID)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	defer rows.Close()
@@ -174,15 +174,13 @@ func (repo *CourseRepository) UserInCourse(userID, courseID int) error {
 
 		err = rows.Scan(&temp)
 		if err != nil {
-			return err
+			return false, err
 		}
 
-		if temp != 0 {
-			return nil
-		}
+		return true, nil
 	}
 
-	return err
+	return false, err
 }
 
 // Update func
