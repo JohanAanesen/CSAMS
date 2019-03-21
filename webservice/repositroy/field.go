@@ -83,6 +83,39 @@ func (repo *FieldRepository) FetchAll() ([]*model.Field, error) {
 	return result, err
 }
 
+// FetchAllFromForm func
+func (repo *FieldRepository) FetchAllFromForm(formID int) ([]*model.Field, error) {
+	result := make([]*model.Field, 0)
+	query := "SELECT id, form_id, type, name, label, description, hasComment, priority, weight, choices FROM fields WHERE form_id = ? ORDER BY priority"
+
+	rows, err := repo.db.Query(query, formID)
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var temp = model.Field{}
+		var hasComment int
+		var choices string
+
+		err = rows.Scan(&temp.ID, &temp.FormID, &temp.Type, &temp.Name,
+			&temp.Label, &temp.Description, &hasComment,
+			&temp.Order, &temp.Weight, &choices)
+		if err != nil {
+			return result, err
+		}
+
+		temp.HasComment = hasComment == 1
+		temp.Choices = strings.Split(choices, ",")
+
+		result = append(result, &temp)
+	}
+
+	return result, err
+}
+
 // Insert func
 func (repo *FieldRepository) Insert(field *model.Field) (int, error) {
 	var id int64
