@@ -75,30 +75,34 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminAssignmentCreateGET handles GET-request from /admin/assigment/create
 func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
-	var subRepo = model.SubmissionRepository{}
-	submissions, err := subRepo.GetAll()
+	// Services
+	submissionService := service.NewSubmissionAnswerService(db.GetDB())
+	reviewService := service.NewReviewService(db.GetDB())
+	courseService := service.NewCourseService(db.GetDB())
 
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
+	// Fetch all submission
+	submissions, err := submissionService.FetchAll()
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	reviewRepo := model.ReviewRepository{}
-	reviews, err := reviewRepo.GetAll()
-
+	// Fetch all reviews
+	reviews, err := reviewService.FetchAll()
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	//course repo
-	courseRepo := model.CourseRepository{}
-	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
-
+	// Fetch courses, ordered
+	courses, err := courseService.FetchAllForUserOrdered(currentUser.ID)
 	if err != nil {
-		log.Println(err)
+		log.Println("course service, fetch all for user ordered", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -158,11 +162,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	// Check if there are any error messages
 	if len(errorMessages) != 0 {
 		// TODO (Svein): Keep data from the previous submit
-		//course repo
-		//courseRepo := &model.CourseRepository{}
-
 		courses, err := courseService.FetchAllForUserOrdered(currentUser.ID)
-		//courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
 		if err != nil {
 			log.Println("course service, fetch all for user ordered", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
@@ -184,7 +184,6 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//assignmentRepository := model.AssignmentRepository{}
 	// Get form values
 	var val int
 
@@ -251,7 +250,6 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Insert data to database
 	lastID, err := assignmentService.Insert(assignment)
-	//assID, err := assignmentRepository.Insert(assignment)
 	if err != nil {
 		log.Println("assignment service, insert", err)
 		return
@@ -286,13 +284,12 @@ func AdminSingleAssignmentGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
+	// Services
+	assignmentService := service.NewAssignmentService(db.GetDB())
 
-	assignmentRepo := &model.AssignmentRepository{}
-
-	assignment, err := assignmentRepo.GetSingle(int(id))
+	assignment, err := assignmentService.Fetch(id)
 	if err != nil {
+		log.Println("assignment service, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -300,11 +297,14 @@ func AdminSingleAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	descriptionMD := []byte(assignment.Description)
 	description := github_flavored_markdown.Markdown(descriptionMD)
 
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
 	v := view.New(r)
 	v.Name = "admin/assignment/single"
 
 	v.Vars["Assignment"] = assignment
-	v.Vars["Description"] = template.HTML(description)
+	v.Vars["Description"] = template.HTML(description) // TODO (Svein): User template function
 
 	v.Render(w)
 }
@@ -319,50 +319,65 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
 
-	assignmentRepo := &model.AssignmentRepository{}
-	submissionRepo := &model.SubmissionRepository{}
-	reviewRepo := &model.ReviewRepository{}
-	courseRepo := &model.CourseRepository{}
+	// Services
+	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
+	assignmentService := service.NewAssignmentService(db.GetDB())
+	submissionService := service.NewSubmissionService(db.GetDB())
+	courseService := service.NewCourseService(db.GetDB())
+	reviewService := service.NewReviewService(db.GetDB())
 
-	submissions, err := submissionRepo.GetAll()
+	//assignmentRepo := &model.AssignmentRepository{}
+	//submissionRepo := &model.SubmissionRepository{}
+	//reviewRepo := &model.ReviewRepository{}
+	//courseRepo := &model.CourseRepository{}
+
+	//submissions, err := submissionRepo.GetAll()
+	submissions, err := submissionService.FetchAll()
 	if err != nil {
-		log.Println(err)
+		log.Println("submission service, fetch all", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	assignment, err := assignmentRepo.GetSingle(int(id))
+	//assignment, err := assignmentRepo.GetSingle(int(id))
+	assignment, err := assignmentService.Fetch(id)
 	if err != nil {
-		log.Println(err)
+		log.Println("assignment service, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	// Get number of Students that has delivered submission with specific submission form
-	submissionCount, err := submissionRepo.GetSubmissionsCountFromAssignment(assignment.ID, assignment.SubmissionID.Int64)
+	//submissionCount, err := submissionRepo.GetSubmissionsCountFromAssignment(assignment.ID, assignment.SubmissionID.Int64)
+	submissionCount, err := submissionAnswerService.CountForAssignment(assignment.ID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("submission answer service, count for assignment", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	//get courses to user
-	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
+	//courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
+	courses, err := courseService.FetchAllForUserOrdered(currentUser.ID)
 	if err != nil {
-		log.Println(err)
+		log.Println("course service, fetch all for user ordered", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	reviews, err := reviewRepo.GetAll()
+	reviews, err := reviewService.FetchAll()
+	//reviews, err := reviewRepo.GetAll()
 	if err != nil {
-		log.Println(err)
+		log.Println("review service, fetch all", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
 	v.Name = "admin/assignment/update"

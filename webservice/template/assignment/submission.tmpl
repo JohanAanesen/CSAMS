@@ -8,6 +8,9 @@
                 <a href="{{ if .IsTeacher }}/admin/assignment/{{ .Assignment.ID }}/submissions {{ else }}/assignment/{{.Assignment.ID}}{{ end}}"
                    class="btn btn-outline-dark mb-3">Go Back</a>
                 <div class="col my-1 container pt-3 jumbotron">
+                    {{range .Fields}}
+
+                    {{end}}
                     {{ if .Delivered }}
 
                         <h1 class="display-4">{{ .Course.Code }} {{ .Course.Name }}</h1>

@@ -1,8 +1,9 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
@@ -40,7 +41,6 @@ func AssignmentGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Fprintf(w, "ID is %s\nClass is %s\n", id, class)
 	}
 
 	//check that user is logged in
@@ -65,8 +65,12 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Services
+	assignmentService := service.NewAssignmentService(db.GetDB())
+
 	assignmentRepo := model.AssignmentRepository{}
-	assignment, err := assignmentRepo.GetSingle(assignmentID)
+	//assignment, err := assignmentRepo.GetSingle(assignmentID)
+	assignment, err := assignmentService.Fetch(assignmentID)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -171,7 +175,6 @@ func AssignmentAutoGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Fprintf(w, "ID is %s\nClass is %s\n", id, class)
 	}
 
 	//check that user is logged in
@@ -198,7 +201,6 @@ func AssignmentPeerGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Fprintf(w, "ID is %s\nClass is %s\n", id, class)
 	}
 
 	//check that user is logged in
@@ -237,6 +239,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+
 	// Give error if assignment doesn't exists
 	if assignment.Name == "" {
 		log.Println("Error: assignment with id '" + id + "' doesn't exist! (assignment.go)")
@@ -244,20 +247,24 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
+	// Services
+	submissionService := service.NewSubmissionService(db.GetDB())
+	courseService := service.NewCourseService(db.GetDB())
+	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
+
 	// Get form and log possible error
-	formRepo := model.FormRepositoryOld{}
-	form, err := formRepo.GetSubmissionFormFromAssignmentID(assignment.ID)
+	submissionForm, err := submissionService.FetchFromAssignment(assignment.ID)
 	if err != nil {
 		log.Println("get submission form from assignment id", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	//course repo
-	courseRepo := &model.CourseRepository{}
-
 	// Get course and log possible error
-	course, err := courseRepo.GetSingle(assignment.CourseID)
+	course, err := courseService.Fetch(assignment.CourseID)
 	if err != nil {
 		log.Println("get single course", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -265,30 +272,25 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get answers to user if he has delivered
-	answers, err := model.GetUserAnswers(session.GetUserFromSession(r).ID, assignmentID)
+	answers, err := submissionAnswerService.FetchUserAnswers(currentUser.ID, assignment.ID)
 	if err != nil {
 		log.Println("get user answers", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	com := MergedAnswerField{}
 	// Only merge if user has delivered
 	if len(answers) > 0 {
-
 		// Make sure answers and fields are same length before merging
-		if len(answers) != len(form.Fields) {
-			log.Println("Error: answers(" + strconv.Itoa(len(answers)) + ") is not equal length as fields(" + strconv.Itoa(len(form.Fields)) + ")! (assignment.go)")
+		if len(answers) != len(submissionForm.Form.Fields) {
+			log.Println("Error: answers(" + strconv.Itoa(len(answers)) + ") is not equal length as fields(" + strconv.Itoa(len(submissionForm.Form.Fields)) + ")! (assignment.go)")
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
-		// Merge field and answer if assignment is delivered
 
-		for i := 0; i < len(form.Fields); i++ {
-			com.Items = append(com.Items, Combined{
-				Answer: answers[i],
-				Field:  form.Fields[i],
-			})
+		for index, field := range submissionForm.Form.Fields {
+			answers[index].HasComment = field.HasComment
+			answers[index].Description = field.Description
 		}
 	}
 
@@ -301,9 +303,9 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 
 	v.Vars["Course"] = course
 	v.Vars["Assignment"] = assignment
-	v.Vars["Fields"] = form.Fields
+	v.Vars["Fields"] = submissionForm.Form.Fields
 	v.Vars["Delivered"] = len(answers)
-	v.Vars["AnswersAndFields"] = com.Items
+	v.Vars["Answers"] = answers
 
 	v.Render(w)
 }
@@ -329,11 +331,18 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
+	// Services
+	assignmentService := service.NewAssignmentService(db.GetDB())
+	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
+	submissionService := service.NewSubmissionService(db.GetDB())
+
 	// Get assignment and log possible error
-	assignmentRepo := model.AssignmentRepository{}
-	assignment, err := assignmentRepo.GetSingle(assignmentID)
+	assignment, err := assignmentService.Fetch(assignmentID)
 	if err != nil {
-		log.Println("get single assignment", err.Error())
+		log.Println("assignment service, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -353,49 +362,44 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get form and log possible error
-	formRepo := model.FormRepositoryOld{}
-	form, err := formRepo.GetSubmissionFormFromAssignmentID(assignment.ID)
-	if err != nil {
-		log.Println(err.Error())
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
-
 	// Check that submission id is valid
 	if !assignment.SubmissionID.Valid {
-		log.Println("Error: Something went wrong with submissionID, its nil (assignment.go))")
+		log.Println("Error: Something went wrong with submissionID, it is not valid (assignment.go))")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	currentUser := session.GetUserFromSession(r)
+	// Get form and log possible error
+	submissionForm, err := submissionService.FetchFromAssignment(assignment.ID)
+	if err != nil {
+		log.Println("submission service, fetch from assignment", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
 
 	// Check if user has uploaded already or not
-	delivered, err := assignmentRepo.HasUserSubmitted(assignmentID, currentUser.ID)
+	delivered, err := submissionAnswerService.HasUserSubmitted(assignmentID, currentUser.ID)
 	if err != nil {
-		log.Println(err)
+		log.Println("submission answer service, has user submitted", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	// Start to fill out user Submission struct
-	userSub := model.UserSubmission{
-		UserID:       currentUser.ID,
-		SubmissionID: assignment.SubmissionID.Int64,
-		AssignmentID: assignment.ID,
-	}
+	// Create empty submission answer slice
+	submissionAnswers := make([]*model.SubmissionAnswer, 0)
 
 	// Get answers WITH answerID if the user has delivered
 	if delivered {
-		userSub.Answers, err = model.GetUserAnswers(session.GetUserFromSession(r).ID, assignmentID)
+		// Fetch answers from the user
+		submissionAnswers, err = submissionAnswerService.FetchUserAnswers(currentUser.ID, assignment.ID)
 		if err != nil {
-			log.Println("get user answers", err.Error())
+			log.Println("submission answer service, fetch user answers", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
 	}
 
+	// Parse form from request
 	err = r.ParseForm()
 	if err != nil {
 		log.Println("request parse form", err)
@@ -404,7 +408,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check that every form is filled an give error if not
-	for index, field := range form.Fields {
+	for index, field := range submissionForm.Form.Fields {
 		// Check if they are empty and give error if they are
 		if r.FormValue(field.Name) == "" && field.Type != "checkbox" && field.Type != "paragraph" && field.Type != "multi-checkbox" {
 			log.Println("Error: assignment with form name '" + field.Name + "' can not be empty! (assignment.go)")
@@ -413,43 +417,63 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Initialize empty answer
-		answer := model.Answer{}
+		answer := model.SubmissionAnswer{}
 		// Check if the field has comment enabled
 		if field.HasComment {
 			// Get comment content, sanitized
 			answer.Comment.String = p.Sanitize(r.FormValue(field.Name + "_comment"))
+			answer.Comment.Valid = answer.Comment.String != ""
 		}
 
+		// Check if multi-checkbox
 		if field.Type == "multi-checkbox" {
 			val := r.Form[field.Name]
-			answer.Value = p.Sanitize(strings.Join(val, ","))
+			answer.Answer = p.Sanitize(strings.Join(val, ","))
 		} else {
 			// Sanitize input
-			answer.Value = p.Sanitize(r.FormValue(field.Name))
+			answer.Answer = p.Sanitize(r.FormValue(field.Name))
 		}
+
 		// Get field type
 		answer.Type = field.Type
+		answer.Name = field.Name
+		answer.Label = field.Label
+		answer.Description = field.Description
+		answer.HasComment = field.HasComment
 
 		// If delivered, only change the value
 		if delivered {
-			userSub.Answers[index].Value = answer.Value
+			submissionAnswers[index].Answer = answer.Answer
+			submissionAnswers[index].Comment = answer.Comment
+			// Set name & label
+			submissionAnswers[index].Name = field.Name
+			submissionAnswers[index].Label = field.Label
+			submissionAnswers[index].Description = field.Description
+			submissionAnswers[index].HasComment = field.HasComment
 		} else {
 			// Else, create new answers array
-			userSub.Answers = append(userSub.Answers, answer)
+			submissionAnswers = append(submissionAnswers, &answer)
 		}
 
+	}
+
+	// Update user, assignment & submission id for all answers
+	for _, item := range submissionAnswers {
+		item.UserID = currentUser.ID
+		item.AssignmentID = assignment.ID
+		item.SubmissionID = int(assignment.SubmissionID.Int64)
 	}
 
 	// Upload or update answers
 	if !delivered {
-		err = model.UploadUserSubmission(userSub)
+		err = submissionAnswerService.Upload(submissionAnswers)
 	} else {
-		err = model.UpdateUserSubmission(userSub)
+		err = submissionAnswerService.Update(submissionAnswers)
 	}
 
 	// Check for error
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("submission answer service, upload/update", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
