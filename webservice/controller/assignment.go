@@ -239,7 +239,6 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	// Give error if assignment doesn't exists
 	if assignment.Name == "" {
 		log.Println("Error: assignment with id '" + id + "' doesn't exist! (assignment.go)")
@@ -292,6 +291,18 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 			answers[index].HasComment = field.HasComment
 			answers[index].Description = field.Description
 		}
+	} else {
+		for _, item := range submissionForm.Form.Fields {
+			answers = append(answers, &model.SubmissionAnswer{
+				Type:        item.Type,
+				Choices:     item.Choices,
+				Weight:      item.Weight,
+				Label:       item.Label,
+				HasComment:  item.HasComment,
+				Description: item.Description,
+				Name:        item.Name,
+			})
+		}
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -310,7 +321,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 }
 
-// AssignmentUploadPOST servers the
+// AssignmentUploadPOST handles POST-request @ /assignment/submission/update
 func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	//XSS sanitizer
 	p := bluemonday.UGCPolicy()
@@ -509,16 +520,21 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Services
+	services := service.NewServices(db.GetDB())
+
 	// Initialize repositories
-	assignmentRepo := &model.AssignmentRepository{}
+	//assignmentRepo := &model.AssignmentRepository{}
 	courseRepo := &model.CourseRepository{}
 	formRepo := model.FormRepositoryOld{}
 	reviewRepo := model.ReviewRepository{}
 
+	// Current user
 	currentUser := session.GetUserFromSession(r)
 
 	// Get relevant assignment
-	assignment, err := assignmentRepo.GetSingle(assignmentID)
+	//assignment, err := assignmentRepo.GetSingle(assignmentID)
+	assignment, err := services.Assignment.Fetch(assignmentID)
 	if err != nil {
 		log.Println("get single assignment", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
