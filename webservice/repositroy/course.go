@@ -167,6 +167,8 @@ func (repo *CourseRepository) UserInCourse(userID, courseID int) error {
 		return err
 	}
 
+	defer rows.Close()
+
 	for rows.Next() {
 		var temp int
 

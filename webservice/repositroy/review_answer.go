@@ -29,6 +29,8 @@ func (repo *ReviewAnswerRepository) FetchForAssignment(assignmentID int) ([]*mod
 		return result, err
 	}
 
+	defer rows.Close()
+
 	for rows.Next() {
 		temp := model.ReviewAnswer{}
 
@@ -54,6 +56,8 @@ func (repo *ReviewAnswerRepository) FetchForTarget(target, assignmentID int) ([]
 	if err != nil {
 		return result, err
 	}
+
+	defer rows.Close()
 
 	for rows.Next() {
 		temp := model.ReviewAnswer{}
@@ -81,6 +85,8 @@ func (repo *ReviewAnswerRepository) FetchForReviewer(reviewer, assignmentID int)
 		return result, err
 	}
 
+	defer rows.Close()
+
 	for rows.Next() {
 		temp := model.ReviewAnswer{}
 
@@ -106,6 +112,8 @@ func (repo *ReviewAnswerRepository) FetchForReviewerAndTarget(reviewer, target, 
 	if err != nil {
 		return result, err
 	}
+
+	defer rows.Close()
 
 	for rows.Next() {
 		temp := model.ReviewAnswer{}

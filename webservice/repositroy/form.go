@@ -52,6 +52,8 @@ func (repo *FormRepository) FetchAll() ([]*model.Form, error) {
 		return result, err
 	}
 
+	defer rows.Close()
+
 	for rows.Next() {
 		var temp model.Form
 
