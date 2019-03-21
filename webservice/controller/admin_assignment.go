@@ -75,30 +75,34 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminAssignmentCreateGET handles GET-request from /admin/assigment/create
 func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
-	var subRepo = model.SubmissionRepository{}
-	submissions, err := subRepo.GetAll()
+	// Services
+	submissionService := service.NewSubmissionAnswerService(db.GetDB())
+	reviewService := service.NewReviewService(db.GetDB())
+	courseService := service.NewCourseService(db.GetDB())
 
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
+	// Fetch all submission
+	submissions, err := submissionService.FetchAll()
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	reviewRepo := model.ReviewRepository{}
-	reviews, err := reviewRepo.GetAll()
-
+	// Fetch all reviews
+	reviews, err := reviewService.FetchAll()
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	//course repo
-	courseRepo := model.CourseRepository{}
-	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
-
+	// Fetch courses, ordered
+	courses, err := courseService.FetchAllForUserOrdered(currentUser.ID)
 	if err != nil {
-		log.Println(err)
+		log.Println("course service, fetch all for user ordered", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
