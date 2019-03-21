@@ -187,4 +187,3 @@ func (repo *ReviewAnswerRepository) Insert(answer model.ReviewAnswer) (int, erro
 
 	return int(id), err
 }
-

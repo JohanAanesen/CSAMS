@@ -29,7 +29,6 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 		return &result, err
 	}
 
-
 	defer rows.Close()
 
 	for rows.Next() {

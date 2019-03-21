@@ -64,7 +64,6 @@ func (s *ReviewAnswerService) FetchReviewUsers(target, assignmentID int) ([]int,
 		return users, err
 	}
 
-
 	for _, answer := range answers {
 		if !util.Contains(users, answer.UserReviewer) {
 			users = append(users, answer.UserReviewer)

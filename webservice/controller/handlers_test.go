@@ -403,12 +403,12 @@ func TestUserUpdateRequest(t *testing.T) {
 
 	//user object we want to fill with variables needed
 	user := model.User{
-		ID:            1,
-		Name:          "Test User",
-		EmailStudent:  "hei@gmail.com",
-		EmailPrivate:  sql.NullString{
+		ID:           1,
+		Name:         "Test User",
+		EmailStudent: "hei@gmail.com",
+		EmailPrivate: sql.NullString{
 			String: "test@yahoo.com",
-			Valid: true,
+			Valid:  true,
 		},
 		Authenticated: true,
 		Teacher:       true,

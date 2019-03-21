@@ -70,6 +70,7 @@ func (repo *CourseRepository) FetchAll() ([]*model.Course, error) {
 
 	return result, err
 }
+
 // FetchAllForUserOrdered func
 func (repo *CourseRepository) FetchAllForUserOrdered(userID int) ([]*model.Course, error) {
 	result := make([]*model.Course, 0)
@@ -98,7 +99,6 @@ func (repo *CourseRepository) FetchAllForUserOrdered(userID int) ([]*model.Cours
 
 	return result, err
 }
-
 
 // Insert func
 func (repo *CourseRepository) Insert(course model.Course) (int, error) {
