@@ -177,7 +177,9 @@ func (repo *CourseRepository) UserInCourse(userID, courseID int) (bool, error) {
 			return false, err
 		}
 
-		return true, nil
+		if temp != 0 {
+			return true, nil
+		}
 	}
 
 	return false, err
