@@ -4,13 +4,17 @@
 	<h1 class="display-4">Submission for {{.User.Name}}</h1>
 	<hr>
 
+	{{$IsWeighted := .IsWeighted}}
+	{{$TotalWeight := .TotalWeight}}
+	{{$ScorePercent := .ScorePercent}}
+
 	{{ range .Answers }}
 		{{if eq .Type "radio"}}
 			{{$A := .}}
 			{{$Answer := ATOI .Answer}}
 			{{$V := 1}}
 			<fieldset>
-				<legend>{{.Label}}</legend>
+				<legend>{{.Label}}{{if $IsWeighted}} (Weight: {{.Weight}}){{end}}</legend>
 				{{range .Choices}}
 					<div class="form-check form-check-inline">
 						<input class="form-check-input" type="radio" name="{{$A.Name}}" id="{{$A.Name}}_{{$V}}" value="{{$V}}"{{if eq $V $Answer}} checked{{end}} disabled>
@@ -38,21 +42,21 @@
 		{{else}}
 			<div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
 				{{ if eq .Type "text" }}
-					<label for="{{ .Name }}">{{ .Label }}</label>
+					<label for="{{ .Name }}">{{ .Label }}{{if $IsWeighted}} (Weight: {{.Weight}}){{end}}</label>
 					<input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" value="{{ .Answer}}" disabled>
 				{{ else if eq .Type "url" }}
-					<label for="{{ .Name }}">{{ .Label }}</label>
+					<label for="{{ .Name }}">{{ .Label }}{{if $IsWeighted}} (Weight: {{.Weight}}){{end}}</label>
 					<input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" value="{{ .Answer}}" disabled>
 					<a href="{{.Answer}}" target="_blank">Open in new tab</a>
 				{{ else if eq .Type "textarea" }}
-					<label for="{{ .Name }}">{{ .Label }}</label>
+					<label for="{{ .Name }}">{{ .Label }}{{if $IsWeighted}} (Weight: {{.Weight}}){{end}}</label>
 					<textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control" rows="5" disabled>{{ .Answer}}</textarea>
 				{{ else if eq .Type "number" }}
-					<label for="{{ .Name }}">{{ .Label }}</label>
+					<label for="{{ .Name }}">{{ .Label }}{{if $IsWeighted}} (Weight: {{.Weight}}){{end}}</label>
 					<input type="number" name="{{ .Name }}" id="{{ .Name }}" class="form-control" value="{{ .Answer}}" disabled>
 				{{ else if eq .Type "checkbox" }}
 					<input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input"{{if eq .Answer "on"}} checked{{end}} disabled>
-					<label class="form-check-inline" for="{{ .Name }}">{{ .Label }}</label>
+					<label class="form-check-inline" for="{{ .Name }}">{{ .Label }}{{if $IsWeighted}} (Weight: {{.Weight}}){{end}}</label>
 				{{else if eq .Type "paragraph"}}
 					<legend>{{.Label}}</legend>
 					<p class="lead">{{.Description}}</p>
@@ -70,6 +74,24 @@
 			</div>
 		{{end}}
 	{{ end }}
+
+	{{if $IsWeighted}}
+		<hr>
+		<table class="table table-striped">
+			<tr>
+				<td><strong>Score</strong></td>
+				<td>{{.WeightScore}}</td>
+			</tr>
+			<tr>
+				<td><strong>Percent</strong></td>
+				<td>{{.ScorePercent}}%</td>
+			</tr>
+			<tr>
+				<td><strong>Total</strong></td>
+				<td>{{.TotalWeight}}</td>
+			</tr>
+		</table>
+	{{end}}
 
 	<hr>
 	<a href="/admin/assignment/{{.AssignmentID}}/submissions" class="btn btn-outline-dark">Go back</a>
