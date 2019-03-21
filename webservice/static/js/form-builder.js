@@ -572,13 +572,17 @@ function Form(args) {
             fields.push(f.get());
         }
 
-        return JSON.stringify({
+        let result = JSON.stringify({
             id: this.id,
             prefix: this.getPrefix(),
             name: this.name,
             weighted: this.weighted,
             fields: fields,
         });
+
+        console.log('toJSON', result);
+
+        return result;
     };
 
     /**
@@ -632,6 +636,8 @@ function Form(args) {
 
         this.sortFields();
         this.render();
+
+        console.log('FromJSON', this);
     };
 
     /**
@@ -672,7 +678,8 @@ function Field(args) {
     this.order = (args.order !== undefined) ? args.order : 0;
     this.weighted = (args.weighted !== undefined) ? args.weighted : false;
     this.weight = (args.weight !== undefined) ? args.weight : 0;
-    this.choices = (args.choices !== undefined) ? args.choices : [];
+    this.choicesArray = (args.choices !== undefined) ? args.choices : [];
+    this.choices = '';
     this.expanded = false;
     this.displayChoices = false;
 
@@ -1157,11 +1164,12 @@ function Field(args) {
                 },
             ],
             id: `choices_${this.id}`,
-            value: this.choices.join('\n'),
+            value: this.choices,
         });
 
         input.addEventListener('keyup', () => {
             this.choices = input.value;
+            this.choicesArray = this.choices.split('\n');
         });
 
         let helperText = createElement({
@@ -1240,7 +1248,7 @@ function Field(args) {
             type: 'small',
             classList: ['form-text', 'text-muted'],
             id: `weight_helper_${this.id}`,
-            innerText: '',
+            innerHTML: 'Weights on radio will be calculated linear based on which is selected. <br>Eg. Weight: 5, Choices: [A, B, C, D, E], Weights: [A:1, B:2, C:3, D:4, E:5]',
         });
 
         rightSide.appendChild(input);
@@ -1259,7 +1267,7 @@ function Field(args) {
         // let totalWeight = localStorage.getItem('totalWeight');
         if (this.type === TYPES.RADIO || this.type === TYPES.MULTI_CHECKBOX) {
             document.getElementById(`choices_display_${this.id}`).classList.remove('sr-only');
-            document.getElementById(`choices_${this.id}`).value = this.choices.join('\n');
+            document.getElementById(`choices_${this.id}`).value = this.choices;
         }
     };
 
@@ -1268,6 +1276,9 @@ function Field(args) {
      * @return {object}
      */
     this.get = function() {
+        console.log('choices', this.choices);
+        this.choicesArray = this.choices.split('\n');
+
         return {
             type:           this.type,
             name:           this.name,
@@ -1276,24 +1287,8 @@ function Field(args) {
             label:          this.label,
             order:          this.order,
             weight:         parseInt(this.weight),
-            choices:        this.getChoices(),
+            choices:        this.choicesArray,
         }
-    };
-
-    /**
-     * Return choices as a single string, with values separated by a comma
-     * @return {Array}
-     */
-    this.getChoices = function() {
-        let val = document.getElementById(`choices_${this.id}`).value;
-
-        if (val === '') {
-            this.choices = [];
-        } else {
-            this.choices = val.split('\n');
-        }
-
-        return this.choices;
     };
 }
 
