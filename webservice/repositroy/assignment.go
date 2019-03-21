@@ -130,3 +130,56 @@ func (repo *AssignmentRepository) Insert(assignment model.Assignment) (int, erro
 
 	return int(id), err
 }
+
+// Update func
+func (repo *AssignmentRepository) Update(assignment model.Assignment) error {
+	query := "UPDATE assignments SET name = ?, description = ?, publish = ?, deadline = ?, course_id = ?"
+	//query := "UPDATE assignments SET name = ?, description = ?, course_id = ?, submission_id = ?, publish = ?, deadline = ?, reviewers = ? WHERE id = ?"
+
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, assignment.Name, assignment.Description,
+		assignment.Publish, assignment.Deadline, assignment.CourseID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if assignment.SubmissionID.Valid {
+		query := "UPDATE assignments SET submission_id = ? WHERE id = ?"
+		_, err := tx.Exec(query, assignment.SubmissionID, assignment.ID)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	if assignment.ReviewID.Valid {
+		query := "UPDATE assignments SET review_id = ? WHERE id = ?"
+		_, err := tx.Exec(query, assignment.ReviewID, assignment.ID)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	if assignment.Reviewers.Valid {
+		query := "UPDATE assignments SET reviewers = ? WHERE id = ?"
+		_, err := tx.Exec(query, assignment.Reviewers, assignment.ID)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return err
+}

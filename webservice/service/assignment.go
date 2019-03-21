@@ -50,3 +50,8 @@ func (s *AssignmentService) FetchFromCourse(courseID int) ([]*model.Assignment, 
 func (s *AssignmentService) Insert(assignment model.Assignment) (int, error) {
 	return s.assignmentRepo.Insert(assignment)
 }
+
+// Update func
+func (s *AssignmentService) Update(assignment model.Assignment) error {
+	return s.assignmentRepo.Update(assignment)
+}
