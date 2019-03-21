@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
+	"strings"
 )
 
 // SubmissionAnswerRepository struct
@@ -45,7 +46,6 @@ func (repo *SubmissionAnswerRepository) Fetch(id int) (*model.SubmissionAnswer, 
 // FetchAll func
 func (repo *SubmissionAnswerRepository) FetchAll() ([]*model.SubmissionAnswer, error) {
 	result := make([]*model.SubmissionAnswer, 0)
-
 	query := "SELECT id, user_id, assignment_id, submission_id, type, name, label, answer, comment, submitted FROM user_submissions"
 
 	rows, err := repo.db.Query(query)
@@ -74,7 +74,7 @@ func (repo *SubmissionAnswerRepository) FetchAll() ([]*model.SubmissionAnswer, e
 func (repo *SubmissionAnswerRepository) FetchAllForUserAndAssignment(userID, assignmentID int) ([]*model.SubmissionAnswer, error) {
 	result := make([]*model.SubmissionAnswer, 0)
 
-	query := "SELECT id, user_id, assignment_id, submission_id, type, name, label, answer, comment, submitted FROM user_submissions WHERE user_id = ? AND assignment_id = ?"
+	query := "SELECT us.id, us.user_id, us.assignment_id, us.submission_id, f.type, f.name, f.label, f.description, us.answer, us.comment, us.submitted, f.hasComment, f.choices, f.weight FROM user_submissions AS us INNER JOIN fields AS f ON us.name = f.name WHERE us.user_id = ? AND us.assignment_id = ?"
 
 	rows, err := repo.db.Query(query, userID, assignmentID)
 	if err != nil {
@@ -85,12 +85,18 @@ func (repo *SubmissionAnswerRepository) FetchAllForUserAndAssignment(userID, ass
 
 	for rows.Next() {
 		temp := model.SubmissionAnswer{}
+		var choices string
+		var hasComment int
 
 		err = rows.Scan(&temp.ID, &temp.UserID, &temp.AssignmentID, &temp.SubmissionID,
-			&temp.Type, &temp.Name, &temp.Label, &temp.Answer, &temp.Comment, &temp.Submitted)
+			&temp.Type, &temp.Name, &temp.Label, &temp.Description, &temp.Answer, &temp.Comment, &temp.Submitted,
+			&hasComment, &choices, &temp.Weight)
 		if err != nil {
 			return result, err
 		}
+
+		temp.HasComment = hasComment == 1
+		temp.Choices = strings.Split(choices, ",")
 
 		result = append(result, &temp)
 	}
@@ -166,6 +172,30 @@ func (repo *SubmissionAnswerRepository) Update(answer model.SubmissionAnswer) er
 
 	submitted := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 	_, err = tx.Exec(query, answer.Answer, answer.Comment, submitted, answer.UserID, answer.AssignmentID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return err
+}
+
+// DeleteFromAssignment func
+func (repo *SubmissionAnswerRepository) DeleteFromAssignment(assignmentID int) error {
+	query := "DELETE FROM user_submissions WHERE assignment_id = ?"
+
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, assignmentID)
 	if err != nil {
 		tx.Rollback()
 		return err

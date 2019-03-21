@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
+	"strings"
 )
 
 // ReviewAnswerRepository struct
@@ -22,7 +23,7 @@ func NewReviewAnswerRepository(db *sql.DB) *ReviewAnswerRepository {
 func (repo *ReviewAnswerRepository) FetchForAssignment(assignmentID int) ([]*model.ReviewAnswer, error) {
 	result := make([]*model.ReviewAnswer, 0)
 
-	query := "SELECT * FROM user_reviews WHERE assignment_id = ?"
+	query := "SELECT ur.id, ur.user_reviewer, ur.user_target, ur.review_id, ur.assignment_id, f.type, f.name, f.label, f.description, ur.answer, ur.comment, ur.submitted, f.hasComment, f.choices, f.weight FROM user_reviews AS ur INNER JOIN fields AS f ON ur.name = f.name WHERE ur.assignment_id = ?"
 
 	rows, err := repo.db.Query(query, assignmentID)
 	if err != nil {
@@ -33,12 +34,18 @@ func (repo *ReviewAnswerRepository) FetchForAssignment(assignmentID int) ([]*mod
 
 	for rows.Next() {
 		temp := model.ReviewAnswer{}
+		var hasComment int
+		var choices string
 
 		err = rows.Scan(&temp.ID, &temp.UserReviewer, &temp.UserTarget, &temp.ReviewID, &temp.AssignmentID,
-			&temp.Type, &temp.Name, &temp.Label, &temp.Answer, &temp.Comment, &temp.Submitted)
+			&temp.Type, &temp.Name, &temp.Label, &temp.Description, &temp.Answer, &temp.Comment, &temp.Submitted,
+			&hasComment, &choices, &temp.Weight)
 		if err != nil {
 			return result, err
 		}
+
+		temp.HasComment = hasComment == 1
+		temp.Choices = strings.Split(choices, ",")
 
 		result = append(result, &temp)
 	}
@@ -50,7 +57,7 @@ func (repo *ReviewAnswerRepository) FetchForAssignment(assignmentID int) ([]*mod
 func (repo *ReviewAnswerRepository) FetchForTarget(target, assignmentID int) ([]*model.ReviewAnswer, error) {
 	result := make([]*model.ReviewAnswer, 0)
 
-	query := "SELECT * FROM user_reviews WHERE user_target = ? AND assignment_id = ?"
+	query := "SELECT ur.id, ur.user_reviewer, ur.user_target, ur.review_id, ur.assignment_id, f.type, f.name, f.label, f.description, ur.answer, ur.comment, ur.submitted, f.hasComment, f.choices, f.weight FROM user_reviews AS ur INNER JOIN fields AS f ON ur.name = f.name WHERE ur.user_target = ? AND ur.assignment_id = ?"
 
 	rows, err := repo.db.Query(query, target, assignmentID)
 	if err != nil {
@@ -61,12 +68,18 @@ func (repo *ReviewAnswerRepository) FetchForTarget(target, assignmentID int) ([]
 
 	for rows.Next() {
 		temp := model.ReviewAnswer{}
+		var hasComment int
+		var choices string
 
 		err = rows.Scan(&temp.ID, &temp.UserReviewer, &temp.UserTarget, &temp.ReviewID, &temp.AssignmentID,
-			&temp.Type, &temp.Name, &temp.Label, &temp.Answer, &temp.Comment, &temp.Submitted)
+			&temp.Type, &temp.Name, &temp.Label, &temp.Description, &temp.Answer, &temp.Comment, &temp.Submitted,
+			&hasComment, &choices, &temp.Weight)
 		if err != nil {
 			return result, err
 		}
+
+		temp.HasComment = hasComment == 1
+		temp.Choices = strings.Split(choices, ",")
 
 		result = append(result, &temp)
 	}
@@ -78,7 +91,7 @@ func (repo *ReviewAnswerRepository) FetchForTarget(target, assignmentID int) ([]
 func (repo *ReviewAnswerRepository) FetchForReviewer(reviewer, assignmentID int) ([]*model.ReviewAnswer, error) {
 	result := make([]*model.ReviewAnswer, 0)
 
-	query := "SELECT id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted FROM user_reviews WHERE user_reviewer = ? AND assignment_id = ?"
+	query := "SELECT ur.id, ur.user_reviewer, ur.user_target, ur.review_id, ur.assignment_id, f.type, f.name, f.label, f.description, ur.answer, ur.comment, ur.submitted, f.hasComment, f.choices, f.weight FROM user_reviews AS ur INNER JOIN fields AS f ON ur.name = f.name WHERE ur.user_reviewer = ? AND ur.assignment_id = ?"
 
 	rows, err := repo.db.Query(query, reviewer, assignmentID)
 	if err != nil {
@@ -89,12 +102,18 @@ func (repo *ReviewAnswerRepository) FetchForReviewer(reviewer, assignmentID int)
 
 	for rows.Next() {
 		temp := model.ReviewAnswer{}
+		var hasComment int
+		var choices string
 
 		err = rows.Scan(&temp.ID, &temp.UserReviewer, &temp.UserTarget, &temp.ReviewID, &temp.AssignmentID,
-			&temp.Type, &temp.Name, &temp.Label, &temp.Answer, &temp.Comment, &temp.Submitted)
+			&temp.Type, &temp.Name, &temp.Label, &temp.Description, &temp.Answer, &temp.Comment, &temp.Submitted,
+			&hasComment, &choices, &temp.Weight)
 		if err != nil {
 			return result, err
 		}
+
+		temp.HasComment = hasComment == 1
+		temp.Choices = strings.Split(choices, ",")
 
 		result = append(result, &temp)
 	}
@@ -106,7 +125,7 @@ func (repo *ReviewAnswerRepository) FetchForReviewer(reviewer, assignmentID int)
 func (repo *ReviewAnswerRepository) FetchForReviewerAndTarget(reviewer, target, assignmentID int) ([]*model.ReviewAnswer, error) {
 	result := make([]*model.ReviewAnswer, 0)
 
-	query := "SELECT id, user_reviewer, user_target, review_id, assignment_id, type, name, label, answer, comment, submitted FROM user_reviews WHERE user_reviewer = ? AND user_target = ? AND assignment_id = ?"
+	query := "SELECT ur.id, ur.user_reviewer, ur.user_target, ur.review_id, ur.assignment_id, f.type, f.name, f.label, f.description, ur.answer, ur.comment, ur.submitted, f.hasComment, f.choices, f.weight FROM user_reviews AS ur INNER JOIN fields AS f ON ur.name = f.name WHERE ur.user_reviewer = ? AND ur.user_target = ? AND ur.assignment_id = ?"
 
 	rows, err := repo.db.Query(query, reviewer, target, assignmentID)
 	if err != nil {
@@ -117,12 +136,18 @@ func (repo *ReviewAnswerRepository) FetchForReviewerAndTarget(reviewer, target, 
 
 	for rows.Next() {
 		temp := model.ReviewAnswer{}
+		var hasComment int
+		var choices string
 
 		err = rows.Scan(&temp.ID, &temp.UserReviewer, &temp.UserTarget, &temp.ReviewID, &temp.AssignmentID,
-			&temp.Type, &temp.Name, &temp.Label, &temp.Answer, &temp.Comment, &temp.Submitted)
+			&temp.Type, &temp.Name, &temp.Label, &temp.Description, &temp.Answer, &temp.Comment, &temp.Submitted,
+			&hasComment, &choices, &temp.Weight)
 		if err != nil {
 			return result, err
 		}
+
+		temp.HasComment = hasComment == 1
+		temp.Choices = strings.Split(choices, ",")
 
 		result = append(result, &temp)
 	}
