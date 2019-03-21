@@ -77,3 +77,8 @@ func (s *SubmissionAnswerService) Update(answers []*model.SubmissionAnswer) erro
 
 	return nil
 }
+
+// DeleteFromAssignment func
+func (s *SubmissionAnswerService) DeleteFromAssignment(assignmentID int) error {
+	return s.submissionAnswerRepo.DeleteFromAssignment(assignmentID)
+}
