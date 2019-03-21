@@ -50,6 +50,11 @@ func (s *ReviewService) FetchAll() ([]model.Review, error) {
 	return result, err
 }
 
+// FetchReviewUsers func
+func (s *ReviewService) FetchReviewUsers(userID, assignmentID int) ([]*model.User, error) {
+	return s.reviewRepo.FetchReviewUsers(userID, assignmentID)
+}
+
 // Insert func
 func (s *ReviewService) Insert(form model.Form) (int, error) {
 	return s.reviewRepo.Insert(form)
