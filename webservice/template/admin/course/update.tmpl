@@ -1,7 +1,6 @@
 {{define "title"}}Edit Course{{end}}
 {{define "head"}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
-    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
 {{end}}
 {{define "content"}}
 
@@ -33,23 +32,26 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea name="description" id="description" class="form-control" required>{{.Course.Description}}</textarea>
+                    <label for="simplemde">Description</label>
+                    <textarea name="description" id="simplemde"
+                              placeholder="Description (Hint: Markdown)">{{.Course.Description}}</textarea>
                 </div>
 
-
                 <input type="hidden" name="id" value="{{.Course.ID}}">
-                <input type="submit" class="btn btn-success">
+                <button type="submit" class="btn btn-success">Submit</button>
                 <br><br>
             </form>
         </div>
     </div>
 {{end}}
 {{define "foot"}}
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
     <script>
-        let simplemde = new SimpleMDE({
-            element: document.getElementById('description'),
-            hideIcons: ["side-by-side", "fullscreen"],
-        });
+        (function() {
+            let simplemde = new SimpleMDE({
+                element: document.getElementById('simplemde'),
+                hideIcons: ["side-by-side", "fullscreen"],
+            });
+        })();
     </script>
 {{end}}
