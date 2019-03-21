@@ -49,8 +49,8 @@
     </style>
 {{end}}
 {{define "content"}}
-    {{ $id := .Assignment.ID }}
-    {{ $length := len .Reviews }}
+    {{$id := .Assignment.ID}}
+    {{$length := len .Reviews}}
     <div class="container pt-3">
         {{if .Delivered}}
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -60,7 +60,7 @@
                 </button>
             </div>
         {{end}}
-        <a href="/course/{{ .CourseID }}" class="btn btn-outline-dark">Go Back</a>
+        <a href="/course/{{.CourseID}}" class="btn btn-outline-dark">Go Back</a>
 
         <h1 class="display-4">
             {{.Assignment.Name}}
@@ -80,21 +80,17 @@
                         <a class="nav-link {{if eq $length 0}}disabled{{end}}" id="peerReview-tab" data-toggle="tab"
                            href="#peerReview" role="tab"
                            aria-controls="peerReview" aria-selected="false">Peer Review
-                            {{ if gt $length 0 }}
+                            {{if gt $length 0}}
                                 <span class="badge badge-danger">{{$length}}</span>
                             {{end}}
 
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link disabled" id="participant-tab" data-toggle="tab" href="#autoValidation"
-                           role="tab"
-                           aria-controls="participants" aria-selected="false">Auto Validation</a>
+                        <a class="nav-link{{if not .HasAutoValidation}} disabled{{end}}" id="participant-tab" data-toggle="tab" href="#autoValidation" role="tab" aria-controls="participants" aria-selected="false">Auto Validation</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="viewReview-tab" data-toggle="tab"
-                           href="#viewReview" role="tab"
-                           aria-controls="viewReview" aria-selected="false">
+                        <a class="nav-link{{if not .HasReview}} disabled{{end}}" id="viewReview-tab" data-toggle="tab" href="#viewReview" role="tab" aria-controls="viewReview" aria-selected="false">
                             View Reviews
                         </a>
                     </li>
@@ -104,14 +100,9 @@
                     <li>
                         {{if not .IsTeacher}}
                             {{if not .Delivered}}
-                                <a style="float:right;" href="/assignment/submission?id={{ .Assignment.ID }}"
-                                   class="btn btn-outline-light btn-success {{if .IsDeadlineOver}}disabled{{end}}">Deliver
-                                    assignment</a>
+                                <a style="float:right;" href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-success {{if .IsDeadlineOver}}disabled{{end}}">Deliver assignment</a>
                             {{else}}
-                                <a href="/assignment/submission?id={{ .Assignment.ID }}"
-                                   class="btn btn-outline-light btn-warning {{if .IsDeadlineOver}}disabled{{end}}">Change
-                                    your
-                                    submission</a>
+                                <a href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-warning {{if .IsDeadlineOver}}disabled{{end}}">Change your submission</a>
                             {{end}}
                         {{end}}
                     </li>
@@ -128,28 +119,26 @@
 
                     <div class="tab-pane fade" id="peerReview" role="tabpanel" aria-labelledby="home-tab">
                         <div class="row">
-                            {{ if gt $length 0 }}
-                                {{ range .Reviews }}
+                            {{if gt $length 0}}
+                                {{range .Reviews}}
                                     <div class="col-md-6 col-sm-12 mb-3">
                                         <div class="card shadow-sm">
                                             <div class="card-body">
-                                                <h2 class="display-5">User {{ .ID }}</h2>
+                                                <h2 class="display-5">User {{.ID}}</h2>
                                                 <h5>
                                                     <span class="badge badge-info">Peer-Review</span>
                                                 </h5>
                                                 <hr class="bg-light">
-                                                <a href="/assignment/{{$id}}/submission/{{.ID}}"
-                                                   class="btn btn-outline-dark btn-lg">Review</a>
+                                                <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-dark btn-lg">Review</a>
                                             </div>
                                         </div>
                                     </div>
-                                {{ end }}
-                            {{end }}
+                                {{end}}
+                            {{end}}
                         </div>
                     </div>
 
-                    <div class="tab-pane fade" id="autoValidation" role="tabpanel"
-                         aria-labelledby="home-tab">
+                    <div class="tab-pane fade" id="autoValidation" role="tabpanel" aria-labelledby="home-tab">
                         <div>:(</div>
                     </div>
 
@@ -162,7 +151,7 @@
                                 </div>
                                 <div class="card-body">
                                     <!-- TODO (Svein): Get the other field types -->
-                                    {{range .Answers}}
+                                    {{range .}}
                                         {{if eq .Type "radio"}}
                                             <label for="">{{.Label}}</label>
                                             <input type="text" class="form-control" value="{{.Answer}}" disabled>
@@ -172,19 +161,19 @@
                                                 {{if eq .Type "text"}}
                                                     <input type="text" class="form-control" value="{{.Answer}}"
                                                            disabled>
-                                                {{ else if eq .Type "url" }}
+                                                {{else if eq .Type "url"}}
                                                     <input type="url" class="form-control" value="{{.Answer}}" disabled>
-                                                {{ else if eq .Type "textarea" }}
+                                                {{else if eq .Type "textarea"}}
                                                     <textarea class="form-control" disabled>{{.Answer}}</textarea>
-                                                {{ else if eq .Type "number" }}
+                                                {{else if eq .Type "number"}}
                                                     <input type="number" class="form-control" value="{{.Answer}}"
                                                            disabled>
-                                                {{ else if eq .Type "checkbox" }}
+                                                {{else if eq .Type "checkbox"}}
                                                     <input type="checkbox"
                                                            class="form-check-input"{{if eq .Answer "on"}} checked{{end}}
                                                            disabled>
-                                                    <label class="form-check-inline">{{ .Label }}</label>
-                                                {{ end }}
+                                                    <label class="form-check-inline">{{.Label}}</label>
+                                                {{end}}
                                             </div>
                                         {{end}}
                                     {{end}}
