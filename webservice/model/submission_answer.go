@@ -15,8 +15,10 @@ type SubmissionAnswer struct {
 	Name         string         `json:"name"`
 	Label        string         `json:"label"`
 	Description  string         `json:"description"`
-	HasComment   bool           `json:"has_comment"`
 	Answer       string         `json:"answer"`
+	HasComment   bool           `json:"has_comment"`
 	Comment      sql.NullString `json:"comment"`
+	Choices      []string       `json:"choices"`
 	Submitted    time.Time      `json:"submitted"`
+	Weight       int            `json:"weight"`
 }
