@@ -6,48 +6,42 @@
             <div class="col-12 mb-3">
                 <!-- TODO brede : add link for back button to students -->
                 <a href="{{ if .IsTeacher }}/admin/assignment/{{ .Assignment.ID }}/submissions {{ else }}/assignment/{{.Assignment.ID}}{{ end}}"
-                   class="btn btn-outline-dark mb-3">Go Back</a>
+                   class="btn btn-outline-dark mb-3">Go Backs</a>
                 <div class="col my-1 container pt-3 jumbotron">
-                    {{range .Fields}}
-
-                    {{end}}
                     {{ if .Delivered }}
 
                         <h1 class="display-4">{{ .Course.Code }} {{ .Course.Name }}</h1>
                         <h2 class="display-5">{{ .Assignment.Name }} - {{ .User.Name }}</h2>
 
-                        {{ range .AnswersAndFields }}
+                        {{ range .Answers }}
                             {{if eq .Field.Type "radio"}}
-                                {{$F := .Field}}
                                 {{$A := .Answer}}
-                                {{$Value := ATOI $A.Value}}
                                 {{$V := 1}}
                                 <fieldset>
-                                    <legend>{{$F.Label}}</legend>
-                                    {{range SPLIT_CHOICES $F.Choices}}
+                                    <legend>{{.Label}}</legend>
+                                    {{range SPLIT_CHOICES .Choices}}
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="{{$F.Name}}" id="{{$F.Name}}_{{$V}}" value="{{$V}}"{{if eq $V $Value}} checked{{end}} disabled>
-                                            <label class="form-check-label" for="{{$F.Name}}_{{$V}}">{{.}}</label>
+                                            <input class="form-check-input" type="radio" name="{{.Name}}" id="{{.Name}}_{{$V}}" value="{{$V}}"{{if eq $V $A}} checked{{end}} disabled>
+                                            <label class="form-check-label" for="{{.Name}}_{{$V}}">{{.}}</label>
                                         </div>
                                         {{$V = INCREMENT $V}}
                                     {{end}}
-                                    <small class="form-text text-muted">{{$F.Description}}</small>
+                                    <small class="form-text text-muted">{{.Description}}</small>
                                 </fieldset>
                             {{else if eq .Field.Type "multi-checkbox"}}
-                                {{$F := .Field}}
                                 {{$A := .Answer}}
                                 {{$Value := SPLIT_STRING $A.Value ","}}
                                 {{$V := 1}}
                                 <fieldset>
-                                    <legend>{{$F.Label}}</legend>
-                                    {{range SPLIT_CHOICES $F.Choices}}
+                                    <legend>{{.Label}}</legend>
+                                    {{range SPLIT_CHOICES .Choices}}
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="{{$F.Name}}" id="{{$F.Name}}_{{$V}}" value="{{$V}}"{{if CONTAINS (ITOA $V) $Value}} checked{{end}}>
-                                            <label class="form-check-label" for="{{$F.Name}}_{{$V}}">{{.}}</label>
+                                            <input class="form-check-input" type="checkbox" name="{{.Name}}" id="{{.Name}}_{{$V}}" value="{{$V}}"{{if CONTAINS (ITOA $V) $Value}} checked{{end}}>
+                                            <label class="form-check-label" for="{{.Name}}_{{$V}}">{{.}}</label>
                                         </div>
                                         {{$V = INCREMENT $V}}
                                     {{end}}
-                                    <small class="form-text text-muted">{{$F.Description}}</small>
+                                    <small class="form-text text-muted">{{.Description}}</small>
                                 </fieldset>
                             {{else}}
                                 <div class="form-group{{if eq .Field.Type "checkbox"}} form-check{{end}} mb-3">
@@ -100,28 +94,30 @@
                             <div class="card-body">
                                 {{range .Answers}}
                                     {{if eq .Type "radio"}}
-                                        {{$R := .}}
+                                        {{$A := .}}
+                                        {{$Answer := ATOI .Answer}}
                                         {{$V := 1}}
                                         <fieldset>
-                                            <legend>{{$R.Label}}</legend>
-                                            {{range SPLIT_CHOICES .Choices}}
+                                            <legend>{{.Label}}</legend>
+                                            {{range .Choices}}
                                                 <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="{{$R.Name}}" id="{{$R.Name}}_{{$V}}" value="{{$V}}">
-                                                    <label class="form-check-label" for="{{$R.Name}}_{{$V}}">{{.}}</label>
+                                                    <input class="form-check-input" type="radio" name="{{$A.Name}}" id="{{$A.Name}}_{{$V}}" value="{{$V}}"{{if eq $V $Answer}} checked{{end}}>
+                                                    <label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
                                                 </div>
                                                 {{$V = INCREMENT $V}}
                                             {{end}}
                                             <small class="form-text text-muted">{{.Description}}</small>
                                         </fieldset>
                                     {{else if eq .Type "multi-checkbox"}}
-                                        {{$R := .}}
+                                        {{$A := .Answer}}
+                                        {{$Value := SPLIT_STRING $A.Value ","}}
                                         {{$V := 1}}
                                         <fieldset>
-                                            <legend>{{$R.Label}}</legend>
+                                            <legend>{{.Label}}</legend>
                                             {{range SPLIT_CHOICES .Choices}}
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="{{$R.Name}}" id="{{$R.Name}}_{{$V}}" value="{{$V}}">
-                                                    <label class="form-check-label" for="{{$R.Name}}_{{$V}}">{{.}}</label>
+                                                    <input class="form-check-input" type="checkbox" name="{{.Name}}" id="{{.Name}}_{{$V}}" value="{{$V}}"{{if CONTAINS (ITOA $V) $Value}} checked{{end}}>
+                                                    <label class="form-check-label" for="{{.Name}}_{{$V}}">{{.}}</label>
                                                 </div>
                                                 {{$V = INCREMENT $V}}
                                             {{end}}
@@ -129,19 +125,23 @@
                                         </fieldset>
                                     {{else}}
                                         <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
-                                            {{if ne .Type "checkbox"}}<label for="{{ .Name }}">{{ .Label }}</label>{{end}}
                                             {{ if eq .Type "text" }}
-                                                <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
+                                                <label for="{{ .Name }}">{{ .Label }}</label>
+                                                <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" value="{{ .Answer}}" required>
                                             {{ else if eq .Type "url" }}
-                                                <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
+                                                <label for="{{ .Name }}">{{ .Label }}</label>
+                                                <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" value="{{ .Answer}}" required>
                                             {{ else if eq .Type "textarea" }}
-                                                <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control" required></textarea>
+                                                <label for="{{ .Name }}">{{ .Label }}</label>
+                                                <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>{{ .Answer}}</textarea>
                                             {{ else if eq .Type "number" }}
-                                                <input type="number" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
+                                                <label for="{{ .Name }}">{{ .Label }}</label>
+                                                <input type="number" name="{{ .Name }}" id="{{ .Name }}" class="form-control" value="{{ .Answer}}" required>
                                             {{ else if eq .Type "checkbox" }}
-                                                <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input">
+                                                <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input"{{if eq .Answer "on"}} checked{{end}}>
                                                 <label class="form-check-inline" for="{{ .Name }}">{{ .Label }}</label>
                                             {{else if eq .Type "paragraph"}}
+                                                <legend>{{.Label}}</legend>
                                                 <p class="lead">{{.Description}}</p>
                                             {{ end }}
 
@@ -153,7 +153,7 @@
                                     {{if .HasComment}}
                                         <div class="form-group form-check">
                                             <label for="{{.Name}}_comment">Comment <em>({{.Label}})</em></label>
-                                            <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3" class="form-control"></textarea>
+                                            <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3" class="form-control">{{.Comment.String}}</textarea>
                                         </div>
                                     {{end}}
                                 {{end}}

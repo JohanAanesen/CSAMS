@@ -16,15 +16,15 @@
                     {{ if .Delivered }}
                         {{ range .Answers }}
                             {{if eq .Type "radio"}}
-                                {{$A := .Answer}}
-                                {{$Value := ATOI $A.Value}}
+                                {{$A := .}}
+                                {{$Answer := ATOI .Answer}}
                                 {{$V := 1}}
                                 <fieldset>
                                     <legend>{{.Label}}</legend>
-                                    {{range SPLIT_CHOICES .Choices}}
+                                    {{range .Choices}}
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="{{.Name}}" id="{{.Name}}_{{$V}}" value="{{$V}}"{{if eq $V $Value}} checked{{end}}>
-                                            <label class="form-check-label" for="{{.Name}}_{{$V}}">{{.}}</label>
+                                            <input class="form-check-input" type="radio" name="{{$A.Name}}" id="{{$A.Name}}_{{$V}}" value="{{$V}}"{{if eq $V $Answer}} checked{{end}}>
+                                            <label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
                                         </div>
                                         {{$V = INCREMENT $V}}
                                     {{end}}
@@ -47,19 +47,23 @@
                                 </fieldset>
                             {{else}}
                                 <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
-                                    {{if ne .Type "checkbox"}}<label for="{{ .Name }}">{{ .Label }}</label>{{end}}
                                     {{ if eq .Type "text" }}
+                                        <label for="{{ .Name }}">{{ .Label }}</label>
                                         <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" value="{{ .Answer}}" required>
                                     {{ else if eq .Type "url" }}
+                                        <label for="{{ .Name }}">{{ .Label }}</label>
                                         <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" value="{{ .Answer}}" required>
                                     {{ else if eq .Type "textarea" }}
+                                        <label for="{{ .Name }}">{{ .Label }}</label>
                                         <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>{{ .Answer}}</textarea>
                                     {{ else if eq .Type "number" }}
+                                        <label for="{{ .Name }}">{{ .Label }}</label>
                                         <input type="number" name="{{ .Name }}" id="{{ .Name }}" class="form-control" value="{{ .Answer}}" required>
                                     {{ else if eq .Type "checkbox" }}
                                         <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input"{{if eq .Answer "on"}} checked{{end}}>
                                         <label class="form-check-inline" for="{{ .Name }}">{{ .Label }}</label>
                                     {{else if eq .Type "paragraph"}}
+                                        <legend>{{.Label}}</legend>
                                         <p class="lead">{{.Description}}</p>
                                     {{ end }}
 
@@ -82,7 +86,7 @@
                                 {{$V := 1}}
                                 <fieldset>
                                     <legend>{{$R.Label}}</legend>
-                                    {{range SPLIT_CHOICES .Choices}}
+                                    {{range .Choices}}
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="{{$R.Name}}" id="{{$R.Name}}_{{$V}}" value="{{$V}}">
                                             <label class="form-check-label" for="{{$R.Name}}_{{$V}}">{{.}}</label>
@@ -107,19 +111,23 @@
                                 </fieldset>
                             {{else}}
                                 <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
-                                    {{if ne .Type "checkbox"}}<label for="{{ .Name }}">{{ .Label }}</label>{{end}}
                                     {{ if eq .Type "text" }}
+                                        <label for="{{ .Name }}">{{ .Label }}</label>
                                         <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
                                     {{ else if eq .Type "url" }}
+                                        <label for="{{ .Name }}">{{ .Label }}</label>
                                         <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
                                     {{ else if eq .Type "textarea" }}
+                                        <label for="{{ .Name }}">{{ .Label }}</label>
                                         <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control" required></textarea>
                                     {{ else if eq .Type "number" }}
+                                        <label for="{{ .Name }}">{{ .Label }}</label>
                                         <input type="number" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
                                     {{ else if eq .Type "checkbox" }}
                                         <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input">
                                         <label class="form-check-inline" for="{{ .Name }}">{{ .Label }}</label>
                                     {{else if eq .Type "paragraph"}}
+                                        <legend>{{.Label}}</legend>
                                         <p class="lead">{{.Description}}</p>
                                     {{ end }}
 
