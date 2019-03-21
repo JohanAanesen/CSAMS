@@ -13,13 +13,6 @@ type Review struct {
 	Form   Form `json:"form"`
 }
 
-// ReviewAnswer holds the data for a single review answer
-type ReviewAnswer struct {
-	Type   string
-	Name   string
-	Label  string
-	Answer string
-}
 
 // FullReview holds specific data about an review for displaying it
 type FullReview struct {
