@@ -801,26 +801,36 @@ func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	/*
-		com := MergedAnswerField{}
-		// Only merge if user has delivered
-		if len(answers) > 0 {
-			// Make sure answers and fields are same length before merging
-			if len(answers) != len(form.Form.Fields) {
-				log.Println("Error: answers(" + strconv.Itoa(len(answers)) + ") is not equal length as fields(" + strconv.Itoa(len(form.Form.Fields)) + ")! (assignment.go)")
-				ErrorHandler(w, r, http.StatusInternalServerError)
-				return
-			}
-			// Merge field and answer if assignment is delivered
+	var totalWeight float32
+	var weightScore float32
+	var scorePercent float32
+	var isWeighted = false
 
-			for i := 0; i < len(form.Form.Fields); i++ {
-				com.Items = append(com.Items, Combined{
-					Answer: answers[i],
-					Field:  form.Form.Fields[i],
-				})
+	for _, item := range answers {
+		totalWeight += float32(item.Weight)
+		if item.Type == "checkbox" {
+			if item.Answer == "on" {
+				weightScore += float32(item.Weight)
+			}
+
+		} else if item.Type == "radio" {
+			for k := range item.Choices {
+				ans, _ := strconv.Atoi(item.Answer)
+				if ans == k {
+					K := float32(k)
+					L := float32(len(item.Choices))
+					V := float32(item.Weight) * (K / L)
+					weightScore += V
+				}
 			}
 		}
-	*/
+	}
+
+	if totalWeight > 0 {
+		isWeighted = true
+	}
+
+	scorePercent = (weightScore / totalWeight) * 100
 
 	// Set header content-type and status code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -835,6 +845,10 @@ func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) 
 	v.Vars["AssignmentID"] = assignmentID
 	v.Vars["User"] = user
 	v.Vars["Answers"] = answers
+	v.Vars["TotalWeight"] = totalWeight
+	v.Vars["WeightScore"] = weightScore
+	v.Vars["ScorePercent"] = scorePercent
+	v.Vars["IsWeighted"] = isWeighted
 
 	// Render view
 	v.Render(w)
