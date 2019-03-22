@@ -21,10 +21,10 @@ func NewAssignmentRepository(db *sql.DB) *AssignmentRepository {
 // Fetch func
 func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 	/*
-	loc, err := time.LoadLocation(os.Getenv("TIME_ZONE"))
-	if err != nil {
-		log.Println(err.Error())
-	}
+		loc, err := time.LoadLocation(os.Getenv("TIME_ZONE"))
+		if err != nil {
+			log.Println(err.Error())
+		}
 	*/
 	result := model.Assignment{}
 
@@ -44,9 +44,9 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 			&result.ReviewID, &result.Reviewers, &result.ValidationID)
 		// TODO time, find some fix for this
 		/*
-		result.Created = result.Created.In(loc).Add(-time.Hour)
-		result.Deadline = result.Deadline.In(loc).Add(-time.Hour)
-		result.Publish = result.Deadline.In(loc).Add(-time.Hour)
+			result.Created = result.Created.In(loc).Add(-time.Hour)
+			result.Deadline = result.Deadline.In(loc).Add(-time.Hour)
+			result.Publish = result.Deadline.In(loc).Add(-time.Hour)
 		*/
 
 		if err != nil {
