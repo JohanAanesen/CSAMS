@@ -1,61 +1,54 @@
 -- Adminer 4.7.1 MySQL dump
 
 SET NAMES utf8;
-SET time_zone = '+00:00';
+SET time_zone = '+01:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 INSERT INTO `adminfaq` (`id`, `timestamp`, `questions`) VALUES
-(1,	'2019-03-06 15:53:00',	'Q: How do I make a course?\n--------------------------------\n**A:** Dashboard -> Courses -> new. And create the course there\n\nQ: How do I invite students to course?\n--------------------------------\n**A:** You go to [admin/course](/admin/course) or [admin/](/admin) and on the course card, click the copy button to get the `join course through link` and send that to all students in preferred way (ex: email)\n\nQ: How do I make an assignment?\n--------------------------------\n**A:** Dashboard -> Assignments-> new. And create the assignment there');
+(1, '2019-03-06 15:53:00', 'Q: How do I make a course?\n--------------------------------\n**A:** Dashboard -> Courses -> new. And create the course there\n\nQ: How do I invite students to course?\n--------------------------------\n**A:** You go to [admin/course](/admin/course) or [admin/](/admin) and on the course card, click the copy button to get the `join course through link` and send that to all students in preferred way (ex: email)\n\nQ: How do I make an assignment?\n--------------------------------\n**A:** Dashboard -> Assignments-> new. And create the assignment there');
 
-INSERT INTO `assignments` (`id`, `name`, `description`, `created`, `publish`, `deadline`, `course_id`, `submission_id`, `review_id`, `validation_id`, `reviewers`) VALUES
-(1,	'Test Assignment',	'# Test Assignment\r\n## This is assignment\r\n### Good assignment\r\n`5/7`',	'2019-03-18 11:52:10',	'2019-03-18 11:51:00',	'2019-03-23 18:00:00',	2,	NULL,	NULL,	NULL,	1),
-(2,	'Test assignment',	'# Testing',	'2019-03-20 10:03:54',	'2019-03-25 12:00:00',	'2019-03-28 23:59:00',	1,	NULL,	NULL,	NULL,	1);
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (1, 'Ken Thompson', 'hei@gmail.com', 1, 'mannen@harmannenfalt.no', '$2a$14$MZj24p41j2NNGn6JDsQi0OsDb56.0LcfrIdgjE6WmZzp58O6V/VhK');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (2, 'Frode Haug', 'frodehg@teach.ntnu.no', 1, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (3, 'Ola Nordmann', 'olanor@stud.ntnu.no', 1, 'swag-meister69@ggmail.com', '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (4, 'Johan Klausen', 'johkl@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (5, 'Stian Fjerdingstad', 'stianfj@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (6, 'Svein Nilsen', 'sveini@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (7, 'Kjell Are-Kjelterud', 'kjellak@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (8, 'Marius Lillevik', 'mariuslil@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (9, 'Jorun Skaalnes', 'jorunska@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
+INSERT INTO users (id, name, email_student, teacher, email_private, password) VALUES (10, 'Klaus Aanesen', 'klausaa@stu.ntnu.no', 0, null, '$2a$14$vH/ibjwwXqBmOgJt8JCiK.S7D2r0VrBu46pYdCLs/dJMMk1aBV8RC');
 
-INSERT INTO `course` (`id`, `hash`, `coursecode`, `coursename`, `teacher`, `description`, `year`, `semester`) VALUES
-(1,	'bi7n4as48c6b4j2l0fv0',	'IMT3673',	'Mobile Programming',	2,	'Mobile Programming Course as part of Bachelor in Programming',	2019,	'spring'),
-(2,	'bi7ng8k48c6b4j2l0fvg',	'IMT1337',	'Test Course',	3,	'# IMT1337 - Test Course\r\n## This is course\r\n### Good course\r\n`10/10`',	2019,	'spring');
+INSERT INTO course (id, hash, coursecode, coursename, teacher, description, year, semester) VALUES (1, 'bi4d2164gh0gbb7r94qg', 'IMT2681', 'Cloud Technologies', 3, '# IMT2681 Cloud Technologies', 2019, 'fall');
 
-INSERT INTO `fields` (`id`, `form_id`, `type`, `name`, `description`, `label`, `hasComment`, `priority`, `weight`, `choices`) VALUES
-(3,	1,	'url',	'testing_svein_gitrepo_w_comment_url_2',	'',	'Git Repository',	1,	0,	0,	''),
-(38,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_29',	'',	'The app has a custom icon (not the default Android one).',	0,	0,	1,	''),
-(39,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_30',	'',	'The app MainActivity loads.',	0,	1,	1,	''),
-(40,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_31',	'',	'The app\'s MainActivity contains all required UI elements as per SPEC.',	0,	2,	1,	''),
-(41,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_32',	'Pressing Android\'s \"back button\" on the MainActivity always quits the app, AND, this behaviour is not hardcoded in the code, ie. the code does not handle the Android back button presses, but instead, relies on the default Android behaviour.',	'\"Back button\"',	0,	3,	1,	''),
-(42,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_33',	'',	'Pressing btn_transactions moves the user to TransactionsActivity.',	0,	4,	1,	''),
-(43,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_34',	'',	'The default founding transaction from Angel is done correctly and visible in the TransactionsActivity. The user balance in lbl_balance matches the funding transaction.',	0,	5,	1,	''),
-(44,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_35',	'',	'TransactionsActivity shows new payments correctly.',	0,	6,	1,	''),
-(45,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_36',	'',	'TransactionsActivity moves the user back to MainActivity on \"back botton\" press.',	0,	7,	1,	''),
-(46,	2,	'checkbox',	'lab_1_mobile_2019_checkbox_37',	'',	'Pressing btn_transfer moves the user to TransferActivity.',	0,	8,	1,	'');
+INSERT INTO usercourse (userid, courseid) VALUES (3, 1);
+INSERT INTO usercourse (userid, courseid) VALUES (4, 1);
+INSERT INTO usercourse (userid, courseid) VALUES (5, 1);
+INSERT INTO usercourse (userid, courseid) VALUES (6, 1);
+INSERT INTO usercourse (userid, courseid) VALUES (7, 1);
+INSERT INTO usercourse (userid, courseid) VALUES (8, 1);
+INSERT INTO usercourse (userid, courseid) VALUES (9, 1);
+INSERT INTO usercourse (userid, courseid) VALUES (10, 1);
 
 INSERT INTO `forms` (`id`, `prefix`, `name`, `created`) VALUES
-(1,	'testing_svein_gitrepo_w_comment',	'Testing (Svein) GitRepo w/Comment',	'2019-03-19 09:27:55'),
-(2,	'lab_1_mobile_2019',	'Lab 1 - Mobile 2019',	'2019-03-20 10:14:13');
+(1, 'git_repository_w_comment', 'Git Repository w/Comment', '2019-03-22 08:10:16'),
+(2, 'lab_1_cloud_2019', 'Lab 1 - Cloud 2019', '2019-03-22 08:14:42');
 
-INSERT INTO `logs` (`userid`, `timestamp`, `activity`, `assignmentid`, `courseid`, `submissionid`, `oldvalue`, `newValue`) VALUES
-(2,	'2019-03-18 11:25:47',	'COURSE-CREATED',	NULL,	1,	NULL,	NULL,	NULL),
-(2,	'2019-03-18 11:25:47',	'JOINED-COURSE',	NULL,	1,	NULL,	NULL,	NULL),
-(3,	'2019-03-18 11:51:14',	'COURSE-CREATED',	NULL,	2,	NULL,	NULL,	NULL),
-(3,	'2019-03-18 11:51:14',	'JOINED-COURSE',	NULL,	2,	NULL,	NULL,	NULL);
-
+INSERT INTO `fields` (`id`, `form_id`, `type`, `name`, `description`, `label`, `hasComment`, `priority`, `weight`, `choices`) VALUES
+(1, 1, 'url', 'git_repository_w_comment_0', 'Make sure it is public', 'Git Repository', 1, 0, 0, ''),
+(2, 2, 'paragraph', 'lab_1_cloud_2019_1', 'Before you start filling out, just know that you are a beatiful person! I love you', 'Some information', 0, 0, 0, ''),
+(3, 2, 'checkbox', 'lab_1_cloud_2019_0', '', 'Does the program compile?', 0, 1, 1, ''),
+(4, 2, 'radio', 'lab_1_cloud_2019_2', 'Mark the closest one.\nEg.: 84,5% -> 80%', 'Test covarage', 0, 2, 4, '10%,20%,30%,40%,50%,60%,70%,80%,90%,100%'),
+(5, 2, 'checkbox', 'lab_1_cloud_2019_3', 'Does the request work?', 'GET /api', 0, 3, 1, ''),
+(6, 2, 'text', 'lab_1_cloud_2019_4', 'Is the duration fomratted in ISO 20915092835209 ?', 'GET /api', 0, 4, 1, ''),
+(7, 2, 'text', 'lab_1_cloud_2019_5', 'Does it work?', 'GET /api/foo', 0, 5, 1, ''),
+(8, 2, 'text', 'lab_1_cloud_2019_6', 'Does it work?', 'POST /api/foo', 0, 6, 1, '');
 
 INSERT INTO `reviews` (`id`, `form_id`) VALUES
-(1,	2);
-
+(1, 2);
 
 INSERT INTO `submissions` (`id`, `form_id`) VALUES
-(1,	1);
+(1, 1);
 
-INSERT INTO `usercourse` (`userid`, `courseid`) VALUES
-(2,	1),
-(3,	2),
-(1,	1);
-
-INSERT INTO `users` (`id`, `name`, `email_student`, `teacher`, `email_private`, `password`) VALUES
-(1,	'Svein Are Danielsen',	'sveiad@stud.ntnu.no',	1,	NULL,	'$2a$14$ZiThiqRkYDj9wS5wyJjbl.jtpB8JLeN2Zztl6Kudhr.2e.bPdmk9W'),
-(2,	'Christopher Frantz',	'christopher.frantz@ntnu.no',	1,	NULL,	'$2a$14$flEKp.4Q136bdgTopw.9wOg2JQ2Jp.rdMYyrDr4Fxwfa0X26DTHrq'),
-(3,	'Brede Fritjof Klausen',	'bredefk@stud.ntnu.no',	1,	NULL,	'$2a$14$rVyqyofcButdQhTB1gABtOlZj6YC8Y27wt6nR.9J/McPba1hCJ7oS');
-
-
-
--- 2019-03-20 10:42:23
+INSERT INTO `assignments` (`id`, `name`, `description`, `created`, `publish`, `deadline`, `course_id`, `submission_id`, `review_id`, `validation_id`, `reviewers`) VALUES
+(1, 'Lab 1', 'Make easiest rest api', '2019-03-22 09:15:15', '2019-03-22 10:00:00', '2019-03-22 12:00:00', 1, 1, 1, NULL, 2);
