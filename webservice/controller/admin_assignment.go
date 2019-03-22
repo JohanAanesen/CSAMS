@@ -732,32 +732,62 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/* TODO (Svein): Adapt this to a 2DD-slice
-	var totalWeight float32
-	var weightScore float32
-	var scorePercent float32
-	var isWeighted = false
+	type WeightData struct {
+		IsWeighted bool
+		Total float32
+		Score float32
+		Percent float32
+	}
 
-	for _, item := range answers {
-		totalWeight += float32(item.Weight)
-		if item.Type == "checkbox" {
-			if item.Answer == "on" {
-				weightScore += float32(item.Weight)
-			}
+	weights := make([]WeightData, 0)
 
-		} else if item.Type == "radio" {
-			for k := range item.Choices {
-				ans, _ := strconv.Atoi(item.Answer)
-				if ans == (k + 1) {
-					K := float32(k + 1)
-					L := float32(len(item.Choices))
-					V := float32(item.Weight) * (K / L)
-					weightScore += V
+	for _, review := range reviews {
+		var totalWeight float32
+		var weightScore float32
+
+		for _, item := range review {
+			totalWeight += float32(item.Weight)
+			if item.Type == "checkbox" {
+				if item.Answer == "on" {
+					weightScore += float32(item.Weight)
+				}
+
+			} else if item.Type == "radio" {
+				for k := range item.Choices {
+					ans, _ := strconv.Atoi(item.Answer)
+					if ans == (k + 1) {
+						K := float32(k + 1)
+						L := float32(len(item.Choices))
+						V := float32(item.Weight) * (K / L)
+						weightScore += V
+					}
 				}
 			}
 		}
+
+		weights = append(weights, WeightData{
+			IsWeighted: totalWeight > 0,
+			Total: totalWeight,
+			Score: weightScore,
+			Percent: (weightScore / totalWeight) * 100.0,
+		})
 	}
-	*/
+
+	totalWeights := WeightData{
+		IsWeighted: false,
+	}
+	var sum float32
+	for _, item := range weights {
+		sum += item.Score
+	}
+
+	if sum > 0 {
+		avg := sum / float32(len(weights))
+		totalWeights.IsWeighted = true
+		totalWeights.Score = avg
+		totalWeights.Total = weights[0].Total
+		totalWeights.Percent = (totalWeights.Score / totalWeights.Total) * 100.0
+	}
 
 	// Set header content-type and status code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -772,6 +802,8 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["AssignmentID"] = assignmentID
 	v.Vars["User"] = user
 	v.Vars["Reviews"] = reviews
+	v.Vars["Weights"] = weights
+	v.Vars["TotalWeights"] = totalWeights
 
 	// Render view
 	v.Render(w)
