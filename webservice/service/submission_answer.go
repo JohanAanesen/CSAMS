@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/repositroy"
+	"time"
 )
 
 // SubmissionAnswerService struct
@@ -81,4 +82,8 @@ func (s *SubmissionAnswerService) Update(answers []*model.SubmissionAnswer) erro
 // DeleteFromAssignment func
 func (s *SubmissionAnswerService) DeleteFromAssignment(assignmentID int) error {
 	return s.submissionAnswerRepo.DeleteFromAssignment(assignmentID)
+}
+
+func (s *SubmissionAnswerService) FetchSubmittedTime(userID, assignmentID int) (time.Time, bool, error) {
+	return s.submissionAnswerRepo.FetchSubmittedTime(userID, assignmentID)
 }
