@@ -33,7 +33,7 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 		// Get userid and convert to int
 		uid, err := strconv.Atoi(array[0])
 		if err != nil {
-			log.Println("string convert atoi array[1]", err.Error())
+			log.Println("string convert atoi array[0]", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}

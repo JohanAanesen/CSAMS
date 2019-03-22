@@ -12,8 +12,10 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Combined holds answer and field
@@ -371,8 +373,18 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO time-norwegian
+	loc, err := time.LoadLocation(os.Getenv("TIME_ZONE"))
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	// TODO fix hack
+	deadline := assignment.Deadline.In(loc).Add(-time.Hour)
+
 	// Check if the deadline is reached TODO fix this quick fix time-norwegian
-	var isDeadlineOver = assignment.Deadline.Before(util.GetTimeInCorrectTimeZone())
+
+	var isDeadlineOver = deadline.Before(util.GetTimeInCorrectTimeZone())
 	if isDeadlineOver {
 		log.Println("Error: Deadline is reached! (assignment.go)")
 		ErrorHandler(w, r, http.StatusBadRequest)
