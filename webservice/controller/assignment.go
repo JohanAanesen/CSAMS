@@ -127,10 +127,9 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO (Svein): Check if this is correct
-	myReviews, err := services.ReviewAnswer.FetchForUser(currentUser.ID, assignment.ID)
+	reviews, err := services.ReviewAnswer.FetchForUser(currentUser.ID, assignmentID)
 	if err != nil {
-		log.Println("services, review answer, fetch for reviewer", err)
+		log.Println("review answer service, fetch for target", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -156,7 +155,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["CourseID"] = course.ID
 	v.Vars["Reviews"] = filteredSubmissionReviews
 	v.Vars["HasBeenValidated"] = hasBeenValidated
-	v.Vars["MyReviews"] = myReviews // TODO (Svein): Fix this, all in one slice, split into N-slices based on reviewer
+	v.Vars["MyReviews"] = reviews
 	v.Vars["IsTeacher"] = currentUser.Teacher
 
 	v.Render(w)
