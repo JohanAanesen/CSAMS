@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
@@ -692,9 +693,13 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Services
+	services := service.NewServices(db.GetDB())
+
 	reviewRepo := model.ReviewRepository{}
 
-	hasBeenReviewed, err := reviewRepo.HasBeenReviewed(targetID, currentUser.ID, assignmentID)
+	//hasBeenReviewed, err := reviewRepo.HasBeenReviewed(targetID, currentUser.ID, assignmentID)
+	hasBeenReviewed, err := services.ReviewAnswer.HasBeenReviewed(targetID, currentUser.ID, assignmentID)
 	if err != nil {
 		log.Println("has been reviewed", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -715,14 +720,45 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get form and log possible error
-	formRepo := model.FormRepositoryOld{}
-	form, err := formRepo.GetReviewFormFromAssignmentID(assignmentID)
+	//formRepo := model.FormRepositoryOld{}
+	//form, err := formRepo.GetReviewFormFromAssignmentID(assignmentID)
+	form, err := services.Review.FetchFromAssignment(assignmentID)
 	if err != nil {
 		log.Println("get review form from assignment id", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
+	reviewAnswer := make([]model.ReviewAnswer, 0)
+
+	for _, field := range form.Form.Fields {
+		temp := model.ReviewAnswer{
+			UserReviewer: currentUser.ID,
+			UserTarget:   targetID,
+			AssignmentID: assignmentID,
+			ReviewID:     reviewID,
+			Type:         field.Type,
+			Name:         field.Name,
+			Label:        field.Label,
+			Description:  field.Description,
+			Answer:       p.Sanitize(r.FormValue(field.Name)),
+			HasComment:   field.HasComment,
+			Choices:      field.Choices,
+			Weight:       field.Weight,
+		}
+
+		if field.HasComment {
+			comment := p.Sanitize(r.FormValue(field.Name + "_comment"))
+			temp.Comment = sql.NullString{
+				String: comment,
+				Valid:  comment != "",
+			}
+		}
+
+		reviewAnswer = append(reviewAnswer, temp)
+	}
+
+	/*
 	fullReview := model.FullReview{
 		Reviewer:     currentUser.ID,
 		Target:       targetID,
@@ -731,7 +767,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		Answers:      make([]model.ReviewAnswer, 0),
 	}
 
-	for _, field := range form.Fields {
+	for _, field := range form.Form.Fields {
 		answer := model.ReviewAnswer{
 			Type:   field.Type,
 			Name:   field.Name,
@@ -741,12 +777,16 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 
 		fullReview.Answers = append(fullReview.Answers, answer)
 	}
+	*/
 
-	err = reviewRepo.InsertReviewAnswers(fullReview)
-	if err != nil {
-		log.Println("insert review answers", err)
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
+	//err = reviewRepo.InsertReviewAnswers(fullReview)
+	for _, item := range reviewAnswer {
+		_, err = services.ReviewAnswer.Insert(item)
+		if err != nil {
+			log.Println("services, review answer, insert", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 	}
 
 	// TODO (Svein): Want to send back to /assignment/{id}. HOW TO?
