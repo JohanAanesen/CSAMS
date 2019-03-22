@@ -232,9 +232,11 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Services
+	services := service.NewServices(db.GetDB())
+
 	// Get assignment and log possible error
-	assignmentRepo := model.AssignmentRepository{}
-	assignment, err := assignmentRepo.GetSingle(assignmentID)
+	assignment, err := services.Assignment.Fetch(assignmentID)
 	if err != nil {
 		log.Println("get single assignment", err.Error())
 		ErrorHandler(w, r, http.StatusBadRequest)
@@ -251,12 +253,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	// Get current user
 	currentUser := session.GetUserFromSession(r)
 
-	// Services
-	submissionService := service.NewSubmissionService(db.GetDB())
-	courseService := service.NewCourseService(db.GetDB())
-	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
-
-	delivered, err := submissionAnswerService.HasUserSubmitted(assignmentID, currentUser.ID)
+	delivered, err := services.SubmissionAnswer.HasUserSubmitted(assignmentID, currentUser.ID)
 	if err != nil {
 		log.Println("services, submission answer, has user submitted", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -264,7 +261,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get form and log possible error
-	submissionForm, err := submissionService.FetchFromAssignment(assignment.ID)
+	submissionForm, err := services.Submission.FetchFromAssignment(assignment.ID)
 	if err != nil {
 		log.Println("get submission form from assignment id", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -272,7 +269,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get course and log possible error
-	course, err := courseService.Fetch(assignment.CourseID)
+	course, err := services.Course.Fetch(assignment.CourseID)
 	if err != nil {
 		log.Println("get single course", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -280,7 +277,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get answers to user if he has delivered
-	answers, err := submissionAnswerService.FetchUserAnswers(currentUser.ID, assignment.ID)
+	answers, err := services.SubmissionAnswer.FetchUserAnswers(currentUser.ID, assignment.ID)
 	if err != nil {
 		log.Println("get user answers", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -532,17 +529,10 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	// Services
 	services := service.NewServices(db.GetDB())
 
-	// Initialize repositories
-	//assignmentRepo := &model.AssignmentRepository{}
-	//courseRepo := &model.CourseRepository{}
-	//formRepo := model.FormRepositoryOld{}
-	//reviewRepo := model.ReviewRepository{}
-
 	// Current user
 	currentUser := session.GetUserFromSession(r)
 
 	// Get relevant assignment
-	//assignment, err := assignmentRepo.GetSingle(assignmentID)
 	assignment, err := services.Assignment.Fetch(assignmentID)
 	if err != nil {
 		log.Println("get single assignment", err.Error())
@@ -550,7 +540,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//hasBeenReviewed, err := reviewRepo.HasBeenReviewed(user.ID, currentUser.ID, assignment.ID)
 	hasBeenReviewed, err := services.ReviewAnswer.HasBeenReviewed(user.ID, currentUser.ID, assignment.ID)
 	if err != nil {
 		log.Println("has been reviewed", err.Error())
@@ -579,7 +568,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get course and log possible error
-	//course, err := courseRepo.GetSingle(assignment.CourseID)
 	course, err := services.Course.Fetch(assignment.CourseID)
 	if err != nil {
 		log.Println("course get single", err.Error())
@@ -588,7 +576,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get form and log possible error
-	//form, err := formRepo.GetSubmissionFormFromAssignmentID(assignment.ID)
 	form, err := services.Submission.FetchFromAssignment(assignment.ID)
 	if err != nil {
 		log.Println("get submission from form assignment id", err.Error())
@@ -597,7 +584,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get assignmentAnswers to user if he has delivered
-	//assignmentAnswers, err := model.GetUserAnswers(userID, assignmentID)
 	assignmentAnswers, err := services.SubmissionAnswer.FetchUserAnswers(userID, assignment.ID)
 	if err != nil {
 		log.Println("get user assignmentAnswers", err.Error())
@@ -627,7 +613,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	*/
 
 	// Get review form for the assignment
-	//review, err := reviewRepo.GetSingle(assignmentID)
 	review, err := services.Review.FetchFromAssignment(assignment.ID)
 	if err != nil {
 		log.Println("get single review", err.Error())
@@ -696,9 +681,6 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	// Services
 	services := service.NewServices(db.GetDB())
 
-	reviewRepo := model.ReviewRepository{}
-
-	//hasBeenReviewed, err := reviewRepo.HasBeenReviewed(targetID, currentUser.ID, assignmentID)
 	hasBeenReviewed, err := services.ReviewAnswer.HasBeenReviewed(targetID, currentUser.ID, assignmentID)
 	if err != nil {
 		log.Println("has been reviewed", err.Error())
@@ -720,8 +702,6 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get form and log possible error
-	//formRepo := model.FormRepositoryOld{}
-	//form, err := formRepo.GetReviewFormFromAssignmentID(assignmentID)
 	form, err := services.Review.FetchFromAssignment(assignmentID)
 	if err != nil {
 		log.Println("get review form from assignment id", err.Error())
@@ -779,7 +759,6 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	}
 	*/
 
-	//err = reviewRepo.InsertReviewAnswers(fullReview)
 	for _, item := range reviewAnswer {
 		_, err = services.ReviewAnswer.Insert(item)
 		if err != nil {
