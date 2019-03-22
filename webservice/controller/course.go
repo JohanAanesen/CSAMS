@@ -64,8 +64,6 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("incourse", inCourse)
-
 	if !inCourse || (!inCourse && !currentUser.Teacher) {
 		log.Println("user not participant of class")
 		ErrorHandler(w, r, http.StatusUnauthorized)

@@ -4,6 +4,9 @@ import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
+	"log"
+	"os"
+	"time"
 )
 
 // AssignmentRepository struct
@@ -20,6 +23,10 @@ func NewAssignmentRepository(db *sql.DB) *AssignmentRepository {
 
 // Fetch func
 func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
+	loc, err := time.LoadLocation(os.Getenv("TIME_ZONE"))
+	if err != nil {
+		log.Println(err.Error())
+	}
 	result := model.Assignment{}
 
 	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, reviewers FROM assignments WHERE id = ?"
@@ -34,6 +41,10 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 	for rows.Next() {
 		err = rows.Scan(&result.ID, &result.Name, &result.Description, &result.Created, &result.Publish,
 			&result.Deadline, &result.CourseID, &result.SubmissionID, &result.ReviewID, &result.Reviewers)
+		// TODO time, find some fix for this
+		result.Created = result.Created.In(loc).Add(-time.Hour)
+		result.Deadline = result.Deadline.In(loc).Add(-time.Hour)
+		result.Publish = result.Deadline.In(loc).Add(-time.Hour)
 		if err != nil {
 			return &result, err
 		}

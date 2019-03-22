@@ -239,7 +239,6 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	// Give error if assignment doesn't exists
 	if assignment.Name == "" {
 		log.Println("Error: assignment with id '" + id + "' doesn't exist! (assignment.go)")
@@ -354,7 +353,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if the deadline is reached TODO time-norwegian
+	// Check if the deadline is reached TODO fix this quick fix time-norwegian
 	var isDeadlineOver = assignment.Deadline.Before(util.GetTimeInCorrectTimeZone())
 	if isDeadlineOver {
 		log.Println("Error: Deadline is reached! (assignment.go)")

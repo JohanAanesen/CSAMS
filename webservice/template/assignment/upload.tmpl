@@ -9,7 +9,7 @@
 
                 <h1 class="display-4">{{ .Course.Code }} {{ .Course.Name }}</h1>
                 <h2 class="display-5">{{ .Assignment.Name }}</h2>
-                <p class="lead" id="countDown"></p>
+                <p class="lead" id="countDown"><strong>Deadline: </strong>{{ PRETTYTIME .Assignment.Deadline }}</p> <!-- TODO time change back to countdown -->
                 <form method="post" action="/assignment/submission/update?id={{ .Assignment.ID }}">
 
                     <!-- TODO (Brede) : This could be one for each loop with only .AnswersAndFields -->
@@ -23,7 +23,9 @@
                                     <legend>{{.Label}}</legend>
                                     {{range SPLIT_CHOICES .Choices}}
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="{{.Name}}" id="{{.Name}}_{{$V}}" value="{{$V}}"{{if eq $V $Value}} checked{{end}}>
+                                            <input class="form-check-input" type="radio" name="{{.Name}}"
+                                                   id="{{.Name}}_{{$V}}"
+                                                   value="{{$V}}"{{if eq $V $Value}} checked{{end}}>
                                             <label class="form-check-label" for="{{.Name}}_{{$V}}">{{.}}</label>
                                         </div>
                                         {{$V = INCREMENT $V}}
@@ -38,7 +40,9 @@
                                     <legend>{{.Label}}</legend>
                                     {{range SPLIT_CHOICES .Choices}}
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="{{.Name}}" id="{{.Name}}_{{$V}}" value="{{$V}}"{{if CONTAINS (ITOA $V) $Value}} checked{{end}}>
+                                            <input class="form-check-input" type="checkbox" name="{{.Name}}"
+                                                   id="{{.Name}}_{{$V}}"
+                                                   value="{{$V}}"{{if CONTAINS (ITOA $V) $Value}} checked{{end}}>
                                             <label class="form-check-label" for="{{.Name}}_{{$V}}">{{.}}</label>
                                         </div>
                                         {{$V = INCREMENT $V}}
@@ -49,15 +53,20 @@
                                 <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
                                     {{if ne .Type "checkbox"}}<label for="{{ .Name }}">{{ .Label }}</label>{{end}}
                                     {{ if eq .Type "text" }}
-                                        <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" value="{{ .Answer}}" required>
+                                        <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control"
+                                               value="{{ .Answer}}" required>
                                     {{ else if eq .Type "url" }}
-                                        <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" value="{{ .Answer}}" required>
+                                        <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control"
+                                               value="{{ .Answer}}" required>
                                     {{ else if eq .Type "textarea" }}
-                                        <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>{{ .Answer}}</textarea>
+                                        <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control"
+                                                  required>{{ .Answer}}</textarea>
                                     {{ else if eq .Type "number" }}
-                                        <input type="number" name="{{ .Name }}" id="{{ .Name }}" class="form-control" value="{{ .Answer}}" required>
+                                        <input type="number" name="{{ .Name }}" id="{{ .Name }}" class="form-control"
+                                               value="{{ .Answer}}" required>
                                     {{ else if eq .Type "checkbox" }}
-                                        <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input"{{if eq .Answer "on"}} checked{{end}}>
+                                        <input type="checkbox" name="{{.Name}}" id="{{.Name}}"
+                                               class="form-check-input"{{if eq .Answer "on"}} checked{{end}}>
                                         <label class="form-check-inline" for="{{ .Name }}">{{ .Label }}</label>
                                     {{else if eq .Type "paragraph"}}
                                         <p class="lead">{{.Description}}</p>
@@ -71,7 +80,8 @@
                             {{if .HasComment}}
                                 <div class="form-group form-check">
                                     <label for="{{.Name}}_comment">Comment <em>({{.Label}})</em></label>
-                                    <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3" class="form-control">{{.Comment.String}}</textarea>
+                                    <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3"
+                                              class="form-control">{{.Comment.String}}</textarea>
                                 </div>
                             {{end}}
                         {{ end }}
@@ -84,7 +94,8 @@
                                     <legend>{{$R.Label}}</legend>
                                     {{range SPLIT_CHOICES .Choices}}
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="{{$R.Name}}" id="{{$R.Name}}_{{$V}}" value="{{$V}}">
+                                            <input class="form-check-input" type="radio" name="{{$R.Name}}"
+                                                   id="{{$R.Name}}_{{$V}}" value="{{$V}}">
                                             <label class="form-check-label" for="{{$R.Name}}_{{$V}}">{{.}}</label>
                                         </div>
                                         {{$V = INCREMENT $V}}
@@ -98,7 +109,8 @@
                                     <legend>{{$R.Label}}</legend>
                                     {{range SPLIT_CHOICES .Choices}}
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="{{$R.Name}}" id="{{$R.Name}}_{{$V}}" value="{{$V}}">
+                                            <input class="form-check-input" type="checkbox" name="{{$R.Name}}"
+                                                   id="{{$R.Name}}_{{$V}}" value="{{$V}}">
                                             <label class="form-check-label" for="{{$R.Name}}_{{$V}}">{{.}}</label>
                                         </div>
                                         {{$V = INCREMENT $V}}
@@ -109,13 +121,17 @@
                                 <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
                                     {{if ne .Type "checkbox"}}<label for="{{ .Name }}">{{ .Label }}</label>{{end}}
                                     {{ if eq .Type "text" }}
-                                        <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
+                                        <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control"
+                                               required>
                                     {{ else if eq .Type "url" }}
-                                        <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
+                                        <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control"
+                                               required>
                                     {{ else if eq .Type "textarea" }}
-                                        <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control" required></textarea>
+                                        <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control"
+                                                  required></textarea>
                                     {{ else if eq .Type "number" }}
-                                        <input type="number" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
+                                        <input type="number" name="{{ .Name }}" id="{{ .Name }}" class="form-control"
+                                               required>
                                     {{ else if eq .Type "checkbox" }}
                                         <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input">
                                         <label class="form-check-inline" for="{{ .Name }}">{{ .Label }}</label>
@@ -131,7 +147,8 @@
                             {{if .HasComment}}
                                 <div class="form-group form-check">
                                     <label for="{{.Name}}_comment">Comment <em>({{.Label}})</em></label>
-                                    <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3" class="form-control"></textarea>
+                                    <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3"
+                                              class="form-control"></textarea>
                                 </div>
                             {{end}}
                         {{ end }}
@@ -152,11 +169,17 @@
 {{define "foot"}}
     <script src="/static/js/time.js"></script>
     <script>
+        // TODO uncomment this
+        /*
         // Source: https://www.w3schools.com/howto/howto_js_countdown.asp
 
         // Set the date we're counting down to
-        let countDownDate = new Date({{ .Assignment.Deadline }});
+        let countDownDate = new Date({{ .Assignment.Deadline }}); // TODO time this converts to wrong timezone
         // let countDownDate = new Date("Jan 5, 2021 15:37:25").getTime();
+
+        console.log({{.Assignment.Deadline}});
+        console.log(countDownDate);
+        console.log(getTimeInNorwegian());
 
         // Update the count down every 1 second
         let x = setInterval(function () {
@@ -194,5 +217,6 @@
                 {{ end }}
             }
         }, 1000);
+        */
     </script>
 {{end}}

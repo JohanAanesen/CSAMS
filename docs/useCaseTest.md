@@ -13,6 +13,7 @@
 1. Startup
     1. Create Course
     2. Create Assignment
+        1. Deadline before publish not allowed
     3. Create Submission Form
     4. Create Review Form
     5. Copy link and send to students

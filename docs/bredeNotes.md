@@ -257,3 +257,18 @@ _Merged following to master_
 ### Friday 15/03/19
 * Merged shit together
 
+## Week seven
+### Monday 18/03/19
+* Fixed some alpha functionality
+
+### Tuesday 19/03/19
+* Fixed some alpha functionality
+
+### Wednesday 20/03/19
+* Fixed some alpha functionality
+
+### Thursday 21/03/19
+* Went to Hafjell
+
+### Friday 22/03/19
+
