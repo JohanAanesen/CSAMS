@@ -5,6 +5,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"strings"
+	"time"
 )
 
 // SubmissionAnswerRepository struct
@@ -208,4 +209,35 @@ func (repo *SubmissionAnswerRepository) DeleteFromAssignment(assignmentID int) e
 	}
 
 	return err
+}
+
+// FetchSubmittedTime func
+func (repo *SubmissionAnswerRepository) FetchSubmittedTime(userID, assignmentID int) (time.Time, bool, error) {
+	result := time.Time{}
+
+	// Select query string
+	query := "SELECT DISTINCT submitted FROM user_submissions WHERE user_id=? AND assignment_id=?;"
+	// Prepare and execute query
+	rows, err := repo.db.Query(query, userID, assignmentID)
+	if err != nil {
+		// Returns empty if it fails
+		return result, false, err
+	}
+
+	// Close connection
+	defer rows.Close()
+
+	// Loop through results
+	if rows.Next() {
+		// Scan rows
+		err := rows.Scan(&result)
+		// Check for error
+		if err != nil {
+			return time.Time{}, false, err
+		}
+
+		return result, true, nil
+	}
+
+	return time.Time{}, false, nil
 }
