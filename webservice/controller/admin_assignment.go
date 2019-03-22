@@ -551,10 +551,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 // AdminAssignmentSubmissionsGET servers list of all users in course to admin
 func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	// Services
-	courseService := service.NewCourseService(db.GetDB())
-	assignmentService := service.NewAssignmentService(db.GetDB())
-	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
-	userService := service.NewUserService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	vars := mux.Vars(r)
 	assignmentID, err := strconv.Atoi(vars["id"])
@@ -564,28 +561,28 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	assignment, err := assignmentService.Fetch(assignmentID)
+	assignment, err := services.Assignment.Fetch(assignmentID)
 	if err != nil {
 		log.Println("assignment service, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	course, err := courseService.Fetch(assignment.CourseID)
+	course, err := services.Course.Fetch(assignment.CourseID)
 	if err != nil {
 		log.Println("course service, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	submissionCount, err := submissionAnswerService.CountForAssignment(assignment.ID)
+	submissionCount, err := services.SubmissionAnswer.CountForAssignment(assignment.ID)
 	if err != nil {
 		log.Println("submission answer service, count for assignment", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	students, err := userService.FetchAllFromCourse(assignment.CourseID)
+	students, err := services.User.FetchAllFromCourse(assignment.CourseID)
 	if err != nil {
 		log.Println("user service, fetch all from course", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -597,38 +594,42 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type UserAndSubmit struct {
+	type UserSubmissionData struct {
 		User          model.User
 		SubmittedTime time.Time
 		Submitted     bool
+		Reviewed      bool
 	}
 
-	var users []UserAndSubmit
+	var users []UserSubmissionData
 
 	for _, student := range students {
-		submitTime, submitted, err := model.GetSubmittedTime(student.ID, assignmentID)
+		submitTime, submitted, err := services.SubmissionAnswer.FetchSubmittedTime(student.ID, assignment.ID)
 		if err != nil {
-			log.Println(err.Error())
+			log.Println("services submission answer, fetch submitted time", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
 
-		if submitted {
-			var data = UserAndSubmit{
-				User:          *student,
-				SubmittedTime: submitTime,
-				Submitted:     true,
-			}
-
-			users = append(users, data)
-		} else {
-			var data = UserAndSubmit{
-				User:      *student,
-				Submitted: false,
-			}
-
-			users = append(users, data)
+		reviews, err := services.ReviewAnswer.FetchForTarget(student.ID, assignment.ID)
+		if err != nil {
+			log.Println("services, review answer, fetch for target", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
 		}
+
+		var data = UserSubmissionData{
+			User:      *student,
+			Submitted: false,
+			Reviewed:  len(reviews) > 0,
+		}
+
+		if submitted {
+			data.SubmittedTime = submitTime
+			data.Submitted = true
+		}
+
+		users = append(users, data)
 	}
 
 	//Sort slice by submitted time
