@@ -43,7 +43,6 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//assignments, err := assignmentRepo.GetAllFromCourse(courseID)
 	assignments, err := services.Assignment.FetchFromCourse(course.ID)
 	if err != nil {
 		log.Println("get all assignments from course", err)
