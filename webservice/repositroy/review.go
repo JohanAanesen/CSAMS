@@ -179,7 +179,7 @@ func (repo *ReviewRepository) FetchReviewUsers(userID, assignmentID int) ([]*mod
 	return result, err
 }
 
-// IsUserTheReviewer
+// IsUserTheReviewer func
 func (repo *ReviewRepository) IsUserTheReviewer(reviewer int, target int, assignment int) (bool, error) {
 	result := make([]int, 0)
 	query := "SELECT id FROM peer_reviews WHERE user_id = ? AND review_user_id = ? AND assignment_id = ?"
