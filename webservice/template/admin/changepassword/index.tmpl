@@ -6,7 +6,7 @@
     <h1 class="display-4">Manage Students</h1> <!-- TODO brede : refactor names -->
 
     <div class="form-group col-lg-8 col-md-10 col-sm-12">
-        <form action="/admin/changepass/list" method="post">
+        <form action="/admin/changepass/list" method="post" id="form">
             <label for="course_id">Select Course</label>
             <select name="course_id" id="course_id" class="form-control" required>
                 <option value="-1">None</option>
@@ -82,7 +82,9 @@
                 window.location.href = window.location.origin + "/admin/changepass?vars=" + ans + '§' + id;
             } else {
                 window.alert("Not changing the password!");
-                window.location.href = window.location.origin + "/admin/changepass";
+                let form = document.getElementById('form');
+                form.getElementById('course_id').value = {{ .SelectedCourse }};
+                form.submit();
             }
         }
 
@@ -102,7 +104,9 @@
                 window.location.href = window.location.origin + "/admin/changepass?removeVars=" + id + '§' + {{ .SelectedCourse }};
             } else {
                 window.alert("Not removing " + studentName + " from course!");
-                window.location.href = window.location.origin + "/admin/changepass";
+                let form = document.getElementById('form');
+                form.getElementById('course_id').value = {{ .SelectedCourse }};
+                form.submit();
             }
         }
     </script>

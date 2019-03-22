@@ -271,4 +271,7 @@ _Merged following to master_
 * Went to Hafjell
 
 ### Friday 22/03/19
+* Checked for bugs
+* Fixed dups email in register
+* Fixing `stay-on-same-page-after-managed-student`
 
