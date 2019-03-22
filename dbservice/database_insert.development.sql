@@ -148,34 +148,3 @@ VALUES (1,
         NULL,
         2);
 
-INSERT INTO `peer_reviews` (`id`, `submission_id`, `assignment_id`, `user_id`, `review_user_id`)
-VALUES (1, 1, 1, 3, 4),
-       (2, 1, 1, 3, 5),
-       (3, 1, 1, 9, 4);
-
-INSERT INTO `user_reviews` (`id`,
-                            `user_reviewer`,
-                            `user_target`,
-                            `review_id`,
-                            `assignment_id`,
-                            `type`,
-                            `name`,
-                            `label`,
-                            `answer`,
-                            `submitted`)
-VALUES (3, 3, 4, 1, 1, 'text', 'test_text_0', 'A', 'good', '2019-03-08 01:08:43'),
-       (4, 3, 4, 1, 1, 'text', 'test_text_1', 'B', 'bad', '2019-03-08 01:08:43');
-
-INSERT INTO `user_submissions` (`id`, `user_id`, `assignment_id`, `submission_id`, `type`, `answer`, `submitted`)
-VALUES (1, 4, 1, 1, 'text', 'JohanKlausen', '2019-03-15 13:52:43'),
-       (2, 4, 1, 1, 'url', 'https://github.com/JohanKlausen/yeet', '2019-03-15 13:52:43'),
-       (3, 4, 1, 1, 'textarea', 'I did good!', '2019-03-15 13:52:43'),
-       (4, 5, 1, 1, 'text', 'StianFjerdingstad', '2019-03-01 23:59:59'),
-       (5, 5, 1, 1, 'url', 'https://github.com/StianFjerdingstad/Sudoku', '2019-03-01 23:59:59'),
-       (6, 5, 1, 1, 'textarea', 'I did sexy good!', '2019-03-01 23:59:59'),
-       (7, 10, 1, 1, 'text', 'KlausAanesen', '2019-02-28 15:23:23'),
-       (8, 10, 1, 1, 'url', 'https://github.com/KlausAanesen/1337yeet420', '2019-02-28 15:23:23'),
-       (9, 10, 1, 1, 'textarea', 'I did bad :(', '2019-02-28 15:23:23');
-
-INSERT INTO `schedule_tasks` (`id`, `submission_id`, `assignment_id`, `scheduled_time`, `task`, `data`)
-VALUES (1, 1, 1, '2019-03-24 23:59:00', 'peer', '{\"authentication\":\"5243980712315079823517089\",\"submission_id\":1,\"assignment_id\":1,\"reviewers\":2}');

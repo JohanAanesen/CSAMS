@@ -255,6 +255,13 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	courseService := service.NewCourseService(db.GetDB())
 	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
 
+	delivered, err := submissionAnswerService.HasUserSubmitted(assignmentID, currentUser.ID)
+	if err != nil {
+		log.Println("services, submission answer, has user submitted", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	// Get form and log possible error
 	submissionForm, err := submissionService.FetchFromAssignment(assignment.ID)
 	if err != nil {
@@ -316,7 +323,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Course"] = course
 	v.Vars["Assignment"] = assignment
 	v.Vars["Fields"] = submissionForm.Form.Fields
-	v.Vars["Delivered"] = len(answers)
+	v.Vars["Delivered"] = delivered
 	v.Vars["Answers"] = answers
 
 	v.Render(w)
