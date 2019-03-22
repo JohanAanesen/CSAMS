@@ -127,7 +127,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO (Svein): Check if this is correct
-	myReviews, err := services.ReviewAnswer.FetchForCurrentUser(currentUser.ID, assignment.ID)
+	myReviews, err := services.ReviewAnswer.FetchForUser(currentUser.ID, assignment.ID)
 	if err != nil {
 		log.Println("services, review answer, fetch for reviewer", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
