@@ -660,7 +660,7 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	currentUser := session.GetUserFromSession(r)
 	if !currentUser.Authenticated {
-		log.Printf("Error: Could not get user (assignment.go)")
+		log.Printf("session, get user from session (request)")
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
@@ -683,15 +683,24 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reviewID, err := strconv.Atoi(p.Sanitize(r.FormValue("review_id")))
-	if err != nil {
-		log.Println("review_id", err)
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
+	/*
+		reviewID, err := strconv.Atoi(p.Sanitize(r.FormValue("review_id")))
+		if err != nil {
+			log.Println("review_id", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+	*/
 
 	// Services
 	services := service.NewServices(db.GetDB())
+
+	assignment, err := services.Assignment.Fetch(assignmentID)
+	if err != nil {
+		log.Println("services, assignment, fetch", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
 
 	hasBeenReviewed, err := services.ReviewAnswer.HasBeenReviewed(targetID, currentUser.ID, assignmentID)
 	if err != nil {
@@ -728,7 +737,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 			UserReviewer: currentUser.ID,
 			UserTarget:   targetID,
 			AssignmentID: assignmentID,
-			ReviewID:     reviewID,
+			ReviewID:     int(assignment.ReviewID.Int64),
 			Type:         field.Type,
 			Name:         field.Name,
 			Label:        field.Label,
@@ -751,24 +760,24 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	/*
-	fullReview := model.FullReview{
-		Reviewer:     currentUser.ID,
-		Target:       targetID,
-		ReviewID:     reviewID,
-		AssignmentID: assignmentID,
-		Answers:      make([]model.ReviewAnswer, 0),
-	}
-
-	for _, field := range form.Form.Fields {
-		answer := model.ReviewAnswer{
-			Type:   field.Type,
-			Name:   field.Name,
-			Label:  field.Label,
-			Answer: p.Sanitize(r.FormValue(field.Name)),
+		fullReview := model.FullReview{
+			Reviewer:     currentUser.ID,
+			Target:       targetID,
+			ReviewID:     reviewID,
+			AssignmentID: assignmentID,
+			Answers:      make([]model.ReviewAnswer, 0),
 		}
 
-		fullReview.Answers = append(fullReview.Answers, answer)
-	}
+		for _, field := range form.Form.Fields {
+			answer := model.ReviewAnswer{
+				Type:   field.Type,
+				Name:   field.Name,
+				Label:  field.Label,
+				Answer: p.Sanitize(r.FormValue(field.Name)),
+			}
+
+			fullReview.Answers = append(fullReview.Answers, answer)
+		}
 	*/
 
 	for _, item := range reviewAnswer {
