@@ -1,5 +1,16 @@
 Svein's log
 ============
+## 22/03/2019
+#### Worked on
+* Finished refactoring of service implementation
+* Implemented weights display for reviews
+#### Good
+* Refactoring done
+#### Bad
+* 
+#### Decisions
+* 
+
 ## 21/03/2019
 #### Worked on
 * Continue: Refactoring

@@ -149,7 +149,7 @@ func (repo *AssignmentRepository) Insert(assignment model.Assignment) (int, erro
 
 // Update func
 func (repo *AssignmentRepository) Update(assignment model.Assignment) error {
-	query := "UPDATE assignments SET name = ?, description = ?, publish = ?, deadline = ?, course_id = ?"
+	query := "UPDATE assignments SET name = ?, description = ?, publish = ?, deadline = ?, course_id = ? WHERE id = ?"
 	//query := "UPDATE assignments SET name = ?, description = ?, course_id = ?, submission_id = ?, publish = ?, deadline = ?, reviewers = ? WHERE id = ?"
 
 	tx, err := repo.db.Begin()
@@ -158,7 +158,7 @@ func (repo *AssignmentRepository) Update(assignment model.Assignment) error {
 	}
 
 	_, err = tx.Exec(query, assignment.Name, assignment.Description,
-		assignment.Publish, assignment.Deadline, assignment.CourseID)
+		assignment.Publish, assignment.Deadline, assignment.CourseID, assignment.ID)
 	if err != nil {
 		tx.Rollback()
 		return err
