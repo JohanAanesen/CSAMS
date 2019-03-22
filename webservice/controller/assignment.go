@@ -570,7 +570,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	//if !currentUser.Teacher && !model.UserIsReviewer(currentUser.ID, assignment.ID, assignment.SubmissionID.Int64, userID) {
 	if !currentUser.Teacher && !isUserTheReviewer {
 		log.Println("Error: Unauthorized access!")
@@ -606,24 +605,24 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	/*
-	com := MergedAnswerField{}
-	// Only merge if user has delivered
-	if len(assignmentAnswers) > 0 {
-		// Make sure assignmentAnswers and fields are same length before merging
-		if len(assignmentAnswers) != len(form.Form.Fields) {
-			log.Println("Error: assignmentAnswers(" + strconv.Itoa(len(assignmentAnswers)) + ") is not equal length as fields(" + strconv.Itoa(len(form.Form.Fields)) + ")! (assignment.go)")
-			ErrorHandler(w, r, http.StatusInternalServerError)
-			return
-		}
+		com := MergedAnswerField{}
+		// Only merge if user has delivered
+		if len(assignmentAnswers) > 0 {
+			// Make sure assignmentAnswers and fields are same length before merging
+			if len(assignmentAnswers) != len(form.Form.Fields) {
+				log.Println("Error: assignmentAnswers(" + strconv.Itoa(len(assignmentAnswers)) + ") is not equal length as fields(" + strconv.Itoa(len(form.Form.Fields)) + ")! (assignment.go)")
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
 
-		// Merge field and answer if assignment is delivered
-		for i := 0; i < len(form.Form.Fields); i++ {
-			com.Items = append(com.Items, Combined{
-				Answer: assignmentAnswers[i],
-				Field:  form.Form.Fields[i],
-			})
+			// Merge field and answer if assignment is delivered
+			for i := 0; i < len(form.Form.Fields); i++ {
+				com.Items = append(com.Items, Combined{
+					Answer: assignmentAnswers[i],
+					Field:  form.Form.Fields[i],
+				})
+			}
 		}
-	}
 	*/
 
 	// Get review form for the assignment

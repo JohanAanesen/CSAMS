@@ -78,7 +78,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		updatedUser := currentUser
 		updatedUser.EmailPrivate = sql.NullString{
 			String: secondaryEmail, // TODO (Svein): sanitize this
-			Valid: secondaryEmail != "",
+			Valid:  secondaryEmail != "",
 		}
 
 		err := services.User.Update(currentUser.ID, updatedUser)
