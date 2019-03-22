@@ -734,9 +734,9 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 
 	type WeightData struct {
 		IsWeighted bool
-		Total float32
-		Score float32
-		Percent float32
+		Total      float32
+		Score      float32
+		Percent    float32
 	}
 
 	weights := make([]WeightData, 0)
@@ -767,9 +767,9 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 
 		weights = append(weights, WeightData{
 			IsWeighted: totalWeight > 0,
-			Total: totalWeight,
-			Score: weightScore,
-			Percent: (weightScore / totalWeight) * 100.0,
+			Total:      totalWeight,
+			Score:      weightScore,
+			Percent:    (weightScore / totalWeight) * 100.0,
 		})
 	}
 
