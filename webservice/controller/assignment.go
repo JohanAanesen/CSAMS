@@ -54,81 +54,82 @@ func AssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 // AssignmentSingleGET handles GET-request @ /assignment/{id:[0-9]+}
 func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
+	// Get current user
 	currentUser := session.GetUserFromSession(r)
-
+	// Get URL variables
 	vars := mux.Vars(r)
 
 	assignmentID, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		log.Println(err)
+		log.Println("strconv, id", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	// Services
-	assignmentService := service.NewAssignmentService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
-	assignmentRepo := model.AssignmentRepository{}
-	//assignment, err := assignmentRepo.GetSingle(assignmentID)
-	assignment, err := assignmentService.Fetch(assignmentID)
+	assignment, err := services.Assignment.Fetch(assignmentID)
 	if err != nil {
-		log.Println(err)
+		log.Println("services, assignment, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	delivered, err := assignmentRepo.HasUserSubmitted(assignmentID, currentUser.ID)
+	delivered, err := services.SubmissionAnswer.HasUserSubmitted(assignmentID, currentUser.ID)
 	if err != nil {
-		log.Println(err)
+		log.Println("services, submission answer, has user submitted", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	hasReview, err := assignmentRepo.HasReview(assignmentID)
+	hasReview, err := services.Assignment.HasReview(assignmentID)
 	if err != nil {
-		log.Println(err)
+		log.Println("services, assignment, has review", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	hasAutoValidation, err := assignmentRepo.HasAutoValidation(assignmentID)
+	hasAutoValidation, err := services.Assignment.HasAutoValidation(assignmentID)
 	if err != nil {
-		log.Println(err)
+		log.Println("services, assignment, has auto validation", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	reviewRepo := model.ReviewRepository{}
 
 	// Filter out the reviews that the current user already has done
-	submissionReviews := model.GetReviewUserIDs(currentUser.ID, assignment.ID)
+	reviewUsers, err := services.Review.FetchReviewUsers(currentUser.ID, assignment.ID)
+	if err != nil {
+		log.Println("services, review, fetch review users", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	filteredSubmissionReviews := make([]model.User, 0)
-	for _, v := range submissionReviews {
-		check, err := reviewRepo.HasBeenReviewed(v.ID, currentUser.ID, assignmentID)
+	for _, user := range reviewUsers {
+		check, err := services.ReviewAnswer.HasBeenReviewed(user.ID, currentUser.ID, assignmentID)
 		if err != nil {
-			log.Println(err)
+			log.Println("services, review answer, has been reviewed", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
 
 		if !check {
-			filteredSubmissionReviews = append(filteredSubmissionReviews, v)
+			filteredSubmissionReviews = append(filteredSubmissionReviews, *user)
 		}
 	}
 
-	//course repo
-	courseRepo := &model.CourseRepository{}
-
-	course, err := courseRepo.GetSingle(assignment.CourseID)
+	course, err := services.Course.Fetch(assignment.CourseID)
 	if err != nil {
-		log.Println("Something went wrong with getting course (assignment.go)")
+		log.Println("services, course, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	myReviews, err := reviewRepo.GetReviewForUser(currentUser.ID, assignment.ID)
+	// TODO (Svein): Check if this is correct
+	myReviews, err := services.ReviewAnswer.FetchForCurrentUser(currentUser.ID, assignment.ID)
 	if err != nil {
-		log.Println("GetReviewFromUser", err)
+		log.Println("services, review answer, fetch for reviewer", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -137,7 +138,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	var isDeadlineOver = assignment.Deadline.Before(util.GetTimeInCorrectTimeZone())
 
 	// TODO : make this dynamic
-	var hasBeenValidated = true
+	var hasBeenValidated = false
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -154,7 +155,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["CourseID"] = course.ID
 	v.Vars["Reviews"] = filteredSubmissionReviews
 	v.Vars["HasBeenValidated"] = hasBeenValidated
-	v.Vars["MyReviews"] = myReviews
+	v.Vars["MyReviews"] = myReviews // TODO (Svein): Fix this, all in one slice, split into N-slices based on reviewer
 	v.Vars["IsTeacher"] = currentUser.Teacher
 
 	v.Render(w)
@@ -291,6 +292,18 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 			answers[index].HasComment = field.HasComment
 			answers[index].Description = field.Description
 		}
+	} else {
+		for _, item := range submissionForm.Form.Fields {
+			answers = append(answers, &model.SubmissionAnswer{
+				Type:        item.Type,
+				Choices:     item.Choices,
+				Weight:      item.Weight,
+				Label:       item.Label,
+				HasComment:  item.HasComment,
+				Description: item.Description,
+				Name:        item.Name,
+			})
+		}
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -309,7 +322,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 }
 
-// AssignmentUploadPOST servers the
+// AssignmentUploadPOST handles POST-request @ /assignment/submission/update
 func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	//XSS sanitizer
 	p := bluemonday.UGCPolicy()
@@ -508,16 +521,21 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Services
+	services := service.NewServices(db.GetDB())
+
 	// Initialize repositories
-	assignmentRepo := &model.AssignmentRepository{}
+	//assignmentRepo := &model.AssignmentRepository{}
 	courseRepo := &model.CourseRepository{}
 	formRepo := model.FormRepositoryOld{}
 	reviewRepo := model.ReviewRepository{}
 
+	// Current user
 	currentUser := session.GetUserFromSession(r)
 
 	// Get relevant assignment
-	assignment, err := assignmentRepo.GetSingle(assignmentID)
+	//assignment, err := assignmentRepo.GetSingle(assignmentID)
+	assignment, err := services.Assignment.Fetch(assignmentID)
 	if err != nil {
 		log.Println("get single assignment", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)

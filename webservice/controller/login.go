@@ -141,6 +141,8 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Removes any messages saved earlier, in failed attempts
+	session.GetAndDeleteMessageFromSession(w, r)
 	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage //todo change redirection
 	//IndexGET(w, r) //redirect to homepage
 }

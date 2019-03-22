@@ -24,15 +24,15 @@ func NewReviewService(db *sql.DB) *ReviewService {
 }
 
 // FetchAll func
-func (rs *ReviewService) FetchAll() ([]model.Review, error) {
+func (s *ReviewService) FetchAll() ([]model.Review, error) {
 	result := make([]model.Review, 0)
 
-	reviewPtr, err := rs.reviewRepo.FetchAll()
+	reviewPtr, err := s.reviewRepo.FetchAll()
 	if err != nil {
 		return result, err
 	}
 
-	formsPtr, err := rs.formRepo.FetchAll()
+	formsPtr, err := s.formRepo.FetchAll()
 	if err != nil {
 		return result, err
 	}
@@ -50,19 +50,24 @@ func (rs *ReviewService) FetchAll() ([]model.Review, error) {
 	return result, err
 }
 
+// FetchReviewUsers func
+func (s *ReviewService) FetchReviewUsers(userID, assignmentID int) ([]*model.User, error) {
+	return s.reviewRepo.FetchReviewUsers(userID, assignmentID)
+}
+
 // Insert func
-func (rs *ReviewService) Insert(form model.Form) (int, error) {
-	return rs.reviewRepo.Insert(form)
+func (s *ReviewService) Insert(form model.Form) (int, error) {
+	return s.reviewRepo.Insert(form)
 }
 
 // Update func
-func (rs *ReviewService) Update(form model.Form) error {
-	err := rs.formRepo.Update(form.ID, &form)
+func (s *ReviewService) Update(form model.Form) error {
+	err := s.formRepo.Update(form.ID, &form)
 	if err != nil {
 		return err
 	}
 
-	err = rs.fieldRepo.DeleteAll(form.ID)
+	err = s.fieldRepo.DeleteAll(form.ID)
 	if err != nil {
 		return err
 	}
@@ -70,7 +75,7 @@ func (rs *ReviewService) Update(form model.Form) error {
 	for _, field := range form.Fields {
 		field.FormID = form.ID
 
-		_, err = rs.fieldRepo.Insert(&field)
+		_, err = s.fieldRepo.Insert(&field)
 		if err != nil {
 			return err
 		}
@@ -80,18 +85,18 @@ func (rs *ReviewService) Update(form model.Form) error {
 }
 
 // Delete func
-func (rs *ReviewService) Delete(id int) error {
-	err := rs.reviewRepo.Delete(id)
+func (s *ReviewService) Delete(id int) error {
+	err := s.reviewRepo.Delete(id)
 	if err != nil {
 		return err
 	}
 
-	err = rs.fieldRepo.DeleteAll(id)
+	err = s.fieldRepo.DeleteAll(id)
 	if err != nil {
 		return err
 	}
 
-	err = rs.formRepo.Delete(id)
+	err = s.formRepo.Delete(id)
 	if err != nil {
 		return err
 	}

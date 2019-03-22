@@ -23,6 +23,7 @@ type Assignment struct {
 	Submission   Submission    `json:"submission"`
 	Review       Review        `json:"review"`
 	Reviewers    sql.NullInt64 `json:"reviewers"`
+	ValidationID sql.NullInt64 `json:"validation_id"`
 }
 
 // AssignmentRepository holds all assignments, and DB-functions

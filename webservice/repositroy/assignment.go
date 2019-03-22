@@ -29,7 +29,7 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 	}
 	result := model.Assignment{}
 
-	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, reviewers FROM assignments WHERE id = ?"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, reviewers, validation_id FROM assignments WHERE id = ?"
 
 	rows, err := repo.db.Query(query, id)
 	if err != nil {
@@ -39,12 +39,15 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		err = rows.Scan(&result.ID, &result.Name, &result.Description, &result.Created, &result.Publish,
-			&result.Deadline, &result.CourseID, &result.SubmissionID, &result.ReviewID, &result.Reviewers)
+
+		err = rows.Scan(&result.ID, &result.Name, &result.Description, &result.Created,
+			&result.Publish, &result.Deadline, &result.CourseID, &result.SubmissionID,
+			&result.ReviewID, &result.Reviewers, &result.ValidationID)
 		// TODO time, find some fix for this
 		result.Created = result.Created.In(loc).Add(-time.Hour)
 		result.Deadline = result.Deadline.In(loc).Add(-time.Hour)
 		result.Publish = result.Deadline.In(loc).Add(-time.Hour)
+
 		if err != nil {
 			return &result, err
 		}
@@ -57,7 +60,7 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 	result := make([]*model.Assignment, 0)
 
-	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, reviewers FROM assignments"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, reviewers, validation_id FROM assignments"
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -69,8 +72,9 @@ func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 	for rows.Next() {
 		temp := model.Assignment{}
 
-		err = rows.Scan(&temp.ID, &temp.Name, &temp.Description, &temp.Created, &temp.Publish,
-			&temp.Deadline, &temp.CourseID, &temp.SubmissionID, &temp.ReviewID, &temp.Reviewers)
+		err = rows.Scan(&temp.ID, &temp.Name, &temp.Description, &temp.Created,
+			&temp.Publish, &temp.Deadline, &temp.CourseID, &temp.SubmissionID,
+			&temp.ReviewID, &temp.Reviewers, &temp.ValidationID)
 		if err != nil {
 			return result, err
 		}

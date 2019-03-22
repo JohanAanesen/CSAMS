@@ -1,13 +1,25 @@
 Svein's log
 ============
-## 14/03/2019
+## 21/03/2019
 #### Worked on
-* 
+* Continue: Refactoring
 #### Good
 * 
 #### Bad
+* Not full group, so many hours of work in a few days
 #### Decisions
-* Nothing
+* 
+
+## 20/03/2019
+#### Worked on
+* Refactoring
+  * Adding service/repository pattern 
+#### Good
+* Works good, allow us to be less reliable of SQL queries
+#### Bad
+* Takes a lot of time, not full group, so did 15 hours today
+#### Decisions
+* Refactoring DAL (data access layer) away from controllers
 
 ## 13/03/2019
 #### Worked on

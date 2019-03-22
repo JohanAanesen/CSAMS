@@ -14,8 +14,10 @@ import (
 
 // AdminSubmissionGET handles GET-request to /admin/submission
 func AdminSubmissionGET(w http.ResponseWriter, r *http.Request) {
-	// Get all submissions from database
+	// Services
 	submissionService := service.NewSubmissionService(db.GetDB())
+
+	// Get all submissions from database
 	submissions, err := submissionService.FetchAll()
 	if err != nil {
 		log.Println("get all submission", err)
@@ -98,7 +100,9 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Services
 	submissionService := service.NewSubmissionService(db.GetDB())
+
 	_, err = submissionService.Insert(form)
 	if err != nil {
 		log.Println("insert submission", err)
@@ -122,7 +126,10 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Services
 	formService := service.NewFormService(db.GetDB())
+
+	// Fetch form by id
 	form, err := formService.Fetch(id)
 	if err != nil {
 		log.Println("form service get", err)
@@ -199,7 +206,10 @@ func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Services
 	submissionService := service.NewSubmissionService(db.GetDB())
+
+	// Update form
 	err = submissionService.Update(form)
 	if err != nil {
 		log.Println("update submission", err)
@@ -233,9 +243,11 @@ func AdminSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 		Location string `json:"location"`
 	}{}
 
+	// Services
+	submissionService := service.NewSubmissionService(db.GetDB())
+
 	// Delete the submission from database, if error, set error messages, if ok, set success message
-	repo := model.SubmissionRepository{}
-	err = repo.Delete(temp.ID)
+	err = submissionService.Delete(temp.ID)
 	if err != nil {
 		msg.Code = http.StatusInternalServerError
 		msg.Message = err.Error()

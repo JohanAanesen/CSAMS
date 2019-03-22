@@ -17,16 +17,18 @@
                         <p{{if DEADLINEDUE .Assignment.Deadline}} class="text-danger"{{end}}>
                             <strong>Deadline: </strong> {{PRETTYTIME .Assignment.Deadline}}</p>
                         <hr class="bg-light">
-                        <a href="/admin/assignment/{{.Assignment.ID}}"
-                           class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
-                            details</a>
-                        <a href="/admin/assignment/{{.Assignment.ID}}/submissions"
-                           class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
-                            submissions</a>
-                        <a href="/admin/assignment/update/{{.Assignment.ID}}"
-                           class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">Edit
-                            assignment
-                        </a>
+                        <div class="btn-group btn-group-sm">
+                            <a href="/admin/assignment/{{.Assignment.ID}}"
+                               class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}}">See
+                                details</a>
+                            <a href="/admin/assignment/{{.Assignment.ID}}/submissions"
+                               class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}}">See
+                                submissions</a>
+                            <a href="/admin/assignment/update/{{.Assignment.ID}}"
+                               class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}}">Edit
+                                assignment
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

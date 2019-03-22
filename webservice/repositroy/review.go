@@ -154,3 +154,27 @@ func (repo *ReviewRepository) Delete(id int) error {
 
 	return err
 }
+
+// FetchReviewUsers func
+func (repo *ReviewRepository) FetchReviewUsers(userID, assignmentID int) ([]*model.User, error) {
+	result := make([]*model.User, 0)
+	query := "SELECT pr.review_user_id, u.name FROM peer_reviews AS pr INNER JOIN users AS u ON pr.review_user_id = u.id WHERE pr.user_id = ? AND pr.assignment_id = ?"
+
+	rows, err := repo.db.Query(query, userID, assignmentID)
+	if err != nil {
+		return result, err
+	}
+
+	for rows.Next() {
+		var temp model.User
+
+		err = rows.Scan(&temp.ID, &temp.Name)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, &temp)
+	}
+
+	return result, err
+}

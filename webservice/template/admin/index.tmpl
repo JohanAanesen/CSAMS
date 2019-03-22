@@ -16,22 +16,22 @@
                     <h3 class="mb-3">{{ .Name }}</h3>
                     <h6><strong>Hash:</strong> {{ .Hash }}</h6>
                     <hr>
-                    <a href="/course/{{ .ID }}" class="btn btn-outline-dark my-3">See Course</a>
-                    <a href="/admin/course/{{.ID}}/assignments" class="btn btn-outline-dark my-3">See
-                        Assignments</a>
-                    <a href="/admin/course/update/{{.ID}}" class="btn btn-outline-dark my-3">Edit Course</a>
+                    <div class="btn-group btn-group-sm">
+                        <a href="/course/{{ .ID }}" class="btn btn-outline-dark">See Course</a>
+                        <a href="/admin/course/{{.ID}}/assignments" class="btn btn-outline-dark">See
+                            Assignments</a>
+                        <a href="/admin/course/update/{{.ID}}" class="btn btn-outline-dark">Edit Course</a>
 
-                    <!-- Hides on screens smaller than md -->
-                    <a onclick="copyLinks({{ .Hash }})"
-                       class="d-none btn btn-outline-dark fa fa-copy d-md-inline my-3"
-                       style="font-size:24px" data-toggle="tooltip" data-placement="bottom"
-                       title="Copy link for students to join class"></a>
-
-                    <!-- Hides on screens wider than md -->
-                    <a onclick="copyLinks({{ .Hash }})" class="d-md-none btn btn-outline-dark my-3"
-                       data-toggle="tooltip"
-                       data-placement="bottom" title="Copy link for students to join class">Copy join-course
-                        link</a>
+                        <!-- Hides on screens smaller than md -->
+                        <a onclick="copyLinks({{.Hash}})" class="btn btn-outline-dark" data-toggle="tooltip" data-placement="bottom" title="Copy link for students to join class">
+                            <span class="d-none d-md-inline">
+                                <i class="fa fa-copy fa-lg"></i>
+                            </span>
+                            <span class="d-md-none">
+                                Copy join-course link
+                            </span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -55,16 +55,18 @@
                     <p{{if DEADLINEDUE .Assignment.Deadline}} class="text-danger"{{end}}>
                         <strong>Deadline: </strong> {{PRETTYTIME .Assignment.Deadline}}</p>
                     <hr class="bg-light">
-                    <a href="/admin/assignment/{{.Assignment.ID}}"
-                       class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
-                        details</a>
-                    <a href="/admin/assignment/{{.Assignment.ID}}/submissions"
-                       class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
-                        submissions</a>
-                    <a href="/admin/assignment/update/{{.Assignment.ID}}"
-                       class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">Edit
-                        assignment
-                    </a>
+                    <div class="btn-group btn-group-sm">
+                        <a href="/admin/assignment/{{.Assignment.ID}}"
+                           class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}}">See
+                            details</a>
+                        <a href="/admin/assignment/{{.Assignment.ID}}/submissions"
+                           class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}}">See
+                            submissions</a>
+                        <a href="/admin/assignment/update/{{.Assignment.ID}}"
+                           class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}}">Edit
+                            assignment
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

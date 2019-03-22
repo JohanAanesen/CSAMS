@@ -17,11 +17,10 @@ func AdminGET(w http.ResponseWriter, r *http.Request) {
 	currentUser := session.GetUserFromSession(r)
 
 	// Services
-	courseService := service.NewCourseService(db.GetDB())
-	assignmentService := service.NewAssignmentService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	// Get courses to current user
-	courses, err := courseService.FetchAllForUserOrdered(currentUser.ID)
+	courses, err := services.Course.FetchAllForUserOrdered(currentUser.ID)
 	if err != nil {
 		log.Println("course service, fetch all for user ordered", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -38,7 +37,7 @@ func AdminGET(w http.ResponseWriter, r *http.Request) {
 
 	for _, course := range courses { //iterate all courses
 		// Fetch assignments from course
-		assignments, err := assignmentService.FetchFromCourse(course.ID)
+		assignments, err := services.Assignment.FetchFromCourse(course.ID)
 		if err != nil {
 			log.Println("assignment service, fetch from course", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)

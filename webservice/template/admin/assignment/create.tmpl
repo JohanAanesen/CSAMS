@@ -11,11 +11,7 @@
     <form action="/admin/assignment/create" method="POST">
         <div class="row">
             <div class="col">
-                <h1 class="display-4">Create assignment
-                    <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#templatesModal">
-                        Templates
-                    </button>
-                </h1>
+                <h1 class="display-4">Create assignment</h1>
             </div>
         </div>
 
@@ -133,31 +129,6 @@
     </form>
 {{end}}
 {{define "foot"}}
-    <div class="modal fade" id="templatesModal" tabindex="-1" role="dialog" aria-labelledby="templatesModel"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-
-                <div class="modal-header bg-info text-light py-2">
-                    <h5 class="modal-title">Select template</h5>
-                    <button class="close text-light" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-
-                <div class="modal-body py-2">
-
-                </div>
-
-                <div class="modal-footer bg-light py-2">
-                    <button class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-                    <button class="btn btn-success btn-sm">Load template</button>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
     <script src="/static/js/simplemde.min.js"></script>
     <script src="/static/js/time.js"></script>
     <script>

@@ -13,7 +13,6 @@ type Review struct {
 	Form   Form `json:"form"`
 }
 
-
 // FullReview holds specific data about an review for displaying it
 type FullReview struct {
 	Reviewer     int // User that is doing the review

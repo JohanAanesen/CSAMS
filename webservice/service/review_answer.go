@@ -34,6 +34,27 @@ func (s *ReviewAnswerService) FetchForReviewer(reviewer, assignmentID int) ([]*m
 	return s.reviewAnswerRepo.FetchForReviewer(reviewer, assignmentID)
 }
 
+// FetchForCurrentUser func
+func (s *ReviewAnswerService) FetchForCurrentUser(userID, assignmentID int) ([][]*model.ReviewAnswer, error) {
+	result := make([][]*model.ReviewAnswer, 0)
+
+	reviewers, err := s.FetchReviewUsers(userID, assignmentID)
+	if err != nil {
+		return result, err
+	}
+
+	for _, k := range reviewers {
+		review, err := s.FetchForReviewerAndTarget(k, userID, assignmentID)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, review)
+	}
+
+	return result, err
+}
+
 // FetchReviewUsers func
 func (s *ReviewAnswerService) FetchReviewUsers(target, assignmentID int) ([]int, error) {
 	users := make([]int, 0)
@@ -42,7 +63,6 @@ func (s *ReviewAnswerService) FetchReviewUsers(target, assignmentID int) ([]int,
 	if err != nil {
 		return users, err
 	}
-
 
 	for _, answer := range answers {
 		if !util.Contains(users, answer.UserReviewer) {
@@ -56,6 +76,16 @@ func (s *ReviewAnswerService) FetchReviewUsers(target, assignmentID int) ([]int,
 // FetchForReviewerAndTarget func
 func (s *ReviewAnswerService) FetchForReviewerAndTarget(reviewer, target, assignmentID int) ([]*model.ReviewAnswer, error) {
 	return s.reviewAnswerRepo.FetchForReviewerAndTarget(reviewer, target, assignmentID)
+}
+
+// HasBeenReviewed func
+func (s *ReviewAnswerService) HasBeenReviewed(target, reviewer, assignmentID int) (bool, error) {
+	temp, err := s.reviewAnswerRepo.FetchForReviewerAndTarget(reviewer, target, assignmentID)
+	if err != nil {
+		return false, err
+	}
+
+	return len(temp) > 0, err
 }
 
 // Insert func

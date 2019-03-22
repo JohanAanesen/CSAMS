@@ -51,12 +51,12 @@
                                 <label for="secondaryEmail" class="col-sm-2 col-form-label"><strong>Secondary
                                         Email: </strong></label>
                                 <div class="col-sm-6">
-                                    {{if .User.EmailPrivate}}
+                                    {{if .User.EmailPrivate.String}}
                                         <input type="email" readonly class="form-control-plaintext"
                                                name="secondaryEmail"
                                                id="email_private"
                                                placeholder="Secondary Email"
-                                               value={{.User.EmailPrivate}}>
+                                               value={{.User.EmailPrivate.String}}>
                                     {{else}}
                                         <input type="email" readonly class="form-control-plaintext"
                                                name="secondaryEmail"

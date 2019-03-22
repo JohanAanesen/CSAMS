@@ -223,7 +223,6 @@ func AdminCourseAllAssignments(w http.ResponseWriter, r *http.Request) {
 
 	//get course from database
 	course, err := courseService.Fetch(id)
-	//course, err := courseRepo.GetSingle(id)
 	if err != nil {
 		log.Println("course service fetch", err)
 		ErrorHandler(w, r, http.StatusBadRequest)
