@@ -9,17 +9,19 @@ import (
 
 // ReviewService struct
 type ReviewService struct {
-	reviewRepo *repositroy.ReviewRepository
-	formRepo   *repositroy.FormRepository
-	fieldRepo  *repositroy.FieldRepository
+	reviewRepo     *repositroy.ReviewRepository
+	formRepo       *repositroy.FormRepository
+	fieldRepo      *repositroy.FieldRepository
+	assignmentRepo *repositroy.AssignmentRepository
 }
 
 // NewReviewService func
 func NewReviewService(db *sql.DB) *ReviewService {
 	return &ReviewService{
-		reviewRepo: repositroy.NewReviewRepository(db),
-		formRepo:   repositroy.NewFormRepository(db),
-		fieldRepo:  repositroy.NewFieldRepository(db),
+		reviewRepo:     repositroy.NewReviewRepository(db),
+		formRepo:       repositroy.NewFormRepository(db),
+		fieldRepo:      repositroy.NewFieldRepository(db),
+		assignmentRepo: repositroy.NewAssignmentRepository(db),
 	}
 }
 
@@ -53,6 +55,11 @@ func (s *ReviewService) FetchAll() ([]model.Review, error) {
 // FetchReviewUsers func
 func (s *ReviewService) FetchReviewUsers(userID, assignmentID int) ([]*model.User, error) {
 	return s.reviewRepo.FetchReviewUsers(userID, assignmentID)
+}
+
+// IsUserTheReviewer func
+func (s *ReviewService) IsUserTheReviewer(userID, targetID, assignmentID int) (bool, error) {
+	return s.reviewRepo.IsUserTheReviewer(userID, targetID, assignmentID)
 }
 
 // Insert func
@@ -102,4 +109,37 @@ func (s *ReviewService) Delete(id int) error {
 	}
 
 	return err
+}
+
+// FetchFromAssignment func
+func (s *ReviewService) FetchFromAssignment(assignmentID int) (*model.Review, error) {
+	result := model.Review{}
+
+	assignment, err := s.assignmentRepo.Fetch(assignmentID)
+	if err != nil {
+		return &result, err
+	}
+
+	temp, err := s.reviewRepo.Fetch(int(assignment.ReviewID.Int64))
+	if err != nil {
+		return &result, err
+	}
+
+	form, err := s.formRepo.Fetch(temp.FormID)
+	if err != nil {
+		return &result, err
+	}
+
+	fields, err := s.fieldRepo.FetchAllFromForm(form.ID)
+	if err != nil {
+		return &result, err
+	}
+
+	for _, field := range fields {
+		form.Fields = append(form.Fields, *field)
+	}
+
+	temp.Form = *form
+
+	return temp, err
 }
