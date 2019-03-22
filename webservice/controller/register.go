@@ -95,8 +95,8 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		EmailStudent: email,
 	}
 
+	// Register user (insert to database)
 	userID, err := userService.Register(userData, password)
-	//user, err := model.RegisterUser(name, email, password) //register user in database
 	if err != nil {
 		log.Println(err.Error())
 		session.SaveMessageToSession("Email already in use", w, r)
