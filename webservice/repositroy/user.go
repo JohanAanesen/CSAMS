@@ -123,6 +123,36 @@ func (repo *UserRepository) FetchAllFromCourse(courseID int) ([]*model.User, err
 	return result, err
 }
 
+// EmailExists Checks if a user with said email exists
+func (repo *UserRepository) EmailExists(user model.User) (bool, error) {
+
+	query := "SELECT COUNT(id) FROM users WHERE email_student = ? OR email_private = ?"
+
+	rows, err := repo.db.Query(query, user.EmailStudent, user.EmailStudent)
+	if err != nil {
+		return false, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var count int
+
+		err = rows.Scan(&count)
+		if err != nil {
+			return false, err
+		}
+
+		// If count is over 0, a user exists with that email
+		if count > 0 {
+			return true, nil
+		}
+
+	}
+
+	return false, err
+}
+
 // Insert func
 func (repo *UserRepository) Insert(user model.User, password string) (int, error) {
 	var id int64

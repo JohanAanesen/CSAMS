@@ -47,6 +47,15 @@ func (s *UserService) Register(user model.User, password string) (int, error) {
 		return 0, err
 	}
 
+	exists, err := s.userRepo.EmailExists(user)
+	if err != nil {
+		return 0, err
+	}
+
+	if exists {
+		return 0, errors.New("email already exists")
+	}
+
 	return s.userRepo.Insert(user, hashed)
 }
 
