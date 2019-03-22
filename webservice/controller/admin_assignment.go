@@ -717,7 +717,7 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reviews, err := reviewAnswerService.FetchForTarget(userID, assignmentID)
+	reviews, err := reviewAnswerService.FetchForUser(userID, assignmentID)
 	if err != nil {
 		log.Println("review answer service, fetch for target", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -731,7 +731,33 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-	//user := model.GetUser(userID)
+
+	/* TODO (Svein): Adapt this to a 2DD-slice
+	var totalWeight float32
+	var weightScore float32
+	var scorePercent float32
+	var isWeighted = false
+
+	for _, item := range answers {
+		totalWeight += float32(item.Weight)
+		if item.Type == "checkbox" {
+			if item.Answer == "on" {
+				weightScore += float32(item.Weight)
+			}
+
+		} else if item.Type == "radio" {
+			for k := range item.Choices {
+				ans, _ := strconv.Atoi(item.Answer)
+				if ans == (k + 1) {
+					K := float32(k + 1)
+					L := float32(len(item.Choices))
+					V := float32(item.Weight) * (K / L)
+					weightScore += V
+				}
+			}
+		}
+	}
+	*/
 
 	// Set header content-type and status code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")

@@ -2,6 +2,8 @@ package controller
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/rs/xid"
@@ -84,9 +86,11 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+	// Services
+	services := service.NewServices(db.GetDB())
+
 	// Get courses
-	courseRepo := &model.CourseRepository{}
-	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
+	courses, err := services.Course.FetchAllForUserOrdered(session.GetUserFromSession(r).ID)
 	if err != nil {
 		log.Println("get all courses to user sorted", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -105,10 +109,10 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 
 // removeUserFromCourse removes user from course
 func removeUserFromCourse(userID int, courseID int) error {
-
+	// Services
+	services := service.NewServices(db.GetDB())
 	// Try to remove user from course
-	courseRepo := &model.CourseRepository{}
-	err := courseRepo.RemoveUser(courseID, userID)
+	err := services.Course.RemoveUser(userID, courseID)
 	if err != nil {
 		return err
 	}
@@ -145,9 +149,13 @@ func AdminGetUsersPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+	// Services
+	services := service.NewServices(db.GetDB())
+
 	// Get courses
-	courseRepo := &model.CourseRepository{}
-	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
+	courses, err := services.Course.FetchAllForUserOrdered(currentUser.ID)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println(err)

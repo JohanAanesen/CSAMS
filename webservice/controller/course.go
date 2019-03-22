@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
@@ -19,7 +18,11 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	//get user
 	currentUser := session.GetUserFromSession(r)
 
-	var course *model.Course
+	//check if user is logged in
+	if !currentUser.Authenticated {
+		LoginGET(w, r)
+		return
+	}
 
 	vars := mux.Vars(r)
 	courseID, err := strconv.Atoi(vars["id"])
@@ -29,27 +32,18 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//check if user is logged in
-	if !currentUser.Authenticated {
-		LoginGET(w, r)
-		return
-	}
-
 	// Services
-	courseService := service.NewCourseService(db.GetDB())
-
-	//repo's
-	assignmentRepo := model.AssignmentRepository{}
+	services := service.NewServices(db.GetDB())
 
 	//get info from db
-	course, err = courseService.Fetch(courseID)
+	course, err := services.Course.Fetch(courseID)
 	if err != nil {
 		log.Println("course service fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	assignments, err := assignmentRepo.GetAllFromCourse(courseID)
+	assignments, err := services.Assignment.FetchFromCourse(course.ID)
 	if err != nil {
 		log.Println("get all assignments from course", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -57,7 +51,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if user is an participant of said class or a teacher
-	inCourse, err := courseService.UserInCourse(currentUser.ID, courseID)
+	inCourse, err := services.Course.UserInCourse(currentUser.ID, courseID)
 	if err != nil {
 		log.Println("course service, user in course", err)
 		ErrorHandler(w, r, http.StatusUnauthorized)
@@ -70,7 +64,12 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	classmates := model.GetUsersToCourse(courseID)
+	classmates, err := services.User.FetchAllFromCourse(course.ID)
+	if err != nil {
+		log.Println("services, user, fetch all from course", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
 
 	//all a-ok
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")

@@ -34,8 +34,8 @@ func (s *ReviewAnswerService) FetchForReviewer(reviewer, assignmentID int) ([]*m
 	return s.reviewAnswerRepo.FetchForReviewer(reviewer, assignmentID)
 }
 
-// FetchForCurrentUser func
-func (s *ReviewAnswerService) FetchForCurrentUser(userID, assignmentID int) ([][]*model.ReviewAnswer, error) {
+// FetchForUser func
+func (s *ReviewAnswerService) FetchForUser(userID, assignmentID int) ([][]*model.ReviewAnswer, error) {
 	result := make([][]*model.ReviewAnswer, 0)
 
 	reviewers, err := s.FetchReviewUsers(userID, assignmentID)

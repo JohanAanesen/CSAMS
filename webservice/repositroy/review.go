@@ -178,3 +178,29 @@ func (repo *ReviewRepository) FetchReviewUsers(userID, assignmentID int) ([]*mod
 
 	return result, err
 }
+
+// IsUserTheReviewer func
+func (repo *ReviewRepository) IsUserTheReviewer(reviewer int, target int, assignment int) (bool, error) {
+	result := make([]int, 0)
+	query := "SELECT id FROM peer_reviews WHERE user_id = ? AND review_user_id = ? AND assignment_id = ?"
+
+	rows, err := repo.db.Query(query, reviewer, target, assignment)
+	if err != nil {
+		return false, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var temp int
+
+		err = rows.Scan(&temp)
+		if err != nil {
+			return false, err
+		}
+
+		result = append(result, temp)
+	}
+
+	return len(result) > 0, err
+}
