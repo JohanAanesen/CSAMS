@@ -99,7 +99,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	//user, err := model.RegisterUser(name, email, password) //register user in database
 	if err != nil {
 		log.Println(err.Error())
-		session.SaveMessageToSession("Email already in use!", w, r)
+		session.SaveMessageToSession("Email already in use", w, r)
 		RegisterGET(w, r)
 		return
 	}
