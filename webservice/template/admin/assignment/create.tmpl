@@ -109,6 +109,10 @@
                             {{end}}
                         </select>
                     </div>
+                    <div class="form-group sr-only" id="review_deadline_container">
+                        <label for="review_deadline">Review Deadline</label>
+                        <input type="datetime-local" name="review_deadline" id="review_deadline" class="form-control">
+                    </div>
 
                     <hr>
 
@@ -147,8 +151,25 @@
 
 
             // TODO time-norwegian
+            /*
             publishNowButton.addEventListener('click', () => {
                 publish.value = getTimeInNorwegian().toNORString();
+            });
+            */
+
+            let reviewDeadline = document.getElementById('review_deadline');
+            let reviewDeadlineContainer = document.getElementById('review_deadline_container');
+            let reviewSelect = document.getElementById('review_id');
+
+            reviewSelect.addEventListener('change', e => {
+                console.log('change', e.target.value);
+                if (e.target.value !== "") {
+                    reviewDeadlineContainer.classList.remove('sr-only');
+                    reviewDeadline.setAttribute('required', '');
+                } else {
+                    reviewDeadlineContainer.classList.add('sr-only');
+                    reviewDeadline.removeAttribute('required');
+                }
             });
         })();
     </script>
