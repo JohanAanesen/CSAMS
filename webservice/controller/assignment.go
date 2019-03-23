@@ -2,6 +2,7 @@ package controller
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
@@ -248,6 +249,11 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	if assignment.Name == "" {
 		log.Println("Error: assignment with id '" + id + "' doesn't exist! (assignment.go)")
 		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	if !assignment.SubmissionID.Valid {
+		http.Redirect(w, r, fmt.Sprintf("/assignment/%d", assignmentID), http.StatusTemporaryRedirect)
 		return
 	}
 
