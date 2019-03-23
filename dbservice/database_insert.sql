@@ -50,5 +50,5 @@ INSERT INTO `reviews` (`id`, `form_id`) VALUES
 INSERT INTO `submissions` (`id`, `form_id`) VALUES
 (1, 1);
 
-INSERT INTO `assignments` (`id`, `name`, `description`, `created`, `publish`, `deadline`, `course_id`, `submission_id`, `review_id`, `validation_id`, `reviewers`) VALUES
-(1, 'Lab 1', 'Make easiest rest api', '2019-03-22 09:15:15', '2019-03-22 10:00:00', '2019-03-22 12:00:00', 1, 1, 1, NULL, 2);
+INSERT INTO `assignments` (`id`, `name`, `description`, `created`, `publish`, `deadline`, `course_id`, `submission_id`, `review_id`, `review_deadline`, `validation_id`, `reviewers`) VALUES
+(1, 'Lab 1', 'Make easiest rest api', '2019-03-22 09:15:15', '2019-03-22 10:00:00', '2019-03-23 16:00:00', 1, 1, 1, '2019-03-23 17:00:00' NULL, 2);
