@@ -86,8 +86,10 @@ func (repo *ReviewAnswerRepository) Insert(answer model.ReviewAnswer) (int, erro
 		return int(id), err
 	}
 
+	created := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
+
 	rows, err := tx.Exec(query, answer.UserReviewer, answer.UserTarget, answer.ReviewID, answer.AssignmentID,
-		answer.Type, answer.Name, answer.Label, answer.Answer, answer.Comment, util.GetTimeInCorrectTimeZone())
+		answer.Type, answer.Name, answer.Label, answer.Answer, answer.Comment, created)
 	if err != nil {
 		tx.Rollback()
 		return int(id), err

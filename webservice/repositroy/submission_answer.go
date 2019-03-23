@@ -116,9 +116,10 @@ func (repo *SubmissionAnswerRepository) Insert(answer model.SubmissionAnswer) (i
 		return int(id), err
 	}
 
-	submitted := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
+	created := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
+
 	rows, err := tx.Exec(query, answer.UserID, answer.AssignmentID,
-		answer.SubmissionID, answer.Type, answer.Name, answer.Label, answer.Answer, answer.Comment, submitted)
+		answer.SubmissionID, answer.Type, answer.Name, answer.Label, answer.Answer, answer.Comment, created)
 	if err != nil {
 		tx.Rollback()
 		return int(id), err
@@ -171,8 +172,9 @@ func (repo *SubmissionAnswerRepository) Update(answer model.SubmissionAnswer) er
 		return err
 	}
 
-	submitted := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
-	_, err = tx.Exec(query, answer.Answer, answer.Comment, submitted, answer.Name)
+	created := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
+
+	_, err = tx.Exec(query, answer.Answer, answer.Comment, created, answer.Name)
 	if err != nil {
 		tx.Rollback()
 		return err

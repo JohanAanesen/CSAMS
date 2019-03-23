@@ -78,9 +78,9 @@ func (repo *FormRepository) Insert(form *model.Form) (int, error) {
 		return int(id), err
 	}
 
-	form.Created = util.GetTimeInCorrectTimeZone()
+	created := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
-	rows, err := tx.Exec(query, form.Prefix, form.Name, form.Created)
+	rows, err := tx.Exec(query, form.Prefix, form.Name, created)
 	if err != nil {
 		tx.Rollback()
 		return int(id), err

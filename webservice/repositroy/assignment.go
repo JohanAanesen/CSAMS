@@ -98,6 +98,7 @@ func (repo *AssignmentRepository) Insert(assignment model.Assignment) (int, erro
 	}
 
 	created := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
+
 	rows, err := tx.Exec(query, assignment.Name, assignment.Description, created,
 		assignment.Publish, assignment.Deadline, assignment.CourseID)
 	if err != nil {
@@ -150,7 +151,6 @@ func (repo *AssignmentRepository) Insert(assignment model.Assignment) (int, erro
 // Update func
 func (repo *AssignmentRepository) Update(assignment model.Assignment) error {
 	query := "UPDATE assignments SET name = ?, description = ?, publish = ?, deadline = ?, course_id = ? WHERE id = ?"
-	//query := "UPDATE assignments SET name = ?, description = ?, course_id = ?, submission_id = ?, publish = ?, deadline = ?, reviewers = ? WHERE id = ?"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
