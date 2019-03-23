@@ -253,6 +253,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !assignment.SubmissionID.Valid {
+		log.Println("assignment submission_id is not valid, redirecting user")
 		http.Redirect(w, r, fmt.Sprintf("/assignment/%d", assignmentID), http.StatusTemporaryRedirect)
 		return
 	}
