@@ -565,12 +565,14 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	/*
 	// Check review deadline
 	if assignment.ReviewDeadline.After(util.GetTimeInCorrectTimeZone()) {
 		log.Println(assignment.ReviewDeadline, "after", util.GetTimeInCorrectTimeZone())
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
+	*/
 
 	hasBeenReviewed, err := services.ReviewAnswer.HasBeenReviewed(user.ID, currentUser.ID, assignment.ID)
 	if err != nil {
