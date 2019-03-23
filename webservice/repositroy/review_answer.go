@@ -42,7 +42,7 @@ func fetchMany(repo *ReviewAnswerRepository, query string, args ...interface{}) 
 		}
 
 		temp.HasComment = hasComment == 1
-		temp.Choices = strings.Split(choices, ",") // TODO (Svein): Change this to pipe '|'
+		temp.Choices = strings.Split(choices, "|")
 
 		result = append(result, &temp)
 	}
