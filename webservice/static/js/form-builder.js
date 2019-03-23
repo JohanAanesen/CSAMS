@@ -580,8 +580,6 @@ function Form(args) {
             fields: fields,
         });
 
-        console.log('toJSON', result);
-
         return result;
     };
 
@@ -636,8 +634,6 @@ function Form(args) {
 
         this.sortFields();
         this.render();
-
-        console.log('FromJSON', this);
     };
 
     /**
@@ -1276,7 +1272,6 @@ function Field(args) {
      * @return {object}
      */
     this.get = function() {
-        console.log('choices', this.choices);
         this.choicesArray = this.choices.split('\n');
 
         return {
