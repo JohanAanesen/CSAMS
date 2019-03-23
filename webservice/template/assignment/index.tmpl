@@ -89,11 +89,13 @@
 
                 <ul class="nav nav-pills" style="float:right;">
                     <li>
-                        {{if not .IsTeacher}}
-                            {{if not .Delivered}}
-                                <a style="float:right;" href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-success {{if .IsDeadlineOver}}disabled{{end}}">Deliver assignment</a>
-                            {{else}}
-                                <a href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-warning {{if .IsDeadlineOver}}disabled{{end}}">Change your submission</a>
+                        {{if .Assignment.SubmissionID.Valid}}
+                            {{if not .IsTeacher}}
+                                {{if not .Delivered}}
+                                    <a style="float:right;" href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-success {{if .IsDeadlineOver}}disabled{{end}}">Deliver assignment</a>
+                                {{else}}
+                                    <a href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-warning {{if .IsDeadlineOver}}disabled{{end}}">Change your submission</a>
+                                {{end}}
                             {{end}}
                         {{end}}
                     </li>
