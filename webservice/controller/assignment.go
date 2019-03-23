@@ -559,12 +559,14 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 
 	// Review deadline is zero, send user to front-page
 	if assignment.ReviewDeadline.IsZero() {
+		log.Println("reviewDeadline isZero")
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
 	// Check review deadline
 	if assignment.ReviewDeadline.After(util.GetTimeInCorrectTimeZone()) {
+		log.Println(assignment.ReviewDeadline, "after", util.GetTimeInCorrectTimeZone())
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
