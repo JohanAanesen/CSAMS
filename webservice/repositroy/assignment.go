@@ -57,7 +57,7 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 		}
 
 		if reviewDeadline.Valid {
-			result.ReviewDeadline, err = time.Parse("2006-01-02 15:04:05", reviewDeadline.String)
+			result.ReviewDeadline, err = time.Parse("2006-02-01 15:04:05", reviewDeadline.String)
 			if err != nil {
 				log.Println("review deadline time.Parse error:", err)
 			}
@@ -92,7 +92,7 @@ func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 		}
 
 		if reviewDeadline.Valid {
-			temp.ReviewDeadline, err = time.Parse("2006-01-02 15:04:05", reviewDeadline.String)
+			temp.ReviewDeadline, err = time.Parse("2006-02-01 15:04:05", reviewDeadline.String)
 			if err != nil {
 				log.Println("review deadline time.Parse error:", err)
 			}
