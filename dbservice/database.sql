@@ -105,6 +105,7 @@ CREATE TABLE `assignments`
   `course_id`     int(11)     NOT NULL,
   `submission_id` int(11) DEFAULT NULL,
   `review_id`     int(11) DEFAULT NULL,
+  `review_deadline` datetime DEFAULT NULL,
   `validation_id` int(11) DEFAULT NULL,
   `reviewers`     int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),

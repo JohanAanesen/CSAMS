@@ -557,6 +557,18 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Review deadline is zero, send user to front-page
+	if assignment.ReviewDeadline.IsZero() {
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
+	// Check review deadline
+	if assignment.ReviewDeadline.After(util.GetTimeInCorrectTimeZone()) {
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
 	hasBeenReviewed, err := services.ReviewAnswer.HasBeenReviewed(user.ID, currentUser.ID, assignment.ID)
 	if err != nil {
 		log.Println("has been reviewed", err.Error())
@@ -565,7 +577,7 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if hasBeenReviewed && !currentUser.Teacher {
-		IndexGET(w, r)
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
@@ -607,27 +619,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	/*
-		com := MergedAnswerField{}
-		// Only merge if user has delivered
-		if len(assignmentAnswers) > 0 {
-			// Make sure assignmentAnswers and fields are same length before merging
-			if len(assignmentAnswers) != len(form.Form.Fields) {
-				log.Println("Error: assignmentAnswers(" + strconv.Itoa(len(assignmentAnswers)) + ") is not equal length as fields(" + strconv.Itoa(len(form.Form.Fields)) + ")! (assignment.go)")
-				ErrorHandler(w, r, http.StatusInternalServerError)
-				return
-			}
-
-			// Merge field and answer if assignment is delivered
-			for i := 0; i < len(form.Form.Fields); i++ {
-				com.Items = append(com.Items, Combined{
-					Answer: assignmentAnswers[i],
-					Field:  form.Form.Fields[i],
-				})
-			}
-		}
-	*/
 
 	// Get review form for the assignment
 	review, err := services.Review.FetchFromAssignment(assignment.ID)

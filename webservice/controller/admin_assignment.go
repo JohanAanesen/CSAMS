@@ -126,6 +126,9 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	// Current user
 	currentUser := session.GetUserFromSession(r)
 
+	// Declare empty assignment
+	assignment := model.Assignment{}
+
 	// Declare empty slice of strings
 	var errorMessages []string
 
@@ -214,6 +217,14 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 			return
 		}
+
+		// Get the time.Time object from the deadline string
+		reviewDeadline, err := util.DatetimeLocalToRFC3339(r.FormValue("review_deadline"))
+		if err != nil {
+			errorMessages = append(errorMessages, "Error: Something wrong with the review deadline datetime.")
+		}
+		// Put review deadline into assignment
+		assignment.ReviewDeadline = reviewDeadline
 	}
 	reviewID := sql.NullInt64{
 		Int64: int64(val),
@@ -234,16 +245,14 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Put all data into an Assignment-struct
-	assignment := model.Assignment{
-		Name:         assignmentName,
-		Description:  assignmentDescription,
-		Publish:      publish,
-		Deadline:     deadline,
-		CourseID:     courseID,
-		SubmissionID: submissionID,
-		ReviewID:     reviewID,
-		Reviewers:    reviewers,
-	}
+	assignment.Name = assignmentName
+	assignment.Description = assignmentDescription
+	assignment.Publish = publish
+	assignment.Deadline = deadline
+	assignment.CourseID = courseID
+	assignment.SubmissionID = submissionID
+	assignment.ReviewID = reviewID
+	assignment.Reviewers = reviewers
 
 	// Insert data to database
 	lastID, err := assignmentService.Insert(assignment)
@@ -376,6 +385,9 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["SubmissionCount"] = submissionCount
 	v.Vars["Publish"] = util.GoToHTMLDatetimeLocal(assignment.Publish)
 	v.Vars["Deadline"] = util.GoToHTMLDatetimeLocal(assignment.Deadline)
+	if !assignment.ReviewDeadline.IsZero() {
+		v.Vars["ReviewDeadline"] = util.GoToHTMLDatetimeLocal(assignment.ReviewDeadline)
+	}
 	v.Vars["Courses"] = courses
 	v.Vars["Submissions"] = submissions
 	v.Vars["Reviews"] = reviews
@@ -396,6 +408,9 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Empty assignment
+	assignment := model.Assignment{}
+
 	// Get the time.Time object from the publish string
 	publish, err := util.DatetimeLocalToRFC3339(r.FormValue("publish"))
 	if err != nil {
@@ -414,6 +429,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 
 	// Check if publish datetime is after the deadline
 	if publish.After(deadline) {
+		log.Println("publish after deadline")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -481,6 +497,16 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 			log.Println("string convert review_id", err)
 			return
 		}
+
+		// Get the time.Time object from the deadline string
+		reviewDeadline, err := util.DatetimeLocalToRFC3339(r.FormValue("review_deadline"))
+		if err != nil {
+			log.Println(err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		assignment.ReviewDeadline = reviewDeadline
 	}
 
 	reviewID := sql.NullInt64{
@@ -500,17 +526,15 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		Valid: val != 0,
 	}
 
-	assignment := model.Assignment{
-		ID:           id,
-		Name:         r.FormValue("name"),
-		Description:  r.FormValue("description"),
-		Publish:      publish,
-		Deadline:     deadline,
-		CourseID:     courseID,
-		SubmissionID: submissionID,
-		ReviewID:     reviewID,
-		Reviewers:    reviewers,
-	}
+	assignment.ID = id
+	assignment.Name = r.FormValue("name") // TODO (Svein): Sanitize
+	assignment.Description = r.FormValue("description")
+	assignment.Publish = publish
+	assignment.Deadline = deadline
+	assignment.CourseID = courseID
+	assignment.SubmissionID = submissionID
+	assignment.ReviewID = reviewID
+	assignment.Reviewers = reviewers
 
 	err = assignmentService.Update(assignment)
 	if err != nil {

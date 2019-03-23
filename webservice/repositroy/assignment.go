@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
+	"log"
+	"time"
 )
 
 // AssignmentRepository struct
@@ -28,7 +30,7 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 	*/
 	result := model.Assignment{}
 
-	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, reviewers, validation_id FROM assignments WHERE id = ?"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, review_deadline, reviewers, validation_id FROM assignments WHERE id = ?"
 
 	rows, err := repo.db.Query(query, id)
 	if err != nil {
@@ -38,10 +40,11 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 	defer rows.Close()
 
 	for rows.Next() {
+		var reviewDeadline sql.NullString
 
 		err = rows.Scan(&result.ID, &result.Name, &result.Description, &result.Created,
 			&result.Publish, &result.Deadline, &result.CourseID, &result.SubmissionID,
-			&result.ReviewID, &result.Reviewers, &result.ValidationID)
+			&result.ReviewID, &reviewDeadline, &result.Reviewers, &result.ValidationID)
 		// TODO time, find some fix for this
 		/*
 			result.Created = result.Created.In(loc).Add(-time.Hour)
@@ -52,6 +55,13 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 		if err != nil {
 			return &result, err
 		}
+
+		if reviewDeadline.Valid {
+			result.ReviewDeadline, err = time.Parse(time.RFC3339, reviewDeadline.String)
+			if err != nil {
+				log.Println("review deadline time.Parse error:", err)
+			}
+		}
 	}
 
 	return &result, err
@@ -61,7 +71,7 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 	result := make([]*model.Assignment, 0)
 
-	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, reviewers, validation_id FROM assignments"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, review_deadline, reviewers, validation_id FROM assignments"
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -72,12 +82,20 @@ func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 
 	for rows.Next() {
 		temp := model.Assignment{}
+		var reviewDeadline sql.NullString
 
 		err = rows.Scan(&temp.ID, &temp.Name, &temp.Description, &temp.Created,
 			&temp.Publish, &temp.Deadline, &temp.CourseID, &temp.SubmissionID,
-			&temp.ReviewID, &temp.Reviewers, &temp.ValidationID)
+			&temp.ReviewID, &reviewDeadline, &temp.Reviewers, &temp.ValidationID)
 		if err != nil {
 			return result, err
+		}
+
+		if reviewDeadline.Valid {
+			temp.ReviewDeadline, err = time.Parse(time.RFC3339, reviewDeadline.String)
+			if err != nil {
+				log.Println("review deadline time.Parse error:", err)
+			}
 		}
 
 		result = append(result, &temp)
@@ -122,8 +140,8 @@ func (repo *AssignmentRepository) Insert(assignment model.Assignment) (int, erro
 	}
 
 	if assignment.ReviewID.Valid {
-		query := "UPDATE assignments SET review_id = ? WHERE id = ?"
-		_, err := tx.Exec(query, assignment.ReviewID, id)
+		query := "UPDATE assignments SET review_id = ?, review_deadline = ? WHERE id = ?"
+		_, err := tx.Exec(query, assignment.ReviewID, assignment.ReviewDeadline, id)
 		if err != nil {
 			tx.Rollback()
 			return int(id), err
@@ -174,8 +192,8 @@ func (repo *AssignmentRepository) Update(assignment model.Assignment) error {
 	}
 
 	if assignment.ReviewID.Valid {
-		query := "UPDATE assignments SET review_id = ? WHERE id = ?"
-		_, err := tx.Exec(query, assignment.ReviewID, assignment.ID)
+		query := "UPDATE assignments SET review_id = ?, review_deadline = ? WHERE id = ?"
+		_, err := tx.Exec(query, assignment.ReviewID, assignment.ReviewDeadline, assignment.ID)
 		if err != nil {
 			tx.Rollback()
 			return err
