@@ -1150,6 +1150,10 @@ function Field(args) {
             classList: ['col-md-9'],
         });
 
+        if (this.choicesArray.length > 1) {
+            this.choices = this.choicesArray.join('\n');
+        }
+
         let input = createElement({
             type: 'textarea',
             classList: ['form-control'],
@@ -1158,6 +1162,10 @@ function Field(args) {
                     name: 'placeholder',
                     value: 'Choices',
                 },
+                {
+                    name: 'rows',
+                    value: 5
+                }
             ],
             id: `choices_${this.id}`,
             value: this.choices,
@@ -1177,7 +1185,7 @@ function Field(args) {
                     value: `choices_${this.id}`,
                 },
             ],
-            innerHTML: 'Enter each choice on a new line. (Known bug: \",\" (comma) may make some strange behaviour at this moment, try to avoid it in a sentence.)',
+            innerHTML: 'Enter each choice on a new line. (Do not use "|" (pipe character), as this is the separator for list)',
         });
 
         rightSide.appendChild(input);

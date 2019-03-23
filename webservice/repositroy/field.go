@@ -44,7 +44,7 @@ func (repo *FieldRepository) Fetch(id int) (*model.Field, error) {
 		}
 
 		result.HasComment = hasComment == 1
-		result.Choices = strings.Split(choices, ",")
+		result.Choices = strings.Split(choices, "|")
 	}
 
 	return &result, err
@@ -75,7 +75,7 @@ func (repo *FieldRepository) FetchAll() ([]*model.Field, error) {
 		}
 
 		temp.HasComment = hasComment == 1
-		temp.Choices = strings.Split(choices, ",")
+		temp.Choices = strings.Split(choices, "|")
 
 		result = append(result, &temp)
 	}
@@ -108,7 +108,7 @@ func (repo *FieldRepository) FetchAllFromForm(formID int) ([]*model.Field, error
 		}
 
 		temp.HasComment = hasComment == 1
-		temp.Choices = strings.Split(choices, ",")
+		temp.Choices = strings.Split(choices, "|")
 
 		result = append(result, &temp)
 	}
@@ -132,7 +132,7 @@ func (repo *FieldRepository) Insert(field *model.Field) (int, error) {
 		hasComment = 1
 	}
 
-	var choices = strings.Join(field.Choices, ",")
+	var choices = strings.Join(field.Choices, "|")
 
 	rows, err := tx.Exec(query,
 		field.FormID, field.Type, field.Name,

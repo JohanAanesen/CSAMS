@@ -32,15 +32,13 @@ func (fs *FormService) Fetch(id int) (*model.Form, error) {
 	if err != nil {
 		return nil, err
 	}
-	fields, err := fs.fieldRepo.FetchAll()
+	fields, err := fs.fieldRepo.FetchAllFromForm(id)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, field := range fields {
-		if field.FormID == form.ID {
-			form.Fields = append(form.Fields, *field)
-		}
+		form.Fields = append(form.Fields, *field)
 	}
 
 	return form, err
