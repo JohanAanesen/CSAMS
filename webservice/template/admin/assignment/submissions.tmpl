@@ -2,9 +2,13 @@
 {{define "head"}}{{end}}
 {{define "content"}}
 
-    <h2 class="display-4 mb-3">{{ .Assignment.Name }} submissions</h2>
-    <h5>{{ .SubmissionCount }} submitted</h5>
-    <table class="table table-striped table-sm">
+    <h2 class="display-4 mb-3">{{.Assignment.Name}} submissions</h2>
+    <h5>{{.SubmissionCount}} submitted</h5>
+
+    <hr class="mb-1">
+
+    <input type="search" class="form-control form-control-sm mb-1" id="search" onkeyup="search()" placeholder="Search by names">
+    <table class="table table-hover table-sm" id="table">
         <thead>
         <tr>
             <th scope="col">#</th>
@@ -17,19 +21,46 @@
         </thead>
         <tbody>
         {{$A := .Assignment}}
-        {{ range .Students }}
-            {{ if not .User.Teacher }}
-                <tr class="clickable-row">
-                    <th scope="row">{{ .User.ID }}</th>
-                    <td>{{ .User.Name }}</td>
-                    <td><a href="mailto:{{ .User.EmailStudent }}">{{ .User.EmailStudent }}</a></td>
-                    <td>{{if .Submitted}}{{PRETTYTIME .SubmittedTime }}{{end}}</td>
-                    <td>{{if .Submitted}}<a href="/admin/assignment/{{ $A.ID }}/submission/{{ .User.ID }}">See submission</a>{{end}}</td>
+        {{range .Students}}
+            {{if not .User.Teacher}}
+                <tr>
+                    <td><strong>{{.User.ID}}</strong></td>
+                    <td>{{.User.Name}}</td>
+                    <td><a href="mailto:{{.User.EmailStudent}}">{{.User.EmailStudent}}</a></td>
+                    <td>{{if .Submitted}}{{PRETTYTIME .SubmittedTime}}{{end}}</td>
+                    <td>{{if .Submitted}}<a href="/admin/assignment/{{$A.ID}}/submission/{{.User.ID}}">See submission</a>{{end}}</td>
                     <td>{{if .Reviewed}}<a href="/admin/assignment/{{$A.ID}}/review/{{.User.ID}}">See review(s)</a>{{end}}</td>
                 </tr>
-            {{ end }}
-        {{ end }}
+            {{end}}
+        {{end}}
         </tbody>
     </table>
 {{end}}
-{{define "foot"}}{{end}}
+{{define "foot"}}
+    <script>
+        // https://www.w3schools.com/howto/howto_js_filter_table.asp
+        function search() {
+            // Declare variables
+            let input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("search");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("table");
+            tr = table.getElementsByTagName("tr");
+
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1]; // Name
+                //let emails = tr[i].getElementsByTagName("td")[2]; // Email
+
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+{{end}}
