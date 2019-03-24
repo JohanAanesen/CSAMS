@@ -165,7 +165,7 @@ func (repo *SubmissionAnswerRepository) CountForAssignment(assignmentID int) (in
 
 // Update func
 func (repo *SubmissionAnswerRepository) Update(answer model.SubmissionAnswer) error {
-	query := "UPDATE user_submissions SET answer = ?, comment = ?, submitted = ? WHERE name = ?"
+	query := "UPDATE user_submissions SET answer = ?, comment = ?, submitted = ? WHERE name = ? AND user_id = ?"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
@@ -174,7 +174,7 @@ func (repo *SubmissionAnswerRepository) Update(answer model.SubmissionAnswer) er
 
 	created := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
-	_, err = tx.Exec(query, answer.Answer, answer.Comment, created, answer.Name)
+	_, err = tx.Exec(query, answer.Answer, answer.Comment, created, answer.Name, answer.UserID)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -218,7 +218,7 @@ func (repo *SubmissionAnswerRepository) FetchSubmittedTime(userID, assignmentID 
 	result := time.Time{}
 
 	// Select query string
-	query := "SELECT DISTINCT submitted FROM user_submissions WHERE user_id=? AND assignment_id=?;"
+	query := "SELECT DISTINCT submitted FROM user_submissions WHERE user_id = ? AND assignment_id = ?"
 	// Prepare and execute query
 	rows, err := repo.db.Query(query, userID, assignmentID)
 	if err != nil {
