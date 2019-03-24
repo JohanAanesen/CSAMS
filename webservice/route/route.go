@@ -44,6 +44,7 @@ func routes() http.Handler {
 	router.HandleFunc("/assignment/peer", controller.AssignmentPeerGET).Methods("GET")
 	router.HandleFunc("/assignment/auto", controller.AssignmentAutoGET).Methods("GET")
 	router.HandleFunc("/assignment/submission", controller.AssignmentUploadGET).Methods("GET")
+	router.HandleFunc("/assignment/submission/{id:[0-9]+}/withdraw", controller.AssignmentWithdrawGET).Methods("GET")
 	router.HandleFunc("/assignment/submission/update", controller.AssignmentUploadPOST).Methods("POST")
 	router.HandleFunc("/assignment/{id:[0-9]+}/submission/{userid:[0-9]+}", controller.AssignmentUserSubmissionGET).Methods("GET")
 	router.HandleFunc("/assignment/{id:[0-9]+}/submission/{userid:[0-9]+}", controller.AssignmentUserSubmissionPOST).Methods("POST")

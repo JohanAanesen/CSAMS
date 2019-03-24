@@ -322,6 +322,18 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
+	sess, err := session.Instance(r)
+	if err != nil {
+		log.Println("session, instance", err)
+	}
+
+	var successMessage string
+
+	successFlash := sess.Flashes("success")
+	if len(successFlash) > 0 {
+		successMessage = successFlash[0].(string)
+	}
+
 	// Create view
 	v := view.New(r)
 	v.Name = "assignment/upload"
@@ -331,6 +343,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Fields"] = submissionForm.Form.Fields
 	v.Vars["Delivered"] = delivered
 	v.Vars["Answers"] = answers
+	v.Vars["SuccessMessage"] = successMessage
 
 	v.Render(w)
 }
@@ -512,6 +525,13 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
+
+	sess, err := session.Instance(r)
+	if err != nil {
+		log.Println("session, instance", err)
+	}
+
+	sess.AddFlash("Submission submitted!", "success")
 
 	// Serve front-end again
 	AssignmentUploadGET(w, r)
@@ -790,5 +810,42 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO (Svein): Want to send back to /assignment/{id}. HOW TO?
+	IndexGET(w, r)
+}
+
+// AssignmentWithdrawGET handles GET-requests for withdrawing submissions
+func AssignmentWithdrawGET(w http.ResponseWriter, r *http.Request) {
+	// Get URL variables
+	vars := mux.Vars(r)
+
+	assignmentID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Println("strconv, atoi, id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	err = services.SubmissionAnswer.Delete(assignmentID, currentUser.ID)
+	if err != nil {
+		log.Println("services, submission answer, delete", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	sess, err := session.Instance(r)
+	if err != nil {
+		log.Println("session, instace", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	sess.AddFlash("Submission withdrawn!", "success")
+
 	IndexGET(w, r)
 }
