@@ -2,7 +2,6 @@ package controller
 
 import (
 	"database/sql"
-	"encoding/json"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
@@ -936,62 +935,4 @@ func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) 
 
 	// Render view
 	v.Render(w)
-}
-
-// AdminAssignmentSubmissionDELETE handles delete requests for assignment submissions
-func AdminAssignmentSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
-	// Respond struct
-	respond := struct {
-		Code    int    `json:"code"`
-		Message string `json:"message"`
-	}{}
-
-	body := struct {
-		AssignmentID int `json:"assignment_id"`
-		UserID       int `json:"user_id"`
-	}{}
-
-	err := json.NewDecoder(r.Body).Decode(&body)
-	if err != nil {
-		respond.Code = http.StatusBadRequest
-		respond.Message = "Could not decode request body"
-
-		w.WriteHeader(respond.Code)
-		err = json.NewEncoder(w).Encode(respond)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Something went wrong."))
-			return
-		}
-		return
-	}
-
-	// Services
-	services := service.NewServices(db.GetDB())
-
-	err = services.SubmissionAnswer.Delete(body.AssignmentID, body.UserID)
-	if err != nil {
-		respond.Code = http.StatusInternalServerError
-		respond.Message = "Could not delete submission"
-
-		w.WriteHeader(respond.Code)
-		err = json.NewEncoder(w).Encode(respond)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Something went wrong."))
-			return
-		}
-		return
-	}
-
-	respond.Code = http.StatusOK
-	respond.Message = "Submission deleted successfully"
-
-	w.WriteHeader(respond.Code)
-	err = json.NewEncoder(w).Encode(respond)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Something went wrong."))
-		return
-	}
 }

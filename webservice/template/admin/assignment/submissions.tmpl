@@ -29,7 +29,6 @@
                         <div class="btn-group btn-group-sm">
                             {{if .Submitted}}
                                 <a href="/admin/assignment/{{ $A.ID }}/submission/{{ .User.ID }}" class="btn btn-info">Preview</a>
-                                <a class="btn btn-danger" onclick="deleteConfirm({{$A.ID}}, {{.User.ID}})">Delete</a>
                             {{end}}
                         </div>
                     </td>
@@ -39,36 +38,4 @@
         </tbody>
     </table>
 {{end}}
-{{define "foot"}}
-    <script>
-        function deleteConfirm(assignmentID, userID) {
-            if (window.confirm('Are you sure you want to delete this submission?')) {
-                let url = `/admin/assignment/submission/delete`;
-                fetch(url, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        'assignment_id': parseInt(assignmentID),
-                        'user_id': parseInt(userID),
-                    })
-                })
-                .then(response => {
-                    if (response.status === 200) {
-                        return response.json()
-                    }
-
-                    return {}
-                })
-                .then(json => {
-                    window.alert(json.message);
-                    location.reload();
-                })
-                .catch(error => {
-                    window.alert(error);
-                });
-            }
-        }
-    </script>
-{{end}}
+{{define "foot"}}{{end}}
