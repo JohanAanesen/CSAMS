@@ -2,8 +2,14 @@ package service
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/repositroy"
+)
+
+var (
+	// ErrUserAlreadyInCourse error
+	ErrUserAlreadyInCourse = errors.New("user already in course")
 )
 
 // CourseService struct
@@ -65,6 +71,15 @@ func (s *CourseService) UserInCourse(userID, courseID int) (bool, error) {
 
 // AddUser to a single course
 func (s *CourseService) AddUser(userID, courseID int) error {
+	exists, err := s.UserInCourse(userID, courseID)
+	if err != nil {
+		return err
+	}
+
+	if exists {
+		return ErrUserAlreadyInCourse
+	}
+
 	return s.courseRepo.InsertUser(userID, courseID)
 }
 

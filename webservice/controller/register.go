@@ -122,6 +122,12 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 			course := courseService.Exists(hash)
 			if course.ID != -1 {
 				err = courseService.AddUser(user.ID, course.ID)
+
+				if err == service.ErrUserAlreadyInCourse {
+					http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
+					return
+				}
+
 				if err != nil {
 					log.Println("course service add user", err.Error())
 					ErrorHandler(w, r, http.StatusInternalServerError)

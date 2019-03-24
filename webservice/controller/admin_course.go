@@ -92,6 +92,11 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Add user to course
 	err = courseService.AddUser(currentUser.ID, course.ID)
+	if err == service.ErrUserAlreadyInCourse {
+		http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
+		return
+	}
+	
 	if err != nil {
 		log.Println("Could not add user to course! (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)

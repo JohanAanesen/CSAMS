@@ -53,6 +53,11 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 		if !userInCourse && hash != "" {
 			// Add user to course
 			err := courseService.AddUser(currentUser.ID, course.ID)
+			if err == service.ErrUserAlreadyInCourse {
+				http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
+				return
+			}
+
 			// Check for errors
 			if err != nil {
 				log.Println("add user to course", err)
@@ -133,6 +138,12 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		}
 		if course.ID != -1 && !userInCourse {
 			err := courseService.AddUser(user.ID, course.ID)
+
+			if err == service.ErrUserAlreadyInCourse {
+				http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
+				return
+			}
+
 			if err != nil {
 				log.Println("add user to course", err)
 				ErrorHandler(w, r, http.StatusInternalServerError)

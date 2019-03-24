@@ -101,6 +101,11 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = services.Course.AddUser(currentUser.ID, course.ID)
+	if err == service.ErrUserAlreadyInCourse {
+		http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
+		return
+	}
+
 	// Add user to course if possible
 	if err != nil {
 		ErrorHandler(w, r, http.StatusBadRequest)
