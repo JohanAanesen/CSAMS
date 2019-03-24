@@ -10,12 +10,14 @@ import (
 // SubmissionAnswerService struct
 type SubmissionAnswerService struct {
 	submissionAnswerRepo *repositroy.SubmissionAnswerRepository
+	reviewAnswerRepo     *repositroy.ReviewAnswerRepository
 }
 
 // NewSubmissionAnswerService func
 func NewSubmissionAnswerService(db *sql.DB) *SubmissionAnswerService {
 	return &SubmissionAnswerService{
 		submissionAnswerRepo: repositroy.NewSubmissionAnswerRepository(db),
+		reviewAnswerRepo:     repositroy.NewReviewAnswerRepository(db),
 	}
 }
 
@@ -84,6 +86,17 @@ func (s *SubmissionAnswerService) DeleteFromAssignment(assignmentID int) error {
 	return s.submissionAnswerRepo.DeleteFromAssignment(assignmentID)
 }
 
+// FetchSubmittedTime func
 func (s *SubmissionAnswerService) FetchSubmittedTime(userID, assignmentID int) (time.Time, bool, error) {
 	return s.submissionAnswerRepo.FetchSubmittedTime(userID, assignmentID)
+}
+
+// Delete func
+func (s *SubmissionAnswerService) Delete(assignmentID, userID int) error {
+	err := s.submissionAnswerRepo.Delete(assignmentID, userID)
+	if err != nil {
+		return err
+	}
+
+	return s.reviewAnswerRepo.DeleteTarget(assignmentID, userID)
 }

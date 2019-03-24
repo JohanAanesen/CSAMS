@@ -109,3 +109,27 @@ func (repo *ReviewAnswerRepository) Insert(answer model.ReviewAnswer) (int, erro
 
 	return int(id), err
 }
+
+// DeleteTarget func
+func (repo *ReviewAnswerRepository) DeleteTarget(assignmentID, userID int) error {
+	query := "DELETE FROM user_reviews WHERE assignment_id = ? AND user_target = ?"
+
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = repo.db.Exec(query, assignmentID, userID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return err
+}

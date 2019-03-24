@@ -243,3 +243,34 @@ func (repo *SubmissionAnswerRepository) FetchSubmittedTime(userID, assignmentID 
 
 	return time.Time{}, false, nil
 }
+
+// Delete func
+func (repo *SubmissionAnswerRepository) Delete(assignmentID, userID int) error {
+	query := "DELETE FROM user_submissions WHERE assignment_id = ? AND user_id = ?"
+
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = repo.db.Exec(query, assignmentID, userID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	query = "DELETE FROM peer_reviews WHERE review_user_id = ?"
+	_, err = repo.db.Exec(query, userID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return err
+}
