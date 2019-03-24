@@ -13,7 +13,7 @@
     <h2 class="display-4 mb-3">{{.Assignment.Name}} submissions</h2>
     <h5>{{.SubmissionCount}} / {{len .Students}} submitted</h5>
 
-    <table class="table table-hover table-sm" id="table" data-toggle="table" data-pagination="true" data-search="true">
+    <table class="table table-hover table-sm" id="table" data-toggle="table" data-pagination="true" data-search="true" data-page-size="100">
         <thead class="thead-light">
         <tr>
             <th data-sortable="true" scope="col">#</th>
@@ -43,5 +43,5 @@
 {{end}}
 {{define "foot"}}
     <script src="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.js"></script>
-    
+
 {{end}}
