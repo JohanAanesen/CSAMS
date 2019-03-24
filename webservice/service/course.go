@@ -71,15 +71,18 @@ func (s *CourseService) UserInCourse(userID, courseID int) (bool, error) {
 
 // AddUser to a single course
 func (s *CourseService) AddUser(userID, courseID int) error {
+	// Check if user already in course
 	exists, err := s.UserInCourse(userID, courseID)
 	if err != nil {
 		return err
 	}
 
+	// Return predefined error if user in course
 	if exists {
 		return ErrUserAlreadyInCourse
 	}
 
+	// Add user to course
 	return s.courseRepo.InsertUser(userID, courseID)
 }
 
