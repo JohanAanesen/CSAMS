@@ -165,7 +165,7 @@ func (repo *SubmissionAnswerRepository) CountForAssignment(assignmentID int) (in
 
 // Update func
 func (repo *SubmissionAnswerRepository) Update(answer model.SubmissionAnswer) error {
-	query := "UPDATE user_submissions SET answer = ?, comment = ?, submitted = ? WHERE name = ? AND user_id = ?"
+	query := "UPDATE user_submissions SET answer = ?, comment = ?, submitted = ? WHERE name = ? AND user_id = ? AND assignment_id = ?"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
@@ -174,7 +174,7 @@ func (repo *SubmissionAnswerRepository) Update(answer model.SubmissionAnswer) er
 
 	created := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
-	_, err = tx.Exec(query, answer.Answer, answer.Comment, created, answer.Name, answer.UserID)
+	_, err = tx.Exec(query, answer.Answer, answer.Comment, created, answer.Name, answer.UserID, answer.AssignmentID)
 	if err != nil {
 		tx.Rollback()
 		return err
