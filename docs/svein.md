@@ -4,8 +4,13 @@ Svein's log
 #### Worked on
 * Implemented default weight and field type to the form builder
 * Implemented deleting submissions by admin
+* Implemented Bootstrap-table extension
+* Fixed bugs for beta
+* Added default weight and field to form-builder
+* Made submissions withdrawable
+* Implemented feedback to student after submission
 #### Good
-* Deployed beta for testing with real students and a real assignemtn
+* Deployed beta for testing with real students and a real assignment
 #### Bad
 * Wrong query-string overwrote all submissions 
 #### Decisions
