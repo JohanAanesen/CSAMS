@@ -169,7 +169,7 @@ func (repo *CourseRepository) InsertUser(userID, courseID int) error {
 
 // UserInCourse func
 func (repo *CourseRepository) UserInCourse(userID, courseID int) (bool, error) {
-	query := "SELECT courseid FROM usercourse WHERE userid = ? AND courseid = ?"
+	query := "SELECT COUNT(DISTINCT userid) FROM usercourse WHERE userid =? AND courseid = ?"
 
 	rows, err := repo.db.Query(query, userID, courseID)
 	if err != nil {
@@ -178,15 +178,16 @@ func (repo *CourseRepository) UserInCourse(userID, courseID int) (bool, error) {
 
 	defer rows.Close()
 
-	for rows.Next() {
-		var temp int
+	if rows.Next() {
+		var result int
 
-		err = rows.Scan(&temp)
+		err = rows.Scan(&result)
 		if err != nil {
 			return false, err
 		}
 
-		if temp != 0 {
+		// If the user is in the course
+		if result == 1 {
 			return true, nil
 		}
 	}

@@ -78,6 +78,8 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 	hash := r.FormValue("courseID")
 
+	// regex, _ := regexp.Compile("[a-zA-Z0-9]{20}") TODO brede fix
+
 	// Check if course exists
 	course := services.Course.Exists(hash)
 	// If course ID == "", it doesn't exist
@@ -86,16 +88,16 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok, err := services.Course.UserInCourse(currentUser.ID, course.ID)
+	existsInCourse, err := services.Course.UserInCourse(currentUser.ID, course.ID)
 	if err != nil {
 		log.Println("services, course, user in course", err)
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
+
 	// Check that user isn't in this class
-	if !ok {
-		//joinedCourse = ""
-		log.Println("user not in course")
+	if existsInCourse {
+		log.Println("user already in course!")
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
