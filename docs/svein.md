@@ -1,5 +1,16 @@
 Svein's log
 ============
+## 24/03/2019
+#### Worked on
+* Implemented default weight and field type to the form builder
+* Implemented deleting submissions by admin
+#### Good
+* Deployed beta for testing with real students and a real assignemtn
+#### Bad
+* Wrong query-string overwrote all submissions 
+#### Decisions
+* 
+
 ## 22/03/2019
 #### Worked on
 * Finished refactoring of service implementation
