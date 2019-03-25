@@ -22,6 +22,7 @@ const (
 	CreatedCourse       activity = "COURSE-CREATED"                         // Course is created
 	CreatAssignment     activity = "ASSIGNMENT-CREATED"                     // Assignment is created
 	UpdateAdminFAQ      activity = "UPDATE-ADMIN-FAQ"                       // The admins faq is updated
+	NewUser             activity = "NEW-USER"                               // A new user is created
 	// TODO Brede : add more activities later :)
 )
 
@@ -75,6 +76,8 @@ func LogToDB(payload Log) error {
 		err = joinCreateCourse(tx, payload, date)
 	case CreatedCourse:
 		err = joinCreateCourse(tx, payload, date)
+	case NewUser:
+		err = newUser(tx, payload, date)
 	default:
 		log.Println("Error: Wrong Log.Activity!")
 		return errors.New("error: wrong log.activity type (log.db)")
@@ -126,6 +129,13 @@ func createAssignment(tx *sql.Tx, data Log, date string) error {
 func joinCreateCourse(tx *sql.Tx, data Log, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`,  `activity`, `courseid`) "+
 		"VALUES (?, ?, ?, ?)", data.UserID, date, data.Activity, data.CourseID)
+
+	return err
+}
+
+func newUser(tx *sql.Tx, data Log, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`) "+
+		"VALUES (?, ?, ?)", data.UserID, date, data.Activity)
 
 	return err
 }

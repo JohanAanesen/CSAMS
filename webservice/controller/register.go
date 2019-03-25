@@ -104,6 +104,15 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Log NewUser in the database and give error if something went wrong
+	logData := model.Log{UserID: userID, Activity: model.NewUser}
+	err = model.LogToDB(logData)
+	if err != nil {
+		log.Println("log new user to db", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	user, err := userService.Fetch(userID)
 	if err != nil {
 		log.Println("user service fetch", err.Error())
