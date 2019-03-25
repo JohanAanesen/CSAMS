@@ -512,16 +512,29 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		item.SubmissionID = int(assignment.SubmissionID.Int64)
 	}
 
+	var activity model.Activity
+
 	// Upload or update answers
 	if !delivered {
 		err = submissionAnswerService.Upload(submissionAnswers)
+		activity = model.DeliveredAssignment
 	} else {
 		err = submissionAnswerService.Update(submissionAnswers)
+		activity = model.UpdateAssignment
 	}
 
 	// Check for error
 	if err != nil {
 		log.Println("submission answer service, upload/update", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log assignment delivery/update
+	logData := model.Log{UserID: currentUser.ID, Activity: activity, AssignmentID: assignment.ID, SubmissionID: int(assignment.SubmissionID.Int64)}
+	err = model.LogToDB(logData)
+	if err != nil {
+		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -834,6 +847,15 @@ func AssignmentWithdrawGET(w http.ResponseWriter, r *http.Request) {
 	err = services.SubmissionAnswer.Delete(assignmentID, currentUser.ID)
 	if err != nil {
 		log.Println("services, submission answer, delete", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log assignment deletion
+	logData := model.Log{UserID: currentUser.ID, Activity: model.DeleteAssignment, AssignmentID: assignmentID, SubmissionID: -1} // TODO brede : get submission id here
+	err = model.LogToDB(logData)
+	if err != nil {
+		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
