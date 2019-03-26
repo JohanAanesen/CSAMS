@@ -40,7 +40,7 @@ func AdminSchedulerGET(w http.ResponseWriter, r *http.Request) {
 
 	url := "http://localhost:8086" //schedulerservice
 
-	if os.Getenv("SCHEDULE_SERVICE") != ""{
+	if os.Getenv("SCHEDULE_SERVICE") != "" {
 		url = "http://" + os.Getenv("SCHEDULE_SERVICE") //schedulerservice address changed in env var
 	}
 

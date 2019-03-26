@@ -48,7 +48,7 @@ func (scheduler Scheduler) SchedulePeerReview(subID int, assID int, reviewers in
 
 	url := "http://localhost:8086" //schedulerservice
 
-	if os.Getenv("SCHEDULE_SERVICE") != ""{
+	if os.Getenv("SCHEDULE_SERVICE") != "" {
 		url = "http://" + os.Getenv("SCHEDULE_SERVICE") //schedulerservice address changed in env var
 	}
 
@@ -88,7 +88,7 @@ func (scheduler Scheduler) UpdateSchedule(subID int, assID int, reviewers int, s
 
 	url := "http://localhost:8086" //schedulerservice
 
-	if os.Getenv("SCHEDULE_SERVICE") != ""{
+	if os.Getenv("SCHEDULE_SERVICE") != "" {
 		url = "http://" + os.Getenv("SCHEDULE_SERVICE") //schedulerservice address changed in env var
 	}
 
@@ -131,7 +131,7 @@ func (scheduler Scheduler) DeleteSchedule(subID int, assID int) error {
 
 	url := "http://localhost:8086" //schedulerservice
 
-	if os.Getenv("SCHEDULE_SERVICE") != ""{
+	if os.Getenv("SCHEDULE_SERVICE") != "" {
 		url = "http://" + os.Getenv("SCHEDULE_SERVICE") //schedulerservice address changed in env var
 	}
 
@@ -163,7 +163,7 @@ func (scheduler Scheduler) SchedulerExists(subID int, assID int) bool {
 
 	url := "http://localhost:8086" //schedulerservice
 
-	if os.Getenv("SCHEDULE_SERVICE") != ""{
+	if os.Getenv("SCHEDULE_SERVICE") != "" {
 		url = "http://" + os.Getenv("SCHEDULE_SERVICE") //schedulerservice address changed in env var
 	}
 
