@@ -135,15 +135,7 @@ func (repo *CourseRepository) Insert(course model.Course) (int, error) {
 }
 
 // InsertUser func
-func (repo *CourseRepository) InsertUser(userID, courseID int) error {
-
-	// TODO (Svein): Make this to a function, eg.: LogUserJoinedCourse(userID, courseID)
-	// Log joinedCourse in the database and give error if something went wrong
-	logData := model.Log{UserID: userID, Activity: model.JoinedCourse, CourseID: courseID}
-	err := model.LogToDB(logData)
-	if err != nil {
-		return err
-	}
+func (repo *CourseRepository) InsertUser(userID int, courseID int) error {
 
 	query := "INSERT INTO usercourse (userid, courseid) VALUES (?, ?)"
 

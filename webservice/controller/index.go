@@ -9,6 +9,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"log"
 	"net/http"
+	"regexp"
 )
 
 // IndexGET serves homepage to authenticated users, send anonymous to login
@@ -78,19 +79,32 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 	hash := r.FormValue("courseID")
 
-	// regex, _ := regexp.Compile("[a-zA-Z0-9]{20}") TODO brede fix
+	rgex := regexp.MustCompile("[a-zA-Z0-9]{20}")
+	result := rgex.FindAllString(hash, -1)
 
-	// Check if course exists
-	course := services.Course.Exists(hash)
-	// If course ID == "", it doesn't exist
-	if course.ID == -1 {
-		ErrorHandler(w, r, http.StatusNotFound)
+	courseExist := true
+	var course *model.Course
+
+	// go through and check for hash in string + save it
+	for _, element := range result {
+		course = services.Course.Exists(element)
+		if course.ID == -1 {
+			courseExist = false
+		} else {
+			hash = element
+		}
+	}
+
+	// Give feedback if course does not exist
+	if !courseExist {
+		log.Println("course does not exist")
+		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
 
 	existsInCourse, err := services.Course.UserInCourse(currentUser.ID, course.ID)
 	if err != nil {
-		log.Println("services, course, user in course", err)
+		log.Println("services, course, user in course", err.Error())
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
@@ -104,12 +118,14 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 	err = services.Course.AddUser(currentUser.ID, course.ID)
 	if err == service.ErrUserAlreadyInCourse {
+		log.Println("user already in course", err.Error())
 		http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
 		return
 	}
 
 	// Add user to course if possible
 	if err != nil {
+		log.Println("error when adding user to course", err.Error())
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
