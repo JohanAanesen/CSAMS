@@ -16,7 +16,6 @@ func AdminSchedulerGET(w http.ResponseWriter, r *http.Request) {
 	type PeerLoad struct {
 		Authentication string `json:"authentication"`
 		AssignmentID   int    `json:"assignment_id"`
-		SubmissionID   int    `json:"submission_id"`
 		Reviewers      int    `json:"reviewers"`
 	}
 
@@ -26,7 +25,6 @@ func AdminSchedulerGET(w http.ResponseWriter, r *http.Request) {
 		ScheduledTime  time.Time `json:"scheduled_time"`
 		Task           string    `json:"task"`
 		AssignmentID   int       `json:"assignment_id"`
-		SubmissionID   int       `json:"submission_id"`
 		Data           PeerLoad  `json:"data"`
 	}
 
@@ -64,9 +62,8 @@ func AdminSchedulerGET(w http.ResponseWriter, r *http.Request) {
 //AdminSchedulerDELETE handles POST requests to the delete address
 func AdminSchedulerDELETE(w http.ResponseWriter, r *http.Request) {
 	assIDString := r.FormValue("assid")
-	subIDString := r.FormValue("subid")
 
-	if assIDString == "" && subIDString == "" {
+	if assIDString == ""{
 		log.Println("Either assid or subid was not provided")
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
@@ -78,16 +75,11 @@ func AdminSchedulerDELETE(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	subID, err := strconv.Atoi(subIDString)
-	if err != nil {
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
 
 	sched := scheduler.Scheduler{}
 
-	if sched.SchedulerExists(subID, assID) {
-		err := sched.DeleteSchedule(subID, assID)
+	if sched.SchedulerExists(assID) {
+		err := sched.DeleteSchedule(assID)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return

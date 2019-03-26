@@ -11,7 +11,6 @@
             <div class="card-body">
                 <h5 class="float-right text-secondary">ID: {{.ID}}</h5>
                 <h2 class="display-5">Assignment ID: {{.AssignmentID}}</h2>
-                <h2 class="display-5">Submission ID: {{.SubmissionID}}</h2>
                 <h5>
                     <span class="badge badge-success">{{.Task}}</span>
                 </h5>
@@ -24,7 +23,6 @@
                 <form action="/admin/scheduler/delete" method="post" id="deleteForm">
                     <div class="form-group">
                         <input type="hidden" form="deleteForm" id="assid" name="assid" value="{{.AssignmentID}}">
-                        <input type="hidden" form="deleteForm" id="subid" name="subid" value="{{.SubmissionID}}">
                     </div>
                     <input type="submit" form="deleteForm" class="btn btn-outline-danger" value="Delete">
                 </form>

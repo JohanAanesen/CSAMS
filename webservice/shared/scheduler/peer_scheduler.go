@@ -14,18 +14,16 @@ import (
 //PeerTask struct
 type PeerTask struct {
 	Authentication string `json:"authentication"`
-	SubmissionID   int    `json:"submission_id"`
 	AssignmentID   int    `json:"assignment_id"`
 	Reviewers      int    `json:"reviewers"`
 }
 
 // SchedulePeerReview schedules a peer review task with scheduler service
-func (scheduler Scheduler) SchedulePeerReview(subID int, assID int, reviewers int, scheduledTime time.Time) error {
+func (scheduler Scheduler) SchedulePeerReview(assID int, reviewers int, scheduledTime time.Time) error {
 	// PeerTask, this is what is being sent to the peerservice
 
 	var peerTask = PeerTask{
 		Authentication: os.Getenv("PEER_AUTH"),
-		SubmissionID:   subID,
 		AssignmentID:   assID,
 		Reviewers:      reviewers,
 	}
@@ -35,7 +33,6 @@ func (scheduler Scheduler) SchedulePeerReview(subID int, assID int, reviewers in
 		"authentication": os.Getenv("PEER_AUTH"),
 		"scheduled_time": scheduledTime,
 		"task":           "peer",
-		"submission_id":  subID,
 		"assignment_id":  assID,
 		"data":           peerTask,
 	}
@@ -62,11 +59,10 @@ func (scheduler Scheduler) SchedulePeerReview(subID int, assID int, reviewers in
 }
 
 // UpdateSchedule updates a schedule task on service
-func (scheduler Scheduler) UpdateSchedule(subID int, assID int, reviewers int, scheduledTime time.Time) error {
+func (scheduler Scheduler) UpdateSchedule(assID int, reviewers int, scheduledTime time.Time) error {
 
 	var peerTask = PeerTask{
 		Authentication: os.Getenv("PEER_AUTH"),
-		SubmissionID:   subID,
 		AssignmentID:   assID,
 		Reviewers:      reviewers,
 	}
@@ -75,7 +71,6 @@ func (scheduler Scheduler) UpdateSchedule(subID int, assID int, reviewers int, s
 	jsonData := map[string]interface{}{
 		"authentication": os.Getenv("PEER_AUTH"),
 		"scheduled_time": scheduledTime,
-		"submission_id":  subID,
 		"assignment_id":  assID,
 		"data":           peerTask,
 	}
@@ -114,12 +109,11 @@ func (scheduler Scheduler) UpdateSchedule(subID int, assID int, reviewers int, s
 }
 
 // DeleteSchedule deletes a planned task from schedule service
-func (scheduler Scheduler) DeleteSchedule(subID int, assID int) error {
+func (scheduler Scheduler) DeleteSchedule(assID int) error {
 
 	//this is what is being sent to the scheduler service
 	jsonData := map[string]interface{}{
 		"authentication": os.Getenv("PEER_AUTH"),
-		"submission_id":  subID,
 		"assignment_id":  assID,
 	}
 
@@ -157,9 +151,9 @@ func (scheduler Scheduler) DeleteSchedule(subID int, assID int) error {
 }
 
 //SchedulerExists returns true if a scheduler with subID and assID identical exists
-func (scheduler Scheduler) SchedulerExists(subID int, assID int) bool {
+func (scheduler Scheduler) SchedulerExists(assID int) bool {
 
-	parameters := fmt.Sprintf("/%v/%v", subID, assID)
+	parameters := fmt.Sprintf("/%v", assID)
 
 	url := "http://localhost:8086" //schedulerservice
 

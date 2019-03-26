@@ -266,7 +266,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 		sched := scheduler.Scheduler{}
 
-		err := sched.SchedulePeerReview(int(assignment.SubmissionID.Int64),
+		err := sched.SchedulePeerReview(
 			lastID, //assignment ID
 			int(assignment.Reviewers.Int64),
 			assignment.Deadline)
@@ -547,8 +547,8 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	if assignment.ID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInCorrectTimeZone()) {
 		sched := scheduler.Scheduler{}
 
-		if sched.SchedulerExists(int(assignment.SubmissionID.Int64), assignment.ID) {
-			err := sched.UpdateSchedule(int(assignment.SubmissionID.Int64),
+		if sched.SchedulerExists(assignment.ID) {
+			err := sched.UpdateSchedule(
 				assignment.ID, //assignment ID
 				int(assignment.Reviewers.Int64),
 				assignment.Deadline)
@@ -557,7 +557,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		} else {
-			err := sched.SchedulePeerReview(int(assignment.SubmissionID.Int64),
+			err := sched.SchedulePeerReview(
 				assignment.ID, //assignment ID
 				int(assignment.Reviewers.Int64),
 				assignment.Deadline)
