@@ -15,7 +15,6 @@ type Payload struct {
 	ScheduledTime  time.Time       `json:"scheduled_time"`
 	Task           string          `json:"task"`
 	AssignmentID   int             `json:"assignment_id"`
-	SubmissionID   int             `json:"submission_id"`
 	Data           json.RawMessage `json:"data"`
 }
 
@@ -37,8 +36,7 @@ func (payload Payload) Save() bool {
 		return false
 	}
 
-	_, err = tx.Exec("INSERT INTO schedule_tasks(submission_id, assignment_id, scheduled_time, task, data) VALUES(?, ?, ?, ?, ?)",
-		payload.SubmissionID,
+	_, err = tx.Exec("INSERT INTO schedule_tasks(assignment_id, scheduled_time, task, data) VALUES(?, ?, ?, ?)",
 		payload.AssignmentID,
 		payload.ScheduledTime,
 		payload.Task,
@@ -67,7 +65,7 @@ func GetPayloads() []Payload {
 
 	var payloads []Payload
 
-	rows, err := db.GetDB().Query("SELECT id, submission_id, assignment_id, scheduled_time, task, data FROM schedule_tasks")
+	rows, err := db.GetDB().Query("SELECT id, assignment_id, scheduled_time, task, data FROM schedule_tasks")
 	if err != nil {
 		log.Fatal(err.Error()) // TODO : log error
 		// returns empty course array if it fails
@@ -76,13 +74,12 @@ func GetPayloads() []Payload {
 
 	for rows.Next() {
 		var ID int
-		var submissionID int
 		var assignmentID int
 		var scheduledTime time.Time
 		var task string
 		var data []byte
 
-		err := rows.Scan(&ID, &submissionID, &assignmentID, &scheduledTime, &task, &data)
+		err := rows.Scan(&ID, &assignmentID, &scheduledTime, &task, &data)
 		if err != nil {
 			log.Println(err.Error()) // TODO : log error
 			// returns empty course array if it fails
@@ -96,7 +93,6 @@ func GetPayloads() []Payload {
 			ID:            ID,
 			ScheduledTime: scheduledTime,
 			Task:          task,
-			SubmissionID:  submissionID,
 			AssignmentID:  assignmentID,
 			Data:          data,
 		}
@@ -109,9 +105,9 @@ func GetPayloads() []Payload {
 }
 
 //GetPayload from db
-func GetPayload(subID int, assID int) Payload {
+func GetPayload(assID int) Payload {
 
-	rows, err := db.GetDB().Query("SELECT id, submission_id, assignment_id, scheduled_time, task, data FROM schedule_tasks WHERE submission_id = ? AND assignment_id = ?", subID, assID)
+	rows, err := db.GetDB().Query("SELECT id, assignment_id, scheduled_time, task, data FROM schedule_tasks WHERE assignment_id = ?", assID)
 	if err != nil {
 		log.Fatal(err.Error()) // TODO : log error
 		// returns empty course array if it fails
@@ -120,13 +116,12 @@ func GetPayload(subID int, assID int) Payload {
 
 	for rows.Next() {
 		var ID int
-		var submissionID int
 		var assignmentID int
 		var scheduledTime time.Time
 		var task string
 		var data []byte
 
-		err := rows.Scan(&ID, &submissionID, &assignmentID, &scheduledTime, &task, &data)
+		err := rows.Scan(&ID, &assignmentID, &scheduledTime, &task, &data)
 		if err != nil {
 			log.Println(err.Error()) // TODO : log error
 			// returns empty course array if it fails
@@ -140,7 +135,6 @@ func GetPayload(subID int, assID int) Payload {
 			ID:            ID,
 			ScheduledTime: scheduledTime,
 			Task:          task,
-			SubmissionID:  submissionID,
 			AssignmentID:  assignmentID,
 			Data:          data,
 		}
@@ -153,9 +147,9 @@ func GetPayload(subID int, assID int) Payload {
 }
 
 //DeletePayload removes payload from db
-func DeletePayload(subID int, assID int) bool {
+func DeletePayload(assID int) bool {
 
-	payload := GetPayload(subID, assID)
+	payload := GetPayload(assID)
 
 	tx, err := db.GetDB().Begin() //start transaction
 	if err != nil {
@@ -163,7 +157,7 @@ func DeletePayload(subID int, assID int) bool {
 		return false
 	}
 
-	_, err = tx.Exec("DELETE FROM schedule_tasks WHERE submission_id = ? AND assignment_id = ?", subID, assID)
+	_, err = tx.Exec("DELETE FROM schedule_tasks WHERE assignment_id = ?", assID)
 
 	if err != nil {
 		//todo log error
@@ -194,11 +188,10 @@ func (payload Payload) UpdatePayload() bool {
 		return false
 	}
 
-	_, err = tx.Exec("UPDATE schedule_tasks SET scheduled_time = ?, task = ?, data = ? WHERE submission_id = ? AND assignment_id = ?",
+	_, err = tx.Exec("UPDATE schedule_tasks SET scheduled_time = ?, task = ?, data = ? WHERE assignment_id = ?",
 		payload.ScheduledTime,
 		payload.Task,
 		payload.Data,
-		payload.SubmissionID,
 		payload.AssignmentID)
 
 	if err != nil {

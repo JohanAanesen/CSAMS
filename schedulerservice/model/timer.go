@@ -65,7 +65,7 @@ func UpdateTimer(newData json.RawMessage, newTime time.Time, payload Payload) bo
 //InitializeTimers fetches timers from database on startup
 func InitializeTimers() {
 
-	time.Sleep(10*time.Second) //wait 10 seconds to let db setup properly
+	time.Sleep(10*time.Second) //wait 10 seconds to let db setup properly, not best fix but it does the trick
 
 	payloads := GetPayloads()
 
@@ -80,7 +80,7 @@ func InitializeTimers() {
 			task.Trigger()
 			return
 		} else if !ScheduleTask(payload) { //schedule task
-			log.Printf("Could not initialize timer for submission ID: %v\n", payload.SubmissionID)
+			log.Printf("Could not initialize timer for AssignmentID: %v\n", payload.AssignmentID)
 			return
 		}
 	}
