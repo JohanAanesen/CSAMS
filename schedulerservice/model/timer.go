@@ -80,7 +80,7 @@ func InitializeTimers() {
 			task.Trigger()
 			return
 		} else if !ScheduleTask(payload) { //schedule task
-			log.Printf("Could not initialize timer for submission ID: %v\n", payload.SubmissionID)
+			log.Printf("Could not initialize timer for AssignmentID: %v\n", payload.AssignmentID)
 			return
 		}
 	}

@@ -17,11 +17,9 @@ var dummyPayload = model.Payload{
 	Authentication: os.Getenv("PEER_AUTH"),
 	ScheduledTime:  util.GetTimeInCorrectTimeZone().Add(time.Hour * 24 * 31), // TODO time-norwegian
 	Task:           "peer",
-	SubmissionID:   1,
 	AssignmentID:   1,
 	Data: peerTasktoRawJSON(model.PeerTask{
 		Authentication: os.Getenv("PEER_AUTH"),
-		SubmissionID:   1,
 		AssignmentID:   1,
 		Reviewers:      20000000,
 	}),
@@ -29,23 +27,19 @@ var dummyPayload = model.Payload{
 
 var dummyUpdate = struct {
 	Authentication string    `json:"authentication"`
-	SubmissionID   int       `json:"submission_id"`
 	AssignmentID   int       `json:"assignment_id"`
 	ScheduledTime  time.Time `json:"scheduled_time"`
 }{
 	Authentication: os.Getenv("PEER_AUTH"),
-	SubmissionID:   1,
 	AssignmentID:   1,
-	ScheduledTime:  util.GetTimeInCorrectTimeZone().Add(time.Hour * 2351467), // TODO time-norwegian
+	ScheduledTime:  util.GetTimeInCorrectTimeZone().Add(time.Hour * 24 * 31), // TODO time-norwegian
 }
 
 var dummyDelete = struct {
 	Authentication string `json:"authentication"`
-	SubmissionID   int    `json:"submission_id"`
 	AssignmentID   int    `json:"assignment_id"`
 }{
 	Authentication: os.Getenv("PEER_AUTH"),
-	SubmissionID:   1,
 	AssignmentID:   1,
 }
 
@@ -56,7 +50,6 @@ func getReaderFromPayload(payload model.Payload) io.Reader {
 
 func getReaderFromUpdate(payload struct {
 	Authentication string    `json:"authentication"`
-	SubmissionID   int       `json:"submission_id"`
 	AssignmentID   int       `json:"assignment_id"`
 	ScheduledTime  time.Time `json:"scheduled_time"`
 }) io.Reader {
@@ -66,7 +59,6 @@ func getReaderFromUpdate(payload struct {
 
 func getReaderFromDelete(payload struct {
 	Authentication string `json:"authentication"`
-	SubmissionID   int    `json:"submission_id"`
 	AssignmentID   int    `json:"assignment_id"`
 }) io.Reader {
 	body, _ := json.Marshal(payload)

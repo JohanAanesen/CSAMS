@@ -22,14 +22,13 @@ type Task interface {
 //PeerTask struct
 type PeerTask struct {
 	Authentication string `json:"authentication"`
-	SubmissionID   int    `json:"submission_id"`
 	AssignmentID   int    `json:"assignment_id"`
 	Reviewers      int    `json:"reviewers"`
 }
 
 //Trigger runs tasks when their scheduled time expires
 func (peer PeerTask) Trigger() {
-	fmt.Printf("Triggering task: %v\n", peer.SubmissionID) //todo remove this
+	fmt.Printf("Triggering task with AssignmentID: %v\n", peer.AssignmentID) //todo remove this
 
 	//Send request to peer service
 	jsonValue, _ := json.Marshal(peer) //json encode the request
@@ -43,21 +42,21 @@ func (peer PeerTask) Trigger() {
 
 	//remove task from database
 	if peer.Delete() {
-		fmt.Printf("Successfully deleted task with SubmissionID: %v\n", peer.SubmissionID)
+		fmt.Printf("Successfully deleted task with AssignmentID: %v\n", peer.AssignmentID)
 	}
 }
 
 //Schedule schedules a PeerTask for being triggered in the future
 func (peer PeerTask) Schedule(scheduledTime time.Time) bool {
 
-	payload := GetPayload(peer.SubmissionID, peer.AssignmentID)
+	payload := GetPayload(peer.AssignmentID)
 
 	// TODO time-schedulerservice
 	timeNow := time.Now().UTC().Add(time.Hour) // Get norwegian time now
 	Duration := scheduledTime.Sub(timeNow)     // Subtract now's time from target time to get time until trigger
 
 	if Duration < 0 { //scheduled time has to be in the future
-		log.Printf("Could not schedule timer for submissionID: %v", peer.SubmissionID)
+		log.Printf("Could not schedule timer for AssignmentID: %v", peer.AssignmentID)
 		peer.Delete() //todo trigger tasks that hasn't been triggered?
 		return false
 	}
@@ -78,7 +77,7 @@ func (peer PeerTask) Delete() bool {
 		return false
 	}
 
-	_, err = tx.Exec("DELETE FROM schedule_tasks WHERE submission_id = ? AND assignment_id = ?", peer.SubmissionID, peer.AssignmentID)
+	_, err = tx.Exec("DELETE FROM schedule_tasks WHERE assignment_id = ?", peer.AssignmentID)
 	if err != nil {
 		//todo log error
 		log.Println(err.Error())
@@ -102,7 +101,7 @@ func (peer PeerTask) Delete() bool {
 //NewTask registers a new Task in database and ships it off for scheduling
 func NewTask(payload Payload) bool {
 	//Make sure a timer does not exist for this submission
-	pay2 := GetPayload(payload.SubmissionID, payload.AssignmentID)
+	pay2 := GetPayload(payload.AssignmentID)
 	if pay2.ID != 0 {
 		log.Println("Payload with these id's already exists.")
 		return false
@@ -114,7 +113,7 @@ func NewTask(payload Payload) bool {
 		return false
 	}
 
-	payload = GetPayload(payload.SubmissionID, payload.AssignmentID) //get a fresh payload with id from db
+	payload = GetPayload(payload.AssignmentID) //get a fresh payload with id from db
 
 	//schedule task
 	if !ScheduleTask(payload) {
@@ -139,7 +138,7 @@ func ScheduleTask(payload Payload) bool {
 
 		//Schedule task
 		if !peerTask.Schedule(payload.ScheduledTime) {
-			log.Printf("Could not schedule task for submissionID: %v and assignmentID: %v\n", peerTask.SubmissionID, peerTask.AssignmentID)
+			log.Printf("Could not schedule task for AssignmentID: %v\n", peerTask.AssignmentID)
 			return false
 		}
 	default:

@@ -25,12 +25,6 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 // IndexSingleGET gets a single schedule from service
 func IndexSingleGET(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	subID, err := strconv.Atoi(vars["subid"])
-	if err != nil {
-		log.Printf("id: %v", err)
-		http.Error(w, "Bad request", http.StatusBadRequest)
-		return
-	}
 
 	assID, err := strconv.Atoi(vars["assid"])
 	if err != nil {
@@ -39,7 +33,7 @@ func IndexSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload := model.GetPayload(subID, assID)
+	payload := model.GetPayload(assID)
 
 	if payload.ID != 0 {
 		http.Header.Add(w.Header(), "content-type", "application/json")
@@ -104,7 +98,6 @@ func IndexPOST(w http.ResponseWriter, r *http.Request) {
 func IndexPUT(w http.ResponseWriter, r *http.Request) {
 	var update struct {
 		Authentication string          `json:"authentication"`
-		SubmissionID   int             `json:"submission_id"`
 		AssignmentID   int             `json:"assignment_id"`
 		ScheduledTime  time.Time       `json:"scheduled_time"`
 		Data           json.RawMessage `json:"data"`
@@ -126,7 +119,7 @@ func IndexPUT(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	model.UpdateTimer(update.Data, update.ScheduledTime, model.GetPayload(update.SubmissionID, update.AssignmentID))
+	model.UpdateTimer(update.Data, update.ScheduledTime, model.GetPayload(update.AssignmentID))
 
 	if err := json.NewEncoder(w).Encode(response{Success: true}); err != nil {
 		log.Println("Something went wrong encoding response") //todo real logger
@@ -138,7 +131,6 @@ func IndexPUT(w http.ResponseWriter, r *http.Request) {
 func IndexDELETE(w http.ResponseWriter, r *http.Request) {
 	var delete struct {
 		Authentication string `json:"authentication"`
-		SubmissionID   int    `json:"submission_id"`
 		AssignmentID   int    `json:"assignment_id"`
 	}
 
@@ -158,7 +150,7 @@ func IndexDELETE(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !model.DeletePayload(delete.SubmissionID, delete.AssignmentID) { //delete the thing
+	if !model.DeletePayload(delete.AssignmentID) { //delete the thing
 		log.Println("Something wrong deleting timer") //todo real logger
 		http.Error(w, "Something wrong deleting timer", http.StatusInternalServerError)
 		return
