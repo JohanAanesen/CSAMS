@@ -105,7 +105,6 @@
                             <table class="table table-borderless table-sm">
                                 <thead>
                                 <tr>
-                                    <th scope="col">#</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Type</th>
@@ -114,7 +113,6 @@
                                 <tbody>
                                 {{ range .Classmates }}
                                     <tr {{if .Teacher}} class="bg-primary" {{end}}>
-                                        <th scope="row">{{.ID}}</th>
                                         <td>{{.Name}}</td>
                                         <td><a href="mailto:{{.EmailStudent}}">{{.EmailStudent}}</a></td>
                                         <td>{{if .Teacher}} Teacher {{else}} Student {{end}}</td>
