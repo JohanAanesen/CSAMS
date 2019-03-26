@@ -30,33 +30,38 @@ func routes() http.Handler {
 	// Instantiate mux-router
 	router := mux.NewRouter().StrictSlash(true)
 
-	// Index-page Handlers
-	router.HandleFunc("/", controller.IndexGET).Methods("GET")
-	router.HandleFunc("/", controller.JoinCoursePOST).Methods("POST")
+	// User-page router
+	userrouter := router.PathPrefix("/").Subrouter()
+	userrouter.Use(middleware.UserAuth)
 
-	// Course-page Handlers
-	router.HandleFunc("/course/{id:[0-9]+}", controller.CourseGET).Methods("GET")
-	router.HandleFunc("/course/list", controller.CourseListGET).Methods("GET")
-
-	// Assignment-page Handlers
-	router.HandleFunc("/assignment", controller.AssignmentGET).Methods("GET")
-	router.HandleFunc("/assignment/{id:[0-9]+}", controller.AssignmentSingleGET).Methods("GET")
-	router.HandleFunc("/assignment/peer", controller.AssignmentPeerGET).Methods("GET")
-	router.HandleFunc("/assignment/auto", controller.AssignmentAutoGET).Methods("GET")
-	router.HandleFunc("/assignment/submission", controller.AssignmentUploadGET).Methods("GET")
-	router.HandleFunc("/assignment/submission/{id:[0-9]+}/withdraw", controller.AssignmentWithdrawGET).Methods("GET")
-	router.HandleFunc("/assignment/submission/update", controller.AssignmentUploadPOST).Methods("POST")
-	router.HandleFunc("/assignment/{id:[0-9]+}/submission/{userid:[0-9]+}", controller.AssignmentUserSubmissionGET).Methods("GET")
-	router.HandleFunc("/assignment/{id:[0-9]+}/submission/{userid:[0-9]+}", controller.AssignmentUserSubmissionPOST).Methods("POST")
-
-	// User-page Handlers
-	router.HandleFunc("/user", controller.UserGET).Methods("GET")
-	router.HandleFunc("/user/update", controller.UserUpdatePOST).Methods("POST")
-
-	// Admin-page Handlers
+	// Admin-page router
 	adminrouter := router.PathPrefix("/admin").Subrouter()
 	adminrouter.Use(middleware.TeacherAuth)
 
+	// Index-page Handlers
+	userrouter.HandleFunc("/", controller.IndexGET).Methods("GET")
+	userrouter.HandleFunc("/", controller.JoinCoursePOST).Methods("POST")
+
+	// Course-page Handlers
+	userrouter.HandleFunc("/course/{id:[0-9]+}", controller.CourseGET).Methods("GET")
+	userrouter.HandleFunc("/course/list", controller.CourseListGET).Methods("GET")
+
+	// Assignment-page Handlers
+	userrouter.HandleFunc("/assignment", controller.AssignmentGET).Methods("GET")
+	userrouter.HandleFunc("/assignment/{id:[0-9]+}", controller.AssignmentSingleGET).Methods("GET")
+	userrouter.HandleFunc("/assignment/peer", controller.AssignmentPeerGET).Methods("GET")
+	userrouter.HandleFunc("/assignment/auto", controller.AssignmentAutoGET).Methods("GET")
+	userrouter.HandleFunc("/assignment/submission", controller.AssignmentUploadGET).Methods("GET")
+	userrouter.HandleFunc("/assignment/submission/{id:[0-9]+}/withdraw", controller.AssignmentWithdrawGET).Methods("GET")
+	userrouter.HandleFunc("/assignment/submission/update", controller.AssignmentUploadPOST).Methods("POST")
+	userrouter.HandleFunc("/assignment/{id:[0-9]+}/submission/{userid:[0-9]+}", controller.AssignmentUserSubmissionGET).Methods("GET")
+	userrouter.HandleFunc("/assignment/{id:[0-9]+}/submission/{userid:[0-9]+}", controller.AssignmentUserSubmissionPOST).Methods("POST")
+
+	// User-page Handlers
+	userrouter.HandleFunc("/user", controller.UserGET).Methods("GET")
+	userrouter.HandleFunc("/user/update", controller.UserUpdatePOST).Methods("POST")
+
+	// Admin-page Handlers
 	adminrouter.HandleFunc("/", controller.AdminGET).Methods("GET")
 
 	adminrouter.HandleFunc("/course", controller.AdminCourseGET).Methods("GET")
@@ -116,7 +121,7 @@ func routes() http.Handler {
 	router.HandleFunc("/login", controller.LoginPOST).Methods("POST")
 	router.HandleFunc("/register", controller.RegisterGET).Methods("GET")
 	router.HandleFunc("/register", controller.RegisterPOST).Methods("POST")
-	router.HandleFunc("/logout", controller.LogoutGET).Methods("GET")
+	userrouter.HandleFunc("/logout", controller.LogoutGET).Methods("GET")
 
 	// Login forgotten password handler
 	router.HandleFunc("/forgottenpass", controller.ForgottenGET).Methods("GET")
