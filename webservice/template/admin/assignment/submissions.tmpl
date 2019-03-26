@@ -19,6 +19,7 @@
 
     <h2 class="display-4 mb-3">{{.Assignment.Name}} submissions</h2>
     <h5>{{.SubmissionCount}} / {{len .Students}} submitted</h5>
+    <h6>Reviews per student: {{.Assignment.Reviewers.Int64}}</h6>
 
     <table class="table table-hover table-sm" id="table" data-toggle="table" data-pagination="true" data-search="true" data-page-size="100">
         <thead class="thead-light">
