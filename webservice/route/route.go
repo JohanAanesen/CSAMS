@@ -81,6 +81,14 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/review/{userID:[0-9]+}", controller.AdminAssignmentReviewsGET).Methods("GET")
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}", controller.AdminAssignmentSingleSubmissionGET).Methods("GET")
 
+	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}/create", controller.AdminAssignmentSubmissionCreateGET).Methods("GET")
+	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}/create", controller.AdminAssignmentSubmissionCreatePOST).Methods("POST")
+	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}/update", controller.AdminAssignmentSubmissionUpdateGET).Methods("GET")
+	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}/update", controller.AdminAssignmentSubmissionUpdatePOST).Methods("POST")
+	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}", controller.AdminAssignmentSubmissionDELETE).Methods("DELETE")
+
+
+
 	adminrouter.HandleFunc("/submission", controller.AdminSubmissionGET).Methods("GET")
 	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreateGET).Methods("GET")
 	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreatePOST).Methods("POST")

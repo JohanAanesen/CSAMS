@@ -40,6 +40,11 @@ func (s *UserService) FetchAllFromCourse(courseID int) ([]*model.User, error) {
 	return s.userRepo.FetchAllFromCourse(courseID)
 }
 
+// FetchAllStudentsFromCourse func
+func (s *UserService) FetchAllStudentsFromCourse(courseID int) ([]*model.User, error) {
+	return s.userRepo.FetchAllStudentsFromCourse(courseID)
+}
+
 // Register func
 func (s *UserService) Register(user model.User, password string) (int, error) {
 	hashed, err := util.GenerateFromPassword(password)

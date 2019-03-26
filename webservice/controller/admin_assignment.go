@@ -606,7 +606,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	students, err := services.User.FetchAllFromCourse(assignment.CourseID)
+	students, err := services.User.FetchAllStudentsFromCourse(assignment.CourseID)
 	if err != nil {
 		log.Println("user service, fetch all from course", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -935,4 +935,75 @@ func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) 
 
 	// Render view
 	v.Render(w)
+}
+
+// AdminAssignmentSubmissionCreateGET func
+func AdminAssignmentSubmissionCreateGET(w http.ResponseWriter, r *http.Request) {
+	// Get URL variables
+	vars := mux.Vars(r)
+
+	assignmentID, err := strconv.Atoi(vars["assignmentID"])
+	if err != nil {
+		log.Println("strconv, atoi, assignmentID", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	userID, err := strconv.Atoi(vars["userID"])
+	if err != nil {
+		log.Println("strconv, atoi, userID", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Fetch user
+	user, err := services.User.Fetch(userID)
+	if err != nil {
+		log.Println("services, user, fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Fetch assignment
+	assignment, err := services.Assignment.Fetch(assignmentID)
+	if err != nil {
+		log.Println("services, assignment, fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	// Create view
+	v := view.New(r)
+	v.Name = "admin/assignment/submission/create"
+
+	v.Vars["User"] = user
+	v.Vars["Assignment"] = assignment
+
+	v.Render(w)
+}
+
+// AdminAssignmentSubmissionCreatePOST func
+func AdminAssignmentSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// AdminAssignmentSubmissionUpdateGET func
+func AdminAssignmentSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// AdminAssignmentSubmissionUpdatePOST func
+func AdminAssignmentSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// AdminAssignmentSubmissionDELETE func
+func AdminAssignmentSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
+
 }
