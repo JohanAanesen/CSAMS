@@ -46,7 +46,13 @@ func (scheduler Scheduler) SchedulePeerReview(subID int, assID int, reviewers in
 		return err
 	}
 
-	_, err = http.Post("http://"+os.Getenv("SCHEDULE_SERVICE"), "application/json", bytes.NewBuffer(jsonValue))
+	url := "http://localhost:8086" //schedulerservice
+
+	if os.Getenv("SCHEDULE_SERVICE") != ""{
+		url = "http://" + os.Getenv("SCHEDULE_SERVICE") //schedulerservice address changed in env var
+	}
+
+	_, err = http.Post(url, "application/json", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Printf("The HTTP request failed with error %s\n", err)
 		return err
@@ -80,8 +86,14 @@ func (scheduler Scheduler) UpdateSchedule(subID int, assID int, reviewers int, s
 		return err
 	}
 
+	url := "http://localhost:8086" //schedulerservice
+
+	if os.Getenv("SCHEDULE_SERVICE") != ""{
+		url = "http://" + os.Getenv("SCHEDULE_SERVICE") //schedulerservice address changed in env var
+	}
+
 	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodPut, "http://"+os.Getenv("SCHEDULE_SERVICE"), bytes.NewBuffer(jsonValue))
+	req, err := http.NewRequest(http.MethodPut, url, bytes.NewBuffer(jsonValue))
 	if err != nil {
 		// handle error
 		log.Fatal(err)
@@ -117,8 +129,14 @@ func (scheduler Scheduler) DeleteSchedule(subID int, assID int) error {
 		return err
 	}
 
+	url := "http://localhost:8086" //schedulerservice
+
+	if os.Getenv("SCHEDULE_SERVICE") != ""{
+		url = "http://" + os.Getenv("SCHEDULE_SERVICE") //schedulerservice address changed in env var
+	}
+
 	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodDelete, "http://"+os.Getenv("SCHEDULE_SERVICE"), bytes.NewBuffer(jsonValue))
+	req, err := http.NewRequest(http.MethodDelete, url, bytes.NewBuffer(jsonValue))
 	if err != nil {
 		// handle error
 		log.Fatal(err)
@@ -143,7 +161,13 @@ func (scheduler Scheduler) SchedulerExists(subID int, assID int) bool {
 
 	parameters := fmt.Sprintf("/%v/%v", subID, assID)
 
-	response, err := http.Get("http://" + os.Getenv("SCHEDULE_SERVICE") + parameters)
+	url := "http://localhost:8086" //schedulerservice
+
+	if os.Getenv("SCHEDULE_SERVICE") != ""{
+		url = "http://" + os.Getenv("SCHEDULE_SERVICE") //schedulerservice address changed in env var
+	}
+
+	response, err := http.Get(url + parameters)
 	if err != nil {
 		log.Printf("The HTTP request to schedulerservice failed with error %s\n", err)
 		return false

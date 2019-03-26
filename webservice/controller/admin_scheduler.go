@@ -38,7 +38,13 @@ func AdminSchedulerGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "admin/scheduler/index"
 
-	resp, err := http.Get("http://" + os.Getenv("SCHEDULE_SERVICE"))
+	url := "http://localhost:8086" //schedulerservice
+
+	if os.Getenv("SCHEDULE_SERVICE") != ""{
+		url = "http://" + os.Getenv("SCHEDULE_SERVICE") //schedulerservice address changed in env var
+	}
+
+	resp, err := http.Get(url)
 	if err != nil {
 		panic(err)
 	}
