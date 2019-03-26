@@ -57,8 +57,8 @@ func (s *SubmissionAnswerService) FetchUserAnswers(userID, assignmentID int) ([]
 	return s.submissionAnswerRepo.FetchAllForUserAndAssignment(userID, assignmentID)
 }
 
-// Upload func
-func (s *SubmissionAnswerService) Upload(answers []*model.SubmissionAnswer) error {
+// Insert func
+func (s *SubmissionAnswerService) Insert(answers []*model.SubmissionAnswer) error {
 	for _, item := range answers {
 		_, err := s.submissionAnswerRepo.Insert(*item)
 		if err != nil {

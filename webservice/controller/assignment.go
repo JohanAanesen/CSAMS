@@ -502,7 +502,6 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 			// Else, create new answers array
 			submissionAnswers = append(submissionAnswers, &answer)
 		}
-
 	}
 
 	// Update user, assignment & submission id for all answers
@@ -514,9 +513,9 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 
 	var activity model.Activity
 
-	// Upload or update answers
+	// Insert or update answers
 	if !delivered {
-		err = submissionAnswerService.Upload(submissionAnswers)
+		err = submissionAnswerService.Insert(submissionAnswers)
 		activity = model.DeliveredAssignment
 	} else {
 		err = submissionAnswerService.Update(submissionAnswers)

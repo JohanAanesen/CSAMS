@@ -48,7 +48,7 @@
                                 {{if .Reviewed}}
                                     <a href="/admin/assignment/{{$A.ID}}/review/{{.User.ID}}" class="btn btn-outline-info">Reviews</a>
                                 {{end}}
-                                <button type="button" onclick="window.alert('not implemented yet');" class="btn btn-outline-danger">Delete</button>
+                                <button type="button" onclick="deleteSubmission({{$A.ID}}, {{.User.ID}})" class="btn btn-outline-danger">Delete</button>
                             {{else}}
                                 <a href="/admin/assignment/{{$A.ID}}/submission/{{.User.ID}}/create" class="btn btn-outline-success">Create</a>
                             {{end}}
@@ -65,4 +65,36 @@
 {{end}}
 {{define "foot"}}
     <script src="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.js"></script>
+    <script>
+        function deleteSubmission(assignment, user) {
+            if (window.confirm('Are you sure you want to delete this submission?')) {
+                let url = `/admin/assignment/${parseInt(assignment)}/submission/${parseInt(user)}`;
+                fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        'assignment_id': parseInt(assignment),
+                        'user_id': parseInt(user),
+                    })
+                })
+                .then(response => {
+                    return response.json();
+                })
+                .then(json => {
+                    window.alert(json.message);
+
+                    if (json.code === 200) {
+                        location.reload();
+                    } else {
+
+                    }
+                })
+                .catch(error => {
+                    window.alert(error);
+                });
+            }
+        }
+    </script>
 {{end}}

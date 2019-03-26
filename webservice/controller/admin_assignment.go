@@ -2,6 +2,8 @@ package controller
 
 import (
 	"database/sql"
+	"encoding/json"
+	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
@@ -10,12 +12,14 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/gorilla/mux"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/shurcooL/github_flavored_markdown"
 	"html/template"
 	"log"
 	"net/http"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -975,6 +979,58 @@ func AdminAssignmentSubmissionCreateGET(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	submitted, err := services.SubmissionAnswer.HasUserSubmitted(assignment.ID, user.ID)
+	if err != nil {
+		log.Println("services, submission answer, has user submitted", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	if submitted {
+		http.Redirect(w, r,
+			fmt.Sprintf("/admin/assignment/%d/submissions", assignment.ID),
+			http.StatusTemporaryRedirect)
+		return
+	}
+
+	// Fetch course
+	course, err := services.Course.Fetch(assignment.CourseID)
+	if err != nil {
+		log.Println("services, course, fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get form and log possible error
+	submissionForm, err := services.Submission.FetchFromAssignment(assignment.ID)
+	if err != nil {
+		log.Println("get submission form from assignment id", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get answers to user if he has delivered
+	answers, err := services.SubmissionAnswer.FetchUserAnswers(user.ID, assignment.ID)
+	if err != nil {
+		log.Println("services, submission answer, fetch user answers", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	if len(answers) == 0 {
+		for _, item := range submissionForm.Form.Fields {
+			answers = append(answers, &model.SubmissionAnswer{
+				Type:        item.Type,
+				Choices:     item.Choices,
+				Weight:      item.Weight,
+				Label:       item.Label,
+				HasComment:  item.HasComment,
+				Description: item.Description,
+				Name:        item.Name,
+			})
+		}
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
@@ -984,26 +1040,417 @@ func AdminAssignmentSubmissionCreateGET(w http.ResponseWriter, r *http.Request) 
 
 	v.Vars["User"] = user
 	v.Vars["Assignment"] = assignment
+	v.Vars["Course"] = course
+	v.Vars["Answers"] = answers
 
 	v.Render(w)
 }
 
 // AdminAssignmentSubmissionCreatePOST func
 func AdminAssignmentSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
+	// Sanitizer
+	p := bluemonday.UGCPolicy()
 
+	// Get URL variables
+	vars := mux.Vars(r)
+
+	assignmentID, err := strconv.Atoi(vars["assignmentID"])
+	if err != nil {
+		log.Println("strconv, atoi, assignmentID", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	userID, err := strconv.Atoi(vars["userID"])
+	if err != nil {
+		log.Println("strconv, atoi, userID", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Fetch user
+	user, err := services.User.Fetch(userID)
+	if err != nil {
+		log.Println("services, user, fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Fetch assignment
+	assignment, err := services.Assignment.Fetch(assignmentID)
+	if err != nil {
+		log.Println("services, assignment, fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get form and log possible error
+	submissionForm, err := services.Submission.FetchFromAssignment(assignment.ID)
+	if err != nil {
+		log.Println("get submission form from assignment id", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Create empty submission answer slice
+	submissionAnswers := make([]*model.SubmissionAnswer, 0)
+
+	// Parse form from request
+	err = r.ParseForm()
+	if err != nil {
+		log.Println("request parse form", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Check that every form is filled an give error if not
+	for _, field := range submissionForm.Form.Fields {
+		// Check if they are empty and give error if they are
+		if r.FormValue(field.Name) == "" && field.Type != "checkbox" && field.Type != "paragraph" && field.Type != "multi-checkbox" {
+			log.Println("Error: assignment with form name '" + field.Name + "' can not be empty! (assignment.go)")
+			ErrorHandler(w, r, http.StatusBadRequest)
+			return
+		}
+
+		// Initialize empty answer
+		answer := model.SubmissionAnswer{}
+
+		// Check if multi-checkbox
+		if field.Type == "multi-checkbox" {
+			val := r.Form[field.Name]
+			answer.Answer = p.Sanitize(strings.Join(val, ","))
+		} else {
+			// Sanitize input
+			answer.Answer = p.Sanitize(r.FormValue(field.Name))
+		}
+
+		// Get field type
+		answer.UserID = user.ID
+		answer.AssignmentID = assignment.ID
+		answer.SubmissionID = int(assignment.SubmissionID.Int64)
+		answer.Type = field.Type
+		answer.Name = field.Name
+		answer.Label = field.Label
+		answer.HasComment = field.HasComment
+		//answer.Description = field.Description
+		// Check if the field has comment enabled
+		if field.HasComment {
+			// Get comment content, sanitized
+			answer.Comment.String = p.Sanitize(r.FormValue(field.Name + "_comment"))
+			answer.Comment.Valid = answer.Comment.String != ""
+		}
+
+		// If delivered, only change the value
+		submissionAnswers = append(submissionAnswers, &answer)
+	}
+
+	err = services.SubmissionAnswer.Insert(submissionAnswers)
+	if err != nil {
+		log.Println("services, submission answer, insert", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r,
+		fmt.Sprintf(
+			"/admin/assignment/%d/submissions",
+			assignment.ID),
+		http.StatusFound)
 }
 
 // AdminAssignmentSubmissionUpdateGET func
 func AdminAssignmentSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
+	// Get URL variables
+	vars := mux.Vars(r)
 
+	assignmentID, err := strconv.Atoi(vars["assignmentID"])
+	if err != nil {
+		log.Println("strconv, atoi, assignmentID", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	userID, err := strconv.Atoi(vars["userID"])
+	if err != nil {
+		log.Println("strconv, atoi, userID", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Fetch user
+	user, err := services.User.Fetch(userID)
+	if err != nil {
+		log.Println("services, user, fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Fetch assignment
+	assignment, err := services.Assignment.Fetch(assignmentID)
+	if err != nil {
+		log.Println("services, assignment, fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	submitted, err := services.SubmissionAnswer.HasUserSubmitted(assignment.ID, user.ID)
+	if err != nil {
+		log.Println("services, submission answer, has user submitted", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Check if user has not submitted
+	if !submitted {
+		http.Redirect(w, r,
+			fmt.Sprintf("/admin/assignment/%d/submissions", assignment.ID),
+			http.StatusTemporaryRedirect)
+		return
+	}
+
+	// Fetch course
+	course, err := services.Course.Fetch(assignment.CourseID)
+	if err != nil {
+		log.Println("services, course, fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get form and log possible error
+	submissionForm, err := services.Submission.FetchFromAssignment(assignment.ID)
+	if err != nil {
+		log.Println("get submission form from assignment id", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get answers to user if he has delivered
+	answers, err := services.SubmissionAnswer.FetchUserAnswers(user.ID, assignment.ID)
+	if err != nil {
+		log.Println("services, submission answer, fetch user answers", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	if len(answers) == 0 {
+		for _, item := range submissionForm.Form.Fields {
+			answers = append(answers, &model.SubmissionAnswer{
+				Type:        item.Type,
+				Choices:     item.Choices,
+				Weight:      item.Weight,
+				Label:       item.Label,
+				HasComment:  item.HasComment,
+				Description: item.Description,
+				Name:        item.Name,
+			})
+		}
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	// Create view
+	v := view.New(r)
+	v.Name = "admin/assignment/submission/update"
+
+	v.Vars["User"] = user
+	v.Vars["Assignment"] = assignment
+	v.Vars["Course"] = course
+	v.Vars["Answers"] = answers
+
+	v.Render(w)
 }
 
 // AdminAssignmentSubmissionUpdatePOST func
 func AdminAssignmentSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
+	// Sanitizer
+	p := bluemonday.UGCPolicy()
 
+	// Get URL variables
+	vars := mux.Vars(r)
+
+	assignmentID, err := strconv.Atoi(vars["assignmentID"])
+	if err != nil {
+		log.Println("strconv, atoi, assignmentID", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	userID, err := strconv.Atoi(vars["userID"])
+	if err != nil {
+		log.Println("strconv, atoi, userID", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Fetch user
+	user, err := services.User.Fetch(userID)
+	if err != nil {
+		log.Println("services, user, fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Fetch assignment
+	assignment, err := services.Assignment.Fetch(assignmentID)
+	if err != nil {
+		log.Println("services, assignment, fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get form and log possible error
+	submissionForm, err := services.Submission.FetchFromAssignment(assignment.ID)
+	if err != nil {
+		log.Println("get submission form from assignment id", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Create empty submission answer slice
+	submissionAnswers, err := services.SubmissionAnswer.FetchUserAnswers(user.ID, assignment.ID)
+	if err != nil {
+		log.Println("services, submission answers, fetch user answers", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Parse form from request
+	err = r.ParseForm()
+	if err != nil {
+		log.Println("request parse form", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Check that every form is filled an give error if not
+	for index, field := range submissionForm.Form.Fields {
+		// Check if they are empty and give error if they are
+		if r.FormValue(field.Name) == "" && field.Type != "checkbox" && field.Type != "paragraph" && field.Type != "multi-checkbox" {
+			log.Println("Error: assignment with form name '" + field.Name + "' can not be empty! (assignment.go)")
+			ErrorHandler(w, r, http.StatusBadRequest)
+			return
+		}
+
+		// Initialize empty answer
+		answer := model.SubmissionAnswer{}
+		// Check if the field has comment enabled
+		if field.HasComment {
+			// Get comment content, sanitized
+			answer.Comment.String = p.Sanitize(r.FormValue(field.Name + "_comment"))
+			answer.Comment.Valid = answer.Comment.String != ""
+		}
+
+		// Check if multi-checkbox
+		if field.Type == "multi-checkbox" {
+			val := r.Form[field.Name]
+			answer.Answer = p.Sanitize(strings.Join(val, ","))
+		} else {
+			// Sanitize input
+			answer.Answer = p.Sanitize(r.FormValue(field.Name))
+		}
+
+		// Get field type
+		answer.Type = field.Type
+		answer.Name = field.Name
+		answer.Label = field.Label
+		answer.Description = field.Description
+		answer.HasComment = field.HasComment
+
+		// If delivered, only change the value
+		submissionAnswers[index].Answer = answer.Answer
+		submissionAnswers[index].Comment = answer.Comment
+		// Set name & label
+		submissionAnswers[index].Name = field.Name
+		submissionAnswers[index].Label = field.Label
+		submissionAnswers[index].Description = field.Description
+		submissionAnswers[index].HasComment = field.HasComment
+	}
+
+	// Update user, assignment & submission id for all answers
+	for _, item := range submissionAnswers {
+		item.UserID = user.ID
+		item.AssignmentID = assignment.ID
+		item.SubmissionID = int(assignment.SubmissionID.Int64)
+	}
+
+	err = services.SubmissionAnswer.Update(submissionAnswers)
+	if err != nil {
+		log.Println("services, submission answer, insert", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r,
+		fmt.Sprintf(
+			"/admin/assignment/%d/submissions",
+			assignment.ID),
+		http.StatusFound)
 }
 
 // AdminAssignmentSubmissionDELETE func
 func AdminAssignmentSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
+	// Respond struct
+	respond := struct {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	}{}
 
+	body := struct {
+		AssignmentID int `json:"assignment_id"`
+		UserID       int `json:"user_id"`
+	}{}
+
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		respond.Code = http.StatusBadRequest
+		respond.Message = "Could not decode request body"
+
+		w.WriteHeader(respond.Code)
+		err = json.NewEncoder(w).Encode(respond)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Something went wrong."))
+			return
+		}
+		return
+	}
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	err = services.SubmissionAnswer.Delete(body.AssignmentID, body.UserID)
+	if err != nil {
+		respond.Code = http.StatusInternalServerError
+		respond.Message = "Could not delete submission"
+
+		w.WriteHeader(respond.Code)
+		err = json.NewEncoder(w).Encode(respond)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Something went wrong."))
+			return
+		}
+		return
+	}
+
+	respond.Code = http.StatusOK
+	respond.Message = "Submission deleted successfully"
+
+	w.WriteHeader(respond.Code)
+	err = json.NewEncoder(w).Encode(respond)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Something went wrong."))
+		return
+	}
 }
