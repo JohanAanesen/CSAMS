@@ -39,7 +39,7 @@
                     <td class="id-col">{{.User.ID}}</td>
                     <td>{{.User.Name}}</td>
                     <td><a href="mailto:{{.User.EmailStudent}}">{{.User.EmailStudent}}</a></td>
-                    <td>{{if .Submitted}}{{PRETTYTIME .SubmittedTime}}{{end}}</td>
+                    <td>{{if .Submitted}}{{SORTABLE_TIME .SubmittedTime}}{{end}}</td>
                     <td>
                         <div class="btn-group btn-group-sm">
                             {{if .Submitted}}
