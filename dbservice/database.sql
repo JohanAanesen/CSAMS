@@ -117,13 +117,11 @@ CREATE TABLE `assignments`
 CREATE TABLE `peer_reviews`
 (
   `id`             int(11) NOT NULL AUTO_INCREMENT,
-  `submission_id`  int(11) NOT NULL,
   `assignment_id`  int(11) NOT NULL,
   `user_id`        int(11) NOT NULL,
   `review_user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`assignment_id`) REFERENCES assignments (`id`),
-  FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`),
   FOREIGN KEY (`user_id`) REFERENCES users (`id`),
   FOREIGN KEY (`review_user_id`) REFERENCES users (`id`)
 );
