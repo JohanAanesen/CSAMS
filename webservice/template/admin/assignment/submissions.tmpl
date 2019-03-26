@@ -28,7 +28,7 @@
             <th data-sortable="true" scope="col">Email</th>
             <th data-sortable="true" scope="col">Submitted</th>
             <th scope="col">Actions</th>
-            <th data-sortable="true" scope="col">No. Reviews</th>
+            <th data-sortable="true" scope="col">Reviews Done</th>
         </tr>
         </thead>
         <tbody>
@@ -55,7 +55,7 @@
                         </div>
                     </td>
                     <td>
-                        0 / 0
+                        {{.ReviewsDone}} / {{$A.Reviewers.Int64}}
                     </td>
                 </tr>
             {{end}}

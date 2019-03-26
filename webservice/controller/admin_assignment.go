@@ -627,6 +627,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		SubmittedTime time.Time
 		Submitted     bool
 		Reviewed      bool
+		ReviewsDone   int
 	}
 
 	var users []UserSubmissionData
@@ -656,6 +657,14 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 			data.SubmittedTime = submitTime
 			data.Submitted = true
 		}
+
+		data.ReviewsDone, err = services.ReviewAnswer.CountReviewsDone(student.ID, assignment.ID)
+		if err != nil {
+			log.Println("services, submission answer, count for assignment", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
 
 		users = append(users, data)
 	}

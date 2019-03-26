@@ -88,6 +88,11 @@ func (s *ReviewAnswerService) HasBeenReviewed(target, reviewer, assignmentID int
 	return len(temp) > 0, err
 }
 
+// CountReviewsDone func
+func (s *ReviewAnswerService) CountReviewsDone(userID, assignmentID int) (int, error) {
+	return s.reviewAnswerRepo.CountReviewsDone(userID, assignmentID)
+}
+
 // Insert func
 func (s *ReviewAnswerService) Insert(answer model.ReviewAnswer) (int, error) {
 	return s.reviewAnswerRepo.Insert(answer)

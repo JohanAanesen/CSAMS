@@ -133,3 +133,26 @@ func (repo *ReviewAnswerRepository) DeleteTarget(assignmentID, userID int) error
 
 	return err
 }
+
+// CountReviewsDone func
+func (repo *ReviewAnswerRepository) CountReviewsDone(userID, assignmentID int) (int, error) {
+	var result int
+
+	query := "SELECT DISTINCT COUNT(id) FROM user_reviews WHERE user_reviewer = ? AND assignment_id = ?"
+
+	rows, err := repo.db.Query(query, userID, assignmentID)
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+
+	if rows.Next() {
+		err = rows.Scan(&result)
+		if err != nil {
+			return result, err
+		}
+	}
+
+	return result, err
+}
