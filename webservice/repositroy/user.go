@@ -123,6 +123,34 @@ func (repo *UserRepository) FetchAllFromCourse(courseID int) ([]*model.User, err
 	return result, err
 }
 
+// FetchAllStudentsFromCourse func
+func (repo *UserRepository) FetchAllStudentsFromCourse(courseID int) ([]*model.User, error) {
+	result := make([]*model.User, 0)
+
+	query := "SELECT u.id, u.name, u.email_student, u.teacher, u.email_private FROM users AS u INNER JOIN usercourse AS uc ON u.id = uc.userid WHERE uc.courseid = ? AND u.teacher = 0"
+
+	rows, err := repo.db.Query(query, courseID)
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		temp := model.User{}
+
+		err = rows.Scan(&temp.ID, &temp.Name, &temp.EmailStudent,
+			&temp.Teacher, &temp.EmailPrivate)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, &temp)
+	}
+
+	return result, err
+}
+
 // EmailExists Checks if a user with said email exists
 func (repo *UserRepository) EmailExists(user model.User) (bool, error) {
 
