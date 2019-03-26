@@ -1,7 +1,6 @@
 package route
 
 import (
-	"fmt"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/controller"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/route/middleware"
 	"github.com/gorilla/handlers"
@@ -18,11 +17,6 @@ func Load() http.Handler {
 // LoadHTTPS http handler
 func LoadHTTPS() http.Handler {
 	return routes()
-}
-
-// redirectToHTTPS ....
-func redirectToHTTPS(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, fmt.Sprintf("https://%s", r.Host), http.StatusMovedPermanently)
 }
 
 // routes setups all routes
