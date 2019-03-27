@@ -665,7 +665,6 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-
 		users = append(users, data)
 	}
 
