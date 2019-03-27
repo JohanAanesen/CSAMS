@@ -91,6 +91,8 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreateGET).Methods("GET")
 	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreatePOST).Methods("POST")
 	adminrouter.HandleFunc("/submission/update/{id:[0-9]+}", controller.AdminSubmissionUpdateGET).Methods("GET")
+	adminrouter.HandleFunc("/submission/update/{id:[0-9]+}/weights", controller.AdminSubmissionUpdateWeightsGET).Methods("GET")
+	adminrouter.HandleFunc("/submission/update/{id:[0-9]+}/weights", controller.AdminSubmissionUpdateWeightsPOST).Methods("POST")
 	adminrouter.HandleFunc("/submission/update", controller.AdminSubmissionUpdatePOST).Methods("POST")
 	adminrouter.HandleFunc("/submission/delete", controller.AdminSubmissionDELETE).Methods("DELETE")
 
@@ -100,7 +102,6 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/review/update/{id:[0-9]+}", controller.AdminReviewUpdateGET).Methods("GET")
 	adminrouter.HandleFunc("/review/update/{id:[0-9]+}/weights", controller.AdminReviewUpdateWeightsGET).Methods("GET")
 	adminrouter.HandleFunc("/review/update/{id:[0-9]+}/weights", controller.AdminReviewUpdateWeightsPOST).Methods("POST")
-
 	adminrouter.HandleFunc("/review/update", controller.AdminReviewUpdatePOST).Methods("POST")
 	adminrouter.HandleFunc("/review/delete", controller.AdminReviewDELETE).Methods("DELETE")
 

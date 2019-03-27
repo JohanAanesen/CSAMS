@@ -1,17 +1,12 @@
-{{define "title"}}Update Review Weights{{end}}
+{{define "title"}}Update Submission Weights{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-    {{if .Errors}}
-        {{range .Errors}}
-            <div class="alert alert-warning">{{.}}</div>
-        {{end}}
-    {{end}}
     <div class="row">
         <div class="col-12">
             <h1 class="display-5">Edit weights for <strong>{{.Form.Name}}</strong></h1>
         </div>
     </div>
-    <form action="/admin/review/update/{{.Form.ID}}/weights" method="post" class="mb-5">
+    <form action="/admin/submission/update/{{.Form.ID}}/weights" method="post" class="mb-5">
 
         <table class="table table-striped">
             <thead>
@@ -41,19 +36,18 @@
     </form>
 {{end}}
 {{define "foot"}}
-    <script>
-        (function() {
-            let submit = document.getElementById('submit');
+<script>
+    (function() {
+        let submit = document.getElementById('submit');
 
-            submit.addEventListener('click', () => {
-                let inputs = document.getElementsByTagName('input');
+        submit.addEventListener('click', () => {
+            let inputs = document.getElementsByTagName('input');
 
-                inputs.forEach(e => {
-                    if (e.value === "") {
-                        e.value = 0;
-                    }
-                });
+            inputs.forEach(e => {
+                if (e.value === "") {
+                    e.value = 0;
+                }
             });
-        })();
-    </script>
-{{end}}
+        });
+    })();
+</script>{{end}}

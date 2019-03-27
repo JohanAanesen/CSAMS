@@ -270,3 +270,84 @@ func AdminSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+// AdminSubmissionUpdateWeightsGET func
+func AdminSubmissionUpdateWeightsGET(w http.ResponseWriter, r *http.Request) {
+	// Get URL variables
+	vars := mux.Vars(r)
+
+	formID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Println("strconv, atoi", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	form, err := services.Form.Fetch(formID)
+	if err != nil {
+		log.Println("services, form, fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	v := view.New(r)
+	v.Name = "admin/submission/update_weights"
+
+	v.Vars["Form"] = form
+
+	v.Render(w)
+}
+
+// AdminSubmissionUpdateWeightsPOST func
+func AdminSubmissionUpdateWeightsPOST(w http.ResponseWriter, r *http.Request) {
+	// Get URL variables
+	vars := mux.Vars(r)
+
+	formID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Println("strconv, atoi", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	form, err := services.Form.Fetch(formID)
+	if err != nil {
+		log.Println("services, form, fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		log.Println("request, parse form", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	for _, field := range form.Fields {
+		newWeight, err := strconv.Atoi(r.FormValue(field.Name))
+		if err != nil {
+			log.Println("strconv, atoi, request.FormValue(field.Name)", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		field.Weight = newWeight
+
+		err = services.Field.Update(field.ID, field)
+		if err != nil {
+			log.Println("services, field, update", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+	}
+
+	// Redirect
+	http.Redirect(w, r, "/admin/submission", http.StatusFound)
+}
