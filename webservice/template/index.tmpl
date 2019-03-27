@@ -63,13 +63,17 @@
                                         {{if .Delivered }}
                                             <span class="badge badge-success">Submitted</span>
                                         {{ else}}
-                                            <span class="badge badge-danger">Not submitted</span>
+                                            <span class="badge badge-warning">Not submitted</span>
                                         {{end}}
                                     {{end}}
                                 </h5>
-                                <p{{if DEADLINEDUE .Assignment.Deadline}} class="text-danger"{{end}}>
-                                    <strong>Deadline: </strong> {{PRETTYTIME .Assignment.Deadline}}</p>
-
+                                {{if DEADLINEDUE .Assignment.Deadline}}
+                                    <h5>
+                                        <span class="badge badge-danger">Deadline passed</span>
+                                    </h5>
+                                {{else}}
+                                    <p><strong>Deadline: </strong> {{PRETTYTIME .Assignment.Deadline}}</p>
+                                {{end}}
                                 <hr class="bg-light">
                                 <a href="/assignment/{{.Assignment.ID}}"
                                    class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See

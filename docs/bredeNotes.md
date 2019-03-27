@@ -287,6 +287,8 @@ _Merged following to master_
 * Sorted participant list by teacher and then name
 * Looked at prettytime bug, it was an user error
 * Updated go to 1.12.1, I have to fix some errors because of that now...
+* Active assignments stay on home page until review deadline goes out
+* Active assignments display `Submitted` or `Not submitted` for students only now
 
 ### Thursday 28/03/19
 
