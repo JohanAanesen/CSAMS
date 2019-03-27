@@ -1,71 +1,71 @@
 {{define "title"}}Assignment: {{.Assignment.Name}}{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-<h1 class="display-4">{{.Assignment.Name}}</h1>
-<hr>
-<div class="row">
-    <div class="col">
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Key</th>
-                <th>Value</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td><strong>ID</strong></td>
-                <td>{{.Assignment.ID}}</td>
-            </tr>
-            <tr>
-                <td><strong>Name</strong></td>
-                <td>{{.Assignment.Name}}</td>
-            </tr>
+    <h1 class="display-4">{{.Assignment.Name}}</h1>
+    <hr>
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><strong>ID</strong></td>
+                    <td>{{.Assignment.ID}}</td>
+                </tr>
+                <tr>
+                    <td><strong>Name</strong></td>
+                    <td>{{.Assignment.Name}}</td>
+                </tr>
 
-            <tr>
-                <td><strong>Created</strong></td>
-                <td>{{ PRETTYTIME .Assignment.Created}}</td>
-            </tr>
+                <tr>
+                    <td><strong>Created</strong></td>
+                    <td>{{ PRETTYTIME .Assignment.Created}}</td>
+                </tr>
 
-            <tr>
-                <td><strong>Publish</strong></td>
-                <td>{{PRETTYTIME .Assignment.Publish}}</td>
-            </tr>
+                <tr>
+                    <td><strong>Publish</strong></td>
+                    <td>{{PRETTYTIME .Assignment.Publish}}</td>
+                </tr>
 
-            <tr>
-                <td><strong>Deadline</strong></td>
-                <td>{{PRETTYTIME .Assignment.Deadline}}</td>
-            </tr>
+                <tr>
+                    <td><strong>Deadline</strong></td>
+                    <td>{{PRETTYTIME .Assignment.Deadline}}</td>
+                </tr>
 
-            <tr>
-                <td><strong>Course</strong></td>
-                <td>{{.Assignment.CourseID}}</td>
-            </tr>
+                <tr>
+                    <td><strong>Course</strong></td>
+                    <td>{{.CourseName}}</td>
+                </tr>
 
-            <tr>
-                <td><strong>Submission Form</strong></td>
-                <td>{{.Assignment.SubmissionID}}</td>
-            </tr>
+                <tr>
+                    <td><strong>Submission Form</strong></td>
+                    <td>{{.Assignment.SubmissionID}}</td>
+                </tr>
 
-            <tr>
-                <td><strong>Review From</strong></td>
-                <td>{{.Assignment.ReviewID}}</td>
-            </tr>
-            <tr>
-                <td><strong>Reviewers</strong></td>
-                <td>{{.Assignment.Reviewers.Int64}}</td>
-            </tr>
-            </tbody>
-        </table>
+                <tr>
+                    <td><strong>Review From</strong></td>
+                    <td>{{.Assignment.ReviewID}}</td>
+                </tr>
+                <tr>
+                    <td><strong>Reviewers</strong></td>
+                    <td>{{.Assignment.Reviewers.Int64}}</td>
+                </tr>
+                </tbody>
+            </table>
 
-        <a href="/admin/assignment/update/{{.Assignment.ID}}" class="btn btn-info">Edit</a>
+            <a href="/admin/assignment/update/{{.Assignment.ID}}" class="btn btn-info">Edit</a>
+        </div>
+
+        <div class="col">
+            <h5>Description:</h5>
+            <hr>
+            {{.Description}}
+        </div>
     </div>
-
-    <div class="col">
-        <h5>Description:</h5>
-        <hr>
-        {{.Description}}
-    </div>
-</div>
 {{end}}
 {{define "foot"}}{{end}}

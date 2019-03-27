@@ -288,6 +288,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 func AdminSingleAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	// Services
 	assignmentService := service.NewAssignmentService(db.GetDB())
+	courseService := service.NewCourseService(db.GetDB())
 
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -304,6 +305,15 @@ func AdminSingleAssignmentGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	course, err := courseService.Fetch(assignment.CourseID)
+	if err != nil {
+		log.Println("course service, fetch", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// TODO fetch submission and review names also
+
 	descriptionMD := []byte(assignment.Description)
 	description := github_flavored_markdown.Markdown(descriptionMD)
 
@@ -314,6 +324,7 @@ func AdminSingleAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "admin/assignment/single"
 
 	v.Vars["Assignment"] = assignment
+	v.Vars["CourseName"] = course.Name
 	v.Vars["Description"] = template.HTML(description) // TODO (Svein): User template function
 
 	v.Render(w)
@@ -664,7 +675,6 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
-
 
 		users = append(users, data)
 	}
