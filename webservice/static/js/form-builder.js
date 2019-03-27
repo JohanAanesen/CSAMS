@@ -8,6 +8,7 @@
  *      - url
  *      - checkbox
  *      - radio
+ *      - paragraph
  *
  * How to use:
  *
@@ -22,7 +23,7 @@
  let formBuilder = new FormBuilder({
     title: 'Form Builder', // Title of the form
     description: 'This is some description', // Description of the form
-    request: '/form-builder', // Action on the form
+    request: '/form-builder.php', // Action on the form
     method: 'POST', // Method of the form
     output: document.getElementById('output'), // The output element of the application
     weighted: true, // Boolean: is the form weighted
@@ -66,7 +67,6 @@ const TYPES = {
     NUMBER: 'number',
     CHECKBOX: 'checkbox',
     RADIO: 'radio',
-    MULTI_CHECKBOX: 'multi-checkbox',
     PARAGRAPH: 'paragraph',
 };
 
@@ -90,11 +90,8 @@ function Form(args) {
     this.deleteRequest = (args.deleteRequest !== undefined) ? args.deleteRequest : '';
     this.deleteMethod = (args.deleteMethod !== undefined) ? args.deleteMethod : 'DELETE';
 
-    this.totalWeight = 0;
     this.defaultWeight = 0;
     this.defaultType = TYPES.TEXT;
-
-    this.sortable = null;
 
     this.lastId = 0;
 
@@ -422,20 +419,6 @@ function Form(args) {
 
         defaultType.addEventListener('change', () => {
             this.defaultType = defaultType.value;
-            /*
-            this.type = e.target.value;
-            this.displayChoices = this.type === TYPES.RADIO
-                || this.type === TYPES.MULTI_CHECKBOX;
-
-            let choicesDisplay = document.getElementById(`choices_display_${this.id}`);
-            let choices = document.getElementById(`choices_${this.id}`);
-
-            if (this.displayChoices) {
-                choicesDisplay.classList.remove('sr-only');
-            } else {
-                choices.value = '';
-                choicesDisplay.classList.add('sr-only');
-            }*/
         });
 
         formGroup.appendChild(label);
@@ -642,17 +625,6 @@ function Form(args) {
                 defaultWeight.classList.add('sr-only');
             }
         });
-    };
-
-    /**
-     * Adds up all weight to a total weight, and stores it in the localStorage.
-     */
-    this.fixTotalWeight = function() {
-        this.totalWeight = 0;
-        this.fields.forEach(e => {
-            this.totalWeight += parseInt(e.weight);
-        });
-        localStorage.setItem('totalWeight', this.totalWeight);
     };
 
     /**
@@ -1028,8 +1000,7 @@ function Field(args) {
 
         select.addEventListener('change', e => {
             this.type = e.target.value;
-            this.displayChoices = this.type === TYPES.RADIO
-                || this.type === TYPES.MULTI_CHECKBOX;
+            this.displayChoices = this.type === TYPES.RADIO;
 
             let choicesDisplay = document.getElementById(`choices_display_${this.id}`);
             let choices = document.getElementById(`choices_${this.id}`);
@@ -1412,10 +1383,7 @@ function Field(args) {
      * Handles all rendering that needs to happen at the end of rendering
      */
     this.postRender = function() {
-        // TODO (Svein): Fix this later, storing the total weight,
-        //  for using as calculation for showing percentage for each field with weights
-        // let totalWeight = localStorage.getItem('totalWeight');
-        if (this.type === TYPES.RADIO || this.type === TYPES.MULTI_CHECKBOX) {
+        if (this.type === TYPES.RADIO) {
             document.getElementById(`choices_display_${this.id}`).classList.remove('sr-only');
             document.getElementById(`choices_${this.id}`).value = this.choices;
         }
