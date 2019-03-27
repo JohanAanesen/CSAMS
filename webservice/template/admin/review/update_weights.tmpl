@@ -36,8 +36,24 @@
             </tbody>
         </table>
 
-        <input type="submit" class="btn btn-primary btn-lg btn-block" value="Save">
+        <input type="submit" id="submit" class="btn btn-primary btn-lg btn-block" value="Save">
 
     </form>
 {{end}}
-{{define "foot"}}{{end}}
+{{define "foot"}}
+    <script>
+        (function() {
+            let submit = document.getElementById('submit');
+
+            submit.addEventListener('click', () => {
+                let inputs = document.getElementsByTagName('input');
+
+                inputs.forEach(e => {
+                    if (e.value === "") {
+                        e.value = 0;
+                    }
+                });
+            });
+        })();
+    </script>
+{{end}}
