@@ -43,7 +43,9 @@ body {
     color: #333;
 }
 
-.sidebar .nav-link .feather {
+.sidebar .nav-link .far,
+.sidebar .nav-link .fas,
+.sidebar .nav-link .fal {
     margin-right: 4px;
     color: #999;
 }
@@ -52,8 +54,12 @@ body {
     color: #007bff;
 }
 
-.sidebar .nav-link:hover .feather,
-.sidebar .nav-link.active .feather {
+.sidebar .nav-link:hover .far,
+.sidebar .nav-link.active .far,
+.sidebar .nav-link:hover .fas,
+.sidebar .nav-link.active .fas,
+.sidebar .nav-link:hover .fal,
+.sidebar .nav-link.active .fal {
     color: inherit;
 }
 
