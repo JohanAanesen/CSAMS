@@ -275,3 +275,19 @@ _Merged following to master_
 * Fixed dups email in register
 * Fixing `stay-on-same-page-after-managed-student`
 
+## Week Eight
+### Monday 25/03/19
+* Had some meetings
+* Ran through the cycle of reviewing assignments
+
+### Tuesday 26/03/19
+* Fixed join course through hash error and enhanced it a little by searching for the hash in the given string
+
+### Wednesday 27/03/19
+* Sorted participant list by teacher and then name
+* Looked at prettytime bug, it was an user error
+* Updated go to 1.12.1, I have to fix some errors because of that now...
+
+### Thursday 28/03/19
+
+### Friday 29/03/19
