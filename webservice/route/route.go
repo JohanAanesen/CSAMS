@@ -98,6 +98,9 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/review/create", controller.AdminReviewCreateGET).Methods("GET")
 	adminrouter.HandleFunc("/review/create", controller.AdminReviewCreatePOST).Methods("POST")
 	adminrouter.HandleFunc("/review/update/{id:[0-9]+}", controller.AdminReviewUpdateGET).Methods("GET")
+	adminrouter.HandleFunc("/review/update/{id:[0-9]+}/weights", controller.AdminReviewUpdateWeightsGET).Methods("GET")
+	adminrouter.HandleFunc("/review/update/{id:[0-9]+}/weights", controller.AdminReviewUpdateWeightsPOST).Methods("POST")
+
 	adminrouter.HandleFunc("/review/update", controller.AdminReviewUpdatePOST).Methods("POST")
 	adminrouter.HandleFunc("/review/delete", controller.AdminReviewDELETE).Methods("DELETE")
 
