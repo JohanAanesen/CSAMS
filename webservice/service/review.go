@@ -143,3 +143,8 @@ func (s *ReviewService) FetchFromAssignment(assignmentID int) (*model.Review, er
 
 	return temp, err
 }
+
+// IsUsed func
+func (s *ReviewService) IsUsed(formID int) (bool, error) {
+	return s.reviewRepo.IsUsed(formID)
+}

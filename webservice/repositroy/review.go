@@ -204,3 +204,27 @@ func (repo *ReviewRepository) IsUserTheReviewer(reviewer int, target int, assign
 
 	return len(result) > 0, err
 }
+
+// InUse func
+func (repo *ReviewRepository) IsUsed(id int) (bool, error) {
+	query := "SELECT r.form_id FROM assignments AS a INNER JOIN reviews AS r ON a.review_id = r.id"
+
+	rows, err := repo.db.Query(query)
+	if err != nil {
+		return false, err
+	}
+
+	for rows.Next() {
+		var temp int
+		err = rows.Scan(&temp)
+		if err != nil {
+			return false, err
+		}
+
+		if temp == id {
+			return true, nil
+		}
+	}
+
+	return false, err
+}

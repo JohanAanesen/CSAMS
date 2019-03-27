@@ -153,3 +153,27 @@ func (repo *SubmissionRepository) Delete(id int) error {
 
 	return err
 }
+
+// InUse func
+func (repo *SubmissionRepository) IsUsed(id int) (bool, error) {
+	query := "SELECT s.form_id FROM assignments AS a INNER JOIN submissions AS s ON a.review_id = s.id"
+
+	rows, err := repo.db.Query(query)
+	if err != nil {
+		return false, err
+	}
+
+	for rows.Next() {
+		var temp int
+		err = rows.Scan(&temp)
+		if err != nil {
+			return false, err
+		}
+
+		if temp == id {
+			return true, nil
+		}
+	}
+
+	return false, err
+}
