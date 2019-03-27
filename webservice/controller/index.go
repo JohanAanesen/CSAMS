@@ -33,10 +33,11 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//need custom struct to get the coursecode
+	// Need custom struct to get the coursecode and delivery status
 	type ActiveAssignment struct {
 		Assignment model.Assignment
 		CourseCode string
+		Delivered  bool
 	}
 
 	var activeAssignments []ActiveAssignment
@@ -53,7 +54,21 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 		timeNow := util.GetTimeInCorrectTimeZone()
 		for _, assignment := range assignments { //go through all it's assignments again
 			if timeNow.After(assignment.Publish) && timeNow.Before(assignment.ReviewDeadline) { //save all 'active' assignments
-				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: *assignment, CourseCode: course.Code})
+
+				// Initiate variable
+				delivered := false
+
+				// Only check if the user isn't a teacher
+				if !currentUser.Teacher {
+					// Check if student has submitted assignment
+					delivered, err = services.SubmissionAnswer.HasUserSubmitted(assignment.ID, currentUser.ID)
+					if err != nil {
+						log.Println("services, submission answer, has user submitted", err)
+						ErrorHandler(w, r, http.StatusInternalServerError)
+						return
+					}
+				}
+				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: *assignment, CourseCode: course.Code, Delivered: delivered})
 			}
 		}
 
@@ -63,6 +78,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "index"
 
+	v.Vars["isStudent"] = !currentUser.Teacher
 	v.Vars["Courses"] = courses
 	v.Vars["Assignments"] = activeAssignments
 	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
