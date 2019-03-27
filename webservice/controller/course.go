@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
@@ -50,6 +51,32 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Need custom struct to get the delivery status
+	type SubmittedAssignment struct {
+		Assignment model.Assignment
+		Delivered  bool
+	}
+
+	var submittedAssignments []SubmittedAssignment
+
+	for _, assignment := range assignments { //go through all it's assignments again
+
+		// Initiate variable
+		delivered := false
+
+		// Only check if the user isn't a teacher
+		if !currentUser.Teacher {
+			// Check if student has submitted assignment
+			delivered, err = services.SubmissionAnswer.HasUserSubmitted(assignment.ID, currentUser.ID)
+			if err != nil {
+				log.Println("services, submission answer, has user submitted", err)
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
+		}
+		submittedAssignments = append(submittedAssignments, SubmittedAssignment{Assignment: *assignment, Delivered: delivered})
+	}
+
 	// Check if user is an participant of said class or a teacher
 	inCourse, err := services.Course.UserInCourse(currentUser.ID, courseID)
 	if err != nil {
@@ -81,7 +108,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Course"] = course
 	v.Vars["User"] = currentUser
 	v.Vars["Classmates"] = classmates
-	v.Vars["Assignments"] = assignments
+	v.Vars["Assignments"] = submittedAssignments
 
 	v.Render(w)
 }
