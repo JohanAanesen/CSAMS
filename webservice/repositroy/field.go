@@ -176,7 +176,7 @@ func (repo *FieldRepository) Update(id int, field *model.Field) error {
 		hasComment = 1
 	}
 
-	var choices = strings.Join(field.Choices, ",")
+	var choices = strings.Join(field.Choices, "|")
 
 	_, err = tx.Exec(query, field.Type, field.Name, field.Label, field.Description, hasComment, field.Order, field.Weight, choices, id)
 	if err != nil {

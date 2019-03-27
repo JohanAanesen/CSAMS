@@ -154,7 +154,7 @@ func (repo *SubmissionRepository) Delete(id int) error {
 	return err
 }
 
-// InUse func
+// IsUsed func
 func (repo *SubmissionRepository) IsUsed(id int) (bool, error) {
 	query := "SELECT s.form_id FROM assignments AS a INNER JOIN submissions AS s ON a.review_id = s.id"
 

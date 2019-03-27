@@ -1,11 +1,6 @@
 {{define "title"}}Update Review Weights{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-    {{if .Errors}}
-        {{range .Errors}}
-            <div class="alert alert-warning">{{.}}</div>
-        {{end}}
-    {{end}}
     <div class="row">
         <div class="col-12">
             <h1 class="display-5">Edit weights for <strong>{{.Form.Name}}</strong></h1>
