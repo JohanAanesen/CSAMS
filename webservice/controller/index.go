@@ -2,28 +2,31 @@ package controller
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"log"
 	"net/http"
+	"regexp"
 )
 
 // IndexGET serves homepage to authenticated users, send anonymous to login
 func IndexGET(w http.ResponseWriter, r *http.Request) {
-	user := session.GetUserFromSession(r)
+	// Current User
+	currentUser := session.GetUserFromSession(r)
 
-	if !user.Authenticated {
+	if !currentUser.Authenticated {
 		LoginGET(w, r)
 		return
 	}
 
-	// repo's
-	courseRepo := &model.CourseRepository{}
-	assignmentRepo := model.AssignmentRepository{}
+	// Services
+	services := service.NewServices(db.GetDB())
 
 	//get courses to user
-	courses, err := courseRepo.GetAllToUserSorted(user.ID)
+	courses, err := services.Course.FetchAllForUserOrdered(currentUser.ID)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -39,9 +42,9 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 	var activeAssignments []ActiveAssignment
 
 	for _, course := range courses { //iterate all courses
-		assignments, err := assignmentRepo.GetAllFromCourse(course.ID) //get assignments from course
+		assignments, err := services.Assignment.FetchFromCourse(course.ID) //get assignments from course
 		if err != nil {
-			log.Println(err)
+			log.Println("services assignment, fetch from course", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
@@ -50,7 +53,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 		timeNow := util.GetTimeInCorrectTimeZone()
 		for _, assignment := range assignments { //go through all it's assignments again
 			if timeNow.After(assignment.Publish) && timeNow.Before(assignment.Deadline) { //save all 'active' assignments
-				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: assignment, CourseCode: course.Code})
+				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: *assignment, CourseCode: course.Code})
 			}
 		}
 
@@ -69,37 +72,68 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 
 // JoinCoursePOST adds user to course
 func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
-	//course repo
-	courseRepo := &model.CourseRepository{}
+	// Get user
+	currentUser := session.GetUserFromSession(r)
+	// Services
+	services := service.NewServices(db.GetDB())
 
-	// Check if course exists
-	course := courseRepo.CourseExists(r.FormValue("courseID"))
+	hash := r.FormValue("courseID")
 
-	// If course ID == "", it doesn't exist
-	if course.ID == -1 {
-		ErrorHandler(w, r, http.StatusNotFound)
+	rgex := regexp.MustCompile("[a-zA-Z0-9]{20}")
+	result := rgex.FindAllString(hash, -1)
+
+	courseExist := true
+	var course *model.Course
+
+	// go through and check for hash in string + save it
+	for _, element := range result {
+		course = services.Course.Exists(element)
+		if course.ID == -1 {
+			courseExist = false
+		} else {
+			hash = element
+		}
+	}
+
+	// Give feedback if course does not exist
+	if !courseExist {
+		log.Println("course does not exist")
+		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
 
-	// Get user
-	user := session.GetUserFromSession(r)
+	existsInCourse, err := services.Course.UserInCourse(currentUser.ID, course.ID)
+	if err != nil {
+		log.Println("services, course, user in course", err.Error())
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
 
 	// Check that user isn't in this class
-	if courseRepo.UserExistsInCourse(user.ID, course.ID) {
-		//joinedCourse = ""
+	if existsInCourse {
+		log.Println("user already in course!")
 		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	err = services.Course.AddUser(currentUser.ID, course.ID)
+	if err == service.ErrUserAlreadyInCourse {
+		log.Println("user already in course", err.Error())
+		http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
 		return
 	}
 
 	// Add user to course if possible
-	if !courseRepo.AddUserToCourse(user.ID, course.ID) {
+	if err != nil {
+		log.Println("error when adding user to course", err.Error())
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
 
+	// TODO (Svein): Make this to a function, eg.: LogUserJoinedCourse(userID, courseID)
 	// Log joinedCourse in the database and give error if something went wrong
-	logData := model.Log{UserID: user.ID, Activity: model.JoinedCourse, CourseID: course.ID}
-	err := model.LogToDB(logData)
+	logData := model.Log{UserID: currentUser.ID, Activity: model.JoinedCourse, CourseID: course.ID}
+	err = model.LogToDB(logData)
 
 	if err != nil {
 		log.Println(err.Error())

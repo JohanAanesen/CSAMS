@@ -39,4 +39,3 @@ func TestPrettyTime(t *testing.T) {
 		t.Fail()
 	}
 }
-

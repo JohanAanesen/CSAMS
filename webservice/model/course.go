@@ -26,7 +26,7 @@ func (repo *CourseRepository) GetSingle(id int) (Course, error) {
 	// Declare empty struct
 	var result Course
 
-	// Create query string
+	// Select query string
 	query := "SELECT id, hash, coursecode, coursename, description, teacher, year, semester FROM course WHERE id = ?"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query, id)
@@ -56,7 +56,7 @@ func (repo *CourseRepository) GetAll() ([]Course, error) {
 	// Declare empty slice
 	var result []Course
 
-	// Create query string
+	// Select query string
 	query := "SELECT id, hash, coursecode, coursename, description, teacher, year, semester FROM course;"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query)
@@ -93,7 +93,7 @@ func (repo *CourseRepository) GetAllToUserSorted(UserID int) ([]Course, error) {
 	// Declare empty slice
 	var result []Course
 
-	// Create query string
+	// Select query string
 	// The tables is connected like this example: users -> usercourse -> course
 	query := "SELECT course.id, course.hash, course.coursecode, course.coursename, course.description, course.teacher, course.year, course.semester  " +
 		"FROM `course` INNER JOIN usercourse ON course.id = usercourse.courseid WHERE usercourse.userid = ? " +
@@ -149,6 +149,24 @@ func (repo *CourseRepository) Update(id int, course Course) error {
 	}
 
 	return err
+}
+
+// RemoveUser removes a user from a course
+func (repo *CourseRepository) RemoveUser(courseID int, userID int) error {
+
+	// Create query string
+	query := "DELETE from usercourse WHERE userid = ? AND courseid = ?"
+	// Prepare and execute query
+	rows, err := db.GetDB().Query(query, userID, courseID)
+
+	// Check for error
+	if err != nil {
+		return err
+	}
+	// Close connection
+	defer rows.Close()
+
+	return nil
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

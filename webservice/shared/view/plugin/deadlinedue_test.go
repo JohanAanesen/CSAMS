@@ -38,7 +38,6 @@ func TestDeadlineDue(t *testing.T) {
 	input = time.Now().UTC().Add(+2 * time.Hour)
 	expected = "false"
 
-
 	buffer = new(bytes.Buffer)
 
 	err = tmpl.Execute(buffer, input)

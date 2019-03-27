@@ -2,6 +2,8 @@ package controller
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/rs/xid"
@@ -17,6 +19,40 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 
 	// Get form value
 	vars := r.FormValue("vars")
+
+	// Remove user from course
+	userid := r.FormValue("removeVars")
+	if userid != "" {
+		array := strings.Split(userid, "§")
+		if len(array) != 2 {
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			log.Println("error: not enough arguments in url!")
+			return
+		}
+
+		// Get userid and convert to int
+		uid, err := strconv.Atoi(array[0])
+		if err != nil {
+			log.Println("string convert atoi array[0]", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		// Get courseid and convert to int
+		cid, err := strconv.Atoi(array[1])
+		if err != nil {
+			log.Println("string convert atoi array[1]", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		err = removeUserFromCourse(uid, cid)
+		if err != nil {
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			log.Println(err.Error())
+			return
+		}
+	}
 
 	// Only change password if vars is not empty
 	if vars != "" {
@@ -50,9 +86,11 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+	// Services
+	services := service.NewServices(db.GetDB())
+
 	// Get courses
-	courseRepo := &model.CourseRepository{}
-	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
+	courses, err := services.Course.FetchAllForUserOrdered(session.GetUserFromSession(r).ID)
 	if err != nil {
 		log.Println("get all courses to user sorted", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -67,6 +105,19 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Courses"] = courses
 
 	v.Render(w)
+}
+
+// removeUserFromCourse removes user from course
+func removeUserFromCourse(userID int, courseID int) error {
+	// Services
+	services := service.NewServices(db.GetDB())
+	// Try to remove user from course
+	err := services.Course.RemoveUser(userID, courseID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // AdminGetUsersPOST serves the same page as above, but with the list of all students in a course
@@ -98,9 +149,13 @@ func AdminGetUsersPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+	// Services
+	services := service.NewServices(db.GetDB())
+
 	// Get courses
-	courseRepo := &model.CourseRepository{}
-	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
+	courses, err := services.Course.FetchAllForUserOrdered(currentUser.ID)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println(err)

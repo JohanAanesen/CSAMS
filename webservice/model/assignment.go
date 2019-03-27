@@ -11,18 +11,20 @@ import (
 
 // Assignment hold the data for a single assignment
 type Assignment struct {
-	ID           int           `json:"id" db:"id"`
-	Name         string        `json:"name" db:"name"`
-	Description  string        `json:"description" db:"description"`
-	Created      time.Time     `json:"created" db:"created"`
-	Publish      time.Time     `json:"publish" db:"publish"`
-	Deadline     time.Time     `json:"deadline" db:"deadline"`
-	CourseID     int           `json:"course_id" db:"course_id"`
-	SubmissionID sql.NullInt64 `json:"-" db:"submission_id"`
-	ReviewID     sql.NullInt64 `json:"-" db:"review_id"`
-	Submission   Submission    `json:"submission"`
-	Review       Review        `json:"review"`
-	Reviewers    sql.NullInt64 `json:"reviewers"`
+	ID             int           `json:"id" db:"id"`
+	Name           string        `json:"name" db:"name"`
+	Description    string        `json:"description" db:"description"`
+	Created        time.Time     `json:"created" db:"created"`
+	Publish        time.Time     `json:"publish" db:"publish"`
+	Deadline       time.Time     `json:"deadline" db:"deadline"`
+	CourseID       int           `json:"course_id" db:"course_id"`
+	SubmissionID   sql.NullInt64 `json:"-" db:"submission_id"`
+	ReviewID       sql.NullInt64 `json:"-" db:"review_id"`
+	Submission     Submission    `json:"submission"`
+	Review         Review        `json:"review"`
+	ReviewDeadline time.Time     `json:"review_deadline"`
+	Reviewers      sql.NullInt64 `json:"reviewers"`
+	ValidationID   sql.NullInt64 `json:"validation_id"`
 }
 
 // AssignmentRepository holds all assignments, and DB-functions
@@ -33,7 +35,7 @@ func (repo *AssignmentRepository) GetSingle(id int) (Assignment, error) {
 	// Declare empty struct
 	var result Assignment
 
-	// Create query string
+	// Select query string
 	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, reviewers FROM assignments WHERE id = ?"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query, id)
@@ -63,7 +65,7 @@ func (repo *AssignmentRepository) GetAll() ([]Assignment, error) {
 	// Declare empty slice
 	var result []Assignment
 
-	// Create query string
+	// Select query string
 	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, reviewers FROM assignments;"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query)
@@ -100,7 +102,7 @@ func (repo *AssignmentRepository) GetAllToUserSorted(UserID int) ([]Assignment, 
 	// Declare empty slice
 	var result []Assignment
 
-	// Create query string
+	// Select query string
 	// The tables is connected like this example: users -> usercourse -> course -> assignments
 	query := "SELECT assignments.id, assignments.name, assignments.description, assignments.created, assignments.publish, assignments.deadline, assignments.course_id  " +
 		"FROM `assignments` INNER JOIN course ON assignments.course_id = course.id " +
@@ -148,7 +150,7 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 	// Get current Norwegian time in string format TODO time-norwegian
 	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
-	// Create query string
+	// Insert query string
 	query := "INSERT INTO assignments (name, description, publish, deadline, course_id) VALUES (?, ?, ?, ?, ?);"
 	// Prepare and execute query
 	ex, err := tx.Exec(query, assignment.Name, assignment.Description, assignment.Publish, assignment.Deadline, assignment.CourseID)
@@ -168,7 +170,7 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 
 	// Check if we have set a submission_id
 	if assignment.SubmissionID.Valid {
-		// Create query string
+		// Update query string
 		query := "UPDATE assignments SET submission_id = ? WHERE id = ?;"
 		// Prepare and execute query
 		_, err := tx.Exec(query, assignment.SubmissionID, id)
@@ -181,7 +183,7 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 
 	// Check if we have set a review_id
 	if assignment.ReviewID.Valid {
-		// Create query string
+		// Update query string
 		query := "UPDATE assignments SET review_id = ? WHERE id = ?;"
 		// Prepare and execute query
 		_, err := tx.Exec(query, assignment.ReviewID, id)
@@ -194,7 +196,7 @@ func (repo *AssignmentRepository) Insert(assignment Assignment) (int, error) {
 
 	// Check if we have set reviewers
 	if assignment.Reviewers.Valid {
-		// Create query string
+		// Update query string
 		query := "UPDATE assignments SET reviewers = ? WHERE id = ?;"
 		// Prepare and execute query
 		_, err := tx.Exec(query, assignment.Reviewers, id)

@@ -3,6 +3,8 @@ package controller
 import (
 	"encoding/json"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/gorilla/mux"
 	"log"
@@ -12,9 +14,11 @@ import (
 
 // AdminSubmissionGET handles GET-request to /admin/submission
 func AdminSubmissionGET(w http.ResponseWriter, r *http.Request) {
+	// Services
+	submissionService := service.NewSubmissionService(db.GetDB())
+
 	// Get all submissions from database
-	subRepo := model.SubmissionRepository{}
-	submissions, err := subRepo.GetAll()
+	submissions, err := submissionService.FetchAll()
 	if err != nil {
 		log.Println("get all submission", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -56,7 +60,7 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 	// Unmarshal the JSON-string sent from the form
 	err := json.Unmarshal([]byte(data), &form)
 	if err != nil {
-		log.Println("json unmarshal form", err)
+		log.Println("unmarshal form from post request", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -84,7 +88,7 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 		// Set header content type and status code
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		// Create new view
+		// Create view
 		v := view.New(r)
 		// Set template file
 		v.Name = "admin/submission/create"
@@ -96,10 +100,10 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Declare an empty Repository for Submission
-	var repo = model.SubmissionRepository{}
-	// Insert data to database
-	err = repo.Insert(form)
+	// Services
+	submissionService := service.NewSubmissionService(db.GetDB())
+
+	_, err = submissionService.Insert(form)
 	if err != nil {
 		log.Println("insert submission", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -122,11 +126,13 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get form from database, based on the id
-	formRepo := model.FormRepository{}
-	form, err := formRepo.Get(id)
+	// Services
+	formService := service.NewFormService(db.GetDB())
+
+	// Fetch form by id
+	form, err := formService.Fetch(id)
 	if err != nil {
-		log.Println("get form", err)
+		log.Println("form service get", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -142,7 +148,7 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 	// Set header content-type and code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	// Create a view
+	// Create view
 	v := view.New(r)
 	// Set template-file
 	v.Name = "admin/submission/update"
@@ -156,13 +162,13 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// Get data from the form
 	data := r.FormValue("form_data")
-
 	// Declare Form-struct
 	var form = model.Form{}
 	// Unmarshal the JSON-string sent from the form
 	err := json.Unmarshal([]byte(data), &form)
 	if err != nil {
-		log.Println(err)
+		log.Println("unmarshal form", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 	// Declare empty slice for error messages
@@ -188,7 +194,7 @@ func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 
-		// Create a view
+		// Create view
 		v := view.New(r)
 		// Set template file
 		v.Name = "admin/submission/update"
@@ -200,10 +206,11 @@ func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Declare an empty Repository for Submission
-	var repo = model.SubmissionRepository{}
-	// Insert data to database
-	err = repo.Update(form)
+	// Services
+	submissionService := service.NewSubmissionService(db.GetDB())
+
+	// Update form
+	err = submissionService.Update(form)
 	if err != nil {
 		log.Println("update submission", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -236,9 +243,11 @@ func AdminSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 		Location string `json:"location"`
 	}{}
 
+	// Services
+	submissionService := service.NewSubmissionService(db.GetDB())
+
 	// Delete the submission from database, if error, set error messages, if ok, set success message
-	repo := model.SubmissionRepository{}
-	err = repo.Delete(temp.ID)
+	err = submissionService.Delete(temp.ID)
 	if err != nil {
 		msg.Code = http.StatusInternalServerError
 		msg.Message = err.Error()

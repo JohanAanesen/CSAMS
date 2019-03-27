@@ -6,9 +6,9 @@
 {{define "content"}}
 
     <div class="row">
-        <div class="col-6">
-            <h2 class="display-4 mb-3">New course</h2>
+        <div class="col-md-6">
             <form action="/admin/course/create" method="post">
+                <h2 class="display-4 mb-3">New course</h2>
                 <div class="form-group">
                     <label for="code">Course code</label>
                     <input type="text" id="code" name="code" class="form-control" required>
@@ -40,6 +40,15 @@
                     </select>
                 </div>
 
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="enable_email_suffix">
+                    <label for="enable_email_suffix" class="form-check-label">Enable Email Suffix</label>
+                </div>
+                <div class="form-group" id="email_suffix_group">
+                    <label for="email_suffix">Email Suffix</label>
+                    <input type="text" class="form-control" id="email_suffix" name="email_suffix" placeholder="Example: @stud.ntnu.no">
+                </div>
+
                 <div class="form-group">
                     <label for="simplemde">Description</label>
                     <textarea name="description" id="simplemde"
@@ -47,10 +56,12 @@
                 </div>
 
                 <input type="submit" class="btn btn-success">
-                <br><br>
+
+                <hr>
             </form>
         </div>
-        <div class="col-md-6">
+
+        <div class="col-md-6 mb-5">
             <h2 class="display-4 mb-3">Import course</h2>
             <form action="/admin/course/import" method="post">
                 <label for="test">Import</label>
@@ -62,13 +73,33 @@
                 <input type="submit" class="btn btn-success" value="Upload">
             </form>
         </div>
+
     </div>
+
 {{end}}
 {{define "foot"}}
     <script>
         let simplemde = new SimpleMDE({
             element: document.getElementById('simplemde'),
             hideIcons: ["side-by-side", "fullscreen"],
+        });
+
+        let enableEmailSuffix = document.getElementById('enable_email_suffix');
+        let emailSuffix = document.getElementById('email_suffix');
+        let emailSuffixGroup = document.getElementById('email_suffix_group');
+
+        emailSuffixGroup.classList.add('sr-only');
+
+        enableEmailSuffix.addEventListener('change', e => {
+            let checked = enableEmailSuffix.checked;
+
+            if (checked) {
+                emailSuffixGroup.classList.remove('sr-only');
+                emailSuffix.setAttribute('required', '');
+            } else {
+                emailSuffixGroup.classList.add('sr-only');
+                emailSuffix.removeAttribute('required');
+            }
         });
     </script>
 {{end}}

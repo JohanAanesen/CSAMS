@@ -1,124 +1,134 @@
 {{define "title"}}Upload Assignment{{end}}
 {{define "head"}}{{end}}
-{{ define "content" }}
+{{define "content"}}
     <main role="main" class="container">
-        <div class="col my-3">
-            <a href="/assignment/{{ .Assignment.ID }}" class="btn btn-outline-dark mb-3">Go Back</a>
-            <div class="col my-1 container pt-3 jumbotron">
+        <div class="row">
+            <div class="col my-3">
+                {{if .SuccessMessage}}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">{{.SuccessMessage}}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                {{end}}
+                {{if .ErrorMessage}}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">{{.ErrorMessage}}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                {{end}}
 
+                <a href="/assignment/{{.Assignment.ID}}" class="btn btn-outline-dark mb-3">Go Back</a>
+                <div class="col my-1 container pt-3 jumbotron">
 
-                <h1 class="display-4">{{ .Course.Code }} {{ .Course.Name }}</h1>
-                <h2 class="display-5">{{ .Assignment.Name }}</h2>
-                <p class="lead" id="countDown"></p>
-                <form method="post" action="/assignment/submission/update?id={{ .Assignment.ID }}">
+                    {{$Assignment := .Assignment}}
 
-                    <!-- TODO (Brede) : This could be one for each loop with only .AnswersAndFields -->
-                    {{ if .Delivered }}
-                        {{ range .AnswersAndFields }}
-                            {{if eq .Field.Type "radio"}}
-                                {{$F := .Field}}
-                                {{$A := .Answer}}
-                                {{$Value := ATOI $A.Value}}
-                                {{$V := 1}}
-                                <fieldset>
-                                    <legend>{{$F.Label}}</legend>
-                                    {{range SPLIT_CHOICES $F.Choices}}
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="{{$F.Name}}" id="{{$F.Name}}_{{$V}}" value="{{$V}}"{{if eq $V $Value}} checked{{end}}>
-                                            <label class="form-check-label" for="{{$F.Name}}_{{$V}}">{{.}}</label>
-                                        </div>
-                                        {{$V = INCREMENT $V}}
-                                    {{end}}
-                                    <small class="form-text text-muted">{{$F.Description}}</small>
-                                </fieldset>
-                            {{else}}
-                                <div class="form-group{{if eq .Field.Type "checkbox"}} form-check{{end}} mb-3">
-                                    {{if ne .Field.Type "checkbox"}}<label for="{{ .Field.Name }}">{{ .Field.Label }}</label>{{end}}
-                                    {{ if eq .Field.Type "text" }}
-                                        <input type="text" name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control" value="{{ .Answer.Value}}" required>
-                                    {{ else if eq .Field.Type "url" }}
-                                        <input type="url" name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control" value="{{ .Answer.Value}}" required>
-                                    {{ else if eq .Field.Type "textarea" }}
-                                        <textarea name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control" required>{{ .Answer.Value}}</textarea>
-                                    {{ else if eq .Field.Type "number" }}
-                                        <input type="number" name="{{ .Field.Name }}" id="{{ .Field.Name }}" class="form-control" value="{{ .Answer.Value}}" required>
-                                    {{ else if eq .Field.Type "checkbox" }}
-                                        <input type="checkbox" name="{{.Field.Name}}" id="{{.Field.Name}}" class="form-check-input"{{if eq .Answer.Value "on"}} checked{{end}}>
-                                        <label class="form-check-inline" for="{{ .Field.Name }}">{{ .Field.Label }}</label>
-                                    {{ end }}
-                                    <small class="form-text text-muted">{{.Field.Description}}</small>
-                                </div>
-                            {{end}}
-                            {{if .Field.HasComment}}
-                                <div class="form-group form-check">
-                                    <label for="{{.Field.Name}}_comment">Comment <em>({{.Field.Label}})</em></label>
-                                    <textarea name="{{.Field.Name}}_comment" id="{{.Field.Name}}_comment" rows="3" class="form-control">{{.Answer.Comment}}</textarea>
-                                </div>
-                            {{end}}
-                        {{ end }}
-                    {{ else }}
-                        {{ range .Fields }}
-                            {{if eq .Type "radio"}}
-                                {{$R := .}}
-                                {{$V := 1}}
-                                <fieldset>
-                                    <legend>{{$R.Label}}</legend>
-                                    {{range SPLIT_CHOICES .Choices}}
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="{{$R.Name}}" id="{{$R.Name}}_{{$V}}" value="{{$V}}">
-                                            <label class="form-check-label" for="{{$R.Name}}_{{$V}}">{{.}}</label>
-                                        </div>
-                                        {{$V = INCREMENT $V}}
-                                    {{end}}
+                    <h1 class="display-4">{{.Course.Code}} {{.Course.Name}}</h1>
+                    <h2 class="display-5">{{.Assignment.Name}}</h2>
+                    <p class="lead" id="countDown">
+                        <strong>Deadline: </strong>{{if DEADLINEDUE .Assignment.Deadline}}  <span class="badge badge-danger">EXPIRED</span> {{else}}{{ PRETTYTIME .Assignment.Deadline}}{{end}}
+                    </p>
+                    {{if not (DEADLINEDUE $Assignment.Deadline)}}<form method="post" action="/assignment/submission/update?id={{.Assignment.ID}}">{{end}}
+
+                    {{range .Answers}}
+                        {{if eq .Type "radio"}}
+                            {{$A := .}}
+                            {{$Answer := ATOI .Answer}}
+                            {{$V := 1}}
+                            <fieldset>
+                                <legend>{{.Label}}</legend>
+                                {{range .Choices}}
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="{{$A.Name}}"
+                                               id="{{$A.Name}}_{{$V}}"
+                                               value="{{$V}}"{{if eq $V $Answer}} checked{{end}}{{if DEADLINEDUE $Assignment.Deadline}} disabled{{end}}>
+                                        <label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
+                                    </div>
+                                    {{$V = INCREMENT $V}}
+                                {{end}}
+                                <small class="form-text text-muted">{{.Description}}</small>
+                            </fieldset>
+                        {{else if eq .Type "multi-checkbox"}}
+                            {{$A := .}}
+                            {{$Answer := ATOI .Answer}}
+                            {{$V := 1}}
+                            <fieldset>
+                                <legend>{{.Label}}</legend>
+                                {{range .Choices}}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="{{$A.Name}}"
+                                               id="{{$A.Name}}_{{$V}}"
+                                               value="{{$V}}"{{if eq $V $Answer}} checked{{end}}{{if DEADLINEDUE $Assignment.Deadline}} disabled{{end}}>
+                                        <label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
+                                    </div>
+                                    {{$V = INCREMENT $V}}
+                                {{end}}
+                                <small class="form-text text-muted">{{.Description}}</small>
+                            </fieldset>
+                        {{else}}
+                            <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
+                                {{if eq .Type "text"}}
+                                    <label for="{{.Name}}">{{.Label}}</label>
+                                    <input type="text" name="{{.Name}}" id="{{.Name}}" class="form-control"
+                                           value="{{.Answer}}" {{if DEADLINEDUE $Assignment.Deadline}}disabled{{else}}required{{end}}>
+                                {{else if eq .Type "url"}}
+                                    <label for="{{.Name}}">{{.Label}}</label>
+                                    <input type="url" name="{{.Name}}" id="{{.Name}}" class="form-control disabled"
+                                           value="{{.Answer}}" {{if DEADLINEDUE $Assignment.Deadline}}disabled{{else}}required{{end}}>
+                                {{else if eq .Type "textarea"}}
+                                    <label for="{{.Name}}">{{.Label}}</label>
+                                    <textarea name="{{.Name}}" id="{{.Name}}" class="form-control"
+                                              {{if DEADLINEDUE $Assignment.Deadline}}disabled{{else}}required{{end}}>{{.Answer}}</textarea>
+                                {{else if eq .Type "number"}}
+                                    <label for="{{.Name}}">{{.Label}}</label>
+                                    <input type="number" name="{{.Name}}" id="{{.Name}}" class="form-control"
+                                           value="{{.Answer}}" {{if DEADLINEDUE $Assignment.Deadline}}disabled{{else}}required{{end}}>
+                                {{else if eq .Type "checkbox"}}
+                                    <input type="checkbox" name="{{.Name}}" id="{{.Name}}"
+                                           class="form-check-input"{{if eq .Answer "on"}} checked{{end}}{{if DEADLINEDUE $Assignment.Deadline}} disabled{{end}}>
+                                    <label class="form-check-inline" for="{{.Name}}">{{.Label}}</label>
+                                {{else if eq .Type "paragraph"}}
+                                    <legend>{{.Label}}</legend>
+                                    <p class="lead">{{.Description}}</p>
+                                {{end}}
+
+                                {{if ne .Type "paragraph"}}
                                     <small class="form-text text-muted">{{.Description}}</small>
-                                </fieldset>
-                            {{else}}
-                                <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
-                                    {{if ne .Type "checkbox"}}<label for="{{ .Name }}">{{ .Label }}</label>{{end}}
-                                    {{ if eq .Type "text" }}
-                                        <input type="text" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
-                                    {{ else if eq .Type "url" }}
-                                        <input type="url" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
-                                    {{ else if eq .Type "textarea" }}
-                                        <textarea name="{{ .Name }}" id="{{ .Name }}" class="form-control" required></textarea>
-                                    {{ else if eq .Type "number" }}
-                                        <input type="number" name="{{ .Name }}" id="{{ .Name }}" class="form-control" required>
-                                    {{ else if eq .Type "checkbox" }}
-                                        <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input">
-                                        <label class="form-check-inline" for="{{ .Name }}">{{ .Label }}</label>
-                                    {{ end }}
-                                    <small class="form-text text-muted">{{.Description}}</small>
-                                </div>
-                            {{end}}
-                            {{if .HasComment}}
-                                <div class="form-group form-check">
-                                    <label for="{{.Name}}_comment">Comment <em>({{.Label}})</em></label>
-                                    <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3" class="form-control"></textarea>
-                                </div>
-                            {{end}}
-                        {{ end }}
-                    {{ end }}
+                                {{end}}
+                            </div>
+                        {{end}}
+                        {{if .HasComment}}
+                            <div class="form-group form-check">
+                                <label for="{{.Name}}_comment">Comment <em>({{.Label}})</em></label>
+                                <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3"
+                                          class="form-control"{{if DEADLINEDUE $Assignment.Deadline}} disabled{{end}}>{{.Comment.String}}</textarea>
+                            </div>
+                        {{end}}
+                    {{end}}
 
 
-                    {{ if .Delivered }}
-                        <button id="uploadBtn" type="submit" class="btn btn-success mt-5">Re-deliver assignment</button>
-                    {{ else }}
-                        <button id="uploadBtn" type="submit" class="btn btn-primary mt-5">Deliver assignment<</button>
-                    {{ end }}
-                </form>
+                    <button id="uploadBtn" type="submit" class="btn btn-{{if .Delivered}}success{{else}}primary{{end}} mt-5"{{if DEADLINEDUE .Assignment.Deadline}} disabled{{end}}>
+                        {{if .Delivered}}Re-deliver assignment{{else}}Deliver assignment{{end}}
+                    </button>
+                    {{if not (DEADLINEDUE $Assignment.Deadline)}}
+                        </form>
+                        {{if .Delivered}}<a href="/assignment/submission/{{.Assignment.ID}}/withdraw" class="btn btn-warning mt-5">Withdraw submission</a>{{end}}
+                    {{end}}
+                </div>
             </div>
         </div>
     </main>
 
-{{ end }}
+{{end}}
 {{define "foot"}}
     <script src="/static/js/time.js"></script>
     <script>
+        // TODO uncomment this
+        /*
         // Source: https://www.w3schools.com/howto/howto_js_countdown.asp
 
         // Set the date we're counting down to
-        let countDownDate = new Date({{ .Assignment.Deadline }});
+
+        let countDownDate = new Date({{ .Assignment.Deadline }}); // TODO time this converts to wrong timezone
+
         // let countDownDate = new Date("Jan 5, 2021 15:37:25").getTime();
+
+        console.log({{.Assignment.Deadline}});
+        console.log(countDownDate);
+        console.log(getTimeInNorwegian());
 
         // Update the count down every 1 second
         let x = setInterval(function () {
@@ -151,10 +161,11 @@
                 document.getElementById("countDown").innerHTML = "EXPIRED";
                 document.getElementById("uploadBtn").disabled = true;
 
-                {{ range .Fields }}
-                document.getElementById({{ .Name }}).disabled = true;
-                {{ end }}
+                {{range .Fields}}
+                document.getElementById({{.Name}}).disabled = true;
+                {{end}}
             }
         }, 1000);
+        */
     </script>
 {{end}}

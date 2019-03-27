@@ -66,6 +66,8 @@ const TYPES = {
     NUMBER: 'number',
     CHECKBOX: 'checkbox',
     RADIO: 'radio',
+    MULTI_CHECKBOX: 'multi-checkbox',
+    PARAGRAPH: 'paragraph',
 };
 
 /**
@@ -89,6 +91,8 @@ function Form(args) {
     this.deleteMethod = (args.deleteMethod !== undefined) ? args.deleteMethod : 'DELETE';
 
     this.totalWeight = 0;
+    this.defaultWeight = 0;
+    this.defaultType = TYPES.TEXT;
 
     this.sortable = null;
 
@@ -173,6 +177,10 @@ function Form(args) {
             classList: ['col'],
         });
 
+        let alertContainer = createElement({
+            id: 'alert_container',
+        });
+
         let title = createElement({
             type: 'h1',
             classList: ['display-4'],
@@ -187,6 +195,7 @@ function Form(args) {
 
         let hr = createElement({type:'hr'});
 
+        col.appendChild(alertContainer);
         col.appendChild(title);
         col.appendChild(description);
         col.appendChild(hr);
@@ -253,6 +262,186 @@ function Form(args) {
         let hr = createElement({ type: 'hr' });
 
         leftCol.appendChild(hr);
+
+        let customControl = createElement({
+            classList: ['custom-control', 'custom-checkbox', 'mb-3'],
+        });
+
+        let customCheckbox = createElement({
+            type: 'input',
+            classList: ['custom-control-input'],
+            attributes: [
+                {
+                    name: 'type',
+                    value: 'checkbox'
+                },
+                {
+                    name: 'name',
+                    value: 'form_weighted',
+                }
+            ],
+            id: 'form_weighted',
+        });
+
+        customCheckbox.checked = this.weighted;
+
+        customCheckbox.addEventListener('change', () => {
+            this.weighted = customCheckbox.checked;
+            this.fields.forEach(e => {
+                e.weighted = this.weighted;
+            });
+
+            // Set all fields weights to 0 if weighted is unchecked
+            if (!this.weighted) {
+                this.fields.forEach(e => {
+                    e.weight = 0;
+                });
+            }
+
+            this.render();
+        });
+
+        let customLabel = createElement({
+            type: 'label',
+            classList: ['custom-control-label'],
+            attributes: [
+                {
+                    name: 'for',
+                    value: 'form_weighted',
+                }
+            ],
+            innerText: 'Enable weights',
+        });
+
+        customControl.appendChild(customCheckbox);
+        customControl.appendChild(customLabel);
+
+        leftCol.appendChild(customControl);
+
+        let formGroupClassList = ['form-group'];
+        if (!this.weighted) {
+            formGroupClassList.push('sr-only');
+        }
+
+        formGroup = createElement({
+            classList: formGroupClassList,
+            id: 'default_weight_form_group',
+        });
+
+        let label = createElement({
+            type: 'label',
+            classList: ['mb-0'],
+            attributes: [
+                {
+                    name: 'for',
+                    value: 'default_weight',
+                }
+            ],
+            innerText: 'Default weight',
+        });
+
+        let input = createElement({
+            type: 'input',
+            classList: ['form-control', 'form-control-sm'],
+            attributes: [
+                {
+                    name: 'type',
+                    value: 'number',
+                }
+            ],
+            id: 'default_weight',
+            value: (this.defaultWeight !== 0) ? this.defaultWeight : 1,
+        });
+
+        if (this.weighted) {
+            this.defaultWeight = (this.defaultWeight !== 0) ? this.defaultWeight : 1;
+        }
+
+        input.addEventListener('change', () => {
+            this.defaultWeight = parseInt(input.value);
+            this.fields.forEach(e => {
+                if (e.weight === 0) {
+                    e.weight = parseInt(this.defaultWeight);
+                }
+            });
+        });
+
+        formGroup.appendChild(label);
+        formGroup.appendChild(input);
+
+        leftCol.appendChild(formGroup);
+
+        hr = createElement({ type: 'hr' });
+
+        leftCol.appendChild(hr);
+
+        formGroup = createElement({
+            classList: ['form-group'],
+        });
+
+        label = createElement({
+            attributes: [
+                {
+                    name: 'for',
+                    value: 'default_type',
+                },
+            ],
+            innerText: 'Default type',
+        });
+
+        let defaultType = createElement({
+            type: 'select',
+            classList: ['form-control', 'form-control-sm'],
+            attributes: [],
+            id: 'default_type',
+        });
+
+        for (let type in TYPES) {
+            let attributes = [
+                {
+                    name: 'value',
+                    value: TYPES[type],
+                },
+            ];
+
+            if (TYPES[type] === this.defaultType) {
+                attributes.push({
+                    name: 'selected',
+                    value: '',
+                });
+            }
+
+            let option = createElement({
+                type: 'option',
+                attributes: attributes,
+                innerText: TYPES[type].toUpperCase(),
+            });
+
+            defaultType.appendChild(option);
+        }
+
+        defaultType.addEventListener('change', () => {
+            this.defaultType = defaultType.value;
+            /*
+            this.type = e.target.value;
+            this.displayChoices = this.type === TYPES.RADIO
+                || this.type === TYPES.MULTI_CHECKBOX;
+
+            let choicesDisplay = document.getElementById(`choices_display_${this.id}`);
+            let choices = document.getElementById(`choices_${this.id}`);
+
+            if (this.displayChoices) {
+                choicesDisplay.classList.remove('sr-only');
+            } else {
+                choices.value = '';
+                choicesDisplay.classList.add('sr-only');
+            }*/
+        });
+
+        formGroup.appendChild(label);
+        formGroup.appendChild(defaultType);
+
+        leftCol.appendChild(formGroup);
 
         let newButton = createElement({
             type: 'button',
@@ -323,6 +512,21 @@ function Form(args) {
                             if (response.status === 200) {
                                 return response.json();
                             } else {
+                                let dom = document.getElementById('alert_container');
+                                dom.innerHTML = '';
+                                let alert = createElement({
+                                    classList: ['alert', 'alert-danger'],
+                                    attributes: [
+                                        {
+                                            name: 'role',
+                                            value: 'alert'
+                                        },
+                                    ],
+                                    innerHTML: `<strong>Error</strong> Could not delete this form.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>`,
+                                });
+
+                                dom.appendChild(alert);
+
                                 return {};
                             }
                         })
@@ -332,8 +536,8 @@ function Form(args) {
                             }
                         })
                         .catch((error) => {
-                            console.error(error);
-                        })
+                            window.alert('Error: ' + error);
+                        });
                 }
             });
 
@@ -352,9 +556,13 @@ function Form(args) {
      */
     this.renderRightColumn = function() {
         let rightCol = createElement({
-            classList: ['col-md-9'],
+            classList: ['col-md-9', 'overflow-auto'],
             id: 'sort_me',
         });
+
+        if (window.innerWidth > 1000) {
+            rightCol.style.maxHeight = (window.innerHeight - 200) + 'px';
+        }
 
         this.fields.forEach((element, index) => {
             rightCol.appendChild(element.render(index));
@@ -362,26 +570,27 @@ function Form(args) {
 
         //noinspection JSUnresolvedVariable
         if (Sortable !== null) {
-            let fields = this.fields;
+            let self = this;
 
             //noinspection JSUnresolvedVariable,JSUnresolvedFunction
             Sortable.create(rightCol, {
                 handle: '.card-header',
-                onEnd: function(e) {
-                    let oldIndex = e.oldIndex;
-                    let newIndex = e.newIndex;
-
-                    let temp = fields[oldIndex].order;
-                    fields[oldIndex].order = fields[newIndex].order;
-                    fields[newIndex].order = temp;
-                },
+                onEnd: (e) => self.onEnd(e),
             });
-
-            this.fields = fields;
-            //this.sortFields(); // TODO (Svein): This cause some bug
         }
 
         return rightCol;
+    };
+
+    this.onEnd = function(e) {
+        let oldIndex = e.oldIndex;
+        let newIndex = e.newIndex;
+
+        let temp = this.fields[oldIndex].order;
+        this.fields[oldIndex].order = this.fields[newIndex].order;
+        this.fields[newIndex].order = temp;
+
+        this.sortFields();
     };
 
     /**
@@ -413,6 +622,25 @@ function Form(args) {
                 });
                 this.render();
             });
+
+            e.postRender();
+
+            if (this.weighted) {
+                if (e.weight === 0) {
+                    e.weight = this.defaultWeight;
+                    e.postRender();
+                }
+            }
+        });
+
+        let formWeighted = document.getElementById('form_weighted');
+        formWeighted.addEventListener('change', e => {
+            let defaultWeight = document.getElementById('default_weight_form_group');
+            if (this.weighted) {
+                defaultWeight.classList.remove('sr-only');
+            } else {
+                defaultWeight.classList.add('sr-only');
+            }
         });
     };
 
@@ -442,9 +670,17 @@ function Form(args) {
             id: this.lastId++,
             order: this.fields.length,
             weighted: this.weighted,
+            weight: this.defaultWeight,
+            type: this.defaultType,
         }));
 
+        this.fields.forEach(e => {
+            e.expanded = e.id === (this.lastId - 1);
+        });
+
         this.render();
+
+        this.focusNewField();
     };
 
     /**
@@ -476,17 +712,21 @@ function Form(args) {
 
         for (let i = 0; i < this.fields.length; i++) {
             let f = this.fields[i];
-            f.name = `${this.getPrefix()}_${f.type}_${f.id}`;
+
+            f.name = `${this.getPrefix()}_${f.id}`;
+
             fields.push(f.get());
         }
 
-        return JSON.stringify({
-            id:         this.id,
-            prefix:     this.getPrefix(),
-            name:       this.name,
-            weighted:   this.weighted,
-            fields:     fields,
+        let result = JSON.stringify({
+            id: this.id,
+            prefix: this.getPrefix(),
+            name: this.name,
+            weighted: this.weighted,
+            fields: fields,
         });
+
+        return result;
     };
 
     /**
@@ -504,6 +744,9 @@ function Form(args) {
         for (let i = 0; i < json.fields.length; i++) {
             let field = json.fields[i];
 
+            field.id = i;
+            field.order = i;
+
             if (field.weight !== 0) {
                 this.weighted = true;
             }
@@ -517,6 +760,7 @@ function Form(args) {
                 type: field.type,
                 weight: field.weight,
                 order: field.order,
+                choices: field.choices,
             });
 
             if (json.weighted) {
@@ -525,6 +769,8 @@ function Form(args) {
 
             this.fields.push(temp);
         }
+
+        this.lastId = json.fields.length;
 
         if (this.weighted) {
             this.fields.forEach(e => {
@@ -541,14 +787,21 @@ function Form(args) {
      */
     this.sortFields = function() {
         this.fields.sort((a, b) => {
-            if (a.order > b.order) {
-                return 1;
-            } else if (a.order < b.order) {
+            if (a.order < b.order) {
                 return -1;
-            } else {
-                return 0;
+            } else if (a.order > b.order) {
+                return 1;
             }
+
+            return 0;
         });
+    };
+
+    /**
+     * Focus on the newest field
+     */
+    this.focusNewField = function() {
+        document.getElementById(`label_${this.lastId - 1}`).focus();
     };
 }
 
@@ -567,7 +820,8 @@ function Field(args) {
     this.order = (args.order !== undefined) ? args.order : 0;
     this.weighted = (args.weighted !== undefined) ? args.weighted : false;
     this.weight = (args.weight !== undefined) ? args.weight : 0;
-    this.choices = (args.choices !== undefined) ? args.choices : '';
+    this.choicesArray = (args.choices !== undefined) ? args.choices : [];
+    this.choices = '';
     this.expanded = false;
     this.displayChoices = false;
 
@@ -774,12 +1028,17 @@ function Field(args) {
 
         select.addEventListener('change', e => {
             this.type = e.target.value;
-            this.displayChoices = this.type === TYPES.RADIO;
+            this.displayChoices = this.type === TYPES.RADIO
+                || this.type === TYPES.MULTI_CHECKBOX;
+
+            let choicesDisplay = document.getElementById(`choices_display_${this.id}`);
+            let choices = document.getElementById(`choices_${this.id}`);
 
             if (this.displayChoices) {
-                document.getElementById(`choices_display_${this.id}`).classList.remove('sr-only');
+                choicesDisplay.classList.remove('sr-only');
             } else {
-                document.getElementById(`choices_display_${this.id}`).classList.add('sr-only');
+                choices.value = '';
+                choicesDisplay.classList.add('sr-only');
             }
         });
 
@@ -829,9 +1088,13 @@ function Field(args) {
                     value: 'Label',
                 },
                 {
+                    name: 'maxlength',
+                    value: '512',
+                },
+                {
                     name: 'required',
                     value: '',
-                }
+                },
             ],
             id: `label_${this.id}`,
             value: this.label,
@@ -848,7 +1111,20 @@ function Field(args) {
             }
         });
 
+        let helperText = createElement({
+            type: 'small',
+            classList: ['form-text', 'text-muted'],
+            attributes: [
+                {
+                    name: 'for',
+                    value: `label_${this.id}`,
+                },
+            ],
+            innerHTML: 'Max length: 256 characters.',
+        });
+
         rightSide.appendChild(input);
+        rightSide.appendChild(helperText);
         formGroup.appendChild(rightSide);
 
         return formGroup;
@@ -1020,6 +1296,10 @@ function Field(args) {
             classList: ['col-md-9'],
         });
 
+        if (this.choicesArray.length > 1) {
+            this.choices = this.choicesArray.join('\n');
+        }
+
         let input = createElement({
             type: 'textarea',
             classList: ['form-control'],
@@ -1028,6 +1308,10 @@ function Field(args) {
                     name: 'placeholder',
                     value: 'Choices',
                 },
+                {
+                    name: 'rows',
+                    value: 5
+                }
             ],
             id: `choices_${this.id}`,
             value: this.choices,
@@ -1035,6 +1319,7 @@ function Field(args) {
 
         input.addEventListener('keyup', () => {
             this.choices = input.value;
+            this.choicesArray = this.choices.split('\n');
         });
 
         let helperText = createElement({
@@ -1046,7 +1331,7 @@ function Field(args) {
                     value: `choices_${this.id}`,
                 },
             ],
-            innerHTML: 'Enter each choice on a new line.',
+            innerHTML: 'Enter each choice on a new line. (Do not use "|" (pipe character), as this is the separator for list)',
         });
 
         rightSide.appendChild(input);
@@ -1113,7 +1398,7 @@ function Field(args) {
             type: 'small',
             classList: ['form-text', 'text-muted'],
             id: `weight_helper_${this.id}`,
-            innerText: '',
+            innerHTML: 'Weights on radio will be calculated linear based on which is selected. <br>Eg. Weight: 5, Choices: [A, B, C, D, E], Weights: [A:1, B:2, C:3, D:4, E:5]',
         });
 
         rightSide.appendChild(input);
@@ -1130,6 +1415,12 @@ function Field(args) {
         // TODO (Svein): Fix this later, storing the total weight,
         //  for using as calculation for showing percentage for each field with weights
         // let totalWeight = localStorage.getItem('totalWeight');
+        if (this.type === TYPES.RADIO || this.type === TYPES.MULTI_CHECKBOX) {
+            document.getElementById(`choices_display_${this.id}`).classList.remove('sr-only');
+            document.getElementById(`choices_${this.id}`).value = this.choices;
+        }
+
+        document.getElementById(`weight_${this.id}`).value = this.weight;
     };
 
     /**
@@ -1137,6 +1428,8 @@ function Field(args) {
      * @return {object}
      */
     this.get = function() {
+        this.choicesArray = this.choices.split('\n');
+
         return {
             type:           this.type,
             name:           this.name,
@@ -1144,18 +1437,9 @@ function Field(args) {
             hasComment:     this.hasComment,
             label:          this.label,
             order:          this.order,
-            weight:         this.weight,
-            choices:        this.getChoices(),
+            weight:         (this.weighted) ? parseInt(this.weight) : 0,
+            choices:        this.choicesArray,
         }
-    };
-
-    /**
-     * Return choices as a single string, with values separated by a comma
-     * @return {string}
-     */
-    this.getChoices = function() {
-        let val = this.choices.split('\n');
-        return val.join(',');
     };
 }
 

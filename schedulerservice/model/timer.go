@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"log"
 	"time"
 )
@@ -23,7 +24,9 @@ func StopTimer(timerID int) {
 }
 
 //UpdateTimer should update the time of an existing timer (delete and create new timer)
-func UpdateTimer(newTime time.Time, payload Payload) bool {
+func UpdateTimer(newData json.RawMessage, newTime time.Time, payload Payload) bool {
+
+	payload.Data = newData
 
 	//update time in payload object
 	payload.ScheduledTime = newTime
@@ -62,6 +65,8 @@ func UpdateTimer(newTime time.Time, payload Payload) bool {
 //InitializeTimers fetches timers from database on startup
 func InitializeTimers() {
 
+	time.Sleep(10*time.Second) //wait 10 seconds to let db setup properly, not best fix but it does the trick
+
 	payloads := GetPayloads()
 
 	for _, payload := range payloads {
@@ -75,7 +80,7 @@ func InitializeTimers() {
 			task.Trigger()
 			return
 		} else if !ScheduleTask(payload) { //schedule task
-			log.Printf("Could not initialize timer for submission ID: %v\n", payload.SubmissionID)
+			log.Printf("Could not initialize timer for AssignmentID: %v\n", payload.AssignmentID)
 			return
 		}
 	}

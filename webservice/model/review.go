@@ -13,14 +13,6 @@ type Review struct {
 	Form   Form `json:"form"`
 }
 
-// ReviewAnswer holds the data for a single review answer
-type ReviewAnswer struct {
-	Type   string
-	Name   string
-	Label  string
-	Answer string
-}
-
 // FullReview holds specific data about an review for displaying it
 type FullReview struct {
 	Reviewer     int // User that is doing the review
@@ -35,8 +27,8 @@ type ReviewRepository struct{}
 
 // Insert a form into the database
 func (repo *ReviewRepository) Insert(form Form) error {
-	// Declare FormRepository
-	var formRepo = FormRepository{}
+	// Declare FormRepositoryOld
+	var formRepo = FormRepositoryOld{}
 
 	// Insert form to database, and get last inserted Id from it
 	formID, err := formRepo.Insert(form)
@@ -84,7 +76,7 @@ func (repo *ReviewRepository) Insert(form Form) error {
 func (repo *ReviewRepository) GetAll() ([]Review, error) {
 	// Declare return slice
 	var result []Review
-	// Create query-string
+	// Select query-string
 	query := "SELECT id, form_id FROM reviews"
 	// Perform query
 	rows, err := db.GetDB().Query(query)
@@ -110,8 +102,8 @@ func (repo *ReviewRepository) GetAll() ([]Review, error) {
 		result = append(result, review)
 	}
 
-	// Declare a FormRepository
-	var formRepo = FormRepository{}
+	// Declare a FormRepositoryOld
+	var formRepo = FormRepositoryOld{}
 	// Loop through all submissions
 	for index, review := range result {
 		// Get form from database
@@ -390,40 +382,18 @@ func (repo *ReviewRepository) Delete(id int) error {
 		tx.Rollback()
 		return err
 	}
-	// Commit transaction
-	err = tx.Commit()
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
 
 	// SQL query
 	query = "DELETE FROM reviews WHERE form_id=?"
-	// Begin transaction
-	tx, err = db.GetDB().Begin()
-	if err != nil {
-		return err
-	}
+
 	// Execute transaction
 	_, err = tx.Exec(query, id)
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
-	// Commit transaction
-	err = tx.Commit()
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
 	// SQL query
 	query = "DELETE FROM forms WHERE id=?"
-	// Begin transaction
-	tx, err = db.GetDB().Begin()
-	if err != nil {
-		return err
-	}
 	// Execute transaction
 	_, err = tx.Exec(query, id)
 	if err != nil {

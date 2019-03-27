@@ -1,13 +1,52 @@
 Svein's log
 ============
-## 14/03/2019
+## 24/03/2019
 #### Worked on
+* Implemented default weight and field type to the form builder
+* Implemented deleting submissions by admin
+* Implemented Bootstrap-table extension
+* Fixed bugs for beta
+* Added default weight and field to form-builder
+* Made submissions withdrawable
+* Implemented feedback to student after submission
+#### Good
+* Deployed beta for testing with real students and a real assignment
+#### Bad
+* Wrong query-string overwrote all submissions 
+#### Decisions
 * 
+
+## 22/03/2019
+#### Worked on
+* Finished refactoring of service implementation
+* Implemented weights display for reviews
+#### Good
+* Refactoring done
+#### Bad
+* 
+#### Decisions
+* 
+
+## 21/03/2019
+#### Worked on
+* Continue: Refactoring
 #### Good
 * 
 #### Bad
+* Not full group, so many hours of work in a few days
 #### Decisions
-* Nothing
+* 
+
+## 20/03/2019
+#### Worked on
+* Refactoring
+  * Adding service/repository pattern 
+#### Good
+* Works good, allow us to be less reliable of SQL queries
+#### Bad
+* Takes a lot of time, not full group, so did 15 hours today
+#### Decisions
+* Refactoring DAL (data access layer) away from controllers
 
 ## 13/03/2019
 #### Worked on

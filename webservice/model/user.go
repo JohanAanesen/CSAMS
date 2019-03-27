@@ -9,12 +9,12 @@ import (
 
 //User struct to hold session data
 type User struct {
-	ID            int    `json:"id"`
-	Name          string `json:"name"`
-	EmailStudent  string `json:"emailstudent"`
-	EmailPrivate  string `json:"emailprivate"`
-	Teacher       bool   `json:"teacher"`
-	Authenticated bool   `json:"authenticated"`
+	ID            int            `json:"id"`
+	Name          string         `json:"name"`
+	EmailStudent  string         `json:"emailstudent"`
+	EmailPrivate  sql.NullString `json:"emailprivate,omitempty"`
+	Teacher       bool           `json:"teacher"`
+	Authenticated bool           `json:"authenticated"`
 }
 
 // UpdateUserName updates the users name in the db
@@ -151,7 +151,7 @@ func GetUser(userID int) User {
 			ID:            userID,
 			Name:          name,
 			EmailStudent:  emailStudent,
-			EmailPrivate:  emailPrivate.String,
+			EmailPrivate:  emailPrivate,
 			Teacher:       teacher,
 			Authenticated: true,
 		}

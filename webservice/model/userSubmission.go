@@ -20,7 +20,7 @@ type UserSubmission struct {
 func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
 	// Create an empty answers array
 	var result []Answer
-	// Create query string
+	// Select query string
 	query := "SELECT id, type, answer, comment FROM user_submissions WHERE user_id =? AND assignment_id=?;"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query, userID, assignmentID)
@@ -50,7 +50,7 @@ func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
 func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
 	result := time.Time{}
 
-	// Create query string
+	// Select query string
 	query := "SELECT DISTINCT submitted FROM user_submissions WHERE user_id=? AND assignment_id=?;"
 	// Prepare and execute query
 	rows, err := db.GetDB().Query(query, userID, assignmentID)
@@ -92,8 +92,8 @@ func UploadUserSubmission(userSub UserSubmission) error {
 	for _, answer := range userSub.Answers {
 
 		// Sql query
-		query := "INSERT INTO user_submissions (user_id, submission_id, assignment_id, type, answer, submitted) VALUES (?, ?, ?, ?, ?, ?)"
-		_, err := tx.Exec(query, userSub.UserID, userSub.SubmissionID, userSub.AssignmentID, answer.Type, answer.Value, date)
+		query := "INSERT INTO user_submissions (user_id, submission_id, assignment_id, type, answer, comment, submitted) VALUES (?, ?, ?, ?, ?, ?)"
+		_, err := tx.Exec(query, userSub.UserID, userSub.SubmissionID, userSub.AssignmentID, answer.Type, answer.Value, answer.Comment, date)
 
 		// Check if there was an error
 		if err != nil {
@@ -114,14 +114,14 @@ func UploadUserSubmission(userSub UserSubmission) error {
 // UpdateUserSubmission updates user submission to the db
 func UpdateUserSubmission(userSub UserSubmission) error {
 	// Norwegian time TODO time-norwegian
-	now := util.GetTimeInCorrectTimeZone()
+	now := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
 	// Go through all answers
 	for _, answer := range userSub.Answers {
 
 		// Sql query
-		query := "UPDATE `user_submissions` SET `answer` = ?, `submitted` = ? WHERE `id` = ?"
-		_, err := db.GetDB().Exec(query, answer.Value, now, answer.ID)
+		query := "UPDATE `user_submissions` SET `answer` = ?, `comment` = ? `submitted` = ? WHERE `id` = ?"
+		_, err := db.GetDB().Exec(query, answer.Value, answer.Comment.String, now, answer.ID)
 
 		// Check if there was an error
 		if err != nil {

@@ -3,6 +3,8 @@ package controller
 import (
 	"encoding/json"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/gorilla/mux"
 	"log"
@@ -15,9 +17,9 @@ func AdminReviewGET(w http.ResponseWriter, r *http.Request) {
 	// Set header content type and status code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	// Get all reviews from database
-	reviewRepo := model.ReviewRepository{}
-	reviews, err := reviewRepo.GetAll()
+
+	reviewService := service.NewReviewService(db.GetDB())
+	reviews, err := reviewService.FetchAll()
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -78,7 +80,7 @@ func AdminReviewCreatePOST(w http.ResponseWriter, r *http.Request) {
 		// Convert form to JSON, handle error if occurs
 		formBytes, err := json.Marshal(&form)
 		if err != nil {
-			log.Println("marshal form", err)
+			log.Println("json marshal form", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
@@ -97,10 +99,11 @@ func AdminReviewCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Declare an empty Repository for Submission
-	var repo = model.ReviewRepository{}
+	// Create new review service
+	reviewService := service.NewReviewService(db.GetDB())
+
 	// Insert data to database
-	err = repo.Insert(form)
+	_, err = reviewService.Insert(form)
 	if err != nil {
 		log.Println("review insert", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -123,13 +126,14 @@ func AdminReviewUpdateGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Get a single form based on ID from the database
-	formRepo := model.FormRepository{}
-	form, err := formRepo.Get(id)
+	formService := service.NewFormService(db.GetDB())
+	form, err := formService.Fetch(id)
 	if err != nil {
-		log.Println("form repository get", err)
+		log.Println("form service get", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
+
 	// Convert form to JSON
 	formBytes, err := json.Marshal(&form)
 	if err != nil {
@@ -137,6 +141,7 @@ func AdminReviewUpdateGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
+
 	// Set header content type and status code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -183,9 +188,11 @@ func AdminReviewUpdatePOST(w http.ResponseWriter, r *http.Request) {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
+
 		// Set header content type and status code
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
+
 		// Create view
 		v := view.New(r)
 		// Set template-file
@@ -198,10 +205,8 @@ func AdminReviewUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Declare an empty Repository for Submission
-	var repo = model.ReviewRepository{}
-	// Insert data to database
-	err = repo.Update(form)
+	reviewService := service.NewReviewService(db.GetDB())
+	err = reviewService.Update(form)
 	if err != nil {
 		log.Println("update review form", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -235,8 +240,8 @@ func AdminReviewDELETE(w http.ResponseWriter, r *http.Request) {
 	}{}
 
 	// Delete the review from database, if error, set error messages, if ok, set success message
-	repo := model.ReviewRepository{}
-	err = repo.Delete(temp.ID)
+	reviewService := service.NewReviewService(db.GetDB())
+	err = reviewService.Delete(temp.ID)
 	if err != nil {
 		msg.Code = http.StatusInternalServerError
 		msg.Message = err.Error()

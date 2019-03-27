@@ -2,9 +2,11 @@ package controller
 
 import (
 	"fmt"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
+	"github.com/gorilla/mux"
 	"html/template"
 	"log"
 	"net/http"
@@ -13,60 +15,61 @@ import (
 
 //CourseGET serves class page to users
 func CourseGET(w http.ResponseWriter, r *http.Request) {
-	var course model.Course
-
-	//check if request has an classID
-	id := r.FormValue("id")
-	if id == "" {
-		//redirect to error pageinfo
-		ErrorHandler(w, r, http.StatusBadRequest)
-		return
-	}
-
-	//check that id is a number
-	courseID, err := strconv.Atoi(id)
-	if err != nil {
-		//redirect to error pageinfo
-		log.Println(err.Error())
-		ErrorHandler(w, r, http.StatusBadRequest)
-		return
-	}
+	//get user
+	currentUser := session.GetUserFromSession(r)
 
 	//check if user is logged in
-	if !session.GetUserFromSession(r).Authenticated {
+	if !currentUser.Authenticated {
 		LoginGET(w, r)
 		return
 	}
 
-	//get user
-	user := session.GetUserFromSession(r)
-
-	//repo's
-	courseRepo := &model.CourseRepository{}
-	assignmentRepo := model.AssignmentRepository{}
-
-	//get info from db
-	course, err = courseRepo.GetSingle(courseID)
+	vars := mux.Vars(r)
+	courseID, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		log.Println(err)
+		log.Printf("id: %v", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	assignments, err := assignmentRepo.GetAllFromCourse(courseID)
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	//get info from db
+	course, err := services.Course.Fetch(courseID)
 	if err != nil {
-		log.Println(err)
+		log.Println("course service fetch", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
-	//check if user is an participant of said class or a teacher
-	participant := courseRepo.UserExistsInCourse(user.ID, courseID) || user.ID == course.Teacher
-	if !participant {
+	assignments, err := services.Assignment.FetchFromCourse(course.ID)
+	if err != nil {
+		log.Println("get all assignments from course", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Check if user is an participant of said class or a teacher
+	inCourse, err := services.Course.UserInCourse(currentUser.ID, courseID)
+	if err != nil {
+		log.Println("course service, user in course", err)
+		ErrorHandler(w, r, http.StatusUnauthorized)
+		return
+	}
+
+	if !inCourse || (!inCourse && !currentUser.Teacher) {
 		log.Println("user not participant of class")
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
 	}
 
-	classmates := model.GetUsersToCourse(courseID)
+	classmates, err := services.User.FetchAllFromCourse(course.ID)
+	if err != nil {
+		log.Println("services, user, fetch all from course", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
 
 	//all a-ok
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -76,7 +79,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "course"
 
 	v.Vars["Course"] = course
-	v.Vars["User"] = user
+	v.Vars["User"] = currentUser
 	v.Vars["Classmates"] = classmates
 	v.Vars["Assignments"] = assignments
 

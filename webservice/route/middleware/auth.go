@@ -17,3 +17,28 @@ func TeacherAuth(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+// UserAuth check if user is authenticated
+func UserAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		currentUser := session.GetUserFromSession(r)
+
+		if r.RequestURI == "/" {
+			switch r.Method {
+			case "GET":
+				controller.IndexGET(w, r)
+				return
+			case "POST":
+				controller.JoinCoursePOST(w, r)
+				return
+			}
+		}
+
+		if !currentUser.Authenticated {
+			controller.ErrorHandler(w, r, http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}

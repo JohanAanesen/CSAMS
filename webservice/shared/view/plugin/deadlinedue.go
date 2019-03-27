@@ -3,6 +3,8 @@ package plugin
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"html/template"
+	"log"
+	"os"
 	"time"
 )
 
@@ -13,6 +15,13 @@ func DeadlineDue() template.FuncMap {
 
 	f["DEADLINEDUE"] = func(t time.Time) bool {
 		// TODO time-norwegian
+		loc, err := time.LoadLocation(os.Getenv("TIME_ZONE"))
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		// TODO fix hack
+		t = t.In(loc).Add(-time.Hour)
 		return t.Before(util.GetTimeInCorrectTimeZone())
 	}
 

@@ -1,7 +1,6 @@
 module github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice
 
 require (
-	github.com/go-ozzo/ozzo-dbx v1.0.15 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gorilla/handlers v1.4.0
 	github.com/gorilla/mux v1.7.0

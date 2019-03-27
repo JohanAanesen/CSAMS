@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
@@ -15,21 +16,23 @@ import (
 
 // AdminCourseGET handles GET-request at /admin/course
 func AdminCourseGET(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
+	currentUser := session.GetUserFromSession(r)
 
-	v := view.New(r)
-	v.Name = "admin/course/index"
+	// Services
+	courseService := service.NewCourseService(db.GetDB())
 
-	//course repo
-	courseRepo := &model.CourseRepository{}
-
-	courses, err := courseRepo.GetAllToUserSorted(session.GetUserFromSession(r).ID)
+	courses, err := courseService.FetchAllForUserOrdered(currentUser.ID)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println(err)
 		return
 	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/course/index"
 
 	v.Vars["Courses"] = courses
 
@@ -51,7 +54,7 @@ func AdminCreateCourseGET(w http.ResponseWriter, r *http.Request) {
 // Inserts a new course to the database
 func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	//check if user is already logged in
-	user := session.GetUserFromSession(r)
+	currentUser := session.GetUserFromSession(r)
 
 	course := model.Course{
 		Hash:        xid.NewWithTime(time.Now()).String(),
@@ -60,55 +63,52 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		Description: r.FormValue("description"),
 		Year:        r.FormValue("year"),
 		Semester:    r.FormValue("semester"),
+		Teacher:     currentUser.ID,
 	}
 
-	// TODO (Svein): Move this to model, in a function/method
-	//insert into database
-	result, err := db.GetDB().Exec("INSERT INTO course(hash, coursecode, coursename, year, semester, description, teacher) VALUES(?, ?, ?, ?, ?, ?, ?)",
-		course.Hash, course.Code, course.Name, course.Year, course.Semester, course.Description, user.ID)
+	// Services
+	courseService := service.NewCourseService(db.GetDB())
 
-	// Log error
+	lastID, err := courseService.Insert(course)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("course service insert", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	// Get course id
-	id, err := result.LastInsertId()
-	if err != nil {
-		log.Println(err.Error())
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
-
 	// Convert from int64 to int
-	course.ID = int(id)
+	course.ID = int(lastID)
 
+	// TODO (Svein): Create functions that does this, eg.: LogCourseCreated(currentUser.ID, course.ID)
 	// Log createCourse in the database and give error if something went wrong
-	logData := model.Log{UserID: user.ID, Activity: model.CreatedCourse, CourseID: course.ID}
+	logData := model.Log{UserID: currentUser.ID, Activity: model.CreatedCourse, CourseID: course.ID}
 	err = model.LogToDB(logData)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("log to DB", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	//course repo
-	courseRepo := &model.CourseRepository{}
-
 	// Add user to course
-	if !courseRepo.AddUserToCourse(user.ID, course.ID) {
+	err = courseService.AddUser(currentUser.ID, course.ID)
+	if err == service.ErrUserAlreadyInCourse {
+		http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
+		return
+	}
+
+	if err != nil {
 		log.Println("Could not add user to course! (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
+	// TODO (Svein): Create functions that does this, eg.: LogCourseJoined(currentUser.ID, course.ID)
 	// Log joinedCourse in the db and give error if something went wrong
-	logData = model.Log{UserID: user.ID, Activity: model.JoinedCourse, CourseID: course.ID}
+	logData = model.Log{UserID: currentUser.ID, Activity: model.JoinedCourse, CourseID: course.ID}
 	err = model.LogToDB(logData)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("log to DB", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -119,41 +119,45 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 // AdminUpdateCourseGET handles GET-request at /admin/course/update/{id}
 func AdminUpdateCourseGET(w http.ResponseWriter, r *http.Request) {
+	// Get url variables
 	vars := mux.Vars(r)
+	// Convert string to int
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		log.Printf("id: %v", err)
+		log.Println("string convert id", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
+	// Services
+	courseService := service.NewCourseService(db.GetDB())
 
-	//course repo
-	courseRepo := &model.CourseRepository{}
-
-	//get course from database
-	course, err := courseRepo.GetSingle(id)
+	// Fetch course
+	course, err := courseService.Fetch(id)
 	if err != nil {
-		log.Println(err)
+		log.Println("course service fetch", err)
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
 
+	// Set content type and status code
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	// Create view
 	v := view.New(r)
 	v.Name = "admin/course/update"
-
+	// View variables
 	v.Vars["Course"] = course //attach course to template
-
+	// Render view
 	v.Render(w)
 }
 
 // AdminUpdateCoursePOST handles POST-request at /admin/course/update
 func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
+	// Get id from form and convert to integer
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err != nil {
-		log.Printf("id: %v", err)
+		log.Println("string convert id", err)
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
@@ -164,18 +168,19 @@ func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	newDescription := r.FormValue("description")
 	newSemester := r.FormValue("semester")
 
+	// TODO (Svein):  `|| newDescription == ""` is removed cause the SimpleMDE textarea cannot be required, causes the submit button to fail
 	//make sure they are not empty
-	if newName == "" || newCode == "" || newDescription == "" || newSemester == "" {
-		log.Printf("id: %v", err)
+	if newName == "" || newCode == "" || newSemester == "" {
+		log.Println("some new data is empty, course update")
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
 
-	//course repo
-	courseRepo := model.CourseRepository{}
+	// Services
+	courseService := service.NewCourseService(db.GetDB())
 
 	//get course from database
-	course, err := courseRepo.GetSingle(id)
+	course, err := courseService.Fetch(id)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusBadRequest)
@@ -189,7 +194,7 @@ func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	course.Semester = newSemester
 
 	//save to database
-	err = courseRepo.Update(id, course)
+	err = courseService.Update(id, *course)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -209,21 +214,22 @@ func AdminCourseAllAssignments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	assignmentRepo := model.AssignmentRepository{}
-	assignments, err := assignmentRepo.GetAllFromCourse(id)
+	// Services
+	assignmentService := service.NewAssignmentService(db.GetDB())
+	courseService := service.NewCourseService(db.GetDB())
+
+	// Fetch all assignments from course
+	assignments, err := assignmentService.FetchFromCourse(id)
 	if err != nil {
-		log.Println(err)
+		log.Println("assignment service fetch from course", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	//course repo
-	courseRepo := model.CourseRepository{}
-
 	//get course from database
-	course, err := courseRepo.GetSingle(id)
+	course, err := courseService.Fetch(id)
 	if err != nil {
-		log.Println(err)
+		log.Println("course service fetch", err)
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}

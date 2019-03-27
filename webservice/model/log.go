@@ -8,27 +8,30 @@ import (
 	"log"
 )
 
-// activity enum for keeping track of log activity
-type activity string
+// Activity enum for keeping track of log Activity
+type Activity string
 
 // Enum for logs
 const (
-	ChangeEmail         activity = "CHANGE-EMAIL"                           // User changed email
-	ChangePassword      activity = "CHANGE-PASSWORD"                        // User changed password (DO NOT SHOW OLD/NEW PASSWORD IN LOG)
-	DeliveredAssignment activity = "ASSIGNMENT-DELIVERED"                   // User delivered assignment
-	FinishedPeerReview  activity = "FINISHED-PEER-REVIEWING"                // User is done peer reviewing two assignments
-	PeerReviewDone      activity = "PEER-REVIEW-IS-DONE-FOR-ONE-ASSIGNMENT" // Users assignment is finished peer-reviewd
-	JoinedCourse        activity = "JOINED-COURSE"                          // User joined course
-	CreatedCourse       activity = "COURSE-CREATED"                         // Course is created
-	CreatAssignment     activity = "ASSIGNMENT-CREATED"                     // Assignment is created
-	UpdateAdminFAQ      activity = "UPDATE-ADMIN-FAQ"                       // The admins faq is updated
+	ChangeEmail         Activity = "CHANGE-EMAIL"                           // User changed email
+	ChangePassword      Activity = "CHANGE-PASSWORD"                        // User changed password (DO NOT SHOW OLD/NEW PASSWORD IN LOG)
+	DeliveredAssignment Activity = "ASSIGNMENT-DELIVERED"                   // User delivered assignment
+	UpdateAssignment    Activity = "ASSIGNMENT-UPDATED"                     // User re-delivered assignment
+	DeleteAssignment    Activity = "ASSIGNMENT-DELETE"                      // user deleted assignment
+	FinishedPeerReview  Activity = "FINISHED-PEER-REVIEWING"                // User is done peer reviewing two assignments
+	PeerReviewDone      Activity = "PEER-REVIEW-IS-DONE-FOR-ONE-ASSIGNMENT" // Users assignment is finished peer-reviewd
+	JoinedCourse        Activity = "JOINED-COURSE"                          // User joined course
+	CreatedCourse       Activity = "COURSE-CREATED"                         // Course is created
+	CreatAssignment     Activity = "ASSIGNMENT-CREATED"                     // Assignment is created
+	UpdateAdminFAQ      Activity = "UPDATE-ADMIN-FAQ"                       // The admins faq is updated
+	NewUser             Activity = "NEW-USER"                               // A new user is created
 	// TODO Brede : add more activities later :)
 )
 
 // Log struct to hold log-data
 type Log struct {
 	UserID       int      // [NOT NULL][all] User identification
-	Activity     activity // [NOT NULL][all] User activity
+	Activity     Activity // [NOT NULL][all] User Activity
 	IsTeacher    bool     // [NULLABLE][later user] Says if the user is student or teacher (This is later checked from database)
 	AssignmentID int      // [NULLABLE][DeliveredAssignment/FinishedPeerReview/PeerReviewDone/CreatAssignment] ID to relative assignment
 	CourseID     int      // [NULLABLE][JoinedCourse/CreatedCourse] ID to relative course
@@ -42,7 +45,7 @@ func LogToDB(payload Log) error {
 
 	// UserID and Activity can not be nil
 	if payload.UserID <= 0 || payload.Activity == "" {
-		return errors.New("error: userid and/or activity can not be nil (log.db)")
+		return errors.New("error: userid and/or Activity can not be nil (log.db)")
 	}
 
 	// Different sql queries to different log types belows
@@ -65,6 +68,10 @@ func LogToDB(payload Log) error {
 		err = changePassword(tx, payload, date)
 	case DeliveredAssignment:
 		err = deliveredAssFinishedPeer(tx, payload, date)
+	case UpdateAssignment:
+		err = deliveredAssFinishedPeer(tx, payload, date)
+	case DeleteAssignment:
+		err = deliveredAssFinishedPeer(tx, payload, date)
 	case FinishedPeerReview:
 		err = deliveredAssFinishedPeer(tx, payload, date)
 	case PeerReviewDone:
@@ -75,9 +82,11 @@ func LogToDB(payload Log) error {
 		err = joinCreateCourse(tx, payload, date)
 	case CreatedCourse:
 		err = joinCreateCourse(tx, payload, date)
+	case NewUser:
+		err = newUser(tx, payload, date)
 	default:
 		log.Println("Error: Wrong Log.Activity!")
-		return errors.New("error: wrong log.activity type (log.db)")
+		return errors.New("error: wrong log.Activity type (log.db)")
 	}
 
 	// Handle possible error
@@ -96,36 +105,43 @@ func LogToDB(payload Log) error {
 }
 
 func changeEmailUpdateFaq(tx *sql.Tx, data Log, date string) error {
-	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`, `oldvalue`, `newvalue`) "+
+	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`, `Activity`, `oldvalue`, `newvalue`) "+
 		"VALUES (?, ?, ?, ?, ?)", data.UserID, date, data.Activity, data.OldValue, data.NewValue)
 
 	return err
 }
 
 func changePassword(tx *sql.Tx, data Log, date string) error {
-	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`) "+
+	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`, `Activity`) "+
 		"VALUES (?, ?, ?)", data.UserID, date, data.Activity)
 
 	return err
 }
 
 func deliveredAssFinishedPeer(tx *sql.Tx, data Log, date string) error {
-	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`,  `activity`, `assignmentid`,  `submissionid`) "+
+	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`,  `Activity`, `assignmentid`,  `submissionid`) "+
 		"VALUES (?, ?, ?, ?, ?)", data.UserID, date, data.Activity, data.AssignmentID, data.SubmissionID)
 
 	return err
 }
 
 func createAssignment(tx *sql.Tx, data Log, date string) error {
-	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`, `activity`, `assignmentid`) "+
+	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`, `Activity`, `assignmentid`) "+
 		"VALUES (?, ?, ?, ?)", data.UserID, date, data.Activity, data.AssignmentID)
 
 	return err
 }
 
 func joinCreateCourse(tx *sql.Tx, data Log, date string) error {
-	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`,  `activity`, `courseid`) "+
+	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`,  `Activity`, `courseid`) "+
 		"VALUES (?, ?, ?, ?)", data.UserID, date, data.Activity, data.CourseID)
+
+	return err
+}
+
+func newUser(tx *sql.Tx, data Log, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`, `Activity`) "+
+		"VALUES (?, ?, ?)", data.UserID, date, data.Activity)
 
 	return err
 }

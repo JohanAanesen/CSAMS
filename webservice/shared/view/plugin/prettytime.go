@@ -18,5 +18,12 @@ func PrettyTime() template.FuncMap {
 		return t.Format("15:04 02/01/2006") + timeZone.Format(" -0700 MST") // Norwegian format with timezone behind
 	}
 
+	f["SORTABLE_TIME"] = func(t time.Time) string {
+		// Get correct timezone. When date is stored in the database, only the date and time is stored, not the timezone.
+		timeZone := util.GetTimeInCorrectTimeZone()
+
+		return t.Format("2006/01/02 15:04") + timeZone.Format(" -0700 MST") // Norwegian format with timezone behind
+	}
+
 	return f
 }

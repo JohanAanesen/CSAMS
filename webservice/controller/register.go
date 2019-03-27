@@ -2,6 +2,8 @@ package controller
 
 import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/microcosm-cc/bluemonday"
@@ -11,16 +13,19 @@ import (
 
 //RegisterGET serves register page to users
 func RegisterGET(w http.ResponseWriter, r *http.Request) {
+	// Services
+	courseService := service.NewCourseService(db.GetDB())
 
-	//course repo
-	courseRepo := &model.CourseRepository{}
+	name := r.FormValue("name")   // get form value name
+	email := r.FormValue("email") // get form value email
 
 	// Check if request has an courseID and it's not empty
 	hash := r.FormValue("courseid")
 	if hash != "" {
-
+		course := courseService.Exists(hash)
 		// Check if the hash is a valid hash
-		if course := courseRepo.CourseExists(hash); course.ID == -1 {
+		if course.ID == -1 {
+			log.Println("course id is -1")
 			ErrorHandler(w, r, http.StatusBadRequest)
 			hash = ""
 			return
@@ -41,6 +46,9 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 		v.Vars["Action"] = "?courseid=" + hash
 	}
 
+	v.Vars["Name"] = name
+	v.Vars["Email"] = email
+
 	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
 
 	v.Render(w)
@@ -51,13 +59,12 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 
 //RegisterPOST validates register requests from users
 func RegisterPOST(w http.ResponseWriter, r *http.Request) {
-
 	//XSS sanitizer
 	p := bluemonday.UGCPolicy()
 
-	user := session.GetUserFromSession(r)
+	currentUser := session.GetUserFromSession(r)
 
-	if user.Authenticated { //already logged in, no need to register
+	if currentUser.Authenticated { //already logged in, no need to register
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
@@ -74,32 +81,67 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Services
+	userService := service.NewUserService(db.GetDB())
+	courseService := service.NewCourseService(db.GetDB())
+
 	//Sanitize input
 	name = p.Sanitize(name)
 	email = p.Sanitize(email)
 	password = p.Sanitize(password)
 
-	user, err := model.RegisterUser(name, email, password) //register user in database
+	userData := model.User{
+		Name:         name,
+		EmailStudent: email,
+	}
+
+	// Register user (insert to database)
+	userID, err := userService.Register(userData, password)
 	if err != nil {
 		log.Println(err.Error())
-		session.SaveMessageToSession("Email already in use!", w, r)
+		session.SaveMessageToSession("Email already in use", w, r)
 		RegisterGET(w, r)
 		return
 	}
 
-	//course repo
-	courseRepo := &model.CourseRepository{}
+	// Log NewUser in the database and give error if something went wrong
+	logData := model.Log{UserID: userID, Activity: model.NewUser}
+	err = model.LogToDB(logData)
+	if err != nil {
+		log.Println("log new user to db", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	user, err := userService.Fetch(userID)
+	if err != nil {
+		log.Println("user service fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
 
 	if user.ID != 0 {
 		//save user to session values
 		user.Authenticated = true
-		session.SaveUserToSession(user, w, r)
+		session.SaveUserToSession(*user, w, r)
 		// Add new user to course
 
 		if hash != "" {
 			hash = p.Sanitize(hash)
-			if id := courseRepo.CourseExists(hash).ID; id != -1 {
-				courseRepo.AddUserToCourse(user.ID, id)
+			course := courseService.Exists(hash)
+			if course.ID != -1 {
+				err = courseService.AddUser(user.ID, course.ID)
+
+				if err == service.ErrUserAlreadyInCourse {
+					http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
+					return
+				}
+
+				if err != nil {
+					log.Println("course service add user", err.Error())
+					ErrorHandler(w, r, http.StatusInternalServerError)
+					return
+				}
 			}
 		}
 	}

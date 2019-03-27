@@ -35,22 +35,17 @@
         #myTab.nav-pills .nav-link {
             color: #f8f9fa;
             border-color: #f8f9fa;
-            border-bottom-color: #f8f9fa;
         }
 
-        a#participant-tab.nav-link.disabled {
-            color: #6c7985;
-        }
-
-        a#peerReview-tab.nav-link.disabled {
-            color: #6c7985;
+        .nav-link.disabled {
+            color: #6c7985 !important;
         }
 
     </style>
 {{end}}
 {{define "content"}}
-    {{ $id := .Assignment.ID }}
-    {{ $length := len .Reviews }}
+    {{$id := .Assignment.ID}}
+    {{$length := len .Reviews}}
     <div class="container pt-3">
         {{if .Delivered}}
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -60,7 +55,7 @@
                 </button>
             </div>
         {{end}}
-        <a href="/course?id={{ .CourseID }}" class="btn btn-outline-dark">Go Back</a>
+        <a href="/course/{{.CourseID}}" class="btn btn-outline-dark">Go Back</a>
 
         <h1 class="display-4">
             {{.Assignment.Name}}
@@ -77,41 +72,30 @@
                            aria-controls="home" aria-selected="true">Assignment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{if eq $length 0}}disabled{{end}}" id="peerReview-tab" data-toggle="tab"
-                           href="#peerReview" role="tab"
-                           aria-controls="peerReview" aria-selected="false">Peer Review
-                            {{ if gt $length 0 }}
-                                <span class="badge badge-danger">{{$length}}</span>
-                            {{end}}
-
-                        </a>
+                        <a class="nav-link {{if eq $length 0}}disabled{{end}}" id="peerReview-tab" data-toggle="tab" href="#peerReview" role="tab" aria-controls="peerReview" aria-selected="false">Peer Review {{if gt $length 0}}<span class="badge badge-danger">{{$length}}</span>{{end}}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link disabled" id="participant-tab" data-toggle="tab" href="#autoValidation"
-                           role="tab"
-                           aria-controls="participants" aria-selected="false">Auto Validation</a>
+                        <a class="nav-link{{if not .HasAutoValidation}} disabled{{end}}" id="participant-tab" data-toggle="tab" href="#autoValidation" role="tab" aria-controls="participants" aria-selected="false">Auto Validation</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="viewReview-tab" data-toggle="tab"
-                           href="#viewReview" role="tab"
-                           aria-controls="viewReview" aria-selected="false">
-                            View Reviews
-                        </a>
+                        <a class="nav-link{{if or (not .HasReview) (.IsTeacher)}} disabled{{end}}" id="viewReview-tab" data-toggle="tab" href="#viewReview" role="tab" aria-controls="viewReview" aria-selected="false">View Reviews</a>
                     </li>
+                    {{if .IsTeacher}}
+                        <li class="nav-item">
+                            <a href="/admin/assignment/{{.Assignment.ID}}/submissions" class="nav-link">See submissions</a>
+                        </li>
+                    {{end}}
                 </ul>
 
                 <ul class="nav nav-pills" style="float:right;">
                     <li>
-                        {{if not .IsTeacher}}
-                            {{if not .Delivered}}
-                                <a style="float:right;" href="/assignment/submission?id={{ .Assignment.ID }}"
-                                   class="btn btn-outline-light btn-success {{if .IsDeadlineOver}}disabled{{end}}">Deliver
-                                    assignment</a>
-                            {{else}}
-                                <a href="/assignment/submission?id={{ .Assignment.ID }}"
-                                   class="btn btn-outline-light btn-warning {{if .IsDeadlineOver}}disabled{{end}}">Change
-                                    your
-                                    submission</a>
+                        {{if .Assignment.SubmissionID.Valid}}
+                            {{if not .IsTeacher}}
+                                {{if not .Delivered}}
+                                    <a style="float:right;" href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-success {{if .IsDeadlineOver}}disabled{{end}}">Deliver assignment</a>
+                                {{else}}
+                                    <a href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-warning {{if .IsDeadlineOver}}disabled{{end}}">Change your submission</a>
+                                {{end}}
                             {{end}}
                         {{end}}
                     </li>
@@ -128,72 +112,121 @@
 
                     <div class="tab-pane fade" id="peerReview" role="tabpanel" aria-labelledby="home-tab">
                         <div class="row">
-                            {{ if gt $length 0 }}
-                                {{ range .Reviews }}
+                            {{if gt $length 0}}
+                                {{range .Reviews}}
                                     <div class="col-md-6 col-sm-12 mb-3">
                                         <div class="card shadow-sm">
                                             <div class="card-body">
-                                                <h2 class="display-5">User {{ .ID }}</h2>
+                                                <h2 class="display-5">User {{.ID}}</h2>
                                                 <h5>
                                                     <span class="badge badge-info">Peer-Review</span>
                                                 </h5>
                                                 <hr class="bg-light">
-                                                <a href="/assignment/{{$id}}/submission/{{.ID}}"
-                                                   class="btn btn-outline-dark btn-lg">Review</a>
+                                                <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-dark btn-lg">Review</a>
                                             </div>
                                         </div>
                                     </div>
-                                {{ end }}
-                            {{end }}
+                                {{end}}
+                            {{end}}
                         </div>
                     </div>
 
-                    <div class="tab-pane fade" id="autoValidation" role="tabpanel"
-                         aria-labelledby="home-tab">
+                    <div class="tab-pane fade" id="autoValidation" role="tabpanel" aria-labelledby="home-tab">
                         <div>:(</div>
                     </div>
 
                     <div class="tab-pane fade" id="viewReview" role="tabpanel">
-                        {{$i := 1}}
-                        {{range .MyReviews}}
-                            <div class="card mb-3">
-                                <div class="card-header bg-secondary">
-                                    <h5 class="card-title mb-0">Review {{$i}}</h5>{{$i = INCREMENT $i}}
-                                </div>
-                                <div class="card-body">
-                                    <!-- TODO (Svein): Get the other field types -->
-                                    {{range .Answers}}
-                                        {{if eq .Type "radio"}}
-                                            <label for="">{{.Label}}</label>
-                                            <input type="text" class="form-control" value="{{.Answer}}" disabled>
-                                        {{else}}
-                                            <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}}">
-                                                {{if ne .Type "checkbox"}}<label for="">{{.Label}}</label>{{end}}
-                                                {{if eq .Type "text"}}
-                                                    <input type="text" class="form-control" value="{{.Answer}}"
-                                                           disabled>
-                                                {{ else if eq .Type "url" }}
-                                                    <input type="url" class="form-control" value="{{.Answer}}" disabled>
-                                                {{ else if eq .Type "textarea" }}
-                                                    <textarea class="form-control" disabled>{{.Answer}}</textarea>
-                                                {{ else if eq .Type "number" }}
-                                                    <input type="number" class="form-control" value="{{.Answer}}"
-                                                           disabled>
-                                                {{ else if eq .Type "checkbox" }}
-                                                    <input type="checkbox"
-                                                           class="form-check-input"{{if eq .Answer "on"}} checked{{end}}
-                                                           disabled>
-                                                    <label class="form-check-inline">{{ .Label }}</label>
-                                                {{ end }}
-                                            </div>
-                                        {{end}}
-                                    {{end}}
-                                </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <h3>Reviews ({{len .MyReviews}})</h3>
                             </div>
-                        {{end}}
-                        {{if eq $i 1}}
-                            <h3>Your assignment has not been reviewed yet.</h3>
-                        {{end}}
+                            {{$i := 1}}
+                            {{range $index, $R := .MyReviews}}
+                                <div class="col-12">
+                                    <div class="card mb-3">
+                                        {{$temp := index . 0}}
+                                        <div class="card-header bg-secondary">
+                                            <h5 class="card-title text-light mb-0">Review no. {{$i}}</h5>{{$i = INCREMENT $i}}
+                                        </div>
+                                        <div class="card-body">
+                                            <!-- TODO (Svein): Get the other field types -->
+                                            {{range $R}}
+                                                {{if eq .Type "radio"}}
+                                                    {{$A := .}}
+                                                    {{$Answer := ATOI .Answer}}
+                                                    {{$V := 1}}
+                                                    <fieldset class="mb-3">
+                                                        <legend>{{.Label}}</legend>
+                                                        {{range .Choices}}
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio" name="{{$A.Name}}" id="{{$A.Name}}_{{$V}}" value="{{$V}}"{{if eq $V $Answer}} checked{{end}} disabled>
+                                                                <label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
+                                                            </div>
+                                                            {{$V = INCREMENT $V}}
+                                                        {{end}}
+                                                        <small class="form-text text-muted">{{.Description}}</small>
+                                                    </fieldset>
+                                                {{else if eq .Type "multi-checkbox"}}
+                                                    {{$A := .Answer}}
+                                                    {{$Value := SPLIT_STRING $A.Value ","}}
+                                                    {{$V := 1}}
+                                                    <fieldset class="mb-3">
+                                                        <legend>{{.Label}}</legend>
+                                                        {{range SPLIT_CHOICES .Choices}}
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" name="{{.Name}}" id="{{.Name}}_{{$V}}" value="{{$V}}"{{if CONTAINS (ITOA $V) $Value}} checked{{end}} disabled>
+                                                                <label class="form-check-label" for="{{.Name}}_{{$V}}">{{.}}</label>
+                                                            </div>
+                                                            {{$V = INCREMENT $V}}
+                                                        {{end}}
+                                                        <small class="form-text text-muted">{{.Description}}</small>
+                                                    </fieldset>
+                                                {{else}}
+                                                    <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
+                                                        {{if eq .Type "text"}}
+                                                            <label for="{{.Name}}">{{.Label}}</label>
+                                                            <input type="text" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
+                                                        {{else if eq .Type "url"}}
+                                                            <label for="{{.Name}}">{{.Label}}</label>
+                                                            <input type="url" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
+                                                            <a href="{{.Answer}}" target="_blank">Open in new tab</a>
+                                                        {{else if eq .Type "textarea"}}
+                                                            <label for="{{.Name}}">{{.Label}}</label>
+                                                            <textarea name="{{.Name}}" id="{{.Name}}" class="form-control" rows="5" disabled>{{.Answer}}</textarea>
+                                                        {{else if eq .Type "number"}}
+                                                            <label for="{{.Name}}">{{.Label}}</label>
+                                                            <input type="number" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
+                                                        {{else if eq .Type "checkbox"}}
+                                                            <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input"{{if eq .Answer "on"}} checked{{end}} disabled>
+                                                            <label class="form-check-inline" for="{{.Name}}">{{.Label}}</label>
+                                                        {{else if eq .Type "paragraph"}}
+                                                            <legend>{{.Label}}</legend>
+                                                            <p class="lead">{{.Description}}</p>
+                                                        {{end}}
+
+                                                        {{if ne .Type "paragraph"}}
+                                                            <small class="form-text text-muted">{{.Description}}</small>
+                                                        {{end}}
+                                                    </div>
+                                                {{end}}
+                                                {{if .HasComment}}
+                                                    <div class="form-group form-check">
+                                                        <label for="{{.Name}}_comment">Comment <em>({{.Label}})</em></label>
+                                                        <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3" class="form-control" disabled>{{.Comment.String}}</textarea>
+                                                    </div>
+                                                {{end}}
+                                            {{end}}
+                                        </div>
+                                    </div>
+                                </div>
+                            {{end}}
+
+                            {{if eq $i 1}}
+                                <div class="col">
+                                    <h3>This assignment has not been reviewed yet.</h3>
+                                </div>
+                            {{end}}
+                        </div>
                     </div>
 
                 </div>

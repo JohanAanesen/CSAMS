@@ -10,6 +10,7 @@ import (
 //LogoutGET logs out logged in users
 func LogoutGET(w http.ResponseWriter, r *http.Request) {
 	sess, err := session.Instance(r) //get session
+
 	if err != nil {
 		log.Println("get session error: ", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -21,14 +22,16 @@ func LogoutGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//session.Empty(sess) // Empty all values in the cookie
 	sess.Values["user"] = model.User{} //replace user object with an empty one
 	sess.Options.MaxAge = -1           //expire cookie
 
-	err = sess.Save(r, w) //save 'empty' session
+	err = sess.Save(r, w)
 	if err != nil {
 		log.Println("save session error: ", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
+
 	http.Redirect(w, r, "/login", http.StatusFound)
 }

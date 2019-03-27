@@ -40,9 +40,11 @@
                     <div class="input-group">
                         <input type="datetime-local" name="publish" id="publish" class="form-control"
                                value="{{.Publish}}" required>
+                        <!-- TODO uncomment after alpha
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary" type="button" id="publish_now">Now</button>
                         </div>
+                        -->
                     </div>
                 </div>
 
@@ -114,6 +116,10 @@
                             {{end}}
                         </select>
                     </div>
+                    <div class="form-group sr-only" id="review_deadline_container">
+                        <label for="review_deadline">Review Deadline</label>
+                        <input type="datetime-local" name="review_deadline" id="review_deadline" class="form-control" value="{{.ReviewDeadline}}">
+                    </div>
 
                     <hr>
 
@@ -137,31 +143,6 @@
     </form>
 {{end}}
 {{define "foot"}}
-    <div class="modal fade" id="templatesModal" tabindex="-1" role="dialog" aria-labelledby="templatesModel"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-
-                <div class="modal-header bg-info text-light py-2">
-                    <h5 class="modal-title">Select template</h5>
-                    <button class="close text-light" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-
-                <div class="modal-body py-2">
-
-                </div>
-
-                <div class="modal-footer bg-light py-2">
-                    <button class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-                    <button class="btn btn-success btn-sm">Load template</button>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
     <script src="/static/js/time.js"></script>
     <script src="/static/js/simplemde.min.js"></script>
     <script>
@@ -177,9 +158,31 @@
             let deadline = document.getElementById('deadline');
 
             // TODO time-norwegian
+            /*
             publishNowButton.addEventListener('click', () => {
                 publish.value = getTimeInNorwegian().toNORString();
             });
+            */
+
+            let reviewDeadline = document.getElementById('review_deadline');
+            let reviewDeadlineContainer = document.getElementById('review_deadline_container');
+            let reviewSelect = document.getElementById('review_id');
+
+            checkReviewValue(reviewSelect.value);
+
+            reviewSelect.addEventListener('change', e => {
+                checkReviewValue(e.target.value);
+            });
+
+            function checkReviewValue(value) {
+                if (value !== "") {
+                    reviewDeadlineContainer.classList.remove('sr-only');
+                    reviewDeadline.setAttribute('required', '');
+                } else {
+                    reviewDeadlineContainer.classList.add('sr-only');
+                    reviewDeadline.removeAttribute('required');
+                }
+            }
         })();
 
         // On submit form, call this function

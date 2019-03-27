@@ -1,0 +1,88 @@
+{{define "title"}}Create submission for {{.User.Name}}{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+	{{$Assignment := .Assignment}}
+
+	<h1 class="display-4">{{.Course.Code}} {{.Course.Name}}</h1>
+	<h2 class="display-5">{{.Assignment.Name}}</h2>
+
+	<form method="post" action="/admin/assignment/{{.Assignment.ID}}/submission/{{.User.ID}}/create">
+
+	{{range .Answers}}
+		{{if eq .Type "radio"}}
+			{{$A := .}}
+			{{$Answer := ATOI .Answer}}
+			{{$V := 1}}
+			<fieldset>
+				<legend>{{.Label}}</legend>
+				{{range .Choices}}
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" name="{{$A.Name}}"
+						       id="{{$A.Name}}_{{$V}}"
+						       value="{{$V}}"{{if eq $V $Answer}} checked{{end}}>
+						<label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
+					</div>
+					{{$V = INCREMENT $V}}
+				{{end}}
+				<small class="form-text text-muted">{{.Description}}</small>
+			</fieldset>
+		{{else if eq .Type "multi-checkbox"}}
+			{{$A := .}}
+			{{$Answer := ATOI .Answer}}
+			{{$V := 1}}
+			<fieldset>
+				<legend>{{.Label}}</legend>
+				{{range .Choices}}
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" name="{{$A.Name}}"
+						       id="{{$A.Name}}_{{$V}}"
+						       value="{{$V}}"{{if eq $V $Answer}} checked{{end}}>
+						<label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
+					</div>
+					{{$V = INCREMENT $V}}
+				{{end}}
+				<small class="form-text text-muted">{{.Description}}</small>
+			</fieldset>
+		{{else}}
+			<div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
+				{{if eq .Type "text"}}
+					<label for="{{.Name}}">{{.Label}}</label>
+					<input type="text" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" required>
+				{{else if eq .Type "url"}}
+					<label for="{{.Name}}">{{.Label}}</label>
+					<input type="url" name="{{.Name}}" id="{{.Name}}" class="form-control disabled" value="{{.Answer}}" required>
+				{{else if eq .Type "textarea"}}
+					<label for="{{.Name}}">{{.Label}}</label>
+					<textarea name="{{.Name}}" id="{{.Name}}" class="form-control" required>{{.Answer}}</textarea>
+				{{else if eq .Type "number"}}
+					<label for="{{.Name}}">{{.Label}}</label>
+					<input type="number" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" required>
+				{{else if eq .Type "checkbox"}}
+					<input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input"{{if eq .Answer "on"}} checked{{end}}>
+					<label class="form-check-inline" for="{{.Name}}">{{.Label}}</label>
+				{{else if eq .Type "paragraph"}}
+					<legend>{{.Label}}</legend>
+					<p class="lead">{{.Description}}</p>
+				{{end}}
+
+				{{if ne .Type "paragraph"}}
+					<small class="form-text text-muted">{{.Description}}</small>
+				{{end}}
+			</div>
+		{{end}}
+		{{if .HasComment}}
+			<div class="form-group form-check">
+				<label for="{{.Name}}_comment">Comment <em>({{.Label}})</em></label>
+				<textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3" class="form-control">{{.Comment.String}}</textarea>
+			</div>
+		{{end}}
+	{{end}}
+
+
+	<button id="uploadBtn" type="submit" class="btn btn-primary mt-5">
+		Create submission
+	</button>
+	</form>
+
+{{end}}
+{{define "foot"}}{{end}}

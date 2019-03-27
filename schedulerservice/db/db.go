@@ -44,7 +44,7 @@ func OpenDB() {
 	var err error
 	db, err = sql.Open(driverName, dataSourceName)
 	if err != nil {
-		fmt.Println("shet")
+		fmt.Println("OpenDB() issue opening sql")
 		panic(err.Error())
 	}
 
