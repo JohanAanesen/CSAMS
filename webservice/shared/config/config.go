@@ -85,6 +85,7 @@ func Initialize(configFile string) *Configuration {
 		plugin.SplitString(),
 		plugin.Itoa(),
 		plugin.Contains(),
+		plugin.HasPrefix(),
 	)
 
 	return cfg

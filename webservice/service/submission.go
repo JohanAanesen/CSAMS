@@ -137,3 +137,8 @@ func (s *SubmissionService) Delete(id int) error {
 
 	return err
 }
+
+// IsUsed func
+func (s *SubmissionService) IsUsed(formID int) (bool, error) {
+	return s.submissionRepo.IsUsed(formID)
+}
