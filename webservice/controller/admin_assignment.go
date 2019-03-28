@@ -731,7 +731,7 @@ func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
 */
 
 // AdminAssignmentReviewGET handles request to /admin/assignment/{id}/review
-func AdminAssignmentReviewGET(w http.ResponseWriter, r *http.Request){
+func AdminAssignmentReviewGET(w http.ResponseWriter, r *http.Request) {
 	// Services
 	peerReviewService := service.NewPeerReviewService(db.GetDB())
 

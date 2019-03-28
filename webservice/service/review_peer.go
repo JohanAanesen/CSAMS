@@ -8,13 +8,13 @@ import (
 
 // ReviewService struct
 type PeerReviewService struct {
-	reviewRepo     *repositroy.ReviewRepository
+	reviewRepo *repositroy.ReviewRepository
 }
 
 // NewReviewService func
 func NewPeerReviewService(db *sql.DB) *PeerReviewService {
 	return &PeerReviewService{
-		reviewRepo:     repositroy.NewReviewRepository(db),
+		reviewRepo: repositroy.NewReviewRepository(db),
 	}
 }
 
