@@ -23,7 +23,7 @@ func NewFieldRepository(db *sql.DB) *FieldRepository {
 // Fetch func
 func (repo *FieldRepository) Fetch(id int) (*model.Field, error) {
 	result := model.Field{}
-	query := "SELECT id, form_id, type, name, label, description, hasComment, priority, weight, choices FROM fields WHERE id = ?"
+	query := "SELECT id, form_id, type, name, label, description, hasComment, priority, weight, choices, required FROM fields WHERE id = ?"
 
 	rows, err := repo.db.Query(query, id)
 	if err != nil {
@@ -35,15 +35,17 @@ func (repo *FieldRepository) Fetch(id int) (*model.Field, error) {
 	for rows.Next() {
 		var hasComment int
 		var choices string
+		var isRequired int
 
 		err = rows.Scan(&result.ID, &result.FormID, &result.Type, &result.Name,
 			&result.Label, &result.Description, &hasComment,
-			&result.Order, &result.Weight, &choices)
+			&result.Order, &result.Weight, &choices, &isRequired)
 		if err != nil {
 			return &result, err
 		}
 
 		result.HasComment = hasComment == 1
+		result.Required = isRequired == 1
 		result.Choices = strings.Split(choices, "|")
 	}
 
@@ -53,7 +55,7 @@ func (repo *FieldRepository) Fetch(id int) (*model.Field, error) {
 // FetchAll func
 func (repo *FieldRepository) FetchAll() ([]*model.Field, error) {
 	result := make([]*model.Field, 0)
-	query := "SELECT id, form_id, type, name, label, description, hasComment, priority, weight, choices FROM fields ORDER BY priority"
+	query := "SELECT id, form_id, type, name, label, description, hasComment, priority, weight, choices, required FROM fields ORDER BY priority"
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -65,16 +67,18 @@ func (repo *FieldRepository) FetchAll() ([]*model.Field, error) {
 	for rows.Next() {
 		var temp = model.Field{}
 		var hasComment int
+		var isRequired int
 		var choices string
 
 		err = rows.Scan(&temp.ID, &temp.FormID, &temp.Type, &temp.Name,
 			&temp.Label, &temp.Description, &hasComment,
-			&temp.Order, &temp.Weight, &choices)
+			&temp.Order, &temp.Weight, &choices, &isRequired)
 		if err != nil {
 			return result, err
 		}
 
 		temp.HasComment = hasComment == 1
+		temp.Required = isRequired == 1
 		temp.Choices = strings.Split(choices, "|")
 
 		result = append(result, &temp)
@@ -86,7 +90,7 @@ func (repo *FieldRepository) FetchAll() ([]*model.Field, error) {
 // FetchAllFromForm func
 func (repo *FieldRepository) FetchAllFromForm(formID int) ([]*model.Field, error) {
 	result := make([]*model.Field, 0)
-	query := "SELECT id, form_id, type, name, label, description, hasComment, priority, weight, choices FROM fields WHERE form_id = ? ORDER BY priority"
+	query := "SELECT id, form_id, type, name, label, description, hasComment, priority, weight, choices, required FROM fields WHERE form_id = ? ORDER BY priority"
 
 	rows, err := repo.db.Query(query, formID)
 	if err != nil {
@@ -99,15 +103,17 @@ func (repo *FieldRepository) FetchAllFromForm(formID int) ([]*model.Field, error
 		var temp = model.Field{}
 		var hasComment int
 		var choices string
+		var isRequired int
 
 		err = rows.Scan(&temp.ID, &temp.FormID, &temp.Type, &temp.Name,
 			&temp.Label, &temp.Description, &hasComment,
-			&temp.Order, &temp.Weight, &choices)
+			&temp.Order, &temp.Weight, &choices, &isRequired)
 		if err != nil {
 			return result, err
 		}
 
 		temp.HasComment = hasComment == 1
+		temp.Required = isRequired == 1
 		temp.Choices = strings.Split(choices, "|")
 
 		result = append(result, &temp)
@@ -120,7 +126,7 @@ func (repo *FieldRepository) FetchAllFromForm(formID int) ([]*model.Field, error
 func (repo *FieldRepository) Insert(field *model.Field) (int, error) {
 	var id int64
 
-	query := "INSERT INTO fields (form_id, type, name, label, description, hasComment, priority, weight, choices) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+	query := "INSERT INTO fields (form_id, type, name, label, description, hasComment, priority, weight, choices, required) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
@@ -132,12 +138,17 @@ func (repo *FieldRepository) Insert(field *model.Field) (int, error) {
 		hasComment = 1
 	}
 
+	var isRequired = 0
+	if field.Required {
+		isRequired = 1
+	}
+
 	var choices = strings.Join(field.Choices, "|")
 
 	rows, err := tx.Exec(query,
 		field.FormID, field.Type, field.Name,
 		field.Label, field.Description, hasComment,
-		field.Order, field.Weight, choices)
+		field.Order, field.Weight, choices, isRequired)
 	if err != nil {
 		tx.Rollback()
 		return int(id), err
@@ -164,7 +175,7 @@ func (repo *FieldRepository) Update(id int, field *model.Field) error {
 		return errors.New("field repository update: id does not match")
 	}
 
-	query := "UPDATE fields SET type = ?, name = ?, label = ?, description = ?, hasComment = ?, priority = ?, weight = ?, choices = ? WHERE id =?"
+	query := "UPDATE fields SET type = ?, name = ?, label = ?, description = ?, hasComment = ?, priority = ?, weight = ?, choices = ?, required = ? WHERE id =?"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
@@ -176,9 +187,15 @@ func (repo *FieldRepository) Update(id int, field *model.Field) error {
 		hasComment = 1
 	}
 
+	var isRequired = 0
+	if field.Required {
+		isRequired = 1
+	}
+
 	var choices = strings.Join(field.Choices, "|")
 
-	_, err = tx.Exec(query, field.Type, field.Name, field.Label, field.Description, hasComment, field.Order, field.Weight, choices, id)
+	_, err = tx.Exec(query, field.Type, field.Name, field.Label, field.Description,
+		hasComment, field.Order, field.Weight, choices, isRequired, id)
 	if err != nil {
 		tx.Rollback()
 		return err
