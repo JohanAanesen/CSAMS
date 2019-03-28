@@ -76,6 +76,7 @@ func New(r *http.Request) *View {
 
 	v.Vars["Auth"] = session.IsLoggedIn(r)
 	v.Vars["IsTeacher"] = session.IsTeacher(r)
+	v.Vars["RequestURI"] = r.RequestURI
 
 	return v
 }

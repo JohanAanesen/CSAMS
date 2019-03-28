@@ -8,6 +8,7 @@
  *      - url
  *      - checkbox
  *      - radio
+ *      - paragraph
  *
  * How to use:
  *
@@ -22,7 +23,7 @@
  let formBuilder = new FormBuilder({
     title: 'Form Builder', // Title of the form
     description: 'This is some description', // Description of the form
-    request: '/form-builder', // Action on the form
+    request: '/form-builder.php', // Action on the form
     method: 'POST', // Method of the form
     output: document.getElementById('output'), // The output element of the application
     weighted: true, // Boolean: is the form weighted
@@ -66,7 +67,6 @@ const TYPES = {
     NUMBER: 'number',
     CHECKBOX: 'checkbox',
     RADIO: 'radio',
-    MULTI_CHECKBOX: 'multi-checkbox',
     PARAGRAPH: 'paragraph',
 };
 
@@ -90,11 +90,8 @@ function Form(args) {
     this.deleteRequest = (args.deleteRequest !== undefined) ? args.deleteRequest : '';
     this.deleteMethod = (args.deleteMethod !== undefined) ? args.deleteMethod : 'DELETE';
 
-    this.totalWeight = 0;
     this.defaultWeight = 0;
     this.defaultType = TYPES.TEXT;
-
-    this.sortable = null;
 
     this.lastId = 0;
 
@@ -422,20 +419,6 @@ function Form(args) {
 
         defaultType.addEventListener('change', () => {
             this.defaultType = defaultType.value;
-            /*
-            this.type = e.target.value;
-            this.displayChoices = this.type === TYPES.RADIO
-                || this.type === TYPES.MULTI_CHECKBOX;
-
-            let choicesDisplay = document.getElementById(`choices_display_${this.id}`);
-            let choices = document.getElementById(`choices_${this.id}`);
-
-            if (this.displayChoices) {
-                choicesDisplay.classList.remove('sr-only');
-            } else {
-                choices.value = '';
-                choicesDisplay.classList.add('sr-only');
-            }*/
         });
 
         formGroup.appendChild(label);
@@ -645,17 +628,6 @@ function Form(args) {
     };
 
     /**
-     * Adds up all weight to a total weight, and stores it in the localStorage.
-     */
-    this.fixTotalWeight = function() {
-        this.totalWeight = 0;
-        this.fields.forEach(e => {
-            this.totalWeight += parseInt(e.weight);
-        });
-        localStorage.setItem('totalWeight', this.totalWeight);
-    };
-
-    /**
      * Clears the output
      */
     this.clearOutput = function() {
@@ -761,6 +733,7 @@ function Form(args) {
                 weight: field.weight,
                 order: field.order,
                 choices: field.choices,
+                isRequired: field.isRequired,
             });
 
             if (json.weighted) {
@@ -821,6 +794,7 @@ function Field(args) {
     this.weighted = (args.weighted !== undefined) ? args.weighted : false;
     this.weight = (args.weight !== undefined) ? args.weight : 0;
     this.choicesArray = (args.choices !== undefined) ? args.choices : [];
+    this.isRequired = (args.isRequired !== undefined) ? args.isRequired : true;
     this.choices = '';
     this.expanded = false;
     this.displayChoices = false;
@@ -943,6 +917,7 @@ function Field(args) {
         cardBody.appendChild(this.renderLabelInput());
         cardBody.appendChild(this.renderDescriptionInput());
         cardBody.appendChild(this.renderCommentCheckbox());
+        cardBody.appendChild(this.renderRequiredCheckbox());
         cardBody.appendChild(this.renderChoicesTextarea());
 
         if (this.weighted) {
@@ -1028,8 +1003,7 @@ function Field(args) {
 
         select.addEventListener('change', e => {
             this.type = e.target.value;
-            this.displayChoices = this.type === TYPES.RADIO
-                || this.type === TYPES.MULTI_CHECKBOX;
+            this.displayChoices = this.type === TYPES.RADIO;
 
             let choicesDisplay = document.getElementById(`choices_display_${this.id}`);
             let choices = document.getElementById(`choices_${this.id}`);
@@ -1190,8 +1164,15 @@ function Field(args) {
         });
 
         let fakeLabel = createElement({
+            type: 'label',
             classList: ['col-md-3', 'col-form-label'],
             innerText: 'Comment',
+            attributes: [
+                {
+                    name: 'for',
+                    value: `comment_${this.id}`,
+                }
+            ],
         });
 
         formGroup.appendChild(fakeLabel);
@@ -1250,6 +1231,95 @@ function Field(args) {
                 },
             ],
             innerHTML: 'Enable this will append a textarea after the field with the option to enter an comment to their answer.',
+        });
+
+        formCheck.appendChild(input);
+        formCheck.appendChild(label);
+        formCheck.appendChild(helperText);
+        rightSide.appendChild(formCheck);
+
+        formGroup.appendChild(rightSide);
+
+        return formGroup;
+    };
+
+    /**
+     * Render the required checkbox input
+     * @return {Element}
+     */
+    this.renderRequiredCheckbox = function() {
+        let formGroup = createElement({
+            classList: ['form-group', 'row'],
+        });
+
+        let fakeLabel = createElement({
+            type: 'label',
+            classList: ['col-md-3', 'col-form-label'],
+            innerText: 'Required',
+            attributes: [
+                {
+                    name: 'for',
+                    value: `required_${this.id}`,
+                }
+            ],
+        });
+
+        formGroup.appendChild(fakeLabel);
+
+        let rightSide = createElement({
+            classList: ['col-md-9'],
+        });
+
+        let formCheck = createElement({
+            classList: ['custom-control', 'custom-checkbox'],
+        });
+
+        let input = createElement({
+            type: 'input',
+            classList: ['custom-control-input'],
+            attributes: [
+                {
+                    name: 'type',
+                    value: TYPES.CHECKBOX,
+                },
+                {
+                    name: 'checked',
+                    value: '',
+                }
+            ],
+            id: `required_${this.id}`,
+        });
+
+        if (!this.isRequired) {
+            input.removeAttribute('checked');
+        }
+
+        input.addEventListener('change', () => {
+            this.isRequired = input.checked;
+        });
+
+        let label = createElement({
+            type: 'label',
+            classList: ['custom-control-label'],
+            attributes: [
+                {
+                    name: 'for',
+                    value: `required_${this.id}`,
+                },
+            ],
+            innerText: 'Make field mandatory',
+        });
+
+        let helperText = createElement({
+            type: 'small',
+            classList: ['form-text', 'text-muted'],
+            attributes: [
+                {
+                    name: 'for',
+                    value: `required_${this.id}`,
+                },
+            ],
+            innerHTML: '',
         });
 
         formCheck.appendChild(input);
@@ -1412,10 +1482,7 @@ function Field(args) {
      * Handles all rendering that needs to happen at the end of rendering
      */
     this.postRender = function() {
-        // TODO (Svein): Fix this later, storing the total weight,
-        //  for using as calculation for showing percentage for each field with weights
-        // let totalWeight = localStorage.getItem('totalWeight');
-        if (this.type === TYPES.RADIO || this.type === TYPES.MULTI_CHECKBOX) {
+        if (this.type === TYPES.RADIO) {
             document.getElementById(`choices_display_${this.id}`).classList.remove('sr-only');
             document.getElementById(`choices_${this.id}`).value = this.choices;
         }
@@ -1439,6 +1506,7 @@ function Field(args) {
             order:          this.order,
             weight:         (this.weighted) ? parseInt(this.weight) : 0,
             choices:        this.choicesArray,
+            required:       this.isRequired,
         }
     };
 }

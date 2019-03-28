@@ -19,7 +19,7 @@
 						<div class="form-check form-check-inline">
 							<input class="form-check-input" type="radio" name="{{$A.Name}}"
 							       id="{{$A.Name}}_{{$V}}"
-							       value="{{$V}}"{{if eq $V $Answer}} checked{{end}}>
+							       value="{{$V}}"{{if eq $V $Answer}} checked{{end}}{{if .Required}} required{{end}}>
 							<label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
 						</div>
 						{{$V = INCREMENT $V}}
@@ -36,7 +36,7 @@
 						<div class="form-check">
 							<input class="form-check-input" type="checkbox" name="{{$A.Name}}"
 							       id="{{$A.Name}}_{{$V}}"
-							       value="{{$V}}"{{if eq $V $Answer}} checked{{end}}>
+							       value="{{$V}}"{{if eq $V $Answer}} checked{{end}}{{if .Required}} required{{end}}>
 							<label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
 						</div>
 						{{$V = INCREMENT $V}}
@@ -47,18 +47,18 @@
 				<div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
 					{{if eq .Type "text"}}
 						<label for="{{.Name}}">{{.Label}}</label>
-						<input type="text" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" required>
+						<input type="text" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}"{{if .Required}} required{{end}}>
 					{{else if eq .Type "url"}}
 						<label for="{{.Name}}">{{.Label}}</label>
-						<input type="url" name="{{.Name}}" id="{{.Name}}" class="form-control disabled" value="{{.Answer}}" required>
+						<input type="url" name="{{.Name}}" id="{{.Name}}" class="form-control disabled" value="{{.Answer}}"{{if .Required}} required{{end}}>
 					{{else if eq .Type "textarea"}}
 						<label for="{{.Name}}">{{.Label}}</label>
-						<textarea name="{{.Name}}" id="{{.Name}}" class="form-control" required>{{.Answer}}</textarea>
+						<textarea name="{{.Name}}" id="{{.Name}}" class="form-control"{{if .Required}} required{{end}}>{{.Answer}}</textarea>
 					{{else if eq .Type "number"}}
 						<label for="{{.Name}}">{{.Label}}</label>
-						<input type="number" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" required>
+						<input type="number" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}"{{if .Required}} required{{end}}>
 					{{else if eq .Type "checkbox"}}
-						<input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input"{{if eq .Answer "on"}} checked{{end}}>
+						<input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input"{{if eq .Answer "on"}} checked{{end}}{{if .Required}} required{{end}}>
 						<label class="form-check-inline" for="{{.Name}}">{{.Label}}</label>
 					{{else if eq .Type "paragraph"}}
 						<legend>{{.Label}}</legend>

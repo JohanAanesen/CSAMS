@@ -22,4 +22,5 @@ type ReviewAnswer struct {
 	Choices      []string       `json:"choices"`
 	Submitted    time.Time      `json:"submitted"`
 	Weight       int            `json:"weight"`
+	Required     bool           `json:"required"`
 }

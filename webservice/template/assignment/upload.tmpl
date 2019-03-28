@@ -34,7 +34,7 @@
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="{{$A.Name}}"
                                                id="{{$A.Name}}_{{$V}}"
-                                               value="{{$V}}"{{if eq $V $Answer}} checked{{end}}{{if DEADLINEDUE $Assignment.Deadline}} disabled{{end}}>
+                                               value="{{$V}}"{{if eq $V $Answer}} checked{{end}}{{if DEADLINEDUE $Assignment.Deadline}} disabled{{else}}{{if .Required}} required{{end}}{{end}}>
                                         <label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
                                     </div>
                                     {{$V = INCREMENT $V}}
@@ -51,7 +51,7 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="{{$A.Name}}"
                                                id="{{$A.Name}}_{{$V}}"
-                                               value="{{$V}}"{{if eq $V $Answer}} checked{{end}}{{if DEADLINEDUE $Assignment.Deadline}} disabled{{end}}>
+                                               value="{{$V}}"{{if eq $V $Answer}} checked{{end}}{{if DEADLINEDUE $Assignment.Deadline}} disabled{{else}}{{if .Required}} required{{end}}{{end}}>
                                         <label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
                                     </div>
                                     {{$V = INCREMENT $V}}
@@ -63,19 +63,19 @@
                                 {{if eq .Type "text"}}
                                     <label for="{{.Name}}">{{.Label}}</label>
                                     <input type="text" name="{{.Name}}" id="{{.Name}}" class="form-control"
-                                           value="{{.Answer}}" {{if DEADLINEDUE $Assignment.Deadline}}disabled{{else}}required{{end}}>
+                                           value="{{.Answer}}" {{if DEADLINEDUE $Assignment.Deadline}}disabled{{else}}{{if .Required}}required{{end}}{{end}}>
                                 {{else if eq .Type "url"}}
                                     <label for="{{.Name}}">{{.Label}}</label>
                                     <input type="url" name="{{.Name}}" id="{{.Name}}" class="form-control disabled"
-                                           value="{{.Answer}}" {{if DEADLINEDUE $Assignment.Deadline}}disabled{{else}}required{{end}}>
+                                           value="{{.Answer}}" {{if DEADLINEDUE $Assignment.Deadline}}disabled{{else}}{{if .Required}}required{{end}}{{end}}>
                                 {{else if eq .Type "textarea"}}
                                     <label for="{{.Name}}">{{.Label}}</label>
                                     <textarea name="{{.Name}}" id="{{.Name}}" class="form-control"
-                                              {{if DEADLINEDUE $Assignment.Deadline}}disabled{{else}}required{{end}}>{{.Answer}}</textarea>
+                                              {{if DEADLINEDUE $Assignment.Deadline}}disabled{{else}}{{if .Required}}required{{end}}{{end}}>{{.Answer}}</textarea>
                                 {{else if eq .Type "number"}}
                                     <label for="{{.Name}}">{{.Label}}</label>
                                     <input type="number" name="{{.Name}}" id="{{.Name}}" class="form-control"
-                                           value="{{.Answer}}" {{if DEADLINEDUE $Assignment.Deadline}}disabled{{else}}required{{end}}>
+                                           value="{{.Answer}}"{{if DEADLINEDUE $Assignment.Deadline}} disabled{{else}}{{if .Required}} required{{end}}{{end}}>
                                 {{else if eq .Type "checkbox"}}
                                     <input type="checkbox" name="{{.Name}}" id="{{.Name}}"
                                            class="form-check-input"{{if eq .Answer "on"}} checked{{end}}{{if DEADLINEDUE $Assignment.Deadline}} disabled{{end}}>
