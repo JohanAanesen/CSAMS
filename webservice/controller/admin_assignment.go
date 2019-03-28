@@ -163,31 +163,6 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		errorMessages = append(errorMessages, "Error: Deadline cannot be before Publish.")
 	}
 
-	// Check if there are any error messages
-	if len(errorMessages) != 0 {
-		// TODO (Svein): Keep data from the previous submit
-		courses, err := courseService.FetchAllForUserOrdered(currentUser.ID)
-		if err != nil {
-			log.Println("course service, fetch all for user ordered", err)
-			ErrorHandler(w, r, http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
-
-		v := view.New(r)
-		v.Name = "admin/assignment/create"
-
-		v.Vars["Errors"] = errorMessages
-		v.Vars["AssignmentName"] = assignmentName
-		v.Vars["AssignmentDescription"] = assignmentDescription
-		v.Vars["Courses"] = courses
-
-		v.Render(w)
-		return
-	}
-
 	// Get form values
 	var val int
 
@@ -227,9 +202,61 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			errorMessages = append(errorMessages, "Error: Something wrong with the review deadline datetime.")
 		}
-		// Put review deadline into assignment
-		assignment.ReviewDeadline = reviewDeadline
+
+		if deadline.After(reviewDeadline) {
+			errorMessages = append(errorMessages, "Error: Review deadline cannot be before Assignment Deadline.")
+		} else {
+			assignment.ReviewDeadline = reviewDeadline
+		}
+
+
 	}
+
+	// Check if there are any error messages
+	if len(errorMessages) != 0 {
+		// TODO (Svein): Keep data from the previous submit
+		submissionService := service.NewSubmissionService(db.GetDB())
+		reviewService := service.NewReviewService(db.GetDB())
+		courses, err := courseService.FetchAllForUserOrdered(currentUser.ID)
+		if err != nil {
+			log.Println("course service, fetch all for user ordered", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		// Fetch all submission
+		submissions, err := submissionService.FetchAll()
+		if err != nil {
+			log.Println(err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		// Fetch all reviews
+		reviews, err := reviewService.FetchAll()
+		if err != nil {
+			log.Println(err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+
+		v := view.New(r)
+		v.Name = "admin/assignment/create"
+
+		v.Vars["Errors"] = errorMessages
+		v.Vars["AssignmentName"] = assignmentName
+		v.Vars["AssignmentDescription"] = assignmentDescription
+		v.Vars["Courses"] = courses
+		v.Vars["Submissions"] = submissions
+		v.Vars["Reviews"] = reviews
+
+		v.Render(w)
+		return
+	}
+
 	reviewID := sql.NullInt64{
 		Int64: int64(val),
 		Valid: val != 0,
