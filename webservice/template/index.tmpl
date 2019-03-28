@@ -56,6 +56,8 @@
                         <div class="card shadow-sm{{if DEADLINEDUE .Assignment.Deadline}} bg-secondary text-light{{ else }} text-dark {{end}}">
                             <div class="card-body">
                                 <h2 class="display-5">{{.Assignment.Name}}</h2>
+                                <hr class="bg-light">
+                                <h3 class="display-5">Submission</h3>
                                 <h5>
                                     <span class="badge {{if DEADLINEDUE .Assignment.Deadline}}badge-dark{{ else}} badge-secondary{{end}}">{{.CourseCode}}</span>
                                     <!-- Only display submission status if it's a student -->
@@ -75,6 +77,32 @@
                                     <p><strong>Deadline: </strong> {{PRETTYTIME .Assignment.Deadline}}</p>
                                 {{end}}
                                 <hr class="bg-light">
+
+                                <!-- Peer Review if student has delivered and deadline to assignment is due-->
+                                {{if .Delivered}}
+                                    {{ if DEADLINEDUE .Assignment.Deadline}}
+                                        <h3 class="display-5">Peer Review</h3>
+
+                                        <h5>
+                                            {{if gt .Reviews 0}}
+                                                <span class="badge badge-warning">Review{{ if ne .Reviews 1}}s{{end}} pending: {{.Reviews}}</span>
+                                            {{ else}}
+                                                <span class="badge badge-success">Review done</span>
+                                            {{end}}
+                                        </h5>
+
+                                        {{if DEADLINEDUE .Assignment.ReviewDeadline}}
+                                            <h5>
+                                                <span class="badge badge-danger">Deadline passed</span>
+                                            </h5>
+                                        {{else}}
+                                            <p><strong>Deadline: </strong> {{PRETTYTIME .Assignment.ReviewDeadline}}</p>
+                                        {{end}}
+
+                                        <hr class="bg-light">
+                                    {{ end }}
+                                {{ end }}
+
                                 <a href="/assignment/{{.Assignment.ID}}"
                                    class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
                                     details</a>

@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"time"
 )
 
 // IndexGET serves homepage to authenticated users, send anonymous to login
@@ -38,9 +39,11 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 		Assignment model.Assignment
 		CourseCode string
 		Delivered  bool
+		Reviews    int
 	}
 
 	var activeAssignments []ActiveAssignment
+	var noOfReviewsLeft int
 
 	for _, course := range courses { //iterate all courses
 		assignments, err := services.Assignment.FetchFromCourse(course.ID) //get assignments from course
@@ -53,7 +56,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 		// TODO time-norwegian
 		timeNow := util.GetTimeInCorrectTimeZone()
 		for _, assignment := range assignments { //go through all it's assignments again
-			if timeNow.After(assignment.Publish) && timeNow.Before(assignment.ReviewDeadline) { //save all 'active' assignments
+			if timeNow.After(assignment.Publish) && timeNow.Before(assignment.ReviewDeadline.Add(time.Hour*12)) { // Assignments stay on front page until an half day after review deadline is over
 
 				// Initiate variable
 				delivered := false
@@ -63,12 +66,34 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 					// Check if student has submitted assignment
 					delivered, err = services.SubmissionAnswer.HasUserSubmitted(assignment.ID, currentUser.ID)
 					if err != nil {
-						log.Println("services, submission answer, has user submitted", err)
+						log.Println("services, submission answer, has user submitted", err.Error())
 						ErrorHandler(w, r, http.StatusInternalServerError)
 						return
 					}
+
+					// Filter out the reviews that the current user already has done
+					reviewUsers, err := services.Review.FetchReviewUsers(currentUser.ID, assignment.ID)
+					if err != nil {
+						log.Println("services, review, fetch review users", err.Error())
+						ErrorHandler(w, r, http.StatusInternalServerError)
+						return
+					}
+
+					// Filter put submission reviews
+					for _, user := range reviewUsers {
+						check, err := services.ReviewAnswer.HasBeenReviewed(user.ID, currentUser.ID, assignment.ID)
+						if err != nil {
+							log.Println("services, review answer, has been reviewed", err.Error())
+							ErrorHandler(w, r, http.StatusInternalServerError)
+							return
+						}
+
+						if !check {
+							noOfReviewsLeft++
+						}
+					}
 				}
-				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: *assignment, CourseCode: course.Code, Delivered: delivered})
+				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: *assignment, CourseCode: course.Code, Delivered: delivered, Reviews: noOfReviewsLeft})
 			}
 		}
 
