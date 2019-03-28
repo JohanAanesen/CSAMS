@@ -209,7 +209,6 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 			assignment.ReviewDeadline = reviewDeadline
 		}
 
-
 	}
 
 	// Check if there are any error messages
@@ -545,6 +544,13 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		// Check that review deadline isn't before assignment deadline 8====D
+		if deadline.After(reviewDeadline) {
+			log.Println("error: review deadline cannot be before assignment deadline")
+			ErrorHandler(w, r, http.StatusBadRequest)
 			return
 		}
 
