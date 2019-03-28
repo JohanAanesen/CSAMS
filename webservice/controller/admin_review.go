@@ -417,6 +417,7 @@ func AdminReviewUpdateUsedPOST(w http.ResponseWriter, r *http.Request) {
 	for _, field := range form.Fields {
 		field.Label = r.FormValue(fmt.Sprintf("label_%s", field.Name))
 		field.Description = r.FormValue(fmt.Sprintf("description_%s", field.Name))
+		field.Required = r.FormValue(fmt.Sprintf("required_%s", field.Name)) == "on"
 
 		if field.Type == "radio" {
 			choices := r.FormValue(fmt.Sprintf("choices_%s", field.Name))
