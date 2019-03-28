@@ -733,6 +733,7 @@ function Form(args) {
                 weight: field.weight,
                 order: field.order,
                 choices: field.choices,
+                isRequired: field.isRequired,
             });
 
             if (json.weighted) {
@@ -793,6 +794,7 @@ function Field(args) {
     this.weighted = (args.weighted !== undefined) ? args.weighted : false;
     this.weight = (args.weight !== undefined) ? args.weight : 0;
     this.choicesArray = (args.choices !== undefined) ? args.choices : [];
+    this.isRequired = (args.isRequired !== undefined) ? args.isRequired : true;
     this.choices = '';
     this.expanded = false;
     this.displayChoices = false;
@@ -915,6 +917,7 @@ function Field(args) {
         cardBody.appendChild(this.renderLabelInput());
         cardBody.appendChild(this.renderDescriptionInput());
         cardBody.appendChild(this.renderCommentCheckbox());
+        cardBody.appendChild(this.renderRequiredCheckbox());
         cardBody.appendChild(this.renderChoicesTextarea());
 
         if (this.weighted) {
@@ -1161,8 +1164,15 @@ function Field(args) {
         });
 
         let fakeLabel = createElement({
+            type: 'label',
             classList: ['col-md-3', 'col-form-label'],
             innerText: 'Comment',
+            attributes: [
+                {
+                    name: 'for',
+                    value: `comment_${this.id}`,
+                }
+            ],
         });
 
         formGroup.appendChild(fakeLabel);
@@ -1221,6 +1231,95 @@ function Field(args) {
                 },
             ],
             innerHTML: 'Enable this will append a textarea after the field with the option to enter an comment to their answer.',
+        });
+
+        formCheck.appendChild(input);
+        formCheck.appendChild(label);
+        formCheck.appendChild(helperText);
+        rightSide.appendChild(formCheck);
+
+        formGroup.appendChild(rightSide);
+
+        return formGroup;
+    };
+
+    /**
+     * Render the required checkbox input
+     * @return {Element}
+     */
+    this.renderRequiredCheckbox = function() {
+        let formGroup = createElement({
+            classList: ['form-group', 'row'],
+        });
+
+        let fakeLabel = createElement({
+            type: 'label',
+            classList: ['col-md-3', 'col-form-label'],
+            innerText: 'Required',
+            attributes: [
+                {
+                    name: 'for',
+                    value: `required_${this.id}`,
+                }
+            ],
+        });
+
+        formGroup.appendChild(fakeLabel);
+
+        let rightSide = createElement({
+            classList: ['col-md-9'],
+        });
+
+        let formCheck = createElement({
+            classList: ['custom-control', 'custom-checkbox'],
+        });
+
+        let input = createElement({
+            type: 'input',
+            classList: ['custom-control-input'],
+            attributes: [
+                {
+                    name: 'type',
+                    value: TYPES.CHECKBOX,
+                },
+                {
+                    name: 'checked',
+                    value: '',
+                }
+            ],
+            id: `required_${this.id}`,
+        });
+
+        if (!this.isRequired) {
+            input.removeAttribute('checked');
+        }
+
+        input.addEventListener('change', () => {
+            this.isRequired = input.checked;
+        });
+
+        let label = createElement({
+            type: 'label',
+            classList: ['custom-control-label'],
+            attributes: [
+                {
+                    name: 'for',
+                    value: `required_${this.id}`,
+                },
+            ],
+            innerText: 'Make field mandatory',
+        });
+
+        let helperText = createElement({
+            type: 'small',
+            classList: ['form-text', 'text-muted'],
+            attributes: [
+                {
+                    name: 'for',
+                    value: `required_${this.id}`,
+                },
+            ],
+            innerHTML: '',
         });
 
         formCheck.appendChild(input);
