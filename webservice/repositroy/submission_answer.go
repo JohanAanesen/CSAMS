@@ -75,7 +75,7 @@ func (repo *SubmissionAnswerRepository) FetchAll() ([]*model.SubmissionAnswer, e
 func (repo *SubmissionAnswerRepository) FetchAllForUserAndAssignment(userID, assignmentID int) ([]*model.SubmissionAnswer, error) {
 	result := make([]*model.SubmissionAnswer, 0)
 
-	query := "SELECT us.id, us.user_id, us.assignment_id, us.submission_id, f.type, f.name, f.label, f.description, us.answer, us.comment, us.submitted, f.hasComment, f.choices, f.weight FROM user_submissions AS us INNER JOIN fields AS f ON us.name = f.name WHERE us.user_id = ? AND us.assignment_id = ?"
+	query := "SELECT us.id, us.user_id, us.assignment_id, us.submission_id, f.type, f.name, f.label, f.description, us.answer, us.comment, us.submitted, f.hasComment, f.choices, f.weight, f.required FROM user_submissions AS us INNER JOIN fields AS f ON us.name = f.name WHERE us.user_id = ? AND us.assignment_id = ?"
 
 	rows, err := repo.db.Query(query, userID, assignmentID)
 	if err != nil {
@@ -88,16 +88,18 @@ func (repo *SubmissionAnswerRepository) FetchAllForUserAndAssignment(userID, ass
 		temp := model.SubmissionAnswer{}
 		var choices string
 		var hasComment int
+		var isRequired int
 
 		err = rows.Scan(&temp.ID, &temp.UserID, &temp.AssignmentID, &temp.SubmissionID,
 			&temp.Type, &temp.Name, &temp.Label, &temp.Description, &temp.Answer, &temp.Comment, &temp.Submitted,
-			&hasComment, &choices, &temp.Weight)
+			&hasComment, &choices, &temp.Weight, &isRequired)
 		if err != nil {
 			return result, err
 		}
 
 		temp.HasComment = hasComment == 1
 		temp.Choices = strings.Split(choices, ",")
+		temp.Required = isRequired == 1
 
 		result = append(result, &temp)
 	}

@@ -33,16 +33,18 @@ func fetchMany(repo *ReviewAnswerRepository, query string, args ...interface{}) 
 		temp := model.ReviewAnswer{}
 		var hasComment int
 		var choices string
+		var isRequired int
 
 		err = rows.Scan(&temp.ID, &temp.UserReviewer, &temp.UserTarget, &temp.ReviewID, &temp.AssignmentID,
 			&temp.Type, &temp.Name, &temp.Label, &temp.Description, &temp.Answer, &temp.Comment, &temp.Submitted,
-			&hasComment, &choices, &temp.Weight)
+			&hasComment, &choices, &temp.Weight, &isRequired)
 		if err != nil {
 			return result, err
 		}
 
 		temp.HasComment = hasComment == 1
 		temp.Choices = strings.Split(choices, "|")
+		temp.Required = isRequired == 1
 
 		result = append(result, &temp)
 	}
@@ -52,26 +54,26 @@ func fetchMany(repo *ReviewAnswerRepository, query string, args ...interface{}) 
 
 // FetchForAssignment func
 func (repo *ReviewAnswerRepository) FetchForAssignment(assignmentID int) ([]*model.ReviewAnswer, error) {
-	query := "SELECT ur.id, ur.user_reviewer, ur.user_target, ur.review_id, ur.assignment_id, f.type, f.name, f.label, f.description, ur.answer, ur.comment, ur.submitted, f.hasComment, f.choices, f.weight FROM user_reviews AS ur INNER JOIN fields AS f ON ur.name = f.name WHERE ur.assignment_id = ?"
+	query := "SELECT ur.id, ur.user_reviewer, ur.user_target, ur.review_id, ur.assignment_id, f.type, f.name, f.label, f.description, ur.answer, ur.comment, ur.submitted, f.hasComment, f.choices, f.weight, f.required FROM user_reviews AS ur INNER JOIN fields AS f ON ur.name = f.name WHERE ur.assignment_id = ?"
 	return fetchMany(repo, query, assignmentID)
 }
 
 // FetchForTarget func
 func (repo *ReviewAnswerRepository) FetchForTarget(target, assignmentID int) ([]*model.ReviewAnswer, error) {
-	query := "SELECT ur.id, ur.user_reviewer, ur.user_target, ur.review_id, ur.assignment_id, f.type, f.name, f.label, f.description, ur.answer, ur.comment, ur.submitted, f.hasComment, f.choices, f.weight FROM user_reviews AS ur INNER JOIN fields AS f ON ur.name = f.name WHERE ur.user_target = ? AND ur.assignment_id = ?"
+	query := "SELECT ur.id, ur.user_reviewer, ur.user_target, ur.review_id, ur.assignment_id, f.type, f.name, f.label, f.description, ur.answer, ur.comment, ur.submitted, f.hasComment, f.choices, f.weight, f.required FROM user_reviews AS ur INNER JOIN fields AS f ON ur.name = f.name WHERE ur.user_target = ? AND ur.assignment_id = ?"
 	return fetchMany(repo, query, target, assignmentID)
 	//return repo.FetchMany(query, target, assignmentID)
 }
 
 // FetchForReviewer func
 func (repo *ReviewAnswerRepository) FetchForReviewer(reviewer, assignmentID int) ([]*model.ReviewAnswer, error) {
-	query := "SELECT ur.id, ur.user_reviewer, ur.user_target, ur.review_id, ur.assignment_id, f.type, f.name, f.label, f.description, ur.answer, ur.comment, ur.submitted, f.hasComment, f.choices, f.weight FROM user_reviews AS ur INNER JOIN fields AS f ON ur.name = f.name WHERE ur.user_reviewer = ? AND ur.assignment_id = ?"
+	query := "SELECT ur.id, ur.user_reviewer, ur.user_target, ur.review_id, ur.assignment_id, f.type, f.name, f.label, f.description, ur.answer, ur.comment, ur.submitted, f.hasComment, f.choices, f.weight, f.required FROM user_reviews AS ur INNER JOIN fields AS f ON ur.name = f.name WHERE ur.user_reviewer = ? AND ur.assignment_id = ?"
 	return fetchMany(repo, query, reviewer, assignmentID)
 }
 
 // FetchForReviewerAndTarget func
 func (repo *ReviewAnswerRepository) FetchForReviewerAndTarget(reviewer, target, assignmentID int) ([]*model.ReviewAnswer, error) {
-	query := "SELECT ur.id, ur.user_reviewer, ur.user_target, ur.review_id, ur.assignment_id, f.type, f.name, f.label, f.description, ur.answer, ur.comment, ur.submitted, f.hasComment, f.choices, f.weight FROM user_reviews AS ur INNER JOIN fields AS f ON ur.name = f.name WHERE ur.user_reviewer = ? AND ur.user_target = ? AND ur.assignment_id = ?"
+	query := "SELECT ur.id, ur.user_reviewer, ur.user_target, ur.review_id, ur.assignment_id, f.type, f.name, f.label, f.description, ur.answer, ur.comment, ur.submitted, f.hasComment, f.choices, f.weight, f.required FROM user_reviews AS ur INNER JOIN fields AS f ON ur.name = f.name WHERE ur.user_reviewer = ? AND ur.user_target = ? AND ur.assignment_id = ?"
 	return fetchMany(repo, query, reviewer, target, assignmentID)
 }
 
