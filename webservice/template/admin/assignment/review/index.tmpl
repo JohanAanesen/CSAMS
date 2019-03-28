@@ -10,6 +10,8 @@
 {{ define "content" }}
     <h1 class="display-4">Reviews for Assignment {{ .AssignmentID }}</h1>
 
+    <a href="/admin/assignment/{{.AssignmentID}}" class="btn btn-outline-dark">Go Back</a>
+
     <div class="form-group col">
         <table class="table table-striped table-sm" data-toggle="table" data-pagination="true" data-search="true"
                data-page-size="100">

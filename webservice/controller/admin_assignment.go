@@ -576,7 +576,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
 }
 
-// AdminAssignmentSubmissionsGET servers list of all users in course to admin
+// AdminAssignmentSubmissionsGET servers list of all users in course to admin /admin/assignment/{id}/submissions
 func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	// Services
 	services := service.NewServices(db.GetDB())
