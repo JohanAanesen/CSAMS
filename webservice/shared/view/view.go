@@ -78,8 +78,6 @@ func New(r *http.Request) *View {
 	v.Vars["IsTeacher"] = session.IsTeacher(r)
 	v.Vars["RequestURI"] = r.RequestURI
 
-	strings.HasPrefix("s", "prefix")
-
 	return v
 }
 

@@ -205,7 +205,7 @@ func (repo *ReviewRepository) IsUserTheReviewer(reviewer int, target int, assign
 	return len(result) > 0, err
 }
 
-// InUse func
+// IsUsed func
 func (repo *ReviewRepository) IsUsed(id int) (bool, error) {
 	query := "SELECT r.form_id FROM assignments AS a INNER JOIN reviews AS r ON a.review_id = r.id"
 
