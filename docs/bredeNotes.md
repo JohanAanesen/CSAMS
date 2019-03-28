@@ -292,5 +292,9 @@ _Merged following to master_
 * Fixed deadline passed design on home and in course + the rest in admin without delivered status
 
 ### Thursday 28/03/19
+* Peer Review is on every assignment card now, admins also
+* Review deadline can not be before Assignment deadline
+* Also fixed a bug in create assignment that removes submission/review form when an error occurred
+* And smaller stuff. 
 
 ### Friday 29/03/19
