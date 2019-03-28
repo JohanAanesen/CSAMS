@@ -79,17 +79,19 @@
                                 <hr class="bg-light">
 
                                 <!-- Peer Review if student has delivered and deadline to assignment is due-->
-                                {{if .Delivered}}
+                                {{if (or (.Delivered) (not $s))}}
                                     {{ if DEADLINEDUE .Assignment.Deadline}}
                                         <h3 class="display-5">Peer Review</h3>
 
-                                        <h5>
-                                            {{if gt .Reviews 0}}
-                                                <span class="badge badge-warning">Review{{ if ne .Reviews 1}}s{{end}} pending: {{.Reviews}}</span>
-                                            {{ else}}
-                                                <span class="badge badge-success">Review done</span>
-                                            {{end}}
-                                        </h5>
+                                        {{ if $s}}
+                                            <h5>
+                                                {{if gt .Reviews 0}}
+                                                    <span class="badge badge-warning">Review{{ if ne .Reviews 1}}s{{end}} pending: {{.Reviews}}</span>
+                                                {{ else}}
+                                                    <span class="badge badge-success">Review done</span>
+                                                {{end}}
+                                            </h5>
+                                        {{ end}}
 
                                         {{if DEADLINEDUE .Assignment.ReviewDeadline}}
                                             <h5>

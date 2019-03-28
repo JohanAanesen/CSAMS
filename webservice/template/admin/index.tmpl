@@ -50,6 +50,8 @@
                     <div class="card-body">
                         <h5 class="float-right text-secondary">ID: {{.Assignment.ID}}</h5>
                         <h2 class="display-5">{{.Assignment.Name}}</h2>
+                        <hr class="bg-light">
+                        <h3 class="display-5">Submission</h3>
                         <h5>
                             <span class="badge {{if DEADLINEDUE .Assignment.Deadline}}badge-dark{{ else}} badge-secondary{{end}}">{{.CourseCode}}</span>
                         </h5>
@@ -61,6 +63,19 @@
                             <p><strong>Deadline: </strong> {{PRETTYTIME .Assignment.Deadline}}</p>
                         {{end}}
                         <hr class="bg-light">
+                        {{ if DEADLINEDUE .Assignment.Deadline}}
+                            <h3 class="display-5">Peer Review</h3>
+                            {{if DEADLINEDUE .Assignment.ReviewDeadline}}
+                                <h5>
+                                    <span class="badge badge-danger">Deadline passed</span>
+                                </h5>
+                            {{else}}
+                                <p><strong>Deadline: </strong> {{PRETTYTIME .Assignment.ReviewDeadline}}</p>
+                            {{end}}
+
+                            <hr class="bg-light">
+                        {{ end}}
+
                         <div class="btn-group btn-group-sm">
                             <a href="/admin/assignment/{{.Assignment.ID}}"
                                class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}}">See
