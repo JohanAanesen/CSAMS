@@ -1,0 +1,42 @@
+{{define "title"}}Change students password{{end}}
+{{define "head"}}
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.css">
+    <style>
+        .id-col {
+            font-weight: 700;
+        }
+    </style>
+{{end}}
+{{ define "content" }}
+    <h1 class="display-4">Reviews for Assignment {{ .AssignmentID }}</h1>
+
+    <div class="form-group col">
+        <table class="table table-striped table-sm" data-toggle="table" data-pagination="true" data-search="true"
+               data-page-size="100">
+            <thead>
+            <tr>
+                <th data-sortable="true" scope="col">#</th>
+                <th data-sortable="true" scope="col">Reviewer ID</th>
+                <th data-sortable="true" scope="col">Reviewer Name</th>
+                <th data-sortable="true" scope="col">Target ID</th>
+                <th data-sortable="true" scope="col">Target Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{ range .PeerReviews }}
+                <tr class="clickable-row">
+                    <td class="id-col">{{ .ID }}</td>
+                    <td>{{ .ReviewerID }}</td>
+                    <td>{{ .ReviewerName }}</td>
+                    <td>{{ .TargetID }}</td>
+                    <td>{{ .TargetName }}</td>
+                </tr>
+            {{ end }}
+            </tbody>
+        </table>
+    </div>
+
+{{ end }}
+{{define "foot"}}
+    <script src="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.js"></script>
+{{end}}
