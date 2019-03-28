@@ -183,7 +183,6 @@ func AdminReviewUpdateGET(w http.ResponseWriter, r *http.Request) {
 	// Set template file
 	v.Name = "admin/review/update"
 
-
 	// Set view variables
 	v.Vars["formJSON"] = string(formBytes)
 	// Render view

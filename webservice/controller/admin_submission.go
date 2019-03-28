@@ -157,7 +157,6 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 		// Set template file
 		v.Name = "admin/submission/update_used"
 
-
 		// Set view variables
 		v.Vars["Form"] = form
 
