@@ -1506,6 +1506,7 @@ function Field(args) {
             order:          this.order,
             weight:         (this.weighted) ? parseInt(this.weight) : 0,
             choices:        this.choicesArray,
+            required:       this.isRequired,
         }
     };
 }
