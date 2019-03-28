@@ -3,20 +3,20 @@ package service
 import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/repositroy"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/repository"
 )
 
 // FormService struct
 type FormService struct {
-	formRepo  *repositroy.FormRepository
-	fieldRepo *repositroy.FieldRepository
+	formRepo  *repository.FormRepository
+	fieldRepo *repository.FieldRepository
 }
 
 // NewFormService func
 func NewFormService(db *sql.DB) *FormService {
 	return &FormService{
-		formRepo:  repositroy.NewFormRepository(db),
-		fieldRepo: repositroy.NewFieldRepository(db),
+		formRepo:  repository.NewFormRepository(db),
+		fieldRepo: repository.NewFieldRepository(db),
 	}
 }
 

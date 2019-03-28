@@ -3,19 +3,19 @@ package service
 import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/repositroy"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/repository"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 )
 
 // ReviewAnswerService struct
 type ReviewAnswerService struct {
-	reviewAnswerRepo *repositroy.ReviewAnswerRepository
+	reviewAnswerRepo *repository.ReviewAnswerRepository
 }
 
 // NewReviewAnswerService func
 func NewReviewAnswerService(db *sql.DB) *ReviewAnswerService {
 	return &ReviewAnswerService{
-		reviewAnswerRepo: repositroy.NewReviewAnswerRepository(db),
+		reviewAnswerRepo: repository.NewReviewAnswerRepository(db),
 	}
 }
 

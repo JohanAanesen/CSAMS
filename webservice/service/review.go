@@ -3,25 +3,25 @@ package service
 import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/repositroy"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/repository"
 	_ "github.com/go-sql-driver/mysql" //database driver
 )
 
 // ReviewService struct
 type ReviewService struct {
-	reviewRepo     *repositroy.ReviewRepository
-	formRepo       *repositroy.FormRepository
-	fieldRepo      *repositroy.FieldRepository
-	assignmentRepo *repositroy.AssignmentRepository
+	reviewRepo     *repository.ReviewRepository
+	formRepo       *repository.FormRepository
+	fieldRepo      *repository.FieldRepository
+	assignmentRepo *repository.AssignmentRepository
 }
 
 // NewReviewService func
 func NewReviewService(db *sql.DB) *ReviewService {
 	return &ReviewService{
-		reviewRepo:     repositroy.NewReviewRepository(db),
-		formRepo:       repositroy.NewFormRepository(db),
-		fieldRepo:      repositroy.NewFieldRepository(db),
-		assignmentRepo: repositroy.NewAssignmentRepository(db),
+		reviewRepo:     repository.NewReviewRepository(db),
+		formRepo:       repository.NewFormRepository(db),
+		fieldRepo:      repository.NewFieldRepository(db),
+		assignmentRepo: repository.NewAssignmentRepository(db),
 	}
 }
 

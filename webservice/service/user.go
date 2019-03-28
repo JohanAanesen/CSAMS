@@ -4,19 +4,19 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/repositroy"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/repository"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 )
 
 // UserService struct
 type UserService struct {
-	userRepo *repositroy.UserRepository
+	userRepo *repository.UserRepository
 }
 
 // NewUserService func
 func NewUserService(db *sql.DB) *UserService {
 	return &UserService{
-		userRepo: repositroy.NewUserRepository(db),
+		userRepo: repository.NewUserRepository(db),
 	}
 }
 
