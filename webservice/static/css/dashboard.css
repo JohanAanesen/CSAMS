@@ -44,8 +44,7 @@ body {
 }
 
 .sidebar .nav-link .far,
-.sidebar .nav-link .fas,
-.sidebar .nav-link .fal {
+.sidebar .nav-link .fas {
     margin-right: 4px;
     color: #999;
 }
@@ -57,9 +56,7 @@ body {
 .sidebar .nav-link:hover .far,
 .sidebar .nav-link.active .far,
 .sidebar .nav-link:hover .fas,
-.sidebar .nav-link.active .fas,
-.sidebar .nav-link:hover .fal,
-.sidebar .nav-link.active .fal {
+.sidebar .nav-link.active .fas {
     color: inherit;
 }
 

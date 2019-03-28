@@ -6,20 +6,17 @@
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a href="/admin" class="nav-link{{if and (HasPrefix .RequestURI "/admin") (lt (len .RequestURI) 8)}} active{{end}}">
-                                <i class="fal fa-home"></i>
-                                Dashboard
+                                <i class="fas fa-home"></i>Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="/admin/course" class="nav-link{{if HasPrefix .RequestURI "/admin/course"}} active{{end}}">
-                                <i class="fal fa-users-class"></i>
-                                Courses
+                                <i class="fas fa-users"></i>Courses
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="/admin/assignment" class="nav-link{{if HasPrefix .RequestURI "/admin/assignment"}} active{{end}}">
-                                <i class="fal fa-clipboard-list-check"></i>
-                                Assignments
+                                <i class="fas fa-clock"></i>Assignments
                             </a>
                         </li>
 
@@ -28,14 +25,12 @@
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a href="/admin/submission" class="nav-link{{if HasPrefix .RequestURI "/admin/submission"}} active{{end}}">
-                                <i class="fal fa-clipboard-list"></i>
-                                Submission Forms
+                                <i class="fas fa-clipboard-list"></i>Submission Forms
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="/admin/review" class="nav-link{{if HasPrefix .RequestURI "/admin/review"}} active{{end}}">
-                                <i class="fal fa-clipboard-check"></i>
-                                Review Forms
+                                <i class="fas fa-clipboard-check"></i>Review Forms
                             </a>
                         </li>
                     </ul>
@@ -44,27 +39,23 @@
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a href="/admin/scheduler" class="nav-link{{if HasPrefix .RequestURI "/admin/scheduler"}} active{{end}}">
-                                <i class="fal fa-business-time"></i>
-                                Scheduler
+                                <i class="fas fa-business-time"></i>Scheduler
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="/admin/changepass" class="nav-link{{if HasPrefix .RequestURI "/admin/changepass"}} active{{end}}">
-                                <i class="fal fa-user-cog"></i>
-                                Manage Students
+                                <i class="fas fa-user-cog"></i>Manage Students
                             </a> <!-- TODO brede : refactor names here -->
                         </li>
                         <li class="nav-item">
                             <a href="/admin/settings" class="nav-link{{if HasPrefix .RequestURI "/admin/settings"}} active{{end}}">
-                                <i class="fal fa-cog"></i>
-                                Settings
+                                <i class="fas fa-cog"></i>Settings
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a href="/admin/faq" class="nav-link{{if HasPrefix .RequestURI "/admin/faq"}} active{{end}}">
-                                <i class="fal fa-question-square"></i>
-                                FAQ
+                                <i class="fas fa-question-circle"></i>FAQ
                             </a>
                         </li>
                     </ul>
