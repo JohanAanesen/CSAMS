@@ -16,17 +16,19 @@ import (
 
 // AdminReviewGET handles GET-requests @ /admin/review
 func AdminReviewGET(w http.ResponseWriter, r *http.Request) {
-	// Set header content type and status code
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
+	// Services
+	services := service.NewServices(db.GetDB())
 
-	reviewService := service.NewReviewService(db.GetDB())
-	reviews, err := reviewService.FetchAll()
+	reviews, err := services.Review.FetchAll()
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
+
+	// Set header content type and status code
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
 
 	// Create view
 	v := view.New(r)

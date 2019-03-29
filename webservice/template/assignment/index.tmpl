@@ -149,7 +149,6 @@
                                             <h5 class="card-title text-light mb-0">Review no. {{$i}}</h5>{{$i = INCREMENT $i}}
                                         </div>
                                         <div class="card-body">
-                                            <!-- TODO (Svein): Get the other field types -->
                                             {{range $R}}
                                                 {{if eq .Type "radio"}}
                                                     {{$A := .}}

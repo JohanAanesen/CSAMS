@@ -16,14 +16,8 @@ import (
 
 //CourseGET serves class page to users
 func CourseGET(w http.ResponseWriter, r *http.Request) {
-	//get user
+	// Get current user
 	currentUser := session.GetUserFromSession(r)
-
-	//check if user is logged in
-	if !currentUser.Authenticated {
-		LoginGET(w, r)
-		return
-	}
 
 	vars := mux.Vars(r)
 	courseID, err := strconv.Atoi(vars["id"])

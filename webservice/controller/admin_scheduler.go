@@ -30,12 +30,6 @@ func AdminSchedulerGET(w http.ResponseWriter, r *http.Request) {
 
 	var payloads []PayLoad
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-
-	v := view.New(r)
-	v.Name = "admin/scheduler/index"
-
 	url := "http://localhost:8086" //schedulerservice
 
 	if os.Getenv("SCHEDULE_SERVICE") != "" {
@@ -44,15 +38,21 @@ func AdminSchedulerGET(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := http.Get(url)
 	if err != nil {
-		panic(err)
+		panic(err) // TODO (Svein): Is panic needed? Is simple log enough?
 	}
 
 	defer resp.Body.Close()
 
 	err = json.NewDecoder(resp.Body).Decode(&payloads)
 	if err != nil {
-		panic(err)
+		panic(err) // TODO (Svein): Is panic needed? Is simple log enough?
 	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/scheduler/index"
 
 	v.Vars["Payloads"] = payloads
 
@@ -64,7 +64,7 @@ func AdminSchedulerDELETE(w http.ResponseWriter, r *http.Request) {
 	assIDString := r.FormValue("assid")
 
 	if assIDString == "" {
-		log.Println("Either assid or subid was not provided")
+		log.Println("Either assignment_id or submission_id was not provided")
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}

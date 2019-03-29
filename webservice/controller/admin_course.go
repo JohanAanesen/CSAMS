@@ -168,9 +168,9 @@ func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	newDescription := r.FormValue("description")
 	newSemester := r.FormValue("semester")
 
-	// TODO (Svein):  `|| newDescription == ""` is removed cause the SimpleMDE textarea cannot be required, causes the submit button to fail
 	//make sure they are not empty
 	if newName == "" || newCode == "" || newSemester == "" {
+		// TODO (Svein): Display error messages and the form.
 		log.Println("some new data is empty, course update")
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return

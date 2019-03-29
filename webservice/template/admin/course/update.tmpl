@@ -1,6 +1,17 @@
 {{define "title"}}Edit Course{{end}}
 {{define "head"}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <style>
+        .CodeMirror {
+            height: 300px;
+        }
+        .CodeMirror-code::selection {
+            background: #000;
+        }
+        .CodeMirror-code::-moz-selection {
+            background: #000;
+        }
+    </style>
 {{end}}
 {{define "content"}}
 
@@ -51,6 +62,7 @@
             let simplemde = new SimpleMDE({
                 element: document.getElementById('simplemde'),
                 hideIcons: ["side-by-side", "fullscreen"],
+                lineWrapping: true,
             });
         })();
     </script>
