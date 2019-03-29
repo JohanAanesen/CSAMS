@@ -56,6 +56,22 @@ services:
       PEER_SERVICE: peerservice:8087
     restart: always
 
+  mailservice:
+    build: mailservice
+    depends_on:
+      - database
+    ports:
+      - 8085:8085
+    links:
+      - database
+    environment:
+      DATABASE_URL: database:3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root
+      DATABASE_DATABASE: cs53
+      PEER_AUTH: "5243980712315079823517089"
+    restart: always
+
   adminer:
     image: adminer
     restart: always
