@@ -25,9 +25,6 @@ func UserAuth(next http.Handler) http.Handler {
 
 		if r.RequestURI == "/" {
 			switch r.Method {
-			case "GET":
-				controller.IndexGET(w, r)
-				return
 			case "POST":
 				controller.JoinCoursePOST(w, r)
 				return
@@ -35,7 +32,7 @@ func UserAuth(next http.Handler) http.Handler {
 		}
 
 		if !currentUser.Authenticated {
-			controller.ErrorHandler(w, r, http.StatusUnauthorized)
+			http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 			return
 		}
 

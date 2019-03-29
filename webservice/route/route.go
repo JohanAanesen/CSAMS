@@ -136,9 +136,9 @@ func routes() http.Handler {
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
 	// 404 Error Handler
-	router.NotFoundHandler = http.HandlerFunc(controller.NotFoundHandler)
+	router.NotFoundHandler = middleware.UserAuth(http.HandlerFunc(controller.NotFoundHandler))
 	// 405 Error Handler
-	router.MethodNotAllowedHandler = http.HandlerFunc(controller.MethodNotAllowedHandler)
+	router.MethodNotAllowedHandler = middleware.UserAuth(http.HandlerFunc(controller.MethodNotAllowedHandler))
 
 	return handlers.CombinedLoggingHandler(os.Stdout, router)
 }
