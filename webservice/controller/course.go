@@ -70,27 +70,16 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			// Filter out the reviews that the current user already has done
-			reviewUsers, err := services.Review.FetchReviewUsers(currentUser.ID, assignment.ID)
+			// Get number of reviews done bu user
+			reviewDone, err := services.ReviewAnswer.CountReviewsDone(currentUser.ID, assignment.ID)
 			if err != nil {
-				log.Println("services, review, fetch review users", err.Error())
+				log.Println("services, review answer, countreviews reviewDone", err.Error())
 				ErrorHandler(w, r, http.StatusInternalServerError)
 				return
 			}
 
-			// Filter put submission reviews
-			for _, user := range reviewUsers {
-				check, err := services.ReviewAnswer.HasBeenReviewed(user.ID, currentUser.ID, assignment.ID)
-				if err != nil {
-					log.Println("services, review answer, has been reviewed", err.Error())
-					ErrorHandler(w, r, http.StatusInternalServerError)
-					return
-				}
-
-				if !check {
-					noOfReviewsLeft++
-				}
-			}
+			// Calculate how many left
+			noOfReviewsLeft = int(assignment.Reviewers.Int64) - reviewDone
 		}
 		submittedAssignments = append(submittedAssignments, SubmittedAssignment{Assignment: *assignment, Delivered: delivered, Reviews: noOfReviewsLeft})
 	}
