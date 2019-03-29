@@ -33,9 +33,6 @@
  * @author Svein Are Danielsen
  * @version 1.0.0
  * @licence GPL-3.0
- *
- * TODO:
- *  - Add button to remove elements
  */
 
 /**
