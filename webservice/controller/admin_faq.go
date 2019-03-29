@@ -11,7 +11,7 @@ import (
 // AdminFaqGET handles GET-request at admin/faq/index
 func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 	content := model.GetDateAndQuestionsFAQ() // TODO (Svein): Move this to 'settings'
-	if content.Questions == "-1" { // TODO (Svein): Allow blank FAQ
+	if content.Questions == "-1" {            // TODO (Svein): Allow blank FAQ
 		log.Println("Something went wrong with getting the faq (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
@@ -30,7 +30,7 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 // AdminFaqEditGET returns the edit view for the faq
 func AdminFaqEditGET(w http.ResponseWriter, r *http.Request) {
 	content := model.GetDateAndQuestionsFAQ() // TODO (Svein): Move this to 'settings'
-	if content.Questions == "-1" { // TODO (Svein): Allow blank FAQ
+	if content.Questions == "-1" {            // TODO (Svein): Allow blank FAQ
 		log.Println("Something went wrong with getting the faq (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
