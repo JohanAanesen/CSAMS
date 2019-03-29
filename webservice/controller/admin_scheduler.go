@@ -63,7 +63,7 @@ func AdminSchedulerGET(w http.ResponseWriter, r *http.Request) {
 func AdminSchedulerDELETE(w http.ResponseWriter, r *http.Request) {
 	assIDString := r.FormValue("assid")
 
-	if assIDString == ""{
+	if assIDString == "" {
 		log.Println("Either assid or subid was not provided")
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
@@ -74,7 +74,6 @@ func AdminSchedulerDELETE(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
 
 	sched := scheduler.Scheduler{}
 

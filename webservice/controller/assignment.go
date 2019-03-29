@@ -304,6 +304,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 		for index, field := range submissionForm.Form.Fields {
 			answers[index].HasComment = field.HasComment
 			answers[index].Description = field.Description
+			answers[index].Required = field.Required
 		}
 	} else {
 		for _, item := range submissionForm.Form.Fields {
@@ -315,6 +316,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 				HasComment:  item.HasComment,
 				Description: item.Description,
 				Name:        item.Name,
+				Required:    item.Required,
 			})
 		}
 	}

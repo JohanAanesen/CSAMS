@@ -1079,6 +1079,7 @@ func AdminAssignmentSubmissionCreateGET(w http.ResponseWriter, r *http.Request) 
 				HasComment:  item.HasComment,
 				Description: item.Description,
 				Name:        item.Name,
+				Required:    item.Required,
 			})
 		}
 	}
@@ -1187,6 +1188,7 @@ func AdminAssignmentSubmissionCreatePOST(w http.ResponseWriter, r *http.Request)
 		answer.Name = field.Name
 		answer.Label = field.Label
 		answer.HasComment = field.HasComment
+		answer.Required = field.Required
 		//answer.Description = field.Description
 		// Check if the field has comment enabled
 		if field.HasComment {
@@ -1300,6 +1302,7 @@ func AdminAssignmentSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) 
 				HasComment:  item.HasComment,
 				Description: item.Description,
 				Name:        item.Name,
+				Required:    item.Required,
 			})
 		}
 	}
@@ -1417,6 +1420,7 @@ func AdminAssignmentSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request)
 		answer.Label = field.Label
 		answer.Description = field.Description
 		answer.HasComment = field.HasComment
+		answer.Required = field.Required
 
 		// If delivered, only change the value
 		submissionAnswers[index].Answer = answer.Answer

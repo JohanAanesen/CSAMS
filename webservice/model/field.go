@@ -12,4 +12,5 @@ type Field struct {
 	Order       int      `json:"order"`
 	Weight      int      `json:"weight,omitempty"`
 	Choices     []string `json:"choices,omitempty"`
+	Required    bool     `json:"required"`
 }

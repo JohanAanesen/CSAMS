@@ -1,0 +1,86 @@
+{{define "title"}}Update Review (In use){{end}}
+{{define "head"}}
+    <style>
+        input[type="checkbox"] {
+            width: 38px;
+            height: 38px;
+            border-radius: .25rem;
+        }
+    </style>
+{{end}}
+{{define "content"}}
+    <div class="row">
+        <div class="col-12">
+            <h1 class="display-5">Update Review <strong>{{.Form.Name}}</strong></h1>
+            <p class="lead">Notice! This review form is in use by an assignment.</p>
+            <hr>
+        </div>
+    </div>
+    <form action="/admin/review/update/{{.Form.ID}}/used" method="post" class="mb-5">
+
+        <div class="accordion" id="accordion">
+            {{range .Form.Fields}}
+                <div class="card">
+                    <div class="card-header" id="heading_{{.Name}}">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link text-left" type="button" data-toggle="collapse" data-target="#collapse_{{.Name}}" aria-expanded="false" aria-controls="collapse_{{.Name}}">
+                                {{.Label}}
+                            </button>
+                        </h2>
+                    </div>
+
+                    <div class="collapse" id="collapse_{{.Name}}" aria-labelledby="heading_{{.Name}}" data-parent="#accordion">
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="type_{{.Name}}"><strong>Type</strong></label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="type_{{.Name}}" id="type_{{.Name}}" class="form-control" value="{{.Type}}" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="label_{{.Name}}"><strong>Label</strong></label>
+                                <div class="col-sm-10">
+                                    {{if eq .Type "paragraph"}}
+                                        <textarea name="label_{{.Name}}" id="label_{{.Name}}" class="form-control" rows="5">{{.Label}}</textarea>
+                                    {{else}}
+                                        <input type="text" name="label_{{.Name}}" id="label_{{.Name}}" class="form-control" value="{{.Label}}">
+                                    {{end}}
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="description_{{.Name}}"><strong>Description</strong></label>
+                                <div class="col-sm-10">
+                                    <textarea name="description_{{.Name}}" id="description_{{.Name}}" class="form-control">{{.Description}}</textarea>
+                                </div>
+                            </div>
+
+                            {{if eq .Type "radio"}}
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="choices_{{.Name}}"><strong>Choices</strong></label>
+                                    <div class="col-sm-10">
+                                        <textarea name="choices_{{.Name}}" id="choices_{{.Name}}" class="form-control" rows="5">{{Join .Choices "\n"}}</textarea>
+                                        <small class="form-text text-muted">Enter each choice on a new line. (Do not use "|" (pipe character), as this is the separator for list)</small>
+                                    </div>
+                                </div>
+                            {{end}}
+
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="required_{{.Name}}"><strong>Required</strong></label>
+                                <div class="col-sm-10">
+                                    <input type="checkbox" name="required_{{.Name}}" id="required_{{.Name}}"{{if .Required}} checked{{end}}>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {{end}}
+        </div>
+
+        <input type="submit" class="btn btn-primary btn-lg btn-block mt-3" value="Save">
+
+    </form>
+{{end}}
+{{define "foot"}}{{end}}
