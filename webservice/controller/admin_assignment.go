@@ -192,16 +192,14 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	// String converted into integer
 	courseID, err := strconv.Atoi(r.FormValue("course_id"))
 	if err != nil {
-		log.Print("course_id")
-		log.Println(err)
+		log.Println("strconv, atoi, course_id", err.Error())
 		return
 	}
 
 	if r.FormValue("submission_id") != "" {
 		val, err = strconv.Atoi(r.FormValue("submission_id"))
 		if err != nil {
-			log.Println("submission_id")
-			log.Println(err)
+			log.Println("strconv, atoi, submission_id", err.Error())
 			return
 		}
 	}
@@ -215,8 +213,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("review_id") != "" {
 		val, err = strconv.Atoi(r.FormValue("review_id"))
 		if err != nil {
-			log.Println("review_id")
-			log.Println(err)
+			log.Println("strconv, atoi, review_id", err.Error())
 			return
 		}
 

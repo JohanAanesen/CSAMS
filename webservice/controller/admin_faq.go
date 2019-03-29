@@ -4,8 +4,6 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
-	"github.com/shurcooL/github_flavored_markdown"
-	"html/template"
 	"log"
 	"net/http"
 )
@@ -22,13 +20,9 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
-	// Convert to html
-	questions := github_flavored_markdown.Markdown([]byte(content.Questions)) // TODO (Svein): Make us of plugin
-
 	v := view.New(r)
 	v.Name = "admin/faq/index"
 	v.Vars["Updated"] = content
-	v.Vars["Questions"] = template.HTML(questions)
 
 	v.Render(w)
 }
