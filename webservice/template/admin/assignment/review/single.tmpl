@@ -42,6 +42,7 @@
         </div>
         {{range $index, $R := .Reviews}}
             <div class="col-lg-6">
+                <form>
                 {{$Weight := index $WEIGHTS $index}}
                 <div class="card mb-3">
                     {{$temp := index . 0}}
@@ -137,6 +138,7 @@
                         {{end}}
                     </div>
                 </div>
+                </form>
             </div>
         {{end}}
 
