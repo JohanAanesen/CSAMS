@@ -66,16 +66,30 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 
-					// Get number of reviews done bu user
-					reviewDone, err := services.ReviewAnswer.CountReviewsDone(currentUser.ID, assignment.ID)
+					// Check if user is in the peer review table
+					inReviewTable, err := services.PeerReview.TargetExists(assignment.ID, currentUser.ID)
 					if err != nil {
-						log.Println("services, review answer, countreviews reviewDone", err.Error())
+						log.Println("services, peer review, target exists", err.Error())
 						ErrorHandler(w, r, http.StatusInternalServerError)
 						return
 					}
 
-					// Calculate how many left
-					noOfReviewsLeft = int(assignment.Reviewers.Int64) - reviewDone
+					// If its -404 the user doesn't exists in the peer review table
+					noOfReviewsLeft = -404
+
+					// Only check for count if user exists in th peer review table
+					if inReviewTable {
+						// Get number of reviews done bu user
+						reviewDone, err := services.ReviewAnswer.CountReviewsDone(currentUser.ID, assignment.ID)
+						if err != nil {
+							log.Println("services, review answer, countreviews reviewDone", err.Error())
+							ErrorHandler(w, r, http.StatusInternalServerError)
+							return
+						}
+
+						// Calculate how many left
+						noOfReviewsLeft = int(assignment.Reviewers.Int64) - reviewDone
+					}
 
 				}
 				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: *assignment, CourseCode: course.Code, Delivered: delivered, Reviews: noOfReviewsLeft})
