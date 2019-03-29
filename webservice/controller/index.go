@@ -17,11 +17,6 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 	// Current User
 	currentUser := session.GetUserFromSession(r)
 
-	if !currentUser.Authenticated {
-		LoginGET(w, r)
-		return
-	}
-
 	// Services
 	services := service.NewServices(db.GetDB())
 
@@ -118,7 +113,7 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 	err = services.Course.AddUser(currentUser.ID, course.ID)
 	if err == service.ErrUserAlreadyInCourse {
-		log.Println("user already in course", err.Error())
+		log.Println("user already in course", service.ErrUserAlreadyInCourse)
 		http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
 		return
 	}
@@ -144,6 +139,6 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	// Give feedback to user
 	session.SaveMessageToSession("You joined "+course.Code+" - "+course.Name, w, r)
 
-	IndexGET(w, r)
-	//http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
+	//IndexGET(w, r)
+	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
 }

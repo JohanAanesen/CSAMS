@@ -693,11 +693,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 // AssignmentUserSubmissionPOST handles POST-request @ /assignment/{id:[0-9]+}/submission/{userid:[0-9]+}
 func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	currentUser := session.GetUserFromSession(r)
-	if !currentUser.Authenticated {
-		log.Printf("session, get user from session (request)")
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
 
 	vars := mux.Vars(r)
 

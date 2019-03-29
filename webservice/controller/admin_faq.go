@@ -12,8 +12,8 @@ import (
 
 // AdminFaqGET handles GET-request at admin/faq/index
 func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
-	content := model.GetDateAndQuestionsFAQ()
-	if content.Questions == "-1" {
+	content := model.GetDateAndQuestionsFAQ() // TODO (Svein): Move this to 'settings'
+	if content.Questions == "-1" { // TODO (Svein): Allow blank FAQ
 		log.Println("Something went wrong with getting the faq (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
@@ -23,7 +23,7 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	// Convert to html
-	questions := github_flavored_markdown.Markdown([]byte(content.Questions))
+	questions := github_flavored_markdown.Markdown([]byte(content.Questions)) // TODO (Svein): Make us of plugin
 
 	v := view.New(r)
 	v.Name = "admin/faq/index"
@@ -35,9 +35,8 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminFaqEditGET returns the edit view for the faq
 func AdminFaqEditGET(w http.ResponseWriter, r *http.Request) {
-	//
-	content := model.GetDateAndQuestionsFAQ()
-	if content.Questions == "-1" {
+	content := model.GetDateAndQuestionsFAQ() // TODO (Svein): Move this to 'settings'
+	if content.Questions == "-1" { // TODO (Svein): Allow blank FAQ
 		log.Println("Something went wrong with getting the faq (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
@@ -87,11 +86,11 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user for logging purposes
-	user := session.GetUserFromSession(r)
+	currentUser := session.GetUserFromSession(r)
 
 	// Collect the log data
 	logData := model.Log{
-		UserID:   user.ID,
+		UserID:   currentUser.ID,
 		Activity: model.UpdateAdminFAQ,
 		OldValue: content.Questions,
 		NewValue: updatedFAQ,
@@ -105,5 +104,6 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	AdminFaqGET(w, r)
+	//AdminFaqGET(w, r)
+	http.Redirect(w, r, "/admin/faq", http.StatusFound)
 }

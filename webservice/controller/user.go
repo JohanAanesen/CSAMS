@@ -14,11 +14,6 @@ import (
 
 // UserGET serves user page to users
 func UserGET(w http.ResponseWriter, r *http.Request) {
-	if !session.IsLoggedIn(r) {
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	// Services
 	services := service.NewServices(db.GetDB())
 
@@ -47,12 +42,6 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
 
 // UserUpdatePOST changes the user information
 func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
-	if !session.IsLoggedIn(r) {
-		//not logged in
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	// Get current user
 	currentUser := session.GetUserFromSession(r)
 	// Services
