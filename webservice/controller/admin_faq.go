@@ -4,16 +4,14 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
-	"github.com/shurcooL/github_flavored_markdown"
-	"html/template"
 	"log"
 	"net/http"
 )
 
 // AdminFaqGET handles GET-request at admin/faq/index
 func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
-	content := model.GetDateAndQuestionsFAQ()
-	if content.Questions == "-1" {
+	content := model.GetDateAndQuestionsFAQ() // TODO (Svein): Move this to 'settings'
+	if content.Questions == "-1" { // TODO (Svein): Allow blank FAQ
 		log.Println("Something went wrong with getting the faq (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
@@ -22,22 +20,17 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
-	// Convert to html
-	questions := github_flavored_markdown.Markdown([]byte(content.Questions))
-
 	v := view.New(r)
 	v.Name = "admin/faq/index"
 	v.Vars["Updated"] = content
-	v.Vars["Questions"] = template.HTML(questions)
 
 	v.Render(w)
 }
 
 // AdminFaqEditGET returns the edit view for the faq
 func AdminFaqEditGET(w http.ResponseWriter, r *http.Request) {
-	//
-	content := model.GetDateAndQuestionsFAQ()
-	if content.Questions == "-1" {
+	content := model.GetDateAndQuestionsFAQ() // TODO (Svein): Move this to 'settings'
+	if content.Questions == "-1" { // TODO (Svein): Allow blank FAQ
 		log.Println("Something went wrong with getting the faq (admin.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
@@ -87,11 +80,11 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user for logging purposes
-	user := session.GetUserFromSession(r)
+	currentUser := session.GetUserFromSession(r)
 
 	// Collect the log data
 	logData := model.Log{
-		UserID:   user.ID,
+		UserID:   currentUser.ID,
 		Activity: model.UpdateAdminFAQ,
 		OldValue: content.Questions,
 		NewValue: updatedFAQ,
@@ -105,5 +98,6 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	AdminFaqGET(w, r)
+	//AdminFaqGET(w, r)
+	http.Redirect(w, r, "/admin/faq", http.StatusFound)
 }

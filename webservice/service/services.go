@@ -10,6 +10,7 @@ type Services struct {
 	Form             *FormService
 	Review           *ReviewService
 	ReviewAnswer     *ReviewAnswerService
+	PeerReview       *PeerReviewService
 	Submission       *SubmissionService
 	SubmissionAnswer *SubmissionAnswerService
 	User             *UserService
@@ -24,6 +25,7 @@ func NewServices(db *sql.DB) *Services {
 		Form:             NewFormService(db),
 		Review:           NewReviewService(db),
 		ReviewAnswer:     NewReviewAnswerService(db),
+		PeerReview:       NewPeerReviewService(db),
 		Submission:       NewSubmissionService(db),
 		SubmissionAnswer: NewSubmissionAnswerService(db),
 		User:             NewUserService(db),

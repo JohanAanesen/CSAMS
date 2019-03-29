@@ -1,0 +1,54 @@
+{{define "title"}}Update Review Weights{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+    <div class="row">
+        <div class="col-12">
+            <h1 class="display-5">Edit weights for <strong>{{.Form.Name}}</strong></h1>
+        </div>
+    </div>
+    <form action="/admin/review/update/{{.Form.ID}}/weights" method="post" class="mb-5">
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Label</th>
+                <th>Type</th>
+                <th width="100px">Old Weight</th>
+                <th width="120px">New Weight</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{range .Form.Fields}}
+                <tr>
+                    <td>{{.Label}}</td>
+                    <td>{{.Type}}</td>
+                    <td>{{.Weight}}</td>
+                    <td>
+                        <input type="number" name="{{.Name}}" id="{{.Name}}" class="form-control rounded-0" value="{{.Weight}}">
+                    </td>
+                </tr>
+            {{end}}
+            </tbody>
+        </table>
+
+        <input type="submit" id="submit" class="btn btn-primary btn-lg btn-block" value="Save">
+
+    </form>
+{{end}}
+{{define "foot"}}
+    <script>
+        (function() {
+            let submit = document.getElementById('submit');
+
+            submit.addEventListener('click', () => {
+                let inputs = document.getElementsByTagName('input');
+
+                inputs.forEach(e => {
+                    if (e.value === "") {
+                        e.value = 0;
+                    }
+                });
+            });
+        })();
+    </script>
+{{end}}

@@ -1,8 +1,13 @@
-github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/peerservice v0.0.0-20190327081156-a950d8e98987 h1:fnrpca0f2sJObKSvWdeEK+nAIQrL3XxQEYEBFEfCSow=
-github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/peerservice v0.0.0-20190327081156-a950d8e98987/go.mod h1:nbZEAUIIQYVQs2eG8Kj4iJOGdNUZwQlAxC/I24nOwEI=
-github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice v0.0.0-20190327081156-a950d8e98987 h1:N0qihcWG5N6LkbUxOtBxW6HMKvGOKVPZorsBhy1Aw0Y=
-github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice v0.0.0-20190327081156-a950d8e98987/go.mod h1:AfKX8c9lP6ehq2SSJxMNQzsxxkJHHtlPOaXtxd+wYDU=
+
+github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/peerservice v0.0.0-20190328152456-ef603713fcd2 h1:E7KMqEyX3OJgIGVmitbhI4hARVJRngio2VCbQX0tuuw=
+github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/peerservice v0.0.0-20190328152456-ef603713fcd2/go.mod h1:nbZEAUIIQYVQs2eG8Kj4iJOGdNUZwQlAxC/I24nOwEI=
+github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice v0.0.0-20190328152456-ef603713fcd2 h1:+N4mGgiBFig27xoghojXmtEzdNDYtaelWkMOj7vbHmg=
+github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice v0.0.0-20190328152456-ef603713fcd2/go.mod h1:DL1Xl2dmhZy9fcJhteyyrmDC9Uxil4Eovor/MhKszto=
+github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice v0.0.0-20190315115739-910973fdbbd7/go.mod h1:PJMjlkZOKaVdJ3o3BwIURY1rU9zA+I/Ziz4eifQd1f4=
+github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice v0.0.0-20190328152456-ef603713fcd2 h1:TEChIs+TvutQ72Hs6gPGID31pRg5JFN6B2ZMegcX8JU=
+github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice v0.0.0-20190328152456-ef603713fcd2/go.mod h1:AfKX8c9lP6ehq2SSJxMNQzsxxkJHHtlPOaXtxd+wYDU=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/go-ozzo/ozzo-dbx v1.0.15/go.mod h1:48NXRgCxSU5JUSW+EA5lnokrL7ql1j6Qh2RsWeh6Fvs=
 github.com/go-sql-driver/mysql v1.4.1 h1:g24URVg0OFbNUTx9qqY1IRZ9D9z3iPyi5zKhQZpNwpA=
 github.com/go-sql-driver/mysql v1.4.1/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=

@@ -18,11 +18,6 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 	// Current User
 	currentUser := session.GetUserFromSession(r)
 
-	if !currentUser.Authenticated {
-		LoginGET(w, r)
-		return
-	}
-
 	// Services
 	services := service.NewServices(db.GetDB())
 
@@ -71,29 +66,34 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 
-					// Filter out the reviews that the current user already has done
-					reviewUsers, err := services.Review.FetchReviewUsers(currentUser.ID, assignment.ID)
+					// Check if user is in the peer review table
+					inReviewTable, err := services.PeerReview.TargetExists(assignment.ID, currentUser.ID)
 					if err != nil {
-						log.Println("services, review, fetch review users", err.Error())
+						log.Println("services, peer review, target exists", err.Error())
 						ErrorHandler(w, r, http.StatusInternalServerError)
 						return
 					}
 
-					// Filter put submission reviews
-					for _, user := range reviewUsers {
-						check, err := services.ReviewAnswer.HasBeenReviewed(user.ID, currentUser.ID, assignment.ID)
+					// If its -404 the user doesn't exists in the peer review table
+					noOfReviewsLeft = -404
+
+					// Only check for count if user exists in th peer review table
+					if inReviewTable {
+						// Get number of reviews done bu user
+						reviewDone, err := services.ReviewAnswer.CountReviewsDone(currentUser.ID, assignment.ID)
 						if err != nil {
-							log.Println("services, review answer, has been reviewed", err.Error())
+							log.Println("services, review answer, countreviews reviewDone", err.Error())
 							ErrorHandler(w, r, http.StatusInternalServerError)
 							return
 						}
 
-						if !check {
-							noOfReviewsLeft++
-						}
+						// Calculate how many left
+						noOfReviewsLeft = int(assignment.Reviewers.Int64) - reviewDone
 					}
+
 				}
 				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: *assignment, CourseCode: course.Code, Delivered: delivered, Reviews: noOfReviewsLeft})
+
 			}
 		}
 
@@ -159,7 +159,7 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 	err = services.Course.AddUser(currentUser.ID, course.ID)
 	if err == service.ErrUserAlreadyInCourse {
-		log.Println("user already in course", err.Error())
+		log.Println("user already in course", service.ErrUserAlreadyInCourse)
 		http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
 		return
 	}
@@ -185,6 +185,6 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	// Give feedback to user
 	session.SaveMessageToSession("You joined "+course.Code+" - "+course.Name, w, r)
 
-	IndexGET(w, r)
-	//http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
+	//IndexGET(w, r)
+	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
 }

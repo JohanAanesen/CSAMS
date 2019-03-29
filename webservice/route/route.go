@@ -38,13 +38,13 @@ func routes() http.Handler {
 
 	// Course-page Handlers
 	userrouter.HandleFunc("/course/{id:[0-9]+}", controller.CourseGET).Methods("GET")
-	userrouter.HandleFunc("/course/list", controller.CourseListGET).Methods("GET")
+	userrouter.HandleFunc("/course/list", controller.CourseListGET).Methods("GET") // TODO (Svein): Needed?
 
 	// Assignment-page Handlers
-	userrouter.HandleFunc("/assignment", controller.AssignmentGET).Methods("GET")
+	userrouter.HandleFunc("/assignment", controller.AssignmentGET).Methods("GET") // TODO (Svein): Needed?
 	userrouter.HandleFunc("/assignment/{id:[0-9]+}", controller.AssignmentSingleGET).Methods("GET")
-	userrouter.HandleFunc("/assignment/peer", controller.AssignmentPeerGET).Methods("GET")
-	userrouter.HandleFunc("/assignment/auto", controller.AssignmentAutoGET).Methods("GET")
+	userrouter.HandleFunc("/assignment/peer", controller.AssignmentPeerGET).Methods("GET") // TODO (Svein): Needed?
+	userrouter.HandleFunc("/assignment/auto", controller.AssignmentAutoGET).Methods("GET") // TODO (Svein): Needed?
 	userrouter.HandleFunc("/assignment/submission", controller.AssignmentUploadGET).Methods("GET")
 	userrouter.HandleFunc("/assignment/submission/{id:[0-9]+}/withdraw", controller.AssignmentWithdrawGET).Methods("GET")
 	userrouter.HandleFunc("/assignment/submission/update", controller.AssignmentUploadPOST).Methods("POST")
@@ -77,7 +77,7 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/assignment/update", controller.AdminUpdateAssignmentPOST).Methods("POST")
 
 	adminrouter.HandleFunc("/assignment/{id:[0-9]+}/submissions", controller.AdminAssignmentSubmissionsGET).Methods("GET")
-	//adminrouter.HandleFunc("/assignment/{id:[0-9]+}/submission", controller.AdminAssignmentSubmissionGET).Methods("GET")
+	//adminrouter.HandleFunc("/assignment/{id:[0-9]+}/submission", controller.AdminAssignmentSubmissionGET).Methods("GET") // TODO (Svein): Needed?
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/review/{userID:[0-9]+}", controller.AdminAssignmentReviewsGET).Methods("GET")
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}", controller.AdminAssignmentSingleSubmissionGET).Methods("GET")
 
@@ -91,6 +91,9 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreateGET).Methods("GET")
 	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreatePOST).Methods("POST")
 	adminrouter.HandleFunc("/submission/update/{id:[0-9]+}", controller.AdminSubmissionUpdateGET).Methods("GET")
+	adminrouter.HandleFunc("/submission/update/{id:[0-9]+}/used", controller.AdminSubmissionUpdateUsedPOST).Methods("POST")
+	adminrouter.HandleFunc("/submission/update/{id:[0-9]+}/weights", controller.AdminSubmissionUpdateWeightsGET).Methods("GET")
+	adminrouter.HandleFunc("/submission/update/{id:[0-9]+}/weights", controller.AdminSubmissionUpdateWeightsPOST).Methods("POST")
 	adminrouter.HandleFunc("/submission/update", controller.AdminSubmissionUpdatePOST).Methods("POST")
 	adminrouter.HandleFunc("/submission/delete", controller.AdminSubmissionDELETE).Methods("DELETE")
 
@@ -98,6 +101,9 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/review/create", controller.AdminReviewCreateGET).Methods("GET")
 	adminrouter.HandleFunc("/review/create", controller.AdminReviewCreatePOST).Methods("POST")
 	adminrouter.HandleFunc("/review/update/{id:[0-9]+}", controller.AdminReviewUpdateGET).Methods("GET")
+	adminrouter.HandleFunc("/review/update/{id:[0-9]+}/used", controller.AdminReviewUpdateUsedPOST).Methods("POST")
+	adminrouter.HandleFunc("/review/update/{id:[0-9]+}/weights", controller.AdminReviewUpdateWeightsGET).Methods("GET")
+	adminrouter.HandleFunc("/review/update/{id:[0-9]+}/weights", controller.AdminReviewUpdateWeightsPOST).Methods("POST")
 	adminrouter.HandleFunc("/review/update", controller.AdminReviewUpdatePOST).Methods("POST")
 	adminrouter.HandleFunc("/review/delete", controller.AdminReviewDELETE).Methods("DELETE")
 
@@ -130,9 +136,9 @@ func routes() http.Handler {
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
 	// 404 Error Handler
-	router.NotFoundHandler = http.HandlerFunc(controller.NotFoundHandler)
+	router.NotFoundHandler = middleware.UserAuth(http.HandlerFunc(controller.NotFoundHandler))
 	// 405 Error Handler
-	router.MethodNotAllowedHandler = http.HandlerFunc(controller.MethodNotAllowedHandler)
+	router.MethodNotAllowedHandler = middleware.UserAuth(http.HandlerFunc(controller.MethodNotAllowedHandler))
 
 	return handlers.CombinedLoggingHandler(os.Stdout, router)
 }

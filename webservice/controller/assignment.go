@@ -304,6 +304,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 		for index, field := range submissionForm.Form.Fields {
 			answers[index].HasComment = field.HasComment
 			answers[index].Description = field.Description
+			answers[index].Required = field.Required
 		}
 	} else {
 		for _, item := range submissionForm.Form.Fields {
@@ -315,6 +316,7 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 				HasComment:  item.HasComment,
 				Description: item.Description,
 				Name:        item.Name,
+				Required:    item.Required,
 			})
 		}
 	}
@@ -691,11 +693,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 // AssignmentUserSubmissionPOST handles POST-request @ /assignment/{id:[0-9]+}/submission/{userid:[0-9]+}
 func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	currentUser := session.GetUserFromSession(r)
-	if !currentUser.Authenticated {
-		log.Printf("session, get user from session (request)")
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
 
 	vars := mux.Vars(r)
 
@@ -714,15 +711,6 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	/*
-		reviewID, err := strconv.Atoi(p.Sanitize(r.FormValue("review_id")))
-		if err != nil {
-			log.Println("review_id", err)
-			ErrorHandler(w, r, http.StatusInternalServerError)
-			return
-		}
-	*/
 
 	// Services
 	services := service.NewServices(db.GetDB())
@@ -791,27 +779,6 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		reviewAnswer = append(reviewAnswer, temp)
 	}
 
-	/*
-		fullReview := model.FullReview{
-			Reviewer:     currentUser.ID,
-			Target:       targetID,
-			ReviewID:     reviewID,
-			AssignmentID: assignmentID,
-			Answers:      make([]model.ReviewAnswer, 0),
-		}
-
-		for _, field := range form.Form.Fields {
-			answer := model.ReviewAnswer{
-				Type:   field.Type,
-				Name:   field.Name,
-				Label:  field.Label,
-				Answer: p.Sanitize(r.FormValue(field.Name)),
-			}
-
-			fullReview.Answers = append(fullReview.Answers, answer)
-		}
-	*/
-
 	for _, item := range reviewAnswer {
 		_, err = services.ReviewAnswer.Insert(item)
 		if err != nil {
@@ -821,8 +788,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// TODO (Svein): Want to send back to /assignment/{id}. HOW TO?
-	IndexGET(w, r)
+	http.Redirect(w, r, fmt.Sprintf("/assignment/%d", assignment.ID), http.StatusFound)
 }
 
 // AssignmentWithdrawGET handles GET-requests for withdrawing submissions

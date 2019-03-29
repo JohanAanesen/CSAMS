@@ -13,8 +13,6 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/gorilla/mux"
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/shurcooL/github_flavored_markdown"
-	"html/template"
 	"log"
 	"net/http"
 	"sort"
@@ -169,16 +167,14 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	// String converted into integer
 	courseID, err := strconv.Atoi(r.FormValue("course_id"))
 	if err != nil {
-		log.Print("course_id")
-		log.Println(err)
+		log.Println("strconv, atoi, course_id", err.Error())
 		return
 	}
 
 	if r.FormValue("submission_id") != "" {
 		val, err = strconv.Atoi(r.FormValue("submission_id"))
 		if err != nil {
-			log.Println("submission_id")
-			log.Println(err)
+			log.Println("strconv, atoi, submission_id", err.Error())
 			return
 		}
 	}
@@ -192,8 +188,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("review_id") != "" {
 		val, err = strconv.Atoi(r.FormValue("review_id"))
 		if err != nil {
-			log.Println("review_id")
-			log.Println(err)
+			log.Println("strconv, atoi, review_id", err.Error())
 			return
 		}
 
@@ -340,9 +335,6 @@ func AdminSingleAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 	// TODO fetch submission and review names also
 
-	descriptionMD := []byte(assignment.Description)
-	description := github_flavored_markdown.Markdown(descriptionMD)
-
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
@@ -351,7 +343,6 @@ func AdminSingleAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 	v.Vars["Assignment"] = assignment
 	v.Vars["CourseName"] = course.Name
-	v.Vars["Description"] = template.HTML(description) // TODO (Svein): User template function
 
 	v.Render(w)
 }
@@ -438,6 +429,9 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminUpdateAssignmentPOST handles POST-request at /admin/assignment/update
 func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
+	// Sanitizer
+	p := bluemonday.UGCPolicy()
+
 	// Services
 	assignmentService := service.NewAssignmentService(db.GetDB())
 	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
@@ -575,8 +569,8 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	assignment.ID = id
-	assignment.Name = r.FormValue("name") // TODO (Svein): Sanitize
-	assignment.Description = r.FormValue("description")
+	assignment.Name = p.Sanitize(r.FormValue("name"))
+	assignment.Description = p.Sanitize(r.FormValue("description"))
 	assignment.Publish = publish
 	assignment.Deadline = deadline
 	assignment.CourseID = courseID
@@ -1079,6 +1073,7 @@ func AdminAssignmentSubmissionCreateGET(w http.ResponseWriter, r *http.Request) 
 				HasComment:  item.HasComment,
 				Description: item.Description,
 				Name:        item.Name,
+				Required:    item.Required,
 			})
 		}
 	}
@@ -1187,6 +1182,7 @@ func AdminAssignmentSubmissionCreatePOST(w http.ResponseWriter, r *http.Request)
 		answer.Name = field.Name
 		answer.Label = field.Label
 		answer.HasComment = field.HasComment
+		answer.Required = field.Required
 		//answer.Description = field.Description
 		// Check if the field has comment enabled
 		if field.HasComment {
@@ -1300,6 +1296,7 @@ func AdminAssignmentSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) 
 				HasComment:  item.HasComment,
 				Description: item.Description,
 				Name:        item.Name,
+				Required:    item.Required,
 			})
 		}
 	}
@@ -1417,6 +1414,7 @@ func AdminAssignmentSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request)
 		answer.Label = field.Label
 		answer.Description = field.Description
 		answer.HasComment = field.HasComment
+		answer.Required = field.Required
 
 		// If delivered, only change the value
 		submissionAnswers[index].Answer = answer.Answer

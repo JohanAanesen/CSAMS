@@ -74,6 +74,7 @@ CREATE TABLE `fields`
   `priority`    int(11)     NOT NULL,
   `weight`      int(11)     DEFAULT NULL,
   `choices`     text DEFAULT NULL,
+  `required`    int(1) NOT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`form_id`) REFERENCES forms (`id`)
 );
