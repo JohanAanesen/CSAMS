@@ -1,9 +1,9 @@
 {{define "title"}}Assignment: {{.Assignment.Name}}{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-<h1 class="display-4">{{.Assignment.Name}}</h1>
-<hr>
-<div class="row">
+    <h1 class="display-4">{{.Assignment.Name}}</h1>
+    <hr>
+    <div class="row">
     <div class="col">
         <table class="table">
             <thead>
@@ -39,7 +39,7 @@
 
             <tr>
                 <td><strong>Course</strong></td>
-                <td>{{.Assignment.CourseID}}</td>
+                <td>{{.CourseName}}</td>
             </tr>
 
             <tr>
@@ -61,11 +61,11 @@
         <a href="/admin/assignment/update/{{.Assignment.ID}}" class="btn btn-info">Edit</a>
     </div>
 
+
     <div class="col">
         <h5>Description:</h5>
         <hr>
         {{MDCONVERT .Assignment.Description}}
     </div>
-</div>
 {{end}}
 {{define "foot"}}{{end}}

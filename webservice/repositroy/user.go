@@ -95,11 +95,11 @@ func (repo *UserRepository) FetchAll() ([]*model.User, error) {
 	return result, err
 }
 
-// FetchAllFromCourse func
+// FetchAllFromCourse fetches all course participants in sorted list by teacher, name
 func (repo *UserRepository) FetchAllFromCourse(courseID int) ([]*model.User, error) {
 	result := make([]*model.User, 0)
 
-	query := "SELECT u.id, u.name, u.email_student, u.teacher, u.email_private FROM users AS u INNER JOIN usercourse AS uc ON u.id = uc.userid WHERE uc.courseid = ?"
+	query := "SELECT u.id, u.name, u.email_student, u.teacher, u.email_private FROM users AS u INNER JOIN usercourse AS uc ON u.id = uc.userid WHERE uc.courseid = ? ORDER BY u.teacher DESC, u.name ASC"
 
 	rows, err := repo.db.Query(query, courseID)
 	if err != nil {

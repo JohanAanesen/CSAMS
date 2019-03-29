@@ -13,12 +13,32 @@
                 <div class="card shadow-sm{{if DEADLINEDUE .Deadline}} bg-secondary text-light{{end}}">
                     <div class="card-body">
                         <h2 class="display-5">{{.Name}}</h2>
+                        <hr class="bg-light">
+                        <h3 class="display-5">Submission</h3>
                         <h5>
                             <span class="badge {{if DEADLINEDUE .Deadline}}badge-dark{{ else}} badge-secondary{{end}}">{{$C.Code}}</span>
                         </h5>
-                        <p{{if DEADLINEDUE .Deadline}} class="text-danger"{{end}}>
-                            <strong>Deadline: </strong> {{PRETTYTIME .Deadline}}</p>
+                        {{if DEADLINEDUE .Deadline}}
+                            <h5>
+                                <span class="badge badge-danger">Deadline passed</span>
+                            </h5>
+                        {{else}}
+                            <p><strong>Deadline: </strong> {{PRETTYTIME .Deadline}}</p>
+                        {{end}}
                         <hr class="bg-light">
+                        {{ if DEADLINEDUE .Deadline}}
+                            <h3 class="display-5">Peer Review</h3>
+                            {{if DEADLINEDUE .ReviewDeadline}}
+                                <h5>
+                                    <span class="badge badge-danger">Deadline passed</span>
+                                </h5>
+                            {{else}}
+                                <p><strong>Deadline: </strong> {{PRETTYTIME .ReviewDeadline}}</p>
+                            {{end}}
+
+                            <hr class="bg-light">
+                        {{ end}}
+
                         <a href="/admin/assignment/{{.ID}}"
                            class="btn btn-outline-{{if DEADLINEDUE .Deadline}}light{{else}}dark{{end}} btn-sm">See
                             details</a>
