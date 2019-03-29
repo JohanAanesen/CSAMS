@@ -2,7 +2,17 @@
 {{define "head"}}
     <!-- This is for the editing -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
-    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+    <style>
+        .CodeMirror {
+            height: 300px;
+        }
+        .CodeMirror-code::selection {
+            background: #000;
+        }
+        .CodeMirror-code::-moz-selection {
+            background: #000;
+        }
+    </style>
 {{end}}
 {{define "content"}}
 
@@ -30,7 +40,12 @@
 
 {{end}}
 {{define "foot"}}
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
     <script>
-        new SimpleMDE({element: document.getElementById("rawQuestions")});
+        new SimpleMDE({
+            element: document.getElementById("rawQuestions"),
+            hideIcons: ["side-by-side", "fullscreen"],
+            lineWrapping: true,
+        });
     </script>
 {{end}}

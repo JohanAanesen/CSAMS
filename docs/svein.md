@@ -1,5 +1,20 @@
 Svein's log
 ============
+## 29/03/2019
+#### Worked on
+* Fixing TODO's
+* Updated code
+  * More informative log messages
+* Adding more security to the application
+* Added selection for SimpleMDE (QoT)
+* Removed deprecated functions
+#### Good
+* 
+#### Bad
+* 
+#### Decisions
+* Redirect all attempts to go to `/admin*` to `/`
+
 ## 24/03/2019
 #### Worked on
 * Implemented default weight and field type to the form builder

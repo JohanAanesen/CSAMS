@@ -8,17 +8,13 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
+	"github.com/microcosm-cc/bluemonday"
 	"log"
 	"net/http"
 )
 
 // UserGET serves user page to users
 func UserGET(w http.ResponseWriter, r *http.Request) {
-	if !session.IsLoggedIn(r) {
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	// Services
 	services := service.NewServices(db.GetDB())
 
@@ -47,12 +43,8 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
 
 // UserUpdatePOST changes the user information
 func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
-	if !session.IsLoggedIn(r) {
-		//not logged in
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
+	// Sanitizer
+	p := bluemonday.UGCPolicy()
 	// Get current user
 	currentUser := session.GetUserFromSession(r)
 	// Services
@@ -77,7 +69,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	if secondaryEmail != "" && secondaryEmail != currentUser.EmailPrivate.String {
 		updatedUser := currentUser
 		updatedUser.EmailPrivate = sql.NullString{
-			String: secondaryEmail, // TODO (Svein): sanitize this
+			String: p.Sanitize(secondaryEmail),
 			Valid:  secondaryEmail != "",
 		}
 
