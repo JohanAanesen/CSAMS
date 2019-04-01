@@ -131,6 +131,7 @@ func routes() http.Handler {
 
 	// Login forgotten password handler
 	router.HandleFunc("/forgottenpass", controller.ForgottenGET).Methods("GET")
+	router.HandleFunc("/forgotten", controller.ForgottenPOST).Methods("POST")
 
 	// Set path prefix for the static-folder
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))

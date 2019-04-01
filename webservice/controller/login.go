@@ -168,3 +168,19 @@ func ForgottenGET(w http.ResponseWriter, r *http.Request) {
 
 	v.Render(w)
 }
+
+// ForgottenPOST checks if the email is valid and sends a link to the email to change password
+func ForgottenPOST(w http.ResponseWriter, r *http.Request) {
+
+	email := r.FormValue("email") // email
+
+	if email == "" { //login credentials cannot be empty
+		ErrorHandler(w, r, http.StatusBadRequest)
+		log.Println("Credentials cannot be empty!")
+		return
+	}
+
+	log.Println("To be continued")
+	// TODO brede : write code here <3
+
+}
