@@ -305,6 +305,7 @@ _Merged following to master_
 * Created a new gmail and started on mailservice
 * Can already send an email since it's only 3 lines of code, too easy :/
 * Function in mailservice for resetting password is ready
+* Changed from https to ssh!!!
 
 ### Tuesday 02/04/19
 
