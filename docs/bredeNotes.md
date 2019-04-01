@@ -298,3 +298,18 @@ _Merged following to master_
 * And smaller stuff. 
 
 ### Friday 29/03/19
+* Fixed some bugs on pullrequest and merged to master
+
+## Week Nine
+### Monday 01/04/19
+* Created a new gmail and started on mailservice
+* Can already send an email since it's only 3 lines of code, too easy :/
+* Function in mailservice for resetting password is ready
+
+### Tuesday 02/04/19
+
+### Wednesday 03/04/19
+
+### Thursday 04/04/19
+
+### Friday 05/04/19

@@ -7,7 +7,6 @@
     "database": "cs53",
     "parseTime": true
   },
-
   "server": {
     "hostname": "0.0.0.0",
     "useHTTP": true,

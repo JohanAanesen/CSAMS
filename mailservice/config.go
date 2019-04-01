@@ -46,7 +46,7 @@ func LoadConfig(configFile string) (*Configuration, error) {
 //Initialize loads the config.json file and sets up database
 func Initialize() *Configuration {
 	var cfg = &Configuration{}
-	cfg, err := LoadConfig("config.json")
+	cfg, err := LoadConfig("config.json") // TODO brede change to config.json only when deploying on docker
 	if err != nil {
 		panic(err)
 	}

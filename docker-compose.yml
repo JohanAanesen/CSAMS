@@ -70,6 +70,8 @@ services:
       DATABASE_PASSWORD: root
       DATABASE_DATABASE: cs53
       PEER_AUTH: "5243980712315079823517089"
+      USERNAME: cs.assignments.noreply@gmail.com
+      PASSWORD:
     restart: always
 
   adminer:
