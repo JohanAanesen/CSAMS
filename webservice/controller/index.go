@@ -90,13 +90,10 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 						// Calculate how many left
 						noOfReviewsLeft = int(assignment.Reviewers.Int64) - reviewDone
 					}
-
 				}
 				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: *assignment, CourseCode: course.Code, Delivered: delivered, Reviews: noOfReviewsLeft})
-
 			}
 		}
-
 	}
 
 	// Set values

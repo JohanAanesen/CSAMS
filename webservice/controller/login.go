@@ -166,11 +166,18 @@ func ForgottenGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "forgotten"
 
+	// Clear message and email
+	v.Vars["Message"] = ""
+	v.Vars["Email"] = ""
+
 	v.Render(w)
 }
 
 // ForgottenPOST checks if the email is valid and sends a link to the email to change password
 func ForgottenPOST(w http.ResponseWriter, r *http.Request) {
+
+	// Service
+	userService := service.NewUserService(db.GetDB())
 
 	email := r.FormValue("email") // email
 
@@ -180,7 +187,28 @@ func ForgottenPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("To be continued")
-	// TODO brede : write code here <3
+	exists, err := userService.EmailExists(email)
+	if err != nil {
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		log.Println("EmailExists, ", err.Error())
+		return
+	}
+
+	if exists {
+		// Send email
+		log.Println("Email exists, sending email")
+	} else {
+		log.Println("Email existsn't, sendingn't email")
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "forgotten"
+	v.Vars["Message"] = "If the email provided exists, we will send you and email with instructions"
+	v.Vars["Email"] = email
+
+	v.Render(w)
 
 }

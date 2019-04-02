@@ -152,11 +152,11 @@ func (repo *UserRepository) FetchAllStudentsFromCourse(courseID int) ([]*model.U
 }
 
 // EmailExists Checks if a user with said email exists
-func (repo *UserRepository) EmailExists(user model.User) (bool, error) {
+func (repo *UserRepository) EmailExists(email string) (bool, error) {
 
 	query := "SELECT COUNT(id) FROM users WHERE email_student = ? OR email_private = ?"
 
-	rows, err := repo.db.Query(query, user.EmailStudent, user.EmailStudent)
+	rows, err := repo.db.Query(query, email, email)
 	if err != nil {
 		return false, err
 	}

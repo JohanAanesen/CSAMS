@@ -2,18 +2,27 @@
 {{define "head"}}{{end}}
 {{ define "content" }}
     <div class="container pt-5">
+        {{ if .Message }}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <strong>Notice!</strong> {{.Message}}!
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {{end}}
         <div class="row justify-content-center align-items-center bg-light rounded shadow-lg">
             <div class="col-md-6 col-xs-12">
                 <h1 class="display-4 mb-3">Forgotten password?</h1>
 
                 <p>If you forgot your password then we'll attempt to email you instructions on how to reset it. If
-                    you don't receive the email then try looking in your spam folder</p>
+                    you don't receive the email then try looking in your spam folder.</p>
 
-                <form action="/forgotten" method="post">
+                <form action="/forgotpassword" method="post">
                     <div class="form-group">
                         <label for="inputEmail" class="sr-only">Email address</label>
                         <input type="email" name="email" id="inputEmail" class="form-control"
-                               placeholder="Email address" required autofocus>
+                               placeholder="Email address" {{ if .Email }} value="{{ .Email }}" {{end}} required
+                               autofocus>
                     </div>
                     <button class="btn btn-primary btn-block mb-3" type="submit">Send email</button>
                 </form>
