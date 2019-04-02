@@ -308,6 +308,8 @@ _Merged following to master_
 * Changed from https to ssh!!!
 
 ### Tuesday 02/04/19
+* Added check to see if the email exists in the database
+* Added feedback to the user
 
 ### Wednesday 03/04/19
 
