@@ -153,6 +153,11 @@ func (s Statistics) GetDisplayStruct() StatisticsDisplay {
 		return result
 	}
 
+	result.Percent, err = s.AveragePercent()
+	if err != nil {
+		return result
+	}
+
 	result.AbsMin = s.AbsMin
 	result.AbsMax = s.AbsMax
 	result.LocalMin = s.Min()
