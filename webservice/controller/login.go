@@ -260,6 +260,7 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 	// Services
 	//userService := service.NewUserService(db.GetDB())
 	forgottenService := service.NewForgottenPassService(db.GetDB())
+	userService := service.NewUserService(db.GetDB())
 
 	match, payload, err := forgottenService.Match(hash)
 	if err != nil {
@@ -268,22 +269,63 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 		return
 	}
 
+	// If the hash matches
 	if match {
 
-		// Check if the link has expired (after 24 hours)
-		if payload.TimeStamp.Add(time.Hour * 24).Before(util.GetTimeInCorrectTimeZone()) {
+		timeNow := util.GetTimeInCorrectTimeZone()
+
+		// Check if the link has expired (after 12 hours)
+		if timeNow.After(payload.TimeStamp.Add(time.Hour * 12)) {
+			// Update forgottenPass table to be expired (one time use only!)
+			err = forgottenService.UpdateValidation(payload.ID, false)
+			if err != nil {
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				log.Println("forgotten, update validation, ", err.Error())
+				return
+			}
+
 			ErrorHandler(w, r, http.StatusBadRequest)
-			log.Println("Link expired")
+			log.Println("Link expired, it's been 12 hours since creation")
 			return
 		}
 
-		// TODO brede
+		// Check if the link has been used before (one time use only)
+		if !payload.Valid {
+			ErrorHandler(w, r, http.StatusBadRequest)
+			log.Println("Link expired, used before")
+			return
+		}
+
 		// Change password to user
+		err := userService.UpdatePassword(payload.UserID, password)
+		if err != nil {
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			log.Println("user, change password, ", err.Error())
+			return
+		}
 
 		// Update forgottenPass table to be expired (one time use only!)
+		err = forgottenService.UpdateValidation(payload.ID, false)
+		if err != nil {
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			log.Println("forgotten, update validation, ", err.Error())
+			return
+		}
+
+		// Add log for updated password
+		logData := model.Log{UserID: payload.UserID, Activity: model.ChangePassword}
+		err = model.LogToDB(logData)
+		if err != nil {
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			log.Println("log, user change password, ", err.Error())
+			return
+		}
 
 		// Give feedback
-		log.Println("link not expired")
+		session.GetAndDeleteMessageFromSession(w, r)
+		session.SaveMessageToSession("You can now log in with your new password", w, r)
+		http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage //todo change redirection
+
 	} else {
 		ErrorHandler(w, r, http.StatusBadRequest)
 		log.Println("Link has no match in db")

@@ -52,3 +52,7 @@ func (s *ForgottenPassService) Match(hash string) (bool, model.ForgottenPass, er
 
 	return false, model.ForgottenPass{}, nil
 }
+
+func (s *ForgottenPassService) UpdateValidation(id int, state bool) error {
+	return s.forgottenPassRepo.UpdateValidation(id, state)
+}

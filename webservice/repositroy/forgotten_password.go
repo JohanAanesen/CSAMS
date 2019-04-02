@@ -54,7 +54,7 @@ func (repo *ForgottenPassRepository) Insert(forgottenPass model.ForgottenPass) (
 func (repo *ForgottenPassRepository) FetchAll() ([]*model.ForgottenPass, error) {
 	result := make([]*model.ForgottenPass, 0)
 
-	query := "SELECT `id`, `hash`, `user_id`, `timestamp`  FROM `forgotten_password`"
+	query := "SELECT `id`, `hash`, `user_id`, `valid`, `timestamp`  FROM `forgotten_password`"
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -66,7 +66,7 @@ func (repo *ForgottenPassRepository) FetchAll() ([]*model.ForgottenPass, error) 
 	for rows.Next() {
 		temp := model.ForgottenPass{}
 
-		err = rows.Scan(&temp.ID, &temp.Hash, &temp.UserID, &temp.TimeStamp)
+		err = rows.Scan(&temp.ID, &temp.Hash, &temp.UserID, &temp.Valid, &temp.TimeStamp)
 		if err != nil {
 			return result, err
 		}
@@ -75,4 +75,28 @@ func (repo *ForgottenPassRepository) FetchAll() ([]*model.ForgottenPass, error) 
 	}
 
 	return result, err
+}
+
+// UpdateValidation updates the validation column
+func (repo *ForgottenPassRepository) UpdateValidation(id int, state bool) error {
+	query := "UPDATE `forgotten_password` SET `valid` = ? WHERE id = ?"
+
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, state, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return err
 }
