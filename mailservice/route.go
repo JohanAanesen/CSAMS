@@ -31,9 +31,17 @@ func routes() http.Handler {
 	// Instantiate mux-router
 	router := mux.NewRouter().StrictSlash(true)
 
-	// Index-page Handlers
-	router.HandleFunc("/", HandlerGET).Methods("GET")
-	router.HandleFunc("/", HandlerPOST).Methods("POST")
+	// Handlers for sending forgotten password email to single user
+	router.HandleFunc("/", ForgottenPassGET).Methods("GET")
+	router.HandleFunc("/", ForgottenPassPOST).Methods("POST")
+
+	// Handlers for sending a single email to an user
+	router.HandleFunc("/single", SingleMailGET).Methods("GET")
+	router.HandleFunc("/single", SingleMailPOST).Methods("POST")
+
+	// Handlers for sending one email to multiple users
+	router.HandleFunc("/multiple", MultipleMailGET).Methods("GET")
+	router.HandleFunc("/multiple", MultipleMailPOST).Methods("POST")
 
 	return handlers.CombinedLoggingHandler(os.Stdout, router)
 }

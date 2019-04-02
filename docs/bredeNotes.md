@@ -330,6 +330,8 @@ CREATE TABLE `forgotten_password`
 * Implemented check for valid hash
 * Changes password and added a new column in forgottenPass
 * Also logs password has been changed
+* Added some tests for the handlers
+* Implemented two more functions, one for sending email to single recipient and one for multiple
 
 ### Wednesday 03/04/19
 

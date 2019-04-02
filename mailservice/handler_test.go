@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-
 func TestHandlers(t *testing.T) {
 	Initialize()
 
@@ -25,7 +24,47 @@ func TestHandlers(t *testing.T) {
 			method:       "GET",
 			url:          "/",
 			body:         nil,
-			handler:      HandlerGET,
+			handler:      ForgottenPassGET,
+			expectedCode: http.StatusBadRequest,
+		},
+		{
+			name:         "indexPOST",
+			method:       "POST",
+			url:          "/",
+			body:         nil,
+			handler:      ForgottenPassPOST,
+			expectedCode: http.StatusBadRequest,
+		},
+		{
+			name:         "SingleMailGET",
+			method:       "GET",
+			url:          "/single",
+			body:         nil,
+			handler:      SingleMailGET,
+			expectedCode: http.StatusBadRequest,
+		},
+		{
+			name:         "SingleMailPOST",
+			method:       "POST",
+			url:          "/single",
+			body:         nil,
+			handler:      SingleMailPOST,
+			expectedCode: http.StatusBadRequest,
+		},
+		{
+			name:         "MultipleMailGET",
+			method:       "GET",
+			url:          "/multiple",
+			body:         nil,
+			handler:      MultipleMailGET,
+			expectedCode: http.StatusBadRequest,
+		},
+		{
+			name:         "MultipleMailPOST",
+			method:       "POST",
+			url:          "/multiple",
+			body:         nil,
+			handler:      MultipleMailPOST,
 			expectedCode: http.StatusBadRequest,
 		},
 	}
