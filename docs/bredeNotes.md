@@ -326,6 +326,7 @@ CREATE TABLE `forgotten_password`
 );
 ```
 * Now adds to the table if the email is correct
+* Implemented check for valid hash
 
 
 ### Wednesday 03/04/19
