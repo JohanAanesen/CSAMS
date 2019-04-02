@@ -97,3 +97,8 @@ func (s *ReviewAnswerService) CountReviewsDone(userID, assignmentID int) (int, e
 func (s *ReviewAnswerService) Insert(answer model.ReviewAnswer) (int, error) {
 	return s.reviewAnswerRepo.Insert(answer)
 }
+
+// FetchMaxScoreFromAssignment func
+func (s *ReviewAnswerService) FetchMaxScoreFromAssignment(assignmentID int) (int, error) {
+	return s.reviewAnswerRepo.MaxScore(assignmentID)
+}

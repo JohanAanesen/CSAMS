@@ -158,3 +158,24 @@ func (repo *ReviewAnswerRepository) CountReviewsDone(userID, assignmentID int) (
 
 	return result, err
 }
+
+// MaxScore func
+func (repo *ReviewAnswerRepository) MaxScore(assignmentID int) (int, error) {
+	var result int
+
+	query := `SELECT SUM(f.weight) FROM fields AS f INNER JOIN reviews AS r ON r.form_id = f.form_id INNER JOIN assignments AS a ON a.review_id = r.id WHERE a.id = ?`
+
+	rows, err := repo.db.Query(query, assignmentID)
+	if err != nil {
+		return 0, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&result)
+		if err != nil {
+			return 0, err
+		}
+	}
+
+	return result, nil
+}
