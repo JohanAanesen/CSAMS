@@ -110,8 +110,8 @@ func (s *ReviewAnswerService) FetchMaxScoreFromAssignment(assignmentID int) (int
 	return s.reviewAnswerRepo.MaxScore(assignmentID)
 }
 
-// FetchStatistics func
-func (s *ReviewAnswerService) FetchStatistics(assignmentID int) (*util.Statistics, error) {
+// FetchStatisticsForAssignment func
+func (s *ReviewAnswerService) FetchStatisticsForAssignment(assignmentID int) (*util.Statistics, error) {
 	// Get max score from assignment
 	absMax, err := s.FetchMaxScoreFromAssignment(assignmentID)
 	if err != nil {
@@ -145,6 +145,52 @@ func (s *ReviewAnswerService) FetchStatistics(assignmentID int) (*util.Statistic
 	}
 
 	return result, nil
+}
+
+// FetchStatisticsForAssignmentAndUser func
+func (s *ReviewAnswerService) FetchStatisticsForAssignmentAndUser(assignmentID, userID int) (*util.Statistics, error) {
+	// Get max score from assignment
+	absMax, err := s.FetchMaxScoreFromAssignment(assignmentID)
+	if err != nil {
+		return nil, err
+	}
+	// Create new statistics object
+	var result = util.NewStatistics(0, float64(absMax))
+
+	// Get assignment
+	assignment, err := s.assignmentRepo.Fetch(assignmentID)
+	if err != nil {
+		return nil, err
+	}
+	// Fetch reviews for the user
+	reviews, err := s.FetchForUser(userID, assignment.ID)
+	if err != nil {
+		return nil, err
+	}
+	// Loop through reviews for the user
+	for _, review := range reviews {
+		// Add result from review
+		result.AddEntry(getScoreFromReview(review))
+	}
+
+	return result, nil
+}
+
+// FetchScoreFromReview func
+func (s *ReviewAnswerService) FetchScoreFromReview(assignmentID, userID int) ([]float64, error) {
+	result := make([]float64, 0)
+
+	reviews, err := s.FetchForUser(userID, assignmentID)
+	if err != nil {
+		return result, err
+	}
+	// Loop through reviews for the user
+	for _, review := range reviews {
+		// Add result from review
+		result = append(result, getScoreFromReview(review))
+	}
+
+	return result, err
 }
 
 func getScoreFromReview(review []*model.ReviewAnswer) float64 {

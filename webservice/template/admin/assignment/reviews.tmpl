@@ -10,31 +10,76 @@
         </div>
     </div>
 
-    {{if .TotalWeights.IsWeighted}}
-        <div class="row">
-            <div class="col">
-                <h3>Total weights</h3>
-                <table class="table table-striped">
-                    <tr>
-                        <td>Score</td>
-                        <td>{{.TotalWeights.Score}}</td>
-                    </tr>
-                    <tr>
-                        <td>Total</td>
-                        <td>{{.TotalWeights.Total}}</td>
-                    </tr>
-                    <tr>
-                        <td>Percent</td>
-                        <td>{{.TotalWeights.Percent}}%</td>
-                    </tr>
-                </table>
-                <hr>
-            </div>
+    <div class="row">
+        <div class="col-lg">
+            <h4>Statistics (User)</h4>
+            <table class="table table-striped table-sm">
+                <tr>
+                    <td>Entries</td>
+                    <td>{{.UserStatistics.Entries}}</td>
+                </tr>
+                <tr>
+                    <td>Absolute Min / Max</td>
+                    <td>{{.UserStatistics.AbsMin}} / {{.UserStatistics.AbsMax}}</td>
+                </tr>
+                <tr>
+                    <td>Local Min / Max</td>
+                    <td>{{.UserStatistics.LocalMin}} / {{.UserStatistics.LocalMax}}</td>
+                </tr>
+                <tr>
+                    <td>Average score</td>
+                    <td>{{.UserStatistics.Average}}</td>
+                </tr>
+                <tr>
+                    <td>Average percent</td>
+                    <td>{{.UserStatistics.Percent}}%</td>
+                </tr>
+                <tr>
+                    <td>Variance / Standard Deviation</td>
+                    <td>{{.UserStatistics.Variance}} / {{.UserStatistics.StandardDeviation}}</td>
+                </tr>
+            </table>
+
+            <hr>
         </div>
-    {{end}}
+
+        <div class="col-lg">
+            <h4>Statistics (Assignment)</h4>
+            <table class="table table-striped table-sm">
+                <tr>
+                    <td>Entries</td>
+                    <td>{{.Statistics.Entries}}</td>
+                </tr>
+                <tr>
+                    <td>Absolute Min / Max</td>
+                    <td>{{.Statistics.AbsMin}} / {{.Statistics.AbsMax}}</td>
+                </tr>
+                <tr>
+                    <td>Local Min / Max</td>
+                    <td>{{.Statistics.LocalMin}} / {{.Statistics.LocalMax}}</td>
+                </tr>
+                <tr>
+                    <td>Average score</td>
+                    <td>{{.Statistics.Average}}</td>
+                </tr>
+                <tr>
+                    <td>Average percent</td>
+                    <td>{{.Statistics.Percent}}%</td>
+                </tr>
+                <tr>
+                    <td>Variance / Standard Deviation</td>
+                    <td>{{.Statistics.Variance}} / {{.Statistics.StandardDeviation}}</td>
+                </tr>
+            </table>
+
+            <hr>
+        </div>
+    </div>
 
     {{$WEIGHTS := .Weights}}
     {{$i := 1}}
+    {{$ReviewScores := .ReviewScores}}
+    {{$zeroIndex := 0}}
 
     <div class="row">
         <div class="col-12">
@@ -42,101 +87,70 @@
         </div>
         {{range $index, $R := .Reviews}}
             <div class="col-lg-6">
-                {{$Weight := index $WEIGHTS $index}}
-                <div class="card mb-3">
-                    {{$temp := index . 0}}
-                    <div class="card-header bg-secondary">
-                        <h5 class="card-title text-light mb-0">Review by {{GET_USERNAME $temp.UserReviewer}}</h5>{{$i = INCREMENT $i}}
-                    </div>
-                    <div class="card-body">
-                        <!-- TODO (Svein): Get the other field types -->
-                        {{range $R}}
-                            {{if eq .Type "radio"}}
-                                {{$A := .}}
-                                {{$Answer := ATOI .Answer}}
-                                {{$V := 1}}
-                                <fieldset class="mb-3">
-                                    <legend>{{.Label}}{{if $Weight.IsWeighted}} <em>(Weight: {{.Weight}})</em>{{end}}</legend>
-                                    {{range .Choices}}
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="{{$A.Name}}" id="{{$A.Name}}_{{$V}}" value="{{$V}}"{{if eq $V $Answer}} checked{{end}} disabled>
-                                            <label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
-                                        </div>
-                                        {{$V = INCREMENT $V}}
-                                    {{end}}
-                                    <small class="form-text text-muted">{{.Description}}</small>
-                                </fieldset>
-                            {{else if eq .Type "multi-checkbox"}}
-                                {{$A := .Answer}}
-                                {{$Value := SPLIT_STRING $A.Value ","}}
-                                {{$V := 1}}
-                                <fieldset class="mb-3">
-                                    <legend>{{.Label}}</legend>
-                                    {{range SPLIT_CHOICES .Choices}}
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="{{.Name}}" id="{{.Name}}_{{$V}}" value="{{$V}}"{{if CONTAINS (ITOA $V) $Value}} checked{{end}} disabled>
-                                            <label class="form-check-label" for="{{.Name}}_{{$V}}">{{.}}</label>
-                                        </div>
-                                        {{$V = INCREMENT $V}}
-                                    {{end}}
-                                    <small class="form-text text-muted">{{.Description}}</small>
-                                </fieldset>
-                            {{else}}
-                                <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
-                                    {{if eq .Type "text"}}
-                                        <label for="{{.Name}}">{{.Label}}{{if $Weight.IsWeighted}}&nbsp;<em>(Weight: {{.Weight}})</em>{{end}}</label>
-                                        <input type="text" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
-                                    {{else if eq .Type "url"}}
-                                        <label for="{{.Name}}">{{.Label}}{{if $Weight.IsWeighted}}&nbsp;<em>(Weight: {{.Weight}})</em>{{end}}</label>
-                                        <input type="url" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
-                                        <a href="{{.Answer}}" target="_blank">Open in new tab</a>
-                                    {{else if eq .Type "textarea"}}
-                                        <label for="{{.Name}}">{{.Label}}{{if $Weight.IsWeighted}}&nbsp;<em>(Weight: {{.Weight}})</em>{{end}}</label>
-                                        <textarea name="{{.Name}}" id="{{.Name}}" class="form-control" rows="5" disabled>{{.Answer}}</textarea>
-                                    {{else if eq .Type "number"}}
-                                        <label for="{{.Name}}">{{.Label}}{{if $Weight.IsWeighted}}&nbsp;<em>(Weight: {{.Weight}})</em>{{end}}</label>
-                                        <input type="number" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
-                                    {{else if eq .Type "checkbox"}}
-                                        <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input"{{if eq .Answer "on"}} checked{{end}} disabled>
-                                        <label class="form-check-inline" for="{{.Name}}">{{.Label}}{{if $Weight.IsWeighted}}&nbsp;<em>(Weight: {{.Weight}})</em>{{end}}</label>
-                                    {{else if eq .Type "paragraph"}}
-                                        <legend>{{.Label}}</legend>
-                                        <p class="lead">{{.Description}}</p>
-                                    {{end}}
-
-                                    {{if ne .Type "paragraph"}}
+                <form>
+                    <div class="card mb-3">
+                        {{$temp := index . 0}}
+                        <div class="card-header bg-secondary">
+                            <h5 class="card-title text-light mb-0">Review by {{GET_USERNAME $temp.UserReviewer}} (Score: {{index $ReviewScores $zeroIndex}})</h5>
+                            {{$i = INCREMENT $i}}
+                            {{$zeroIndex = INCREMENT $zeroIndex}}
+                        </div>
+                        <div class="card-body">
+                            {{range $R}}
+                                {{if eq .Type "radio"}}
+                                    {{$A := .}}
+                                    {{$Answer := ATOI .Answer}}
+                                    {{$V := 1}}
+                                    <fieldset class="mb-3">
+                                        <legend>{{.Label}}&nbsp;<em>(Weight: {{.Weight}})</em></legend>
+                                        {{range .Choices}}
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="{{$A.Name}}" id="{{$A.Name}}_{{$V}}" value="{{$V}}"{{if eq $V $Answer}} checked{{end}} disabled>
+                                                <label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
+                                            </div>
+                                            {{$V = INCREMENT $V}}
+                                        {{end}}
                                         <small class="form-text text-muted">{{.Description}}</small>
-                                    {{end}}
-                                </div>
-                            {{end}}
-                            {{if .HasComment}}
-                                <div class="form-group form-check">
-                                    <label for="{{.Name}}_comment">Comment</label>
-                                    <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3" class="form-control" disabled>{{.Comment.String}}</textarea>
-                                </div>
-                            {{end}}
-                        {{end}}
+                                    </fieldset>
+                                {{else}}
+                                    <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
+                                        {{if eq .Type "text"}}
+                                            <label for="{{.Name}}">{{.Label}}&nbsp;<em>(Weight: {{.Weight}})</em></label>
+                                            <input type="text" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
+                                        {{else if eq .Type "url"}}
+                                            <label for="{{.Name}}">{{.Label}}&nbsp;<em>(Weight: {{.Weight}})</em></label>
+                                            <input type="url" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
+                                            <a href="{{.Answer}}" target="_blank">Open in new tab</a>
+                                        {{else if eq .Type "textarea"}}
+                                            <label for="{{.Name}}">{{.Label}}&nbsp;<em>(Weight: {{.Weight}})</em></label>
+                                            <textarea name="{{.Name}}" id="{{.Name}}" class="form-control" rows="5" disabled>{{.Answer}}</textarea>
+                                        {{else if eq .Type "number"}}
+                                            <label for="{{.Name}}">{{.Label}}&nbsp;<em>(Weight: {{.Weight}})</em></label>
+                                            <input type="number" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
+                                        {{else if eq .Type "checkbox"}}
+                                            <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input"{{if eq .Answer "on"}} checked{{end}} disabled>
+                                            <label class="form-check-inline" for="{{.Name}}">{{.Label}}&nbsp;<em>(Weight: {{.Weight}})</em></label>
+                                        {{else if eq .Type "paragraph"}}
+                                            <legend>{{.Label}}</legend>
+                                            <p class="lead">{{.Description}}</p>
+                                        {{end}}
 
-                        {{if $Weight.IsWeighted}}
-                            <hr>
-                            <h2>Weights</h2>
-                            <table class="table table-striped">
-                                <tr>
-                                    <td>Score</td>
-                                    <td>{{$Weight.Score}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Total</td>
-                                    <td>{{$Weight.Total}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Percent</td>
-                                    <td>{{$Weight.Percent}}%</td>
-                                </tr>
-                            </table>
-                        {{end}}
+                                        {{if ne .Type "paragraph"}}
+                                            <small class="form-text text-muted">{{.Description}}</small>
+                                        {{end}}
+                                    </div>
+                                {{end}}
+                                {{if .HasComment}}
+                                    <div class="form-group form-check">
+                                        <label for="{{.Name}}_comment">Comment</label>
+                                        <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3" class="form-control" disabled>{{.Comment.String}}</textarea>
+                                    </div>
+                                {{end}}
+                                <hr>
+                            {{end}}
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         {{end}}
 

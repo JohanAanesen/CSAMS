@@ -711,7 +711,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		return users[i].SubmittedTime.After(users[j].SubmittedTime)
 	})
 
-	stats, err := services.ReviewAnswer.FetchStatistics(assignment.ID)
+	stats, err := services.ReviewAnswer.FetchStatisticsForAssignment(assignment.ID)
 	if err != nil {
 		log.Println("services, review answer, fetch statistics", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -779,8 +779,7 @@ func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
 // AdminAssignmentReviewsGET handles request to /admin/assignment/{id}/review/{id}
 func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 	// Services
-	userService := service.NewUserService(db.GetDB())
-	reviewAnswerService := service.NewReviewAnswerService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	// Get URL variables
 	vars := mux.Vars(r)
@@ -800,7 +799,7 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reviews, err := reviewAnswerService.FetchForUser(userID, assignmentID)
+	reviews, err := services.ReviewAnswer.FetchForUser(userID, assignmentID)
 	if err != nil {
 		log.Println("review answer service, fetch for target", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -808,68 +807,32 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user data
-	user, err := userService.Fetch(userID)
+	user, err := services.User.Fetch(userID)
 	if err != nil {
 		log.Println("user service, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	type WeightData struct {
-		IsWeighted bool
-		Total      float32
-		Score      float32
-		Percent    float32
+	assignmentStats, err := services.ReviewAnswer.FetchStatisticsForAssignment(assignmentID)
+	if err != nil {
+		log.Println("services, review answer, fetch statistics for assignment", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
-	weights := make([]WeightData, 0)
-
-	for _, review := range reviews {
-		var totalWeight float32
-		var weightScore float32
-
-		for _, item := range review {
-			totalWeight += float32(item.Weight)
-			if item.Type == "checkbox" {
-				if item.Answer == "on" {
-					weightScore += float32(item.Weight)
-				}
-
-			} else if item.Type == "radio" {
-				for k := range item.Choices {
-					ans, _ := strconv.Atoi(item.Answer)
-					if ans == (k + 1) {
-						K := float32(k + 1)
-						L := float32(len(item.Choices))
-						V := float32(item.Weight) * (K / L)
-						weightScore += V
-					}
-				}
-			}
-		}
-
-		weights = append(weights, WeightData{
-			IsWeighted: totalWeight > 0,
-			Total:      totalWeight,
-			Score:      weightScore,
-			Percent:    (weightScore / totalWeight) * 100.0,
-		})
+	userStats, err := services.ReviewAnswer.FetchStatisticsForAssignmentAndUser(assignmentID, user.ID)
+	if err != nil {
+		log.Println("services, review answer, fetch statistics for assignment and user", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
-	totalWeights := WeightData{
-		IsWeighted: false,
-	}
-	var sum float32
-	for _, item := range weights {
-		sum += item.Score
-	}
-
-	if sum > 0 {
-		avg := sum / float32(len(weights))
-		totalWeights.IsWeighted = true
-		totalWeights.Score = avg
-		totalWeights.Total = weights[0].Total
-		totalWeights.Percent = (totalWeights.Score / totalWeights.Total) * 100.0
+	reviewScores, err := services.ReviewAnswer.FetchScoreFromReview(assignmentID, userID)
+	if err != nil {
+		log.Println("services, review answer, fetch score from review", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	// Set header content-type and status code
@@ -885,8 +848,9 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["AssignmentID"] = assignmentID
 	v.Vars["User"] = user
 	v.Vars["Reviews"] = reviews
-	v.Vars["Weights"] = weights
-	v.Vars["TotalWeights"] = totalWeights
+	v.Vars["ReviewScores"] = reviewScores
+	v.Vars["Statistics"] = assignmentStats.GetDisplayStruct()
+	v.Vars["UserStatistics"] = userStats.GetDisplayStruct()
 
 	// Render view
 	v.Render(w)
@@ -895,9 +859,7 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 // AdminAssignmentSingleSubmissionGET handles GET-request at /admin/assignment/{id}/submission/{id}
 func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	// Services
-	submissionService := service.NewSubmissionService(db.GetDB())
-	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
-	userService := service.NewUserService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	// Get URL variables
 	vars := mux.Vars(r)
@@ -918,7 +880,7 @@ func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) 
 	}
 
 	//user := model.GetUser(userID)
-	user, err := userService.Fetch(userID)
+	user, err := services.User.Fetch(userID)
 	if err != nil {
 		log.Println("user service, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -926,7 +888,7 @@ func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Get form and log possible error
-	_, err = submissionService.FetchFromAssignment(assignmentID)
+	_, err = services.Submission.FetchFromAssignment(assignmentID)
 	if err != nil {
 		log.Println("get submission form from assignment id", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -935,7 +897,7 @@ func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) 
 
 	// Get answers to user if he has delivered
 	//answers, err := model.GetUserAnswers(user.ID, assignmentID)
-	answers, err := submissionAnswerService.FetchUserAnswers(user.ID, assignmentID)
+	answers, err := services.SubmissionAnswer.FetchUserAnswers(user.ID, assignmentID)
 	if err != nil {
 		log.Println("get user answers", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -1511,29 +1473,4 @@ func AdminAssignmentSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Something went wrong."))
 		return
 	}
-}
-
-func getScoreFromReview(review []*model.ReviewAnswer) float64 {
-	var score float64
-
-	for _, item := range review {
-		if item.Type == "checkbox" {
-			if item.Answer == "on" {
-				score += float64(item.Weight)
-			}
-
-		} else if item.Type == "radio" {
-			for k := range item.Choices {
-				ans, _ := strconv.Atoi(item.Answer)
-				if ans == (k + 1) {
-					K := float64(k + 1)
-					L := float64(len(item.Choices))
-					V := float64(item.Weight) * (K / L)
-					score += V
-				}
-			}
-		}
-	}
-
-	return score
 }
