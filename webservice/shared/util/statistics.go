@@ -17,6 +17,19 @@ type Statistics struct {
 	AbsMax  float64
 }
 
+// StatisticsDisplay struct
+type StatisticsDisplay struct {
+	Average           float64
+	Variance          float64
+	StandardDeviation float64
+	Percent           float64
+	AbsMin            float64
+	AbsMax            float64
+	LocalMin          float64
+	LocalMax          float64
+	Entries           int
+}
+
 // NewStatistics func
 func NewStatistics(min, max float64) *Statistics {
 	return &Statistics{
@@ -118,4 +131,33 @@ func (s Statistics) Max() float64 {
 	}
 
 	return max
+}
+
+// GetDisplayStruct returns a struct for displaying the data
+func (s Statistics) GetDisplayStruct() StatisticsDisplay {
+	var err error
+	result := StatisticsDisplay{}
+
+	result.Average, err = s.Average()
+	if err != nil {
+		return result
+	}
+
+	result.Variance, err = s.Variance()
+	if err != nil {
+		return result
+	}
+
+	result.StandardDeviation, err = s.StandardDeviation()
+	if err != nil {
+		return result
+	}
+
+	result.AbsMin = s.AbsMin
+	result.AbsMax = s.AbsMax
+	result.LocalMin = s.Min()
+	result.LocalMax = s.Max()
+	result.Entries = s.Size()
+
+	return result
 }
