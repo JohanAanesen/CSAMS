@@ -6,7 +6,7 @@
         .id-col {
             font-weight: 700;
         }
-        .btn-group-sm > .btn {
+        .btn-xs {
             padding: .25rem .5rem;
             font-size: .75rem;
             line-height: 1;
@@ -28,7 +28,10 @@
             <th data-sortable="true" scope="col">Name</th>
             <th data-sortable="true" scope="col">Email</th>
             <th data-sortable="true" scope="col">Submitted</th>
-            <th scope="col">Actions</th>
+            <th scope="col">Preview</th>
+            <th scope="col">Update</th>
+            <th scope="col">Delete</th>
+            <th scope="col">Reviews Received</th>
             <th data-sortable="true" scope="col">Reviews Done</th>
         </tr>
         </thead>
@@ -42,21 +45,31 @@
                     <td><a href="mailto:{{.User.EmailStudent}}">{{.User.EmailStudent}}</a></td>
                     <td>{{if .Submitted}}{{SORTABLE_TIME .SubmittedTime}}{{end}}</td>
                     <td>
-                        <div class="btn-group btn-group-sm">
-                            {{if .Submitted}}
-                                <a href="/admin/assignment/{{$A.ID}}/submission/{{.User.ID}}" class="btn btn-outline-primary">Preview</a>
-                                <a href="/admin/assignment/{{$A.ID}}/submission/{{.User.ID}}/update" class="btn btn-outline-warning">Update</a>
-                                {{if .Reviewed}}
-                                    <a href="/admin/assignment/{{$A.ID}}/review/{{.User.ID}}" class="btn btn-outline-info">Reviews</a>
-                                {{end}}
-                                <button type="button" onclick="deleteSubmission({{$A.ID}}, {{.User.ID}})" class="btn btn-outline-danger">Delete</button>
-                            {{else}}
-                                <a href="/admin/assignment/{{$A.ID}}/submission/{{.User.ID}}/create" class="btn btn-outline-success">Create</a>
-                            {{end}}
-                        </div>
+                        {{if .Submitted}}
+                            <a href="/admin/assignment/{{$A.ID}}/submission/{{.User.ID}}" class="btn btn-primary btn-xs">Preview</a>
+                        {{else}}
+                            <a href="/admin/assignment/{{$A.ID}}/submission/{{.User.ID}}/create" class="btn btn-success btn-xs">Create</a>
+                        {{end}}
                     </td>
                     <td>
-                        {{.ReviewsDone}} / {{$A.Reviewers.Int64}}
+                        {{if .Submitted}}
+                            <a href="/admin/assignment/{{$A.ID}}/submission/{{.User.ID}}/update" class="btn btn-warning btn-xs">Update</a>
+                        {{end}}
+                    </td>
+                    <td>
+                        {{if .Submitted}}
+                            <button type="button" onclick="deleteSubmission({{$A.ID}}, {{.User.ID}})" class="btn btn-danger btn-xs">Delete</button>
+                        {{end}}
+                    </td>
+                    <td>
+                        {{if .Reviewed}}
+                            <a href="/admin/assignment/{{$A.ID}}/review/{{.User.ID}}" class="btn btn-info btn-xs">Reviews</a>
+                        {{end}}
+                    </td>
+                    <td>
+                        {{if .Submitted}}
+                            <a href="#" class="btn btn-dark btn-xs">{{.ReviewsDone}} / {{$A.Reviewers.Int64}}</a>
+                        {{end}}
                     </td>
                 </tr>
             {{end}}
