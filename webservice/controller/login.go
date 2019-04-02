@@ -232,9 +232,12 @@ func sendEmailPOST(email string, w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Send email with link TODO send link, not hash
+		// Get link
+		link := "http://" + r.Host + "/forgotpassword?id=" + hash
+
+		// Send email with link
 		mailservice := mail.Mail{}
-		err = mailservice.SendMail(email, "http://localhost:8088/forgotpassword?id="+hash)
+		err = mailservice.SendMail(email, link)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("mail.SendMail, ", err.Error())
