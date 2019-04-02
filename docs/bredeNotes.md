@@ -310,6 +310,8 @@ _Merged following to master_
 ### Tuesday 02/04/19
 * Added check to see if the email exists in the database
 * Added feedback to the user
+* Fixed `EmailExists` function
+* Added mailservice to webservice, it works to get email from front-end now <3 :D 
 
 ### Wednesday 03/04/19
 
