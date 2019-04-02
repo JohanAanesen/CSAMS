@@ -711,6 +711,13 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		return users[i].SubmittedTime.After(users[j].SubmittedTime)
 	})
 
+	stats, err := services.ReviewAnswer.FetchStatistics(assignment.ID)
+	if err != nil {
+		log.Println("services, review answer, fetch statistics", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
@@ -721,6 +728,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Assignment"] = assignment
 	v.Vars["Students"] = users
 	v.Vars["Course"] = course
+	v.Vars["Statistics"] = stats.GetDisplayStruct()
 
 	v.Render(w)
 }
@@ -1503,4 +1511,29 @@ func AdminAssignmentSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Something went wrong."))
 		return
 	}
+}
+
+func getScoreFromReview(review []*model.ReviewAnswer) float64 {
+	var score float64
+
+	for _, item := range review {
+		if item.Type == "checkbox" {
+			if item.Answer == "on" {
+				score += float64(item.Weight)
+			}
+
+		} else if item.Type == "radio" {
+			for k := range item.Choices {
+				ans, _ := strconv.Atoi(item.Answer)
+				if ans == (k + 1) {
+					K := float64(k + 1)
+					L := float64(len(item.Choices))
+					V := float64(item.Weight) * (K / L)
+					score += V
+				}
+			}
+		}
+	}
+
+	return score
 }
