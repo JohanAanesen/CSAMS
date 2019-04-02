@@ -19,6 +19,7 @@ services:
       DATABASE_PASSWORD: root
       DATABASE_DATABASE: cs53
       SCHEDULE_SERVICE: schedulerservice:8086
+      MAIL_SERVICE: mailservice:8085
       TIME_ZONE: "Europe/Oslo"
     restart: always
 

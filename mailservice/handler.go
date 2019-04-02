@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"net/smtp"
@@ -25,23 +26,26 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	email := r.FormValue("email")
-	link := r.FormValue("link")
+	payload := Payload{}
 
-	if email == "" {
-		log.Println("email value can not be empty!")
-		http.Error(w, "email value can not be empty!", http.StatusBadRequest)
+	// Decode json request into struct
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		log.Println("Something went wrong decoding request" + err.Error())
+		http.Error(w, "Something went wrong decoding request", http.StatusInternalServerError)
 		return
 	}
 
-	if link == "" {
-		log.Println("link value can not be empty!")
-		http.Error(w, "link value can not be empty!", http.StatusBadRequest)
+	// Close body
+	err = r.Body.Close()
+	if err != nil {
+		log.Println("Something went wrong closing body" + err.Error())
+		http.Error(w, "Something went wrong closing body", http.StatusInternalServerError)
 		return
 	}
 
 	// Send forgotten password link
-	err := SendMailForgottenPassword(email, link)
+	err = SendMailForgottenPassword(payload.Email, payload.Link)
 	if err != nil {
 		log.Println("Send Mail", err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)

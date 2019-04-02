@@ -1,6 +1,6 @@
 package main
 
-type Auth struct {
-	Username string
-	Password string
+type Payload struct {
+	Email string `json:"email"`
+	Link  string `json:"link"`
 }

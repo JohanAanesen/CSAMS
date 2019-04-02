@@ -5,6 +5,7 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/mail"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/microcosm-cc/bluemonday"
@@ -195,10 +196,13 @@ func ForgottenPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if exists {
-		// Send email
-		log.Println("Email exists, sending email")
-	} else {
-		log.Println("Email existsn't, sendingn't email")
+		mailservice := mail.Mail{}
+		err := mailservice.SendMail(email)
+		if err != nil {
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			log.Println("mail.SendMail, ", err.Error())
+			return
+		}
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
