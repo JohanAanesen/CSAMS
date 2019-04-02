@@ -178,20 +178,32 @@ func ForgottenGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 }
 
-// ForgottenPOST checks if the email is valid and sends a link to the email to change password
+// ForgottenPOST checks routes the two different post requests
 func ForgottenPOST(w http.ResponseWriter, r *http.Request) {
+
+	email := r.FormValue("email")                 // email
+	newPass := r.FormValue("newPassword")         // new password
+	confirmPass := r.FormValue("confirmPassword") // confirm password
+	hash := r.FormValue("id")
+
+	// Route where the POST request are going
+	if email != "" {
+		sendEmailPOST(email, w, r)
+	} else if newPass != "" && confirmPass != "" && newPass == confirmPass {
+		changePasswordPOST(newPass, hash, w, r)
+	} else {
+		ErrorHandler(w, r, http.StatusBadRequest)
+		log.Println("Something wrong with the credentials!")
+		return
+	}
+}
+
+// sendEmailPOST checks if the email is valid and sends a link to the email to change password
+func sendEmailPOST(email string, w http.ResponseWriter, r *http.Request) {
 
 	// Services
 	userService := service.NewUserService(db.GetDB())
 	forgottenService := service.NewForgottenPassService(db.GetDB())
-
-	email := r.FormValue("email") // email
-
-	if email == "" { //login credentials cannot be empty
-		ErrorHandler(w, r, http.StatusBadRequest)
-		log.Println("Credentials cannot be empty!")
-		return
-	}
 
 	exists, userID, err := userService.EmailExists(email)
 	if err != nil {
@@ -209,7 +221,7 @@ func ForgottenPOST(w http.ResponseWriter, r *http.Request) {
 		forgotten := model.ForgottenPass{
 			UserID:    userID,
 			Hash:      hash,
-			TimeStamp: util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone()),
+			TimeStamp: util.GetTimeInCorrectTimeZone(),
 		}
 
 		// Insert into the db
@@ -240,4 +252,41 @@ func ForgottenPOST(w http.ResponseWriter, r *http.Request) {
 
 	v.Render(w)
 
+}
+
+// changePasswordPOST checks the hash and time, and changes password if it's correct
+func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *http.Request) {
+
+	// Services
+	//userService := service.NewUserService(db.GetDB())
+	forgottenService := service.NewForgottenPassService(db.GetDB())
+
+	match, payload, err := forgottenService.Match(hash)
+	if err != nil {
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		log.Println("hashMatch, ", err.Error())
+		return
+	}
+
+	if match {
+
+		// Check if the link has expired (after 24 hours)
+		if payload.TimeStamp.Add(time.Hour * 24).Before(util.GetTimeInCorrectTimeZone()) {
+			ErrorHandler(w, r, http.StatusBadRequest)
+			log.Println("Link expired")
+			return
+		}
+
+		// TODO brede
+		// Change password to user
+
+		// Update forgottenPass table to be expired (one time use only!)
+
+		// Give feedback
+		log.Println("link not expired")
+	} else {
+		ErrorHandler(w, r, http.StatusBadRequest)
+		log.Println("Link has no match in db")
+		return
+	}
 }

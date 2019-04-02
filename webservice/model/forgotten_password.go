@@ -1,8 +1,11 @@
 package model
 
+import "time"
+
 // ForgottenPass struct for keeping the data for forgotten password
 type ForgottenPass struct {
-	Hash      string `json:"hash"`
-	UserID    int    `json:"userid"`
-	TimeStamp string `json:"timestamp"`
+	ID        int       `jsoh:"id"`
+	Hash      string    `json:"hash"`
+	UserID    int       `json:"userid"`
+	TimeStamp time.Time `json:"timestamp"`
 }

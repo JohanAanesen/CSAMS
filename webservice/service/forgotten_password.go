@@ -33,13 +33,22 @@ func (s *ForgottenPassService) Insert(forgottenPass model.ForgottenPass) (int, e
 }
 
 // Match first hashes the hash and then checks if the hash match in the db
-func (s *ForgottenPassService) Match(hash string) (bool, error) {
+func (s *ForgottenPassService) Match(hash string) (bool, model.ForgottenPass, error) {
 
-	//  First hash the hash for more security
-	hashed, err := util.GenerateFromPassword(hash)
+	// Fetch all rows
+	forgottenPasses, err := s.forgottenPassRepo.FetchAll()
 	if err != nil {
-		return false, err
+		return false, model.ForgottenPass{}, err
 	}
 
-	return s.forgottenPassRepo.Match(hashed)
+	for _, item := range forgottenPasses {
+		err := util.CompareHashAndPassword(hash, item.Hash)
+
+		// If there is a match
+		if err == nil {
+			return true, *item, err
+		}
+	}
+
+	return false, model.ForgottenPass{}, nil
 }

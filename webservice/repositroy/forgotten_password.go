@@ -3,6 +3,7 @@ package repositroy
 import (
 	"database/sql"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 )
 
 // ForgottenPassRepository struct
@@ -28,7 +29,7 @@ func (repo *ForgottenPassRepository) Insert(forgottenPass model.ForgottenPass) (
 		return int(id), err
 	}
 
-	rows, err := tx.Exec(query, forgottenPass.Hash, forgottenPass.UserID, forgottenPass.TimeStamp)
+	rows, err := tx.Exec(query, forgottenPass.Hash, forgottenPass.UserID, util.ConvertTimeStampToString(forgottenPass.TimeStamp))
 	if err != nil {
 		tx.Rollback()
 		return int(id), err
@@ -49,31 +50,29 @@ func (repo *ForgottenPassRepository) Insert(forgottenPass model.ForgottenPass) (
 	return int(id), nil
 }
 
-// Match checks if the hash exists in the db
-func (repo *ForgottenPassRepository) Match(hash string) (bool, error) {
+// FetchAll fetches all forgotten_password rows
+func (repo *ForgottenPassRepository) FetchAll() ([]*model.ForgottenPass, error) {
+	result := make([]*model.ForgottenPass, 0)
 
-	query := "SELECT COUNT(id) FROM `forgotten_password` WHERE `hash` = ?"
+	query := "SELECT `id`, `hash`, `user_id`, `timestamp`  FROM `forgotten_password`"
 
-	rows, err := repo.db.Query(query, hash)
+	rows, err := repo.db.Query(query)
 	if err != nil {
-		return false, err
+		return result, err
 	}
 
 	defer rows.Close()
 
 	for rows.Next() {
-		var count int
+		temp := model.ForgottenPass{}
 
-		err = rows.Scan(&count)
+		err = rows.Scan(&temp.ID, &temp.Hash, &temp.UserID, &temp.TimeStamp)
 		if err != nil {
-			return false, err
+			return result, err
 		}
 
-		// If count is over 0, the hash exists in the db
-		if count > 0 {
-			return true, nil
-		}
+		result = append(result, &temp)
 	}
 
-	return false, err
+	return result, err
 }
