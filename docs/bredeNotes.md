@@ -313,6 +313,19 @@ _Merged following to master_
 * Fixed `EmailExists` function
 * Added mailservice to webservice, it works to get email from front-end now <3 :D 
 * Added authentication to the mailservice, so that only the system can trigger mailservice
+* Added new table in db for forgotten passwords OBS! TODO brede : ADD THIS TO PULLREQUEST!!!!!!!!!!!!!!!!!!!!!!! <3
+```Mysql
+CREATE TABLE `forgotten_password`
+(
+    `id`        int(11)     NOT NULL AUTO_INCREMENT,
+    `hash`      varchar(64) NOT NULL,
+    `user_id`   int(11)     NOT NULL,
+    `timestamp` datetime    NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`user_id`) REFERENCES users (`id`)
+);
+```
+
 
 ### Wednesday 03/04/19
 
