@@ -5,17 +5,24 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/repositroy"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
+	"strconv"
 )
 
 // ReviewAnswerService struct
 type ReviewAnswerService struct {
 	reviewAnswerRepo *repositroy.ReviewAnswerRepository
+	courseRepo       *repositroy.CourseRepository
+	assignmentRepo   *repositroy.AssignmentRepository
+	userRepo         *repositroy.UserRepository
 }
 
 // NewReviewAnswerService func
 func NewReviewAnswerService(db *sql.DB) *ReviewAnswerService {
 	return &ReviewAnswerService{
 		reviewAnswerRepo: repositroy.NewReviewAnswerRepository(db),
+		courseRepo:       repositroy.NewCourseRepository(db),
+		assignmentRepo:   repositroy.NewAssignmentRepository(db),
+		userRepo:         repositroy.NewUserRepository(db),
 	}
 }
 
@@ -101,4 +108,66 @@ func (s *ReviewAnswerService) Insert(answer model.ReviewAnswer) (int, error) {
 // FetchMaxScoreFromAssignment func
 func (s *ReviewAnswerService) FetchMaxScoreFromAssignment(assignmentID int) (int, error) {
 	return s.reviewAnswerRepo.MaxScore(assignmentID)
+}
+
+// FetchStatistics func
+func (s *ReviewAnswerService) FetchStatistics(assignmentID int) (*util.Statistics, error) {
+	// Get max score from assignment
+	absMax, err := s.FetchMaxScoreFromAssignment(assignmentID)
+	if err != nil {
+		return nil, err
+	}
+	// Create new statistics object
+	var result = util.NewStatistics(0, float64(absMax))
+
+	// Get assignment
+	assignment, err := s.assignmentRepo.Fetch(assignmentID)
+	if err != nil {
+		return nil, err
+	}
+	// Get users from course
+	users, err := s.userRepo.FetchAllStudentsFromCourse(assignment.CourseID)
+	if err != nil {
+		return nil, err
+	}
+	// Loop through users
+	for _, user := range users {
+		// Fetch reviews for the user
+		reviews, err := s.FetchForUser(user.ID, assignment.ID)
+		if err != nil {
+			return nil, err
+		}
+		// Loop through reviews for the user
+		for _, review := range reviews {
+			// Add result from review
+			result.AddEntry(getScoreFromReview(review))
+		}
+	}
+
+	return result, nil
+}
+
+func getScoreFromReview(review []*model.ReviewAnswer) float64 {
+	var score float64
+
+	for _, item := range review {
+		if item.Type == "checkbox" {
+			if item.Answer == "on" {
+				score += float64(item.Weight)
+			}
+
+		} else if item.Type == "radio" {
+			for k := range item.Choices {
+				ans, _ := strconv.Atoi(item.Answer)
+				if ans == (k + 1) {
+					K := float64(k + 1)
+					L := float64(len(item.Choices))
+					V := float64(item.Weight) * (K / L)
+					score += V
+				}
+			}
+		}
+	}
+
+	return score
 }
