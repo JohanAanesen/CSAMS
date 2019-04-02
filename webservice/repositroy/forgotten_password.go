@@ -19,28 +19,34 @@ func NewForgottenPassRepository(db *sql.DB) *ForgottenPassRepository {
 
 // Insert inserts a new forgottenpass in the db
 func (repo *ForgottenPassRepository) Insert(forgottenPass model.ForgottenPass) (int, error) {
-	var id int
+	var id int64
 
 	query := "INSERT INTO `forgotten_password` (`hash`, `user_id`, `timestamp`) VALUES (?, ?, ?)"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
-		return id, err
+		return int(id), err
 	}
 
-	_, err = tx.Exec(query, forgottenPass.Hash, forgottenPass.UserID, forgottenPass.TimeStamp)
+	rows, err := tx.Exec(query, forgottenPass.Hash, forgottenPass.UserID, forgottenPass.TimeStamp)
 	if err != nil {
 		tx.Rollback()
-		return id, err
+		return int(id), err
+	}
+
+	id, err = rows.LastInsertId()
+	if err != nil {
+		tx.Rollback()
+		return int(id), err
 	}
 
 	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
-		return id, err
+		return int(id), err
 	}
 
-	return id, nil
+	return int(id), nil
 }
 
 // Match checks if the hash exists in the db

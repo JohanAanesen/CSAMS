@@ -9,7 +9,7 @@ import (
 )
 
 // SendMail sends mail to the user with mailservice
-func (mail Mail) SendMail(email string) error {
+func (mail Mail) SendMail(email string, link string) error {
 
 	// Make a temporary struct for posting to mailservice
 	jsonData := struct {
@@ -19,7 +19,7 @@ func (mail Mail) SendMail(email string) error {
 	}{
 		Authentication: os.Getenv("MAIL_AUTH"),
 		Email:          email,
-		Link:           "https://www.google.no/",
+		Link:           link,
 	}
 
 	// This is just sending the request

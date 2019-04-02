@@ -325,6 +325,7 @@ CREATE TABLE `forgotten_password`
     FOREIGN KEY (`user_id`) REFERENCES users (`id`)
 );
 ```
+* Now adds to the table if the email is correct
 
 
 ### Wednesday 03/04/19

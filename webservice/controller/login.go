@@ -7,10 +7,13 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/mail"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/microcosm-cc/bluemonday"
+	"github.com/rs/xid"
 	"log"
 	"net/http"
+	"time"
 )
 
 func init() {
@@ -170,6 +173,7 @@ func ForgottenGET(w http.ResponseWriter, r *http.Request) {
 	// Clear message and email
 	v.Vars["Message"] = ""
 	v.Vars["Email"] = ""
+	v.Vars["Hash"] = r.FormValue("id") // hash
 
 	v.Render(w)
 }
@@ -177,8 +181,9 @@ func ForgottenGET(w http.ResponseWriter, r *http.Request) {
 // ForgottenPOST checks if the email is valid and sends a link to the email to change password
 func ForgottenPOST(w http.ResponseWriter, r *http.Request) {
 
-	// Service
+	// Services
 	userService := service.NewUserService(db.GetDB())
+	forgottenService := service.NewForgottenPassService(db.GetDB())
 
 	email := r.FormValue("email") // email
 
@@ -188,16 +193,36 @@ func ForgottenPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	exists, err := userService.EmailExists(email)
+	exists, userID, err := userService.EmailExists(email)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println("EmailExists, ", err.Error())
 		return
 	}
 
+	// If the email exists in the db
 	if exists {
+		// Get new hash in 20 chars
+		hash := xid.NewWithTime(time.Now()).String()
+
+		// Fill forgotten model for new insert in table
+		forgotten := model.ForgottenPass{
+			UserID:    userID,
+			Hash:      hash,
+			TimeStamp: util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone()),
+		}
+
+		// Insert into the db
+		_, err := forgottenService.Insert(forgotten)
+		if err != nil {
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			log.Println("EmailExists, ", err.Error())
+			return
+		}
+
+		// Send email with link TODO send link, not hash
 		mailservice := mail.Mail{}
-		err := mailservice.SendMail(email)
+		err = mailservice.SendMail(email, "http://localhost:8088/forgotpassword?id="+hash)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("mail.SendMail, ", err.Error())
