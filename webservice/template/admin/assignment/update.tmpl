@@ -8,12 +8,11 @@
             <div class="alert alert-warning">{{.}}</div>
         {{end}}
     {{end}}
+
+    <div class="col">
+        <h1 class="display-4">Update assignment</h1>
+    </div>
     <form id="assignmentForm" action="/admin/assignment/update" method="POST">
-        <div class="row">
-            <div class="col">
-                <h1 class="display-4">Update assignment</h1>
-            </div>
-        </div>
 
         <hr>
         <!-- TODO (Svein): Make this for horizontal. See https://getbootstrap.com/docs/4.3/components/forms/#horizontal-form -->
@@ -118,7 +117,8 @@
                     </div>
                     <div class="form-group sr-only" id="review_deadline_container">
                         <label for="review_deadline">Review Deadline</label>
-                        <input type="datetime-local" name="review_deadline" id="review_deadline" class="form-control" value="{{.ReviewDeadline}}">
+                        <input type="datetime-local" name="review_deadline" id="review_deadline" class="form-control"
+                               value="{{.ReviewDeadline}}">
                     </div>
 
                     <hr>
