@@ -24,9 +24,13 @@
                                placeholder="Email address" {{ if .Email }} value="{{ .Email }}" {{end}} required
                                autofocus>
                     </div>
-                    <button class="btn btn-primary btn-block mb-3" type="submit">Send email</button>
+                    <button class="btn btn-primary btn-block mb-3" type="submit">Send email
+                        <!--
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Loading...
+                        -->
+                    </button>
                 </form>
-
             </div>
         </div>
     </div>

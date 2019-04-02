@@ -312,6 +312,7 @@ _Merged following to master_
 * Added feedback to the user
 * Fixed `EmailExists` function
 * Added mailservice to webservice, it works to get email from front-end now <3 :D 
+* Added authentication to the mailservice, so that only the system can trigger mailservice
 
 ### Wednesday 03/04/19
 

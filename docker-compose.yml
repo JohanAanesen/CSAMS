@@ -14,6 +14,7 @@ services:
       - schedulerservice
     environment:
       PEER_AUTH: "5243980712315079823517089"
+      MAIL_AUTH: "RqHDMR6WfMd9zMhr^kgDA4kZ0DJbEElu7Sb^B!#1uXVzDy%zW85yGIL#iI6D2%S*"
       DATABASE_URL: database:3306
       DATABASE_USER: root
       DATABASE_PASSWORD: root
@@ -71,6 +72,7 @@ services:
       DATABASE_PASSWORD: root
       DATABASE_DATABASE: cs53
       PEER_AUTH: "5243980712315079823517089"
+      MAIL_AUTH: "RqHDMR6WfMd9zMhr^kgDA4kZ0DJbEElu7Sb^B!#1uXVzDy%zW85yGIL#iI6D2%S*"
       USERNAME: cs.assignments.noreply@gmail.com
       PASSWORD:
     restart: always

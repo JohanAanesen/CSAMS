@@ -13,11 +13,13 @@ func (mail Mail) SendMail(email string) error {
 
 	// Make a temporary struct for posting to mailservice
 	jsonData := struct {
-		Email string `json:"email"`
-		Link  string `json:"link"`
+		Authentication string `json:"authentication"`
+		Email          string `json:"email"`
+		Link           string `json:"link"`
 	}{
-		Email: email,
-		Link:  "https://www.google.no/",
+		Authentication: os.Getenv("MAIL_AUTH"),
+		Email:          email,
+		Link:           "https://www.google.no/",
 	}
 
 	// This is just sending the request

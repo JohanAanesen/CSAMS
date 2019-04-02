@@ -32,7 +32,7 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
 		log.Println("Something went wrong decoding request" + err.Error())
-		http.Error(w, "Something went wrong decoding request", http.StatusInternalServerError)
+		http.Error(w, "Something went wrong decoding request", http.StatusBadRequest)
 		return
 	}
 
@@ -41,6 +41,13 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Something went wrong closing body" + err.Error())
 		http.Error(w, "Something went wrong closing body", http.StatusInternalServerError)
+		return
+	}
+
+	// Authenticate request
+	if payload.Authentication != os.Getenv("MAIL_AUTH") { // Don't accept requests from places we don't know
+		log.Println("Unauthorized request")
+		http.Error(w, "Unauthorized request", http.StatusUnauthorized)
 		return
 	}
 
