@@ -17,65 +17,110 @@
 {{end}}
 {{define "content"}}
 
-    <h2 class="display-4 mb-3">{{.Assignment.Name}} submissions</h2>
-    <h5>{{.SubmissionCount}} / {{len .Students}} submitted</h5>
-    <h6>Reviews per student: {{.Assignment.Reviewers.Int64}}</h6>
+    <div class="row">
+        <div class="col">
+            <h2 class="display-4 mb-3">{{.Assignment.Name}} submissions</h2>
+            <h5>{{.SubmissionCount}} / {{len .Students}} submitted</h5>
+            <h6>Reviews per student: {{.Assignment.Reviewers.Int64}}</h6>
 
-    <table class="table table-hover table-sm" id="table" data-toggle="table" data-pagination="true" data-search="true" data-page-size="100">
-        <thead class="thead-light">
-        <tr>
-            <th data-sortable="true" scope="col">#</th>
-            <th data-sortable="true" scope="col">Name</th>
-            <th data-sortable="true" scope="col">Email</th>
-            <th data-sortable="true" scope="col">Submitted</th>
-            <th scope="col">Preview</th>
-            <th scope="col">Update</th>
-            <th scope="col">Delete</th>
-            <th scope="col">Reviews Received</th>
-            <th data-sortable="true" scope="col">Reviews Done</th>
-        </tr>
-        </thead>
-        <tbody>
-        {{$A := .Assignment}}
-        {{range .Students}}
-            {{if not .User.Teacher}}
-                <tr{{if not .Submitted}} class="table-danger"{{else}} class="table-success"{{end}}>
-                    <td class="id-col">{{.User.ID}}</td>
-                    <td>{{.User.Name}}</td>
-                    <td><a href="mailto:{{.User.EmailStudent}}">{{.User.EmailStudent}}</a></td>
-                    <td>{{if .Submitted}}{{SORTABLE_TIME .SubmittedTime}}{{end}}</td>
-                    <td>
-                        {{if .Submitted}}
-                            <a href="/admin/assignment/{{$A.ID}}/submission/{{.User.ID}}" class="btn btn-primary btn-xs">Preview</a>
-                        {{else}}
-                            <a href="/admin/assignment/{{$A.ID}}/submission/{{.User.ID}}/create" class="btn btn-success btn-xs">Create</a>
-                        {{end}}
-                    </td>
-                    <td>
-                        {{if .Submitted}}
-                            <a href="/admin/assignment/{{$A.ID}}/submission/{{.User.ID}}/update" class="btn btn-warning btn-xs">Update</a>
-                        {{end}}
-                    </td>
-                    <td>
-                        {{if .Submitted}}
-                            <button type="button" onclick="deleteSubmission({{$A.ID}}, {{.User.ID}})" class="btn btn-danger btn-xs">Delete</button>
-                        {{end}}
-                    </td>
-                    <td>
-                        {{if .Reviewed}}
-                            <a href="/admin/assignment/{{$A.ID}}/review/{{.User.ID}}" class="btn btn-info btn-xs">Reviews</a>
-                        {{end}}
-                    </td>
-                    <td>
-                        {{if .Submitted}}
-                            <a href="#" class="btn btn-dark btn-xs">{{.ReviewsDone}} / {{$A.Reviewers.Int64}}</a>
-                        {{end}}
-                    </td>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <h4>Statistics (Review)</h4>
+            <table class="table table-striped table-sm">
+                <tr>
+                    <td>Entries</td>
+                    <td>{{.Statistics.Entries}}</td>
                 </tr>
-            {{end}}
-        {{end}}
-        </tbody>
-    </table>
+                <tr>
+                    <td>Absolute Min / Max</td>
+                    <td>{{.Statistics.AbsMin}} / {{.Statistics.AbsMax}}</td>
+                </tr>
+                <tr>
+                    <td>Local Min / Max</td>
+                    <td>{{.Statistics.LocalMin}} / {{.Statistics.LocalMax}}</td>
+                </tr>
+                <tr>
+                    <td>Average score</td>
+                    <td>{{.Statistics.Average}}</td>
+                </tr>
+                <tr>
+                    <td>Average percent</td>
+                    <td>{{.Statistics.Percent}}%</td>
+                </tr>
+                <tr>
+                    <td>Variance / Standard Deviation</td>
+                    <td>{{.Statistics.Variance}} / {{.Statistics.StandardDeviation}}</td>
+                </tr>
+            </table>
+
+            <hr>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col">
+            <table class="table table-hover table-sm" id="table" data-toggle="table" data-pagination="true" data-search="true" data-page-size="100">
+                <thead class="thead-light">
+                <tr>
+                    <th data-sortable="true" scope="col">#</th>
+                    <th data-sortable="true" scope="col">Name</th>
+                    <th data-sortable="true" scope="col">Email</th>
+                    <th data-sortable="true" scope="col">Submitted</th>
+                    <th scope="col">Preview</th>
+                    <th scope="col">Update</th>
+                    <th scope="col">Delete</th>
+                    <th scope="col">Reviews Received</th>
+                    <th data-sortable="true" scope="col">Reviews Done</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{$A := .Assignment}}
+                {{range .Students}}
+                    {{if not .User.Teacher}}
+                        <tr{{if not .Submitted}} class="table-danger"{{else}} class="table-success"{{end}}>
+                            <td class="id-col">{{.User.ID}}</td>
+                            <td>{{.User.Name}}</td>
+                            <td><a href="mailto:{{.User.EmailStudent}}">{{.User.EmailStudent}}</a></td>
+                            <td>{{if .Submitted}}{{SORTABLE_TIME .SubmittedTime}}{{end}}</td>
+                            <td>
+                                {{if .Submitted}}
+                                    <a href="/admin/assignment/{{$A.ID}}/submission/{{.User.ID}}" class="btn btn-primary btn-xs">Preview</a>
+                                {{else}}
+                                    <a href="/admin/assignment/{{$A.ID}}/submission/{{.User.ID}}/create" class="btn btn-success btn-xs">Create</a>
+                                {{end}}
+                            </td>
+                            <td>
+                                {{if .Submitted}}
+                                    <a href="/admin/assignment/{{$A.ID}}/submission/{{.User.ID}}/update" class="btn btn-warning btn-xs">Update</a>
+                                {{end}}
+                            </td>
+                            <td>
+                                {{if .Submitted}}
+                                    <button type="button" onclick="deleteSubmission({{$A.ID}}, {{.User.ID}})" class="btn btn-danger btn-xs">Delete</button>
+                                {{end}}
+                            </td>
+                            <td>
+                                {{if .Reviewed}}
+                                    <a href="/admin/assignment/{{$A.ID}}/review/{{.User.ID}}" class="btn btn-info btn-xs">Reviews</a>
+                                {{end}}
+                            </td>
+                            <td>
+                                {{if .Submitted}}
+                                    <a href="#" class="btn btn-dark btn-xs">{{.ReviewsDone}} / {{$A.Reviewers.Int64}}</a>
+                                {{end}}
+                            </td>
+                        </tr>
+                    {{end}}
+                {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {{end}}
 {{define "foot"}}
     <script src="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.js"></script>
