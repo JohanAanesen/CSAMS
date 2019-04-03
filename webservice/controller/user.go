@@ -73,7 +73,22 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 			Valid:  secondaryEmail != "",
 		}
 
-		err := services.User.Update(currentUser.ID, updatedUser)
+		// Check if the email exists in the db
+		exist, _, err := services.User.EmailExists(p.Sanitize(secondaryEmail))
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		// If the email already exists
+		if exist {
+			log.Println("email already exist in db")
+			ErrorHandler(w, r, http.StatusBadRequest)
+			return
+		}
+
+		err = services.User.Update(currentUser.ID, updatedUser)
 		if err != nil {
 			log.Println(err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
