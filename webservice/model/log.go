@@ -40,6 +40,48 @@ type Log struct {
 	NewValue     string   // [NULLABLE][ChangeName/ChangeEmail/UpdateAdminFAQ] Value after changing name/email/faq
 }
 
+/* TODO : convert to something like this later
+func LogChangeEmail(userID int, oldValue string, newValue string) error {
+
+}
+
+func LogChangeFAQ(userID int, oldValue string, newValue string) error {
+
+}
+
+func LogCreateAssignment(userID int, assignmentID string) error {
+
+}
+
+func LogDeliveredAssignment(userID int, assignmentID string, submissionID string) error {
+
+}
+
+func LogUpdateAssignment(userID int, assignmentID string, submissionID string) error {
+
+}
+
+func LogDeleteAssignment(userID int, assignmentID string, submissionID string) error {
+
+}
+
+func LogPeerReviewFinished(userID int, assignmentID string, submissionID string) error {
+
+}
+
+func LogPeerReviewDone(userID int, assignmentID string, submissionID string) error {
+
+}
+
+func LogCreateCourse(userID int, courseID string) error {
+
+}
+
+func LogJoinCourse(userID int, courseID string) error {
+
+}
+*/
+
 // LogToDB adds logs to the database when an user/admin does something noteworthy
 func LogToDB(payload Log) error {
 

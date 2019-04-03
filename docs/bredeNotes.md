@@ -298,3 +298,46 @@ _Merged following to master_
 * And smaller stuff. 
 
 ### Friday 29/03/19
+* Fixed some bugs on pullrequest and merged to master
+
+## Week Nine
+### Monday 01/04/19
+* Created a new gmail and started on mailservice
+* Can already send an email since it's only 3 lines of code, too easy :/
+* Function in mailservice for resetting password is ready
+* Changed from https to ssh!!!
+
+### Tuesday 02/04/19
+* Added check to see if the email exists in the database
+* Added feedback to the user
+* Fixed `EmailExists` function
+* Added mailservice to webservice, it works to get email from front-end now <3 :D 
+* Added authentication to the mailservice, so that only the system can trigger mailservice
+* Added new table in db for forgotten passwords OBS! TODO brede : ADD THIS TO PULLREQUEST!!!!!!!!!!!!!!!!!!!!!!! <3
+```Mysql
+CREATE TABLE `forgotten_password`
+(
+    `id`        int(11)     NOT NULL AUTO_INCREMENT,
+    `hash`      varchar(64) NOT NULL,
+    `user_id`   int(11)     NOT NULL,
+    `valid`     tinyint(1)  NOT NULL DEFAULT '1',
+    `timestamp` datetime    NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`user_id`) REFERENCES users (`id`)
+);
+```
+* Now adds to the table if the email is correct
+* Implemented check for valid hash
+* Changes password and added a new column in forgottenPass
+* Also logs password has been changed
+* Added some tests for the handlers
+* Implemented two more functions, one for sending email to single recipient and one for multiple
+
+### Wednesday 03/04/19
+* Fixed forgotten password email message text
+* Fixed `goFixShit.ps1` script and added colours <3
+* Fixed golint errors
+
+### Thursday 04/04/19
+
+### Friday 05/04/19

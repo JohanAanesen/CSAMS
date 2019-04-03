@@ -1,16 +1,52 @@
 {{define "title"}}Forgotten Password{{end}}
 {{define "head"}}{{end}}
 {{ define "content" }}
-    <main>
-        <div class="container pt-5 text-center">
-            <div class="alert alert-info"><strong>Note:</strong> This is a temporary solution for the alpha version!
+    <div class="container pt-5">
+        {{ if .Message }}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <strong>Notice!</strong> {{.Message}}!
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <h1 class="display-1">Forgotten Password?</h1>
-            <h2 class="display-4">Contact your course leader</h2>
-            <h4 class="display-10">Please include full name, correct e-mail and what course(s) you're in :)</h4>
-            <a href="/"><p class="lead">Go back to the login page</p></a>
+        {{end}}
+
+        <div class="row justify-content-center align-items-center bg-light rounded shadow-lg">
+            <div class="col-md-6 col-xs-12">
+                {{ if .Hash }}
+                    <h1 class="display-4 mb-3">Change password</h1>
+
+                    <form action="/forgotpassword?id={{ .Hash }}" method="post">
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" name="newPassword" id="newPassword"
+                                   class="form-control" minlength="6" required autofocus>
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" name="confirmPassword" id="confirmPassword"
+                                   class="form-control" minlength="6" required autofocus>
+                        </div>
+                        <button class="btn btn-primary btn-block mb-3" type="submit">Continue</button>
+                    </form>
+                {{ else }}
+                    <h1 class="display-4 mb-3">Forgotten password?</h1>
+
+                    <p>If you forgot your password then we'll attempt to email you instructions on how to reset it. If
+                        you don't receive the email then try looking in your spam folder.</p>
+
+                    <form action="/forgotpassword" method="post">
+                        <div class="form-group">
+                            <label for="inputEmail" class="text-dark">Email address</label>
+                            <input type="email" name="email" id="inputEmail"
+                                   class="form-control" {{ if .Email }} value="{{ .Email }}" {{end}} required
+                                   autofocus>
+                        </div>
+                        <button class="btn btn-primary btn-block mb-3" type="submit">Send email</button>
+                    </form>
+                {{ end }}
+            </div>
         </div>
-    </main>
+    </div>
+
 {{ end }}
 {{define "foot"}}
 {{end}}
