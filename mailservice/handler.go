@@ -62,7 +62,7 @@ func ForgottenPassPOST(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// ForgottenPassGET handles GET requests
+// SingleMailGET handles GET requests
 func SingleMailGET(w http.ResponseWriter, r *http.Request) {
 	log.Println("This API only accepts POST-requests")
 	http.Error(w, "This API only accepts POST-requests", http.StatusBadRequest)
@@ -115,7 +115,7 @@ func SingleMailPOST(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// ForgottenPassGET handles GET requests
+// MultipleMailGET handles GET requests
 func MultipleMailGET(w http.ResponseWriter, r *http.Request) {
 	log.Println("This API only accepts POST-requests")
 	http.Error(w, "This API only accepts POST-requests", http.StatusBadRequest)
@@ -175,11 +175,10 @@ func SendMailForgottenPassword(recipient string, link string) error {
 	userEmail := strings.Fields(recipient)
 	subject := "Forgotten Password | CS Assignments"
 	message := "Change password\n" +
-		"Looks like you have forgotten your password.\n" +
+		"There has been requested a password recovery for this account\n" +
 		"If this was not you, please disregard this email.\n\n" +
 		"Click this link to reset your password:\n" +
-		link +
-		"\nGood luck :)"
+		link
 
 	err := sendMail("To", userEmail, subject, message)
 	if err != nil {

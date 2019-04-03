@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-// MailForgottenPassword sends mail to the user with mailservice
+// MailForgottenPassword sends mail about forgotten password to the user
 func (mail Mail) MailForgottenPassword(email string, link string) error {
 
 	// Make a temporary struct for posting to mailservice
@@ -43,6 +43,7 @@ func (mail Mail) MailForgottenPassword(email string, link string) error {
 	return nil
 }
 
+// SendSingleRecipient Sends mail to an single recipient
 func (mail Mail) SendSingleRecipient(email string, subject string, message string) error {
 
 	// Make a temporary struct for posting to mailservice
@@ -79,6 +80,7 @@ func (mail Mail) SendSingleRecipient(email string, subject string, message strin
 	return nil
 }
 
+// SendMultipleRecipient Sends one mail to multiple recipients
 func (mail Mail) SendMultipleRecipient(emails []string, subject string, message string) error {
 
 	// Make a temporary struct for posting to mailservice

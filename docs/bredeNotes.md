@@ -334,6 +334,9 @@ CREATE TABLE `forgotten_password`
 * Implemented two more functions, one for sending email to single recipient and one for multiple
 
 ### Wednesday 03/04/19
+* Fixed forgotten password email message text
+* Fixed `goFixShit.ps1` script and added colours <3
+* Fixed golint errors
 
 ### Thursday 04/04/19
 
