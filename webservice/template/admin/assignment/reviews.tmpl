@@ -24,19 +24,19 @@
                 </tr>
                 <tr>
                     <td>Local Min / Max</td>
-                    <td>{{.UserStatistics.LocalMin}} / {{.UserStatistics.LocalMax}}</td>
+                    <td>{{Sprintf "%.2f / %.2f" .UserStatistics.LocalMin .UserStatistics.LocalMax}}</td>
                 </tr>
                 <tr>
                     <td>Average score</td>
-                    <td>{{.UserStatistics.Average}}</td>
+                    <td>{{Sprintf "%.2f" .UserStatistics.Average}}</td>
                 </tr>
                 <tr>
                     <td>Average percent</td>
-                    <td>{{.UserStatistics.Percent}}%</td>
+                    <td>{{Sprintf "%.2f%%" .UserStatistics.Percent}}</td>
                 </tr>
                 <tr>
-                    <td>Variance / Standard Deviation</td>
-                    <td>{{.UserStatistics.Variance}} / {{.UserStatistics.StandardDeviation}}</td>
+                    <td>Standard Deviation</td>
+                    <td>{{Sprintf "%.2f" .UserStatistics.StandardDeviation}}</td>
                 </tr>
             </table>
 
@@ -56,19 +56,19 @@
                 </tr>
                 <tr>
                     <td>Local Min / Max</td>
-                    <td>{{.Statistics.LocalMin}} / {{.Statistics.LocalMax}}</td>
+                    <td>{{Sprintf "%.2f / %.2f" .Statistics.LocalMin .Statistics.LocalMax}}</td>
                 </tr>
                 <tr>
                     <td>Average score</td>
-                    <td>{{.Statistics.Average}}</td>
+                    <td>{{Sprintf "%.2f" .Statistics.Average}}</td>
                 </tr>
                 <tr>
                     <td>Average percent</td>
-                    <td>{{.Statistics.Percent}}%</td>
+                    <td>{{Sprintf "%.2f%%" .Statistics.Percent}}</td>
                 </tr>
                 <tr>
-                    <td>Variance / Standard Deviation</td>
-                    <td>{{.Statistics.Variance}} / {{.Statistics.StandardDeviation}}</td>
+                    <td>Standard Deviation</td>
+                    <td>{{Sprintf "%.2f" .Statistics.StandardDeviation}}</td>
                 </tr>
             </table>
 
