@@ -18,7 +18,7 @@
 * Maybe make the project test driven?
 * ~~Trello export comments~~
 * Write why we chose Kanban in plan report.
-* What license do we use? (*[GNU General Public License v3.0](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/master/LICENSE)*)
+* What license do we use? (*[GNU General Public License v3.0](https://github.com/JohanAanesen/CSAMS/blob/master/LICENSE)*)
 * Add possibility to add a second email (*BredeFK did it 😎*)
 * Add possibility to have stats (% of reviews done and grades stuff) and make it possible to export (json?).
 * Have a checkbox for permission to share users email.

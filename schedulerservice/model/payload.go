@@ -2,7 +2,7 @@ package model
 
 import (
 	"encoding/json"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/db"
+	"github.com/JohanAanesen/CSAMS/schedulerservice/db"
 	"log"
 	"time"
 )
