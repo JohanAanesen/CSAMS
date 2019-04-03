@@ -91,7 +91,7 @@
                     <div class="card mb-3">
                         {{$temp := index . 0}}
                         <div class="card-header bg-secondary">
-                            <h5 class="card-title text-light mb-0">Review by {{GET_USERNAME $temp.UserReviewer}} (Score: {{index $ReviewScores $zeroIndex}})</h5>
+                            <h5 class="card-title text-light mb-0">Review by {{GET_USERNAME $temp.UserReviewer}} (Score: {{Sprintf "%.2f" (index $ReviewScores $zeroIndex)}})</h5>
                             {{$i = INCREMENT $i}}
                             {{$zeroIndex = INCREMENT $zeroIndex}}
                         </div>
