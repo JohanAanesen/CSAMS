@@ -114,10 +114,18 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// No password input fields can be empty,
 	// the new password has to be equal to repeat password field,
 	// and the new password can't be the same as the old password
-	passwordIsOkay := oldPass != "" && newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass
+	passwordIsOkay := oldPass != "" && newPass != "" && repeatPass != ""
 	err = util.CompareHashAndPassword(oldPass, hash)
 	// If there's no problem with passwords and the password is changed
 	if passwordIsOkay && err != nil {
+
+		// If password hasn't changed or new and repeat doesn't match
+		if newPass == oldPass || newPass != repeatPass {
+			log.Println("New password has not changed or repeat password and new password is not the same")
+			ErrorHandler(w, r, http.StatusBadRequest)
+			return
+		}
+
 		err = services.User.UpdatePassword(currentUser.ID, newPass)
 		//err := model.UpdateUserPassword(currentUser.ID, newPass)
 		if err != nil {
