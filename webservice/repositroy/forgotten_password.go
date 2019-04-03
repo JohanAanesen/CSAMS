@@ -22,7 +22,7 @@ func NewForgottenPassRepository(db *sql.DB) *ForgottenPassRepository {
 func (repo *ForgottenPassRepository) Insert(forgottenPass model.ForgottenPass) (int, error) {
 	var id int64
 
-	query := "INSERT INTO `forgotten_password` (`hash`, `user_id`, `timestamp`) VALUES (?, ?, ?)"
+	query := "INSERT INTO `validation` (`hash`, `user_id`, `timestamp`) VALUES (?, ?, ?)"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
@@ -50,11 +50,11 @@ func (repo *ForgottenPassRepository) Insert(forgottenPass model.ForgottenPass) (
 	return int(id), nil
 }
 
-// FetchAll fetches all forgotten_password rows
+// FetchAll fetches all validation rows
 func (repo *ForgottenPassRepository) FetchAll() ([]*model.ForgottenPass, error) {
 	result := make([]*model.ForgottenPass, 0)
 
-	query := "SELECT `id`, `hash`, `user_id`, `valid`, `timestamp`  FROM `forgotten_password`"
+	query := "SELECT `id`, `hash`, `user_id`, `valid`, `timestamp`  FROM `validation`"
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -79,7 +79,7 @@ func (repo *ForgottenPassRepository) FetchAll() ([]*model.ForgottenPass, error) 
 
 // UpdateValidation updates the validation column
 func (repo *ForgottenPassRepository) UpdateValidation(id int, state bool) error {
-	query := "UPDATE `forgotten_password` SET `valid` = ? WHERE id = ?"
+	query := "UPDATE `validation` SET `valid` = ? WHERE id = ?"
 
 	tx, err := repo.db.Begin()
 	if err != nil {

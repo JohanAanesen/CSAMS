@@ -315,11 +315,11 @@ _Merged following to master_
 * Added authentication to the mailservice, so that only the system can trigger mailservice
 * Added new table in db for forgotten passwords OBS! TODO brede : ADD THIS TO PULLREQUEST!!!!!!!!!!!!!!!!!!!!!!! <3
 ```Mysql
-CREATE TABLE `forgotten_password`
+CREATE TABLE `validation`
 (
     `id`        int(11)     NOT NULL AUTO_INCREMENT,
     `hash`      varchar(64) NOT NULL,
-    `user_id`   int(11)     NOT NULL,
+    `user_id`   int(11)     NULL,
     `valid`     tinyint(1)  NOT NULL DEFAULT '1',
     `timestamp` datetime    NOT NULL,
     PRIMARY KEY (`id`),
