@@ -41,19 +41,19 @@
                 </tr>
                 <tr>
                     <td>Local Min / Max</td>
-                    <td>{{.Statistics.LocalMin}} / {{.Statistics.LocalMax}}</td>
+                    <td>{{Sprintf "%.2f / %.2f" .Statistics.LocalMin .Statistics.LocalMax}}</td>
                 </tr>
                 <tr>
                     <td>Average score</td>
-                    <td>{{.Statistics.Average}}</td>
+                    <td>{{Sprintf "%.2f" .Statistics.Average}}</td>
                 </tr>
                 <tr>
                     <td>Average percent</td>
-                    <td>{{.Statistics.Percent}}%</td>
+                    <td>{{Sprintf "%.2f%%" .Statistics.Percent}}</td>
                 </tr>
                 <tr>
                     <td>Variance / Standard Deviation</td>
-                    <td>{{.Statistics.Variance}} / {{.Statistics.StandardDeviation}}</td>
+                    <td>{{Sprintf "%.2f / %.2f" .Statistics.Variance .Statistics.StandardDeviation}}</td>
                 </tr>
             </table>
 
