@@ -80,19 +80,20 @@ func (s Statistics) AveragePercent() (float64, error) {
 
 // Variance func
 func (s Statistics) Variance() (float64, error) {
-	avg, err := s.Average()
+	Avg, err := s.Average()
 	if err != nil {
 		return 0, err
 	}
 
 	var Var float64
+	var Sum float64
 
 	for _, entry := range s.Entries {
-		res := entry - avg
-		Var += math.Pow(res, 2)
+		res := entry - Avg
+		Sum += math.Pow(res, 2)
 	}
 
-	Var = Var / (float64(s.Size() - 1))
+	Var = Sum / float64(s.Size())
 
 	return Var, nil
 }

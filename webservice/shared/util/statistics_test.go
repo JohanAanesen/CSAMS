@@ -11,7 +11,7 @@ func TestStatistics(t *testing.T) {
 	const MAX = 5
 	const SIZE = 30
 	const AVG = 3.233333333333333
-	const VAR = 1.426436782
+	const VAR = 1.378888888888888
 	const PERCENT = 64.66666666666
 	var StdDev = math.Sqrt(VAR)
 
