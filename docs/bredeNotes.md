@@ -337,6 +337,8 @@ CREATE TABLE `forgotten_password`
 * Fixed forgotten password email message text
 * Fixed `goFixShit.ps1` script and added colours <3
 * Fixed golint errors
+* Merged emailservice to master
+* Changed name from `NTNU-Bachelor-Management-System-For-CS-Assignments` to `CSAMS` short for `Computer Science Assignment Management System` in project and repo
 
 ### Thursday 04/04/19
 
