@@ -3,7 +3,7 @@ package mail
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 	"os"
 )
@@ -36,7 +36,7 @@ func (mail Mail) MailForgottenPassword(email string, link string) error {
 
 	_, err = http.Post(url, "application/json", bytes.NewBuffer(jsonValue))
 	if err != nil {
-		fmt.Printf("The HTTP request failed with error %s\n", err)
+		log.Printf("The HTTP request failed with error %s\n", err.Error())
 		return err
 	}
 
@@ -73,7 +73,7 @@ func (mail Mail) SendSingleRecipient(email string, subject string, message strin
 
 	_, err = http.Post(url, "application/json", bytes.NewBuffer(jsonValue))
 	if err != nil {
-		fmt.Printf("The HTTP request failed with error %s\n", err)
+		log.Printf("The HTTP request failed with error %s\n", err.Error())
 		return err
 	}
 
@@ -110,7 +110,7 @@ func (mail Mail) SendMultipleRecipient(emails []string, subject string, message 
 
 	_, err = http.Post(url, "application/json", bytes.NewBuffer(jsonValue))
 	if err != nil {
-		fmt.Printf("The HTTP request failed with error %s\n", err)
+		log.Printf("The HTTP request failed with error %s\n", err.Error())
 		return err
 	}
 
