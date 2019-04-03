@@ -188,6 +188,17 @@ CREATE TABLE `validation`
     FOREIGN KEY (`user_id`) REFERENCES users (`id`)
 );
 
+CREATE TABLE `users_pending`
+(
+    `id`            int(11)     NOT NULL AUTO_INCREMENT,
+    `name`          varchar(64) DEFAULT NULL,
+    `email_student` varchar(64) NOT NULL,
+    `password`      varchar(64) NOT NULL,
+    `validation_id` int(11)     NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`validation_id`) REFERENCES validation (`id`)
+);
+
 -- not attaching any foreign keys to log because we always want it to log something even if some of the data is missing
 CREATE TABLE `logs`
 (

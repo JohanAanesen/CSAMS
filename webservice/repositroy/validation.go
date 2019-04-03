@@ -6,20 +6,20 @@ import (
 	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
 )
 
-// ForgottenPassRepository struct
-type ForgottenPassRepository struct {
+// ValidationRepository struct
+type ValidationRepository struct {
 	db *sql.DB
 }
 
-// NewForgottenPassRepository func
-func NewForgottenPassRepository(db *sql.DB) *ForgottenPassRepository {
-	return &ForgottenPassRepository{
+// NewValidationRepository func
+func NewValidationRepository(db *sql.DB) *ValidationRepository {
+	return &ValidationRepository{
 		db: db,
 	}
 }
 
 // Insert inserts a new forgottenpass in the db
-func (repo *ForgottenPassRepository) Insert(forgottenPass model.ForgottenPass) (int, error) {
+func (repo *ValidationRepository) Insert(validation model.Validation) (int, error) {
 	var id int64
 
 	query := "INSERT INTO `validation` (`hash`, `user_id`, `timestamp`) VALUES (?, ?, ?)"
@@ -29,7 +29,7 @@ func (repo *ForgottenPassRepository) Insert(forgottenPass model.ForgottenPass) (
 		return int(id), err
 	}
 
-	rows, err := tx.Exec(query, forgottenPass.Hash, forgottenPass.UserID, util.ConvertTimeStampToString(forgottenPass.TimeStamp))
+	rows, err := tx.Exec(query, validation.Hash, validation.UserID, util.ConvertTimeStampToString(validation.TimeStamp))
 	if err != nil {
 		tx.Rollback()
 		return int(id), err
@@ -51,8 +51,8 @@ func (repo *ForgottenPassRepository) Insert(forgottenPass model.ForgottenPass) (
 }
 
 // FetchAll fetches all validation rows
-func (repo *ForgottenPassRepository) FetchAll() ([]*model.ForgottenPass, error) {
-	result := make([]*model.ForgottenPass, 0)
+func (repo *ValidationRepository) FetchAll() ([]*model.Validation, error) {
+	result := make([]*model.Validation, 0)
 
 	query := "SELECT `id`, `hash`, `user_id`, `valid`, `timestamp`  FROM `validation`"
 
@@ -64,7 +64,7 @@ func (repo *ForgottenPassRepository) FetchAll() ([]*model.ForgottenPass, error) 
 	defer rows.Close()
 
 	for rows.Next() {
-		temp := model.ForgottenPass{}
+		temp := model.Validation{}
 
 		err = rows.Scan(&temp.ID, &temp.Hash, &temp.UserID, &temp.Valid, &temp.TimeStamp)
 		if err != nil {
@@ -78,7 +78,7 @@ func (repo *ForgottenPassRepository) FetchAll() ([]*model.ForgottenPass, error) 
 }
 
 // UpdateValidation updates the validation column
-func (repo *ForgottenPassRepository) UpdateValidation(id int, state bool) error {
+func (repo *ValidationRepository) UpdateValidation(id int, state bool) error {
 	query := "UPDATE `validation` SET `valid` = ? WHERE id = ?"
 
 	tx, err := repo.db.Begin()
