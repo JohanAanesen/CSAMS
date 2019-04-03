@@ -55,6 +55,7 @@
                                     {{else if eq .Type "url"}}
                                         <label for="{{.Name}}">{{.Label}}</label>
                                         <input type="url" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
+                                        <a href="{{.Answer}}" target="_blank">Open in a new tab</a>
                                     {{else if eq .Type "textarea"}}
                                         <label for="{{.Name}}">{{.Label}}</label>
                                         <textarea name="{{.Name}}" id="{{.Name}}" class="form-control" disabled>{{.Answer}}</textarea>
