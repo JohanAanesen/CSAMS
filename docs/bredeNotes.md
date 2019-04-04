@@ -366,5 +366,8 @@ CREATE TABLE `validation`
 ***
 
 ### Thursday 04/04/19
+* Don't have time to work a full day today, but i have 6h to spear from mon-wed.
+* I added repository and service for the table `users_pending` also struct in model
+
 
 ### Friday 05/04/19
