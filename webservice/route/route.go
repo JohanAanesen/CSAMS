@@ -1,8 +1,8 @@
 package route
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/controller"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/route/middleware"
+	"github.com/JohanAanesen/CSAMS/webservice/controller"
+	"github.com/JohanAanesen/CSAMS/webservice/route/middleware"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"net/http"

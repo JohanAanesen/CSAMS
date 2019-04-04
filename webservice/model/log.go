@@ -3,8 +3,8 @@ package model
 import (
 	"database/sql"
 	"errors"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
 	"log"
 )
 

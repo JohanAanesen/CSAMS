@@ -1,7 +1,7 @@
 package session
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
+	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/gorilla/sessions"
 	"log"
 	"net/http"
