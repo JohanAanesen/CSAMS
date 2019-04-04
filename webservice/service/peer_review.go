@@ -17,6 +17,7 @@ func NewPeerReviewService(db *sql.DB) *PeerReviewService {
 	}
 }
 
+// TargetExists checks if the target exist in the table
 func (s *PeerReviewService) TargetExists(assignmentID int, userID int) (bool, error) {
 	return s.peerReviewRepo.TargetExists(assignmentID, userID)
 }

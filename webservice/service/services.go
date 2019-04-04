@@ -14,6 +14,7 @@ type Services struct {
 	Submission       *SubmissionService
 	SubmissionAnswer *SubmissionAnswerService
 	User             *UserService
+	ForgottenPass    *ForgottenPassService
 }
 
 // NewServices func
@@ -29,5 +30,6 @@ func NewServices(db *sql.DB) *Services {
 		Submission:       NewSubmissionService(db),
 		SubmissionAnswer: NewSubmissionAnswerService(db),
 		User:             NewUserService(db),
+		ForgottenPass:    NewForgottenPassService(db),
 	}
 }

@@ -14,11 +14,13 @@ services:
       - schedulerservice
     environment:
       PEER_AUTH: "5243980712315079823517089"
+      MAIL_AUTH: "RqHDMR6WfMd9zMhr^kgDA4kZ0DJbEElu7Sb^B!#1uXVzDy%zW85yGIL#iI6D2%S*"
       DATABASE_URL: database:3306
       DATABASE_USER: root
       DATABASE_PASSWORD: root
       DATABASE_DATABASE: cs53
       SCHEDULE_SERVICE: schedulerservice:8086
+      MAIL_SERVICE: mailservice:8085
       TIME_ZONE: "Europe/Oslo"
     restart: always
 
@@ -54,6 +56,25 @@ services:
       DATABASE_DATABASE: cs53
       PEER_AUTH: "5243980712315079823517089"
       PEER_SERVICE: peerservice:8087
+    restart: always
+
+  mailservice:
+    build: mailservice
+    depends_on:
+      - database
+    ports:
+      - 8085:8085
+    links:
+      - database
+    environment:
+      DATABASE_URL: database:3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root
+      DATABASE_DATABASE: cs53
+      PEER_AUTH: "5243980712315079823517089"
+      MAIL_AUTH: "RqHDMR6WfMd9zMhr^kgDA4kZ0DJbEElu7Sb^B!#1uXVzDy%zW85yGIL#iI6D2%S*"
+      USERNAME: cs.assignments.noreply@gmail.com
+      PASSWORD:
     restart: always
 
   adminer:

@@ -2,18 +2,19 @@ package repositroy
 
 import "database/sql"
 
-// ReviewAnswerRepository struct
+// PeerReviewRepository struct
 type PeerReviewRepository struct {
 	db *sql.DB
 }
 
-// NewReviewAnswerRepository func
+// NewPeerReviewRepository func
 func NewPeerReviewRepository(db *sql.DB) *PeerReviewRepository {
 	return &PeerReviewRepository{
 		db: db,
 	}
 }
 
+// TargetExists Checks if the target exist in the table
 func (repo *PeerReviewRepository) TargetExists(assignmentID int, userID int) (bool, error) {
 	var result int
 
