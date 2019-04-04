@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// Initialize config
-	var cfg = config.Initialize("webservice/config/config.json")
+	var cfg = config.Initialize("config/config.json")
 
 	if cfg == nil {
 		log.Fatal("could not load config, shutting down")
