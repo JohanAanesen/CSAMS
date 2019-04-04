@@ -1,6 +1,17 @@
 {{define "title"}}Create Assignment{{end}}
 {{define "head"}}
     <link rel="stylesheet" href="/static/css/simplemde.min.css">
+    <style>
+        .CodeMirror {
+            height: 300px;
+        }
+        .CodeMirror-code::selection {
+            background: #000;
+        }
+        .CodeMirror-code::-moz-selection {
+            background: #000;
+        }
+    </style>
 {{end}}
 {{define "content"}}
     {{if .Errors}}
@@ -16,7 +27,6 @@
         </div>
 
         <hr>
-        <!-- TODO (Svein): Make this for horizontal. See https://getbootstrap.com/docs/4.3/components/forms/#horizontal-form -->
         <div class="row">
             <div class="col-12 col-lg">
                 <div class="form-group">
@@ -86,15 +96,8 @@
                             {{range .Submissions}}
                                 <option value="{{.ID}}">{{.Form.Name}}</option>
                             {{end}}
-                            <!-- TODO (Svein): Create an API-call for getting the JSON og the submission form -->
                         </select>
                     </div>
-
-                    <hr>
-
-                    <h6>Preview</h6>
-                    <hr>
-                    <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
                     <hr>
                 </div>
 
@@ -113,14 +116,7 @@
                         <label for="review_deadline">Review Deadline</label>
                         <input type="datetime-local" name="review_deadline" id="review_deadline" class="form-control">
                     </div>
-
                     <hr>
-
-                    <h6>Preview</h6>
-                    <hr>
-                    <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
-                    <hr>
-                    <div id="review_container"></div>
                 </div>
             </div>
 
@@ -143,6 +139,7 @@
             let simplemde = new SimpleMDE({
                 element: document.getElementById('simplemde'),
                 hideIcons: ["side-by-side", "fullscreen"],
+                lineWrapping: true,
             });
 
             let publishNowButton = document.getElementById('publish_now');

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
@@ -15,14 +16,8 @@ import (
 
 //CourseGET serves class page to users
 func CourseGET(w http.ResponseWriter, r *http.Request) {
-	//get user
+	// Get current user
 	currentUser := session.GetUserFromSession(r)
-
-	//check if user is logged in
-	if !currentUser.Authenticated {
-		LoginGET(w, r)
-		return
-	}
 
 	vars := mux.Vars(r)
 	courseID, err := strconv.Atoi(vars["id"])
@@ -48,6 +43,59 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 		log.Println("get all assignments from course", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
+	}
+
+	// Need custom struct to get the delivery status
+	type SubmittedAssignment struct {
+		Assignment model.Assignment
+		Delivered  bool
+		Reviews    int
+	}
+
+	var submittedAssignments []SubmittedAssignment
+	var noOfReviewsLeft int
+
+	for _, assignment := range assignments { //go through all it's assignments again
+
+		// Initiate variable
+		delivered := false
+
+		// Only check if the user isn't a teacher
+		if !currentUser.Teacher {
+			// Check if student has submitted assignment
+			delivered, err = services.SubmissionAnswer.HasUserSubmitted(assignment.ID, currentUser.ID)
+			if err != nil {
+				log.Println("services, submission answer, has user submitted", err)
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
+
+			// Check if user is in the peer review table
+			inReviewTable, err := services.PeerReview.TargetExists(assignment.ID, currentUser.ID)
+			if err != nil {
+				log.Println("services, peer review, target exists", err.Error())
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
+
+			// If its -404 the user doesn't exists in the peer review table
+			noOfReviewsLeft = -404
+
+			// Only check for count if user exists in th peer review table
+			if inReviewTable {
+				// Get number of reviews done bu user
+				reviewDone, err := services.ReviewAnswer.CountReviewsDone(currentUser.ID, assignment.ID)
+				if err != nil {
+					log.Println("services, review answer, countreviews reviewDone", err.Error())
+					ErrorHandler(w, r, http.StatusInternalServerError)
+					return
+				}
+
+				// Calculate how many left
+				noOfReviewsLeft = int(assignment.Reviewers.Int64) - reviewDone
+			}
+		}
+		submittedAssignments = append(submittedAssignments, SubmittedAssignment{Assignment: *assignment, Delivered: delivered, Reviews: noOfReviewsLeft})
 	}
 
 	// Check if user is an participant of said class or a teacher
@@ -81,7 +129,7 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Course"] = course
 	v.Vars["User"] = currentUser
 	v.Vars["Classmates"] = classmates
-	v.Vars["Assignments"] = assignments
+	v.Vars["Assignments"] = submittedAssignments
 
 	v.Render(w)
 }

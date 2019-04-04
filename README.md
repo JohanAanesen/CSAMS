@@ -1,7 +1,8 @@
-# NTNU-Bachelor-Management-System-For-CS-Assignments
+# ~NTNU-Bachelor-Management-System-For-CS-Assignments~
+# Computer Science Assignment Management System
 
 ## Links
-* [Github](https://https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments)
+* [Github](https://github.com/JohanAanesen/CSAMS)
 * [Trello](https://trello.com/bachelor531)
 * [ShareLatex](https://www.overleaf.com/project/5c3491a162ba3128fda8c11d)
 * [Discord](https://discord.gg/rZ4zg2R)
@@ -27,7 +28,7 @@ This project is in the norwegian timezone!
 ### SQL
 Uses the Go function below combined with `ConvertTimeStampToString(time.Time)`
 ### GO
-[`webservice/shared/util/time.go`](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/master/webservice/shared/util/time.go)
+[`webservice/shared/util/time.go`](https://github.com/JohanAanesen/CSAMS/blob/master/webservice/shared/util/time.go)
 ```Go
 func GetTimeInNorwegian() time.Time {
 	//init the loc
@@ -37,7 +38,7 @@ func GetTimeInNorwegian() time.Time {
 }
 ```
 ### Javascript
-[`webservice/static/js/time.js`](https://github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/blob/master/webservice/static/js/time.js)
+[`webservice/static/js/time.js`](https://github.com/JohanAanesen/CSAMS/blob/master/webservice/static/js/time.js)
 ```Js
 function getTimeInNorwegian() {
     let norTime = new Date().toLocaleString("no-no", {timeZone: "Europe/Oslo"});

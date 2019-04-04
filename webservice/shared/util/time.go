@@ -72,3 +72,9 @@ func ConvertTimeStampToString(timestamp time.Time) string {
 	// ex: 2019-03-13 10:14:40
 	return timestamp.Format("2006-01-02 15:04:05")
 }
+
+// AddDeadlineDelay adds 10min to the deadline TODO use this function for #59
+func AddDeadlineDelay(timeStamp time.Time) time.Time {
+
+	return timeStamp.Add(time.Minute * 10)
+}

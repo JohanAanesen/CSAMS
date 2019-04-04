@@ -45,6 +45,8 @@
                 {{ end }}
 
             </div> <!-- /.row -->
+
+            {{ $s := .isStudent}}
             {{ if .Assignments }}<h2>Active Assignments</h2>
             <hr>{{end}}
             <div class="row">
@@ -54,12 +56,57 @@
                         <div class="card shadow-sm{{if DEADLINEDUE .Assignment.Deadline}} bg-secondary text-light{{ else }} text-dark {{end}}">
                             <div class="card-body">
                                 <h2 class="display-5">{{.Assignment.Name}}</h2>
+                                <hr class="bg-light">
+                                <h3 class="display-5">Submission</h3>
                                 <h5>
                                     <span class="badge {{if DEADLINEDUE .Assignment.Deadline}}badge-dark{{ else}} badge-secondary{{end}}">{{.CourseCode}}</span>
+                                    <!-- Only display submission status if it's a student -->
+                                    {{ if $s }}
+                                        {{if .Delivered }}
+                                            <span class="badge badge-success">Submitted</span>
+                                        {{ else}}
+                                            <span class="badge badge-warning">Not submitted</span>
+                                        {{end}}
+                                    {{end}}
                                 </h5>
-                                <p{{if DEADLINEDUE .Assignment.Deadline}} class="text-danger"{{end}}>
-                                    <strong>Deadline: </strong> {{PRETTYTIME .Assignment.Deadline}}</p>
+                                {{if DEADLINEDUE .Assignment.Deadline}}
+                                    <h5>
+                                        <span class="badge badge-danger">Deadline passed</span>
+                                    </h5>
+                                {{else}}
+                                    <p><strong>Deadline: </strong> {{PRETTYTIME .Assignment.Deadline}}</p>
+                                {{end}}
                                 <hr class="bg-light">
+
+                                <!-- Peer Review if student has delivered and deadline to assignment is due-->
+                                {{if (or (.Delivered) (not $s))}}
+                                    {{ if DEADLINEDUE .Assignment.Deadline}}
+                                        <h3 class="display-5">Peer Review</h3>
+
+                                        {{ if $s}}
+                                            <h5>
+                                                {{if gt .Reviews 0}}
+                                                    <span class="badge badge-warning">Review{{ if ne .Reviews 1}}s{{end}} pending: {{.Reviews}}</span>
+                                                {{ else if eq .Reviews -404}}
+                                                    <span class="badge badge-warning">Reviews N/A</span>
+                                                {{else}}
+                                                    <span class="badge badge-success">Review done</span>
+                                                {{end}}
+                                            </h5>
+                                        {{ end}}
+
+                                        {{if DEADLINEDUE .Assignment.ReviewDeadline}}
+                                            <h5>
+                                                <span class="badge badge-danger">Deadline passed</span>
+                                            </h5>
+                                        {{else}}
+                                            <p><strong>Deadline: </strong> {{PRETTYTIME .Assignment.ReviewDeadline}}</p>
+                                        {{end}}
+
+                                        <hr class="bg-light">
+                                    {{ end }}
+                                {{ end }}
+
                                 <a href="/assignment/{{.Assignment.ID}}"
                                    class="btn btn-outline-{{if DEADLINEDUE .Assignment.Deadline}}light{{else}}dark{{end}} btn-sm">See
                                     details</a>

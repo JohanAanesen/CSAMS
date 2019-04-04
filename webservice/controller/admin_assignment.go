@@ -13,8 +13,6 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
 	"github.com/gorilla/mux"
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/shurcooL/github_flavored_markdown"
-	"html/template"
 	"log"
 	"net/http"
 	"sort"
@@ -163,12 +161,75 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		errorMessages = append(errorMessages, "Error: Deadline cannot be before Publish.")
 	}
 
+	// Get form values
+	var val int
+
+	// String converted into integer
+	courseID, err := strconv.Atoi(r.FormValue("course_id"))
+	if err != nil {
+		log.Println("strconv, atoi, course_id", err.Error())
+		return
+	}
+
+	if r.FormValue("submission_id") != "" {
+		val, err = strconv.Atoi(r.FormValue("submission_id"))
+		if err != nil {
+			log.Println("strconv, atoi, submission_id", err.Error())
+			return
+		}
+	}
+	submissionID := sql.NullInt64{
+		Int64: int64(val),
+		Valid: val != 0,
+	}
+
+	val = 0
+
+	if r.FormValue("review_id") != "" {
+		val, err = strconv.Atoi(r.FormValue("review_id"))
+		if err != nil {
+			log.Println("strconv, atoi, review_id", err.Error())
+			return
+		}
+
+		// Get the time.Time object from the deadline string
+		reviewDeadline, err := util.DatetimeLocalToRFC3339(r.FormValue("review_deadline"))
+		if err != nil {
+			errorMessages = append(errorMessages, "Error: Something wrong with the review deadline datetime.")
+		}
+
+		if deadline.After(reviewDeadline) {
+			errorMessages = append(errorMessages, "Error: Review deadline cannot be before Assignment Deadline.")
+		} else {
+			assignment.ReviewDeadline = reviewDeadline
+		}
+
+	}
+
 	// Check if there are any error messages
 	if len(errorMessages) != 0 {
 		// TODO (Svein): Keep data from the previous submit
+		submissionService := service.NewSubmissionService(db.GetDB())
+		reviewService := service.NewReviewService(db.GetDB())
 		courses, err := courseService.FetchAllForUserOrdered(currentUser.ID)
 		if err != nil {
 			log.Println("course service, fetch all for user ordered", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		// Fetch all submission
+		submissions, err := submissionService.FetchAll()
+		if err != nil {
+			log.Println(err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		// Fetch all reviews
+		reviews, err := reviewService.FetchAll()
+		if err != nil {
+			log.Println(err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
@@ -183,53 +244,13 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		v.Vars["AssignmentName"] = assignmentName
 		v.Vars["AssignmentDescription"] = assignmentDescription
 		v.Vars["Courses"] = courses
+		v.Vars["Submissions"] = submissions
+		v.Vars["Reviews"] = reviews
 
 		v.Render(w)
 		return
 	}
 
-	// Get form values
-	var val int
-
-	// String converted into integer
-	courseID, err := strconv.Atoi(r.FormValue("course_id"))
-	if err != nil {
-		log.Print("course_id")
-		log.Println(err)
-		return
-	}
-
-	if r.FormValue("submission_id") != "" {
-		val, err = strconv.Atoi(r.FormValue("submission_id"))
-		if err != nil {
-			log.Println("submission_id")
-			log.Println(err)
-			return
-		}
-	}
-	submissionID := sql.NullInt64{
-		Int64: int64(val),
-		Valid: val != 0,
-	}
-
-	val = 0
-
-	if r.FormValue("review_id") != "" {
-		val, err = strconv.Atoi(r.FormValue("review_id"))
-		if err != nil {
-			log.Println("review_id")
-			log.Println(err)
-			return
-		}
-
-		// Get the time.Time object from the deadline string
-		reviewDeadline, err := util.DatetimeLocalToRFC3339(r.FormValue("review_deadline"))
-		if err != nil {
-			errorMessages = append(errorMessages, "Error: Something wrong with the review deadline datetime.")
-		}
-		// Put review deadline into assignment
-		assignment.ReviewDeadline = reviewDeadline
-	}
 	reviewID := sql.NullInt64{
 		Int64: int64(val),
 		Valid: val != 0,
@@ -288,6 +309,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 func AdminSingleAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	// Services
 	assignmentService := service.NewAssignmentService(db.GetDB())
+	courseService := service.NewCourseService(db.GetDB())
 
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -304,8 +326,14 @@ func AdminSingleAssignmentGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	descriptionMD := []byte(assignment.Description)
-	description := github_flavored_markdown.Markdown(descriptionMD)
+	course, err := courseService.Fetch(assignment.CourseID)
+	if err != nil {
+		log.Println("course service, fetch", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// TODO fetch submission and review names also
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -314,7 +342,7 @@ func AdminSingleAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "admin/assignment/single"
 
 	v.Vars["Assignment"] = assignment
-	v.Vars["Description"] = template.HTML(description) // TODO (Svein): User template function
+	v.Vars["CourseName"] = course.Name
 
 	v.Render(w)
 }
@@ -401,6 +429,9 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminUpdateAssignmentPOST handles POST-request at /admin/assignment/update
 func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
+	// Sanitizer
+	p := bluemonday.UGCPolicy()
+
 	// Services
 	assignmentService := service.NewAssignmentService(db.GetDB())
 	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
@@ -510,6 +541,13 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Check that review deadline isn't before assignment deadline 8====D
+		if deadline.After(reviewDeadline) {
+			log.Println("error: review deadline cannot be before assignment deadline")
+			ErrorHandler(w, r, http.StatusBadRequest)
+			return
+		}
+
 		assignment.ReviewDeadline = reviewDeadline
 	}
 
@@ -531,8 +569,8 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	assignment.ID = id
-	assignment.Name = r.FormValue("name") // TODO (Svein): Sanitize
-	assignment.Description = r.FormValue("description")
+	assignment.Name = p.Sanitize(r.FormValue("name"))
+	assignment.Description = p.Sanitize(r.FormValue("description"))
 	assignment.Publish = publish
 	assignment.Deadline = deadline
 	assignment.CourseID = courseID

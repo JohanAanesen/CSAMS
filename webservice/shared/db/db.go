@@ -26,7 +26,8 @@ type MySQLInfo struct {
 }
 
 //ConfigureDB loads database connection string
-func ConfigureDB(info *MySQLInfo) { // TODO (Svein): Is DB needed at the end? We are in db-package
+// TODO (Svein): Is DB needed at the end? We are in db-package, usage: db.Configure() vs db.ConfigureDB)
+func ConfigureDB(info *MySQLInfo) {
 	// root:@tcp(127.0.0.1:3306)/cs53
 	if os.Getenv("DATABASE_URL") == "" {
 		dataSourceName = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=%t", info.Username, info.Password, info.Hostname, info.Port, info.Database, info.ParseTime)
@@ -41,7 +42,8 @@ func ConfigureDB(info *MySQLInfo) { // TODO (Svein): Is DB needed at the end? We
 }
 
 //OpenDB creates connection with database
-func OpenDB() { // TODO (Svein): Is DB needed at the end? We are in db-package
+// TODO (Svein): Is DB needed at the end? We are in db-package, usage: db.Open() vs db.OpenDB()
+func OpenDB() {
 	var err error
 	db, err = sql.Open(driverName, dataSourceName)
 	if err != nil {
@@ -56,11 +58,13 @@ func OpenDB() { // TODO (Svein): Is DB needed at the end? We are in db-package
 }
 
 //GetDB returns db object
-func GetDB() *sql.DB { // TODO (Svein): Is DB needed at the end? We are in db-package
+// TODO (Svein): Is DB needed at the end? We are in db-package, usage: db.Get() vs db.GetDB()
+func GetDB() *sql.DB {
 	return db
 }
 
 //CloseDB closes db
-func CloseDB() { // TODO (Svein): Is DB needed at the end? We are in db-package
+// TODO (Svein): Is DB needed at the end? We are in db-package, usage: db.Close() vs db.CloseDB()
+func CloseDB() {
 	db.Close()
 }

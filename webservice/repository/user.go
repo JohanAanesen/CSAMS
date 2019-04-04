@@ -95,11 +95,11 @@ func (repo *UserRepository) FetchAll() ([]*model.User, error) {
 	return result, err
 }
 
-// FetchAllFromCourse func
+// FetchAllFromCourse fetches all course participants in sorted list by teacher, name
 func (repo *UserRepository) FetchAllFromCourse(courseID int) ([]*model.User, error) {
 	result := make([]*model.User, 0)
 
-	query := "SELECT u.id, u.name, u.email_student, u.teacher, u.email_private FROM users AS u INNER JOIN usercourse AS uc ON u.id = uc.userid WHERE uc.courseid = ?"
+	query := "SELECT u.id, u.name, u.email_student, u.teacher, u.email_private FROM users AS u INNER JOIN usercourse AS uc ON u.id = uc.userid WHERE uc.courseid = ? ORDER BY u.teacher DESC, u.name ASC"
 
 	rows, err := repo.db.Query(query, courseID)
 	if err != nil {
@@ -151,34 +151,31 @@ func (repo *UserRepository) FetchAllStudentsFromCourse(courseID int) ([]*model.U
 	return result, err
 }
 
-// EmailExists Checks if a user with said email exists
-func (repo *UserRepository) EmailExists(user model.User) (bool, error) {
+// EmailExists Checks if a user with said email exists and returns userid
+func (repo *UserRepository) EmailExists(email string) (bool, int, error) {
 
-	query := "SELECT COUNT(id) FROM users WHERE email_student = ? OR email_private = ?"
+	query := "SELECT id FROM users WHERE email_student = ? OR email_private = ?"
 
-	rows, err := repo.db.Query(query, user.EmailStudent, user.EmailStudent)
+	rows, err := repo.db.Query(query, email, email)
 	if err != nil {
-		return false, err
+		return false, -1, err
 	}
 
 	defer rows.Close()
 
-	for rows.Next() {
-		var count int
+	// If rows.next is true, there were a match
+	if rows.Next() {
+		var id int
 
-		err = rows.Scan(&count)
+		err = rows.Scan(&id)
 		if err != nil {
-			return false, err
+			return false, -1, err
 		}
 
-		// If count is over 0, a user exists with that email
-		if count > 0 {
-			return true, nil
-		}
-
+		return true, id, nil
 	}
 
-	return false, err
+	return false, -1, err
 }
 
 // Insert func

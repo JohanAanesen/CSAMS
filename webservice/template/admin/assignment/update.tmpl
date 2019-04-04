@@ -1,6 +1,17 @@
 {{define "title"}}Update Assignment{{end}}
 {{define "head"}}
     <link rel="stylesheet" href="/static/css/simplemde.min.css">
+    <style>
+        .CodeMirror {
+            height: 300px;
+        }
+        .CodeMirror-code::selection {
+            background: #000;
+        }
+        .CodeMirror-code::-moz-selection {
+            background: #000;
+        }
+    </style>
 {{end}}
 {{define "content"}}
     {{if .Errors}}
@@ -153,6 +164,7 @@
             let simplemde = new SimpleMDE({
                 element: document.getElementById('simplemde'),
                 hideIcons: ["side-by-side", "fullscreen"],
+                lineWrapping: true,
             });
 
             let publishNowButton = document.getElementById('publish_now');

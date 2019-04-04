@@ -45,12 +45,6 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 		err = rows.Scan(&result.ID, &result.Name, &result.Description, &result.Created,
 			&result.Publish, &result.Deadline, &result.CourseID, &result.SubmissionID,
 			&result.ReviewID, &reviewDeadline, &result.Reviewers, &result.ValidationID)
-		// TODO time, find some fix for this
-		/*
-			result.Created = result.Created.In(loc).Add(-time.Hour)
-			result.Deadline = result.Deadline.In(loc).Add(-time.Hour)
-			result.Publish = result.Deadline.In(loc).Add(-time.Hour)
-		*/
 
 		if err != nil {
 			return &result, err

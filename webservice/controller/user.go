@@ -8,17 +8,13 @@ import (
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
 	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
+	"github.com/microcosm-cc/bluemonday"
 	"log"
 	"net/http"
 )
 
 // UserGET serves user page to users
 func UserGET(w http.ResponseWriter, r *http.Request) {
-	if !session.IsLoggedIn(r) {
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
 	// Services
 	services := service.NewServices(db.GetDB())
 
@@ -47,12 +43,8 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
 
 // UserUpdatePOST changes the user information
 func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
-	if !session.IsLoggedIn(r) {
-		//not logged in
-		ErrorHandler(w, r, http.StatusUnauthorized)
-		return
-	}
-
+	// Sanitizer
+	p := bluemonday.UGCPolicy()
 	// Get current user
 	currentUser := session.GetUserFromSession(r)
 	// Services
@@ -77,11 +69,26 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	if secondaryEmail != "" && secondaryEmail != currentUser.EmailPrivate.String {
 		updatedUser := currentUser
 		updatedUser.EmailPrivate = sql.NullString{
-			String: secondaryEmail, // TODO (Svein): sanitize this
+			String: p.Sanitize(secondaryEmail),
 			Valid:  secondaryEmail != "",
 		}
 
-		err := services.User.Update(currentUser.ID, updatedUser)
+		// Check if the email exists in the db
+		exist, _, err := services.User.EmailExists(p.Sanitize(secondaryEmail))
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		// If the email already exists
+		if exist {
+			log.Println("email already exist in db")
+			ErrorHandler(w, r, http.StatusBadRequest)
+			return
+		}
+
+		err = services.User.Update(currentUser.ID, updatedUser)
 		if err != nil {
 			log.Println(err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
@@ -104,15 +111,26 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// No password input fields can be empty,
-	// the new password has to be equal to repeat password field,
-	// and the new password can't be the same as the old password
-	passwordIsOkay := oldPass != "" && newPass != "" && repeatPass != "" && newPass == repeatPass && newPass != oldPass
-	err = util.CompareHashAndPassword(oldPass, hash)
-	// If there's no problem with passwords and the password is changed
-	if passwordIsOkay && err != nil {
+	// if no of these fields are empty, try to change password
+	if oldPass != "" && newPass != "" && repeatPass != "" {
+
+		// check if the old password is correct
+		err = util.CompareHashAndPassword(oldPass, hash)
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusBadRequest)
+			return
+		}
+
+		// If password hasn't changed or new and repeat doesn't match
+		if newPass == oldPass || newPass != repeatPass {
+			log.Println("New password has not changed or repeat password and new password is not the same")
+			ErrorHandler(w, r, http.StatusBadRequest)
+			return
+		}
+
+		// Update password
 		err = services.User.UpdatePassword(currentUser.ID, newPass)
-		//err := model.UpdateUserPassword(currentUser.ID, newPass)
 		if err != nil {
 			log.Println(err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)

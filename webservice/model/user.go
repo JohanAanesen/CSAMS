@@ -17,22 +17,6 @@ type User struct {
 	Authenticated bool           `json:"authenticated"`
 }
 
-// UpdateUserName updates the users name in the db
-// TODO (Svein): Is this not in use anymore?
-func UpdateUserName(userID int, newName string) bool {
-
-	rows, err := db.GetDB().Query("UPDATE users SET name = ? WHERE id = ?", newName, userID)
-
-	if err != nil {
-		log.Println("update user name query error:", err)
-		return false
-	}
-
-	defer rows.Close()
-
-	return true
-}
-
 // UserIsReviewer Checks if the user (userID) can review another user(reviewUserID)
 func UserIsReviewer(userID int, assignmentID int, submissionID int64, reviewUserID int) bool {
 

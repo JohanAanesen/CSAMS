@@ -45,6 +45,11 @@ func (s *UserService) FetchAllStudentsFromCourse(courseID int) ([]*model.User, e
 	return s.userRepo.FetchAllStudentsFromCourse(courseID)
 }
 
+// EmailExists checks if the email exists in emailprivate and emailstudent
+func (s *UserService) EmailExists(email string) (bool, int, error) {
+	return s.userRepo.EmailExists(email)
+}
+
 // Register func
 func (s *UserService) Register(user model.User, password string) (int, error) {
 	hashed, err := util.GenerateFromPassword(password)
@@ -52,7 +57,7 @@ func (s *UserService) Register(user model.User, password string) (int, error) {
 		return 0, err
 	}
 
-	exists, err := s.userRepo.EmailExists(user)
+	exists, _, err := s.userRepo.EmailExists(user.EmailPrivate.String)
 	if err != nil {
 		return 0, err
 	}

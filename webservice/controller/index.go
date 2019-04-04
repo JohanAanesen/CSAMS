@@ -10,17 +10,13 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"time"
 )
 
 // IndexGET serves homepage to authenticated users, send anonymous to login
 func IndexGET(w http.ResponseWriter, r *http.Request) {
 	// Current User
 	currentUser := session.GetUserFromSession(r)
-
-	if !currentUser.Authenticated {
-		LoginGET(w, r)
-		return
-	}
 
 	// Services
 	services := service.NewServices(db.GetDB())
@@ -33,13 +29,16 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//need custom struct to get the coursecode
+	// Need custom struct to get the coursecode and delivery status
 	type ActiveAssignment struct {
 		Assignment model.Assignment
 		CourseCode string
+		Delivered  bool
+		Reviews    int
 	}
 
 	var activeAssignments []ActiveAssignment
+	var noOfReviewsLeft int
 
 	for _, course := range courses { //iterate all courses
 		assignments, err := services.Assignment.FetchFromCourse(course.ID) //get assignments from course
@@ -52,17 +51,56 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 		// TODO time-norwegian
 		timeNow := util.GetTimeInCorrectTimeZone()
 		for _, assignment := range assignments { //go through all it's assignments again
-			if timeNow.After(assignment.Publish) && timeNow.Before(assignment.Deadline) { //save all 'active' assignments
-				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: *assignment, CourseCode: course.Code})
+			if timeNow.After(assignment.Publish) && timeNow.Before(assignment.ReviewDeadline.Add(time.Hour*12)) { // Assignments stay on front page until an half day after review deadline is over
+
+				// Initiate variable
+				delivered := false
+
+				// Only check if the user isn't a teacher
+				if !currentUser.Teacher {
+					// Check if student has submitted assignment
+					delivered, err = services.SubmissionAnswer.HasUserSubmitted(assignment.ID, currentUser.ID)
+					if err != nil {
+						log.Println("services, submission answer, has user submitted", err.Error())
+						ErrorHandler(w, r, http.StatusInternalServerError)
+						return
+					}
+
+					// Check if user is in the peer review table
+					inReviewTable, err := services.PeerReview.TargetExists(assignment.ID, currentUser.ID)
+					if err != nil {
+						log.Println("services, peer review, target exists", err.Error())
+						ErrorHandler(w, r, http.StatusInternalServerError)
+						return
+					}
+
+					// If its -404 the user doesn't exists in the peer review table
+					noOfReviewsLeft = -404
+
+					// Only check for count if user exists in th peer review table
+					if inReviewTable {
+						// Get number of reviews done bu user
+						reviewDone, err := services.ReviewAnswer.CountReviewsDone(currentUser.ID, assignment.ID)
+						if err != nil {
+							log.Println("services, review answer, countreviews reviewDone", err.Error())
+							ErrorHandler(w, r, http.StatusInternalServerError)
+							return
+						}
+
+						// Calculate how many left
+						noOfReviewsLeft = int(assignment.Reviewers.Int64) - reviewDone
+					}
+				}
+				activeAssignments = append(activeAssignments, ActiveAssignment{Assignment: *assignment, CourseCode: course.Code, Delivered: delivered, Reviews: noOfReviewsLeft})
 			}
 		}
-
 	}
 
 	// Set values
 	v := view.New(r)
 	v.Name = "index"
 
+	v.Vars["isStudent"] = !currentUser.Teacher
 	v.Vars["Courses"] = courses
 	v.Vars["Assignments"] = activeAssignments
 	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
@@ -118,7 +156,7 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 	err = services.Course.AddUser(currentUser.ID, course.ID)
 	if err == service.ErrUserAlreadyInCourse {
-		log.Println("user already in course", err.Error())
+		log.Println("user already in course", service.ErrUserAlreadyInCourse)
 		http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
 		return
 	}
@@ -144,6 +182,6 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	// Give feedback to user
 	session.SaveMessageToSession("You joined "+course.Code+" - "+course.Name, w, r)
 
-	IndexGET(w, r)
-	//http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
+	//IndexGET(w, r)
+	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage
 }

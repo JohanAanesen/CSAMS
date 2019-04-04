@@ -15,37 +15,6 @@ type UserSubmission struct {
 	Submitted    time.Time
 }
 
-// GetUserAnswers returns answers if it exists, empty if not
-// TODO (Svein): Move this into some struct as a method, or rename it to reflect it's actions
-func GetUserAnswers(userID int, assignmentID int) ([]Answer, error) {
-	// Create an empty answers array
-	var result []Answer
-	// Select query string
-	query := "SELECT id, type, answer, comment FROM user_submissions WHERE user_id =? AND assignment_id=?;"
-	// Prepare and execute query
-	rows, err := db.GetDB().Query(query, userID, assignmentID)
-	if err != nil {
-
-		// Returns empty if it fails
-		return result, err
-	}
-	// Close connection
-	defer rows.Close()
-	// Loop through results
-	for rows.Next() {
-		var temp Answer
-		// Scan rows
-		err := rows.Scan(&temp.ID, &temp.Type, &temp.Value, &temp.Comment)
-		// Check for error
-		if err != nil {
-			return result, err
-		}
-		result = append(result, temp)
-	}
-
-	return result, nil
-}
-
 // GetSubmittedTime returns submitted time if it exists, empty if not
 func GetSubmittedTime(userID int, assignmentID int) (time.Time, bool, error) {
 	result := time.Time{}

@@ -1,7 +1,17 @@
 {{define "title"}}Create Course{{end}}
 {{define "head"}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
-    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+    <style>
+        .CodeMirror {
+            height: 300px;
+        }
+        .CodeMirror-code::selection {
+            background: #000;
+        }
+        .CodeMirror-code::-moz-selection {
+            background: #000;
+        }
+    </style>
 {{end}}
 {{define "content"}}
 
@@ -78,10 +88,12 @@
 
 {{end}}
 {{define "foot"}}
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
     <script>
         let simplemde = new SimpleMDE({
             element: document.getElementById('simplemde'),
             hideIcons: ["side-by-side", "fullscreen"],
+            lineWrapping: true,
         });
 
         let enableEmailSuffix = document.getElementById('enable_email_suffix');
