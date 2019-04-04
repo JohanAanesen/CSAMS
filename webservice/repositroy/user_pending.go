@@ -65,7 +65,7 @@ func (repo *UserPendingRepository) FetchAll() ([]*model.UserPending, error) {
 	for rows.Next() {
 		temp := model.UserPending{}
 
-		err = rows.Scan(&temp.ID, &temp.ID, &temp.Name, &temp.EmailStudent, &temp.ValidationID)
+		err = rows.Scan(&temp.ID, &temp.Name, &temp.EmailStudent, &temp.ValidationID)
 		if err != nil {
 			return result, err
 		}
@@ -80,9 +80,9 @@ func (repo *UserPendingRepository) FetchAll() ([]*model.UserPending, error) {
 func (repo *UserPendingRepository) FetchPassword(id int) (string, error) {
 	var password string
 
-	query := "SELECT `password` FROM `users_pending` WHERE id = ?"
+	query := "SELECT `password` FROM `users_pending` WHERE `id` = ?"
 
-	rows, err := repo.db.Query(query)
+	rows, err := repo.db.Query(query, id)
 	if err != nil {
 		return password, err
 	}

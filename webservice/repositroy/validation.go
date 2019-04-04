@@ -79,7 +79,7 @@ func (repo *ValidationRepository) FetchAll() ([]*model.Validation, error) {
 
 // UpdateValidation updates the validation column
 func (repo *ValidationRepository) UpdateValidation(id int, state bool) error {
-	query := "UPDATE `validation` SET `valid` = ? WHERE id = ?"
+	query := "UPDATE `validation` SET `valid` = ? WHERE `id` = ?"
 
 	tx, err := repo.db.Begin()
 	if err != nil {

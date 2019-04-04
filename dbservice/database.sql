@@ -181,11 +181,10 @@ CREATE TABLE `validation`
 (
     `id`        int(11)     NOT NULL AUTO_INCREMENT,
     `hash`      varchar(64) NOT NULL,
-    `user_id`   int(11)     NULL,
+    `user_id`   int(11)              DEFAULT NULL,
     `valid`     tinyint(1)  NOT NULL DEFAULT 1,
     `timestamp` datetime    NOT NULL,
-    PRIMARY KEY (`id`),
-    FOREIGN KEY (`user_id`) REFERENCES users (`id`)
+    PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `users_pending`

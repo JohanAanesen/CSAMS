@@ -50,23 +50,19 @@ func (s *UserService) EmailExists(email string) (bool, int, error) {
 	return s.userRepo.EmailExists(email)
 }
 
-// Register func
-func (s *UserService) Register(user model.User, password string) (int, error) {
+// RegisterWithHashing func
+func (s *UserService) RegisterWithHashing(user model.User, password string) (int, error) {
 	hashed, err := util.GenerateFromPassword(password)
 	if err != nil {
 		return 0, err
 	}
 
-	exists, _, err := s.userRepo.EmailExists(user.EmailPrivate.String)
-	if err != nil {
-		return 0, err
-	}
-
-	if exists {
-		return 0, errors.New("email already exists")
-	}
-
 	return s.userRepo.Insert(user, hashed)
+}
+
+// Register func
+func (s *UserService) Register(user model.User, hashedPass string) (int, error) {
+	return s.userRepo.Insert(user, hashedPass)
 }
 
 // Authenticate func
