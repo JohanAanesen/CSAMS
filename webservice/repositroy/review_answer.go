@@ -179,3 +179,35 @@ func (repo *ReviewAnswerRepository) MaxScore(assignmentID int) (int, error) {
 
 	return result, nil
 }
+
+func (repo *ReviewAnswerRepository) FetchRawReviewForUser(userID, assignmentID int) ([]*model.ReviewAnswer, error) {
+	result := make([]*model.ReviewAnswer, 0)
+
+	query := `SELECT ur.type, ur.answer, f.choices, f.weight FROM user_reviews AS ur
+INNER JOIN fields AS f ON f.name = ur.name
+INNER JOIN reviews AS r ON f.form_id = r.form_id
+INNER JOIN assignments AS a ON a.review_id = r.id
+WHERE a.id = ? AND ur.user_target = ? AND f.weight != 0
+ORDER BY f.priority`
+
+	rows, err := repo.db.Query(query, assignmentID, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		temp := model.ReviewAnswer{}
+		var choices string
+
+		err = rows.Scan(&temp.Type, &temp.Answer, &choices, &temp.Weight)
+		if err != nil {
+			return nil, err
+		}
+
+		temp.Choices = strings.Split(choices, "|")
+
+		result = append(result, &temp)
+	}
+
+	return result, nil
+}
