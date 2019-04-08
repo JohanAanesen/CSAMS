@@ -718,6 +718,71 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO (Svein): Implement this to an export button, and export it
+	processedUserReports := make([]model.ProcessedUserReport, 0)
+
+	rawUserReports, err := services.ReviewAnswer.FetchUserReportsForAssignment(assignment.ID)
+	if err != nil {
+		log.Println("services, review answer, fetch user reports for assignment", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	var processedLength = 0
+
+	for _, item := range rawUserReports {
+		// TODO (Svein): Check all slices, not only first and last
+		if len(item.ReviewScores) == int(assignment.Reviewers.Int64) {
+			if len(item.ReviewScores[0]) != len(item.ReviewScores[int(assignment.Reviewers.Int64-1)]) {
+				log.Println("raw user report, review scores are not same length")
+				return
+			}
+		}
+
+		temp := model.ProcessedUserReport{
+			Name:        item.Name,
+			Email:       item.Email,
+			ReviewsDone: item.ReviewsDone,
+		}
+
+		scores := item.ReviewScores
+		if len(scores) > 0 {
+			for i := 0; i < len(scores[0]); i++ {
+				data := make([]float64, 0)
+
+				for j := range scores {
+					data = append(data, scores[j][i])
+				}
+
+				stats := util.Statistics{
+					Entries: data,
+				}
+
+				mean, _ := stats.Average()
+				stdDev, _ := stats.StandardDeviation()
+
+				t := model.ProcessedReviewItem{
+					Mean:   mean,
+					StdDev: stdDev,
+				}
+
+				temp.ReviewItems = append(temp.ReviewItems, t)
+			}
+
+			if processedLength == 0 {
+				processedLength = len(temp.ReviewItems)
+			}
+		}
+
+		processedUserReports = append(processedUserReports, temp)
+	}
+
+	for _, item := range processedUserReports {
+		if len(item.ReviewItems) > 0 {
+			fmt.Println(item.ReviewItems)
+		}
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
@@ -729,6 +794,9 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Students"] = users
 	v.Vars["Course"] = course
 	v.Vars["Statistics"] = stats.GetDisplayStruct()
+	v.Vars["ProcessedReports"] = processedUserReports // TODO (Svein): Move this to a new view
+	v.Vars["ReviewItems"] = processedUserReports
+	v.Vars["ProcessLength"] = make([]struct{}, processedLength)
 
 	v.Render(w)
 }
