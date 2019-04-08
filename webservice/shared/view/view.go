@@ -1,7 +1,7 @@
 package view
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
 	"html/template"
 	"log"
 	"net/http"

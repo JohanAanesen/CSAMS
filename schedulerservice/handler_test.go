@@ -3,8 +3,8 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
+	"github.com/JohanAanesen/CSAMS/schedulerservice/model"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
 	"io"
 	"net/http"
 	"net/http/httptest"

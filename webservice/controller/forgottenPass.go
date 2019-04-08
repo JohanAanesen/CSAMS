@@ -1,13 +1,13 @@
 package controller
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/mail"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
+	"github.com/JohanAanesen/CSAMS/webservice/model"
+	"github.com/JohanAanesen/CSAMS/webservice/service"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/mail"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
 	"github.com/rs/xid"
 	"log"
 	"net/http"
@@ -55,7 +55,7 @@ func sendEmailPOST(email string, w http.ResponseWriter, r *http.Request) {
 
 	// Services
 	userService := service.NewUserService(db.GetDB())
-	forgottenService := service.NewForgottenPassService(db.GetDB())
+	forgottenService := service.NewValidationService(db.GetDB())
 
 	exists, userID, err := userService.EmailExists(email)
 	if err != nil {
@@ -70,7 +70,7 @@ func sendEmailPOST(email string, w http.ResponseWriter, r *http.Request) {
 		hash := xid.NewWithTime(time.Now()).String()
 
 		// Fill forgotten model for new insert in table
-		forgotten := model.ForgottenPass{
+		forgotten := model.Validation{
 			UserID:    userID,
 			Hash:      hash,
 			TimeStamp: util.GetTimeInCorrectTimeZone(),
@@ -114,7 +114,7 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 
 	// Services
 	//userService := service.NewUserService(db.GetDB())
-	forgottenService := service.NewForgottenPassService(db.GetDB())
+	forgottenService := service.NewValidationService(db.GetDB())
 	userService := service.NewUserService(db.GetDB())
 
 	match, payload, err := forgottenService.Match(hash)

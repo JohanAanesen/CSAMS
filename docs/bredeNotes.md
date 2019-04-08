@@ -315,11 +315,11 @@ _Merged following to master_
 * Added authentication to the mailservice, so that only the system can trigger mailservice
 * Added new table in db for forgotten passwords OBS! TODO brede : ADD THIS TO PULLREQUEST!!!!!!!!!!!!!!!!!!!!!!! <3
 ```Mysql
-CREATE TABLE `forgotten_password`
+CREATE TABLE `validation`
 (
     `id`        int(11)     NOT NULL AUTO_INCREMENT,
     `hash`      varchar(64) NOT NULL,
-    `user_id`   int(11)     NOT NULL,
+    `user_id`   int(11)     NULL,
     `valid`     tinyint(1)  NOT NULL DEFAULT '1',
     `timestamp` datetime    NOT NULL,
     PRIMARY KEY (`id`),
@@ -337,7 +337,38 @@ CREATE TABLE `forgotten_password`
 * Fixed forgotten password email message text
 * Fixed `goFixShit.ps1` script and added colours <3
 * Fixed golint errors
+* Merged emailservice to master
+* Changed name from `NTNU-Bachelor-Management-System-For-CS-Assignments` to `CSAMS` short for `Computer Science Assignment Management System` in project and repo
+* Possible solution to `confirm email` issue [#97](https://github.com/JohanAanesen/CSAMS/issues/97) below
+***
+#### ~~forgotten_password~~ validation table
+| id | hash | user | valid | time |
+| ------ | ------ | ------ | ---- | ----- |
+| 1 | jhdsgjshgfjsdgfsdfgusdgfyusdgfuysgeuyfesg |1| 1 |2019-03-24 14:42:00 |
+| 2 | jhdsgjshgfjsdsfsddgfsdfgusdgfyusdgfuysgeu |32| 0 |2019-03-24 14:42:00 |
+| 3 | jhdsgjshgfjfdgdfgfggusdgfyusdgfuysgeuyfes |11| 1 | 2019-03-24 14:42:00 |
+
+#### pending_user table
+| id | email | name | password | validationID|
+| ----- | ----- | ----- | ----- | ---- |
+| 1 | dummy@hotmail.com | Dummy dummy |adhjguhguygedwuyGYDGWEIUYG | 2 |
+| 2 | YEET@mymeat.com | Svein Klausen | hjfsuyefgsuyegfuiygef | 3 |
+| 3 | swag@yolo.com | Johan Nilsen |kjewgfhiuefwoig | 1 |
+
+##### How to solve `confirm email` function
+* Create user
+* Create new entry in `validation`
+* Add user to `pending_user` and link to `validation`
+* Get email with one time use link (including `hash` from `validation`)
+* Check if validation hash exists, not expired and is valid
+* Get row from `pending_user` matching `validationID` to `validation` field `id`
+* Move user from `user_pending` to `user` table
+***
 
 ### Thursday 04/04/19
+* Don't have time to work a full day today, but i have 6h to spear from mon-wed.
+* I added repository and service for the table `users_pending` also struct in model
+* Users can now create user through email confirmation
+
 
 ### Friday 05/04/19

@@ -1,8 +1,8 @@
 package route
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/controller"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/route/middleware"
+	"github.com/JohanAanesen/CSAMS/webservice/controller"
+	"github.com/JohanAanesen/CSAMS/webservice/route/middleware"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -123,7 +123,7 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/settings/import", controller.AdminSettingsImportGET).Methods("GET")
 	adminrouter.HandleFunc("/settings/import", controller.AdminSettingsImportPOST).Methods("POST")
 
-	// Login/Register Handlers
+	// Login/RegisterWithHashing Handlers
 	router.HandleFunc("/login", controller.LoginGET).Methods("GET")
 	router.HandleFunc("/login", controller.LoginPOST).Methods("POST")
 	router.HandleFunc("/register", controller.RegisterGET).Methods("GET")
@@ -133,6 +133,9 @@ func routes() http.Handler {
 	// Login forgotten password handler
 	router.HandleFunc("/forgotpassword", controller.ForgottenGET).Methods("GET")
 	router.HandleFunc("/forgotpassword", controller.ForgottenPOST).Methods("POST")
+
+	// RegisterWithHashing confirm user
+	router.HandleFunc("/confirm", controller.ConfirmGET).Methods("GET")
 
 	// Set path prefix for the static-folder
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))

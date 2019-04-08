@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/controller"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
+	"github.com/JohanAanesen/CSAMS/webservice/controller"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
 	"net/http"
 )
 
