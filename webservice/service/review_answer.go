@@ -50,8 +50,8 @@ func (s *ReviewAnswerService) FetchForUser(userID, assignmentID int) ([][]*model
 		return result, err
 	}
 
-	for _, k := range reviewers {
-		review, err := s.FetchForReviewerAndTarget(k, userID, assignmentID)
+	for _, reviewerID := range reviewers {
+		review, err := s.FetchForReviewerAndTarget(reviewerID, userID, assignmentID)
 		if err != nil {
 			return result, err
 		}
@@ -193,26 +193,88 @@ func (s *ReviewAnswerService) FetchScoreFromReview(assignmentID, userID int) ([]
 	return result, err
 }
 
+func (s *ReviewAnswerService) FetchUserReportsForAssignment(assignmentID int) ([]model.RawUserReport, error) {
+	assignment, err := s.assignmentRepo.Fetch(assignmentID)
+	if err != nil {
+		return nil, err
+	}
+
+	users, err := s.userRepo.FetchAllStudentsFromCourse(assignment.CourseID)
+	if err != nil {
+		return nil, err
+	}
+
+	userReports := make([]model.RawUserReport, 0)
+
+	// Loop through all users
+	for _, user := range users {
+		// Fetch reviewers for current user
+		reviewers, err := s.FetchReviewUsers(user.ID, assignment.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		tempUserReport := model.RawUserReport{}
+		tempUserReport.Name = user.Name
+		tempUserReport.Email = user.EmailStudent
+		tempUserReport.ReviewsDone, err = s.reviewAnswerRepo.CountReviewsDone(user.ID, assignment.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		// Loop through all reviewers
+		for _, reviewerID := range reviewers {
+			// Fetch all answers from reviewer to target
+			reviewAnswers, err := s.reviewAnswerRepo.FetchForReviewerAndTarget(reviewerID, user.ID, assignment.ID)
+			if err != nil {
+				return nil, err
+			}
+			// Declare data-slice
+			var data = make([]float64, 0)
+			// Loop trough all answers
+			for _, answer := range reviewAnswers {
+				if answer.Weight != 0 {
+					// Check answer type
+					data = append(data, getWeight(answer))
+				}
+			}
+
+			tempUserReport.ReviewScores = append(tempUserReport.ReviewScores, data)
+		}
+
+		userReports = append(userReports, tempUserReport)
+	}
+
+	return userReports, nil
+}
+
+func getWeight(review *model.ReviewAnswer) float64 {
+	switch review.Type {
+	case "checkbox":
+		if review.Answer == "on" {
+			return float64(review.Weight)
+		}
+
+	case "radio":
+		for k := range review.Choices {
+			ans, _ := strconv.Atoi(review.Answer)
+			if ans == (k + 1) {
+				K := float64(k + 1)
+				L := float64(len(review.Choices))
+				V := float64(review.Weight) * (K / L)
+				return V
+			}
+		}
+	}
+
+	return 0
+}
+
 func getScoreFromReview(review []*model.ReviewAnswer) float64 {
 	var score float64
 
 	for _, item := range review {
-		if item.Type == "checkbox" {
-			if item.Answer == "on" {
-				score += float64(item.Weight)
-			}
-
-		} else if item.Type == "radio" {
-			for k := range item.Choices {
-				ans, _ := strconv.Atoi(item.Answer)
-				if ans == (k + 1) {
-					K := float64(k + 1)
-					L := float64(len(item.Choices))
-					V := float64(item.Weight) * (K / L)
-					score += V
-				}
-			}
-		}
+		score += getWeight(item)
 	}
 
 	return score
