@@ -13,6 +13,7 @@ import (
 	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
 	"github.com/gorilla/mux"
 	"github.com/microcosm-cc/bluemonday"
+	"github.com/tealeg/xlsx"
 	"log"
 	"net/http"
 	"sort"
@@ -729,6 +730,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var processedLength = 0
+	var itemMaxLength = 0
 
 	for _, item := range rawUserReports {
 		// TODO (Svein): Check all slices, not only first and last
@@ -769,6 +771,10 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 				temp.ReviewItems = append(temp.ReviewItems, t)
 			}
 
+			if len(temp.ReviewItems) > itemMaxLength {
+				itemMaxLength = len(temp.ReviewItems)
+			}
+
 			if processedLength == 0 {
 				processedLength = len(temp.ReviewItems)
 			}
@@ -777,11 +783,29 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		processedUserReports = append(processedUserReports, temp)
 	}
 
-	for _, item := range processedUserReports {
-		if len(item.ReviewItems) > 0 {
-			fmt.Println(item.ReviewItems)
-		}
+	fmt.Print("Name;Email;ReviewsDone")
+	for i := 0; i < itemMaxLength; i++ {
+		a := i + 1
+		fmt.Printf(";RevItem %d Mean;RevItem %d Std Dev", a, a)
 	}
+	fmt.Println("")
+	for _, item := range processedUserReports {
+		fmt.Printf("%s;%s;%d", item.Name, item.Email, item.ReviewsDone)
+		if len(item.ReviewItems) > 0 {
+			for _, v := range item.ReviewItems {
+				str := fmt.Sprintf(";%.2f;%.2f", v.Mean, v.StdDev)
+				str = strings.Replace(str, ".", ",", -1)
+				fmt.Print(str)
+			}
+		} else {
+			for i := 0; i < itemMaxLength; i++ {
+				fmt.Printf(";0;0")
+			}
+		}
+		fmt.Println("")
+	}
+
+	foo(processedUserReports, itemMaxLength)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -794,11 +818,163 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Students"] = users
 	v.Vars["Course"] = course
 	v.Vars["Statistics"] = stats.GetDisplayStruct()
+
 	v.Vars["ProcessedReports"] = processedUserReports // TODO (Svein): Move this to a new view
 	v.Vars["ReviewItems"] = processedUserReports
 	v.Vars["ProcessLength"] = make([]struct{}, processedLength)
 
 	v.Render(w)
+}
+
+func foo(report []model.ProcessedUserReport, length int) {
+	var file *xlsx.File
+	var sheet *xlsx.Sheet
+	var row *xlsx.Row
+	var cell *xlsx.Cell
+	var err error
+
+	file = xlsx.NewFile()
+	sheet, err = file.AddSheet("Sheet1")
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+
+	rowIndex := 1
+
+	// HEADER ROW START
+	row = sheet.AddRow()
+	cell = row.AddCell()
+	cell.Value = "Name"
+	cell = row.AddCell()
+	cell.Value = "Email"
+	cell = row.AddCell()
+	cell.Value = "Reviews Done"
+
+	for i := 0; i < length; i++ {
+		cell = row.AddCell()
+		cell.Value = fmt.Sprintf("ReviewItem %d Mean", i + 1)
+		cell = row.AddCell()
+		cell.Value = fmt.Sprintf("ReviewItem %d Std Dev", i + 1)
+	}
+	// HEADER ROW END
+
+	// DATA ROWS START
+	for _, item := range report {
+		rowIndex += 1
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = item.Name
+		cell = row.AddCell()
+		cell.Value = item.Email
+		cell = row.AddCell()
+		cell.SetInt(item.ReviewsDone)
+
+		for _, k := range item.ReviewItems {
+			cell = row.AddCell()
+			cell.SetFloat(k.Mean)
+			cell = row.AddCell()
+			cell.SetFloat(k.StdDev)
+		}
+	}
+	// DATA ROWS END
+
+	var dataRowStart = 2
+	var dataRowEnd = rowIndex
+
+	// MEAN ROW START
+	rowIndex += 1
+	row = sheet.AddRow()
+
+	cell = row.AddCell()
+	cell.Value = "Mean of total"
+	cell = row.AddCell() // Blank cel
+	cell.Value = ""
+
+	cell = row.AddCell() // Mean of all reviews
+	cell.SetFormula(fmt.Sprintf("=AVERAGE(C%d:C%d)", dataRowStart, dataRowEnd))
+
+	cellChar := []string{"D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","AA","AB","AC","AD","AE","AF","AG","AH","AI","AJ","AK"}
+
+	k := 0
+	for i := 0; i < length; i, k = i + 1, k + 1 {
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=AVERAGE(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+		k += 1
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=AVERAGE(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+	}
+	// MEAN ROW END
+
+	// STD DEV ROW START
+	rowIndex += 1
+	row = sheet.AddRow()
+
+	cell = row.AddCell()
+	cell.Value = "Std dev of total"
+	cell = row.AddCell() // Blank cel
+	cell.Value = ""
+
+	cell = row.AddCell() // Std dev of all reviews done
+	cell.SetFormula(fmt.Sprintf("=STDEV(C%d:C%d)", dataRowStart, dataRowEnd))
+
+	k = 0
+	for i := 0; i < length; i, k = i + 1, k + 1 {
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=STDEV(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+		k += 1
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=STDEV(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+	}
+	// STD DEV ROW END
+
+	// MIN VALUE ROW START
+	rowIndex += 1
+	row = sheet.AddRow()
+
+	cell = row.AddCell()
+	cell.Value = "Minimum value"
+	cell = row.AddCell() // Blank cel
+	cell.Value = ""
+
+	cell = row.AddCell() // Minimum value of all reviews done
+	cell.SetFormula(fmt.Sprintf("=MIN(C%d:C%d)", dataRowStart, dataRowEnd))
+
+	k = 0
+	for i := 0; i < length; i, k = i + 1, k + 1 {
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=MIN(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+		k += 1
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=MIN(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+	}
+	// MIN VALUE ROW END
+
+	// MAX VALUE ROW START
+	rowIndex += 1
+	row = sheet.AddRow()
+
+	cell = row.AddCell()
+	cell.Value = "Maximum value"
+	cell = row.AddCell() // Blank cel
+	cell.Value = ""
+
+	cell = row.AddCell() // Maximum value of all reviews done
+	cell.SetFormula(fmt.Sprintf("=MAX(C%d:C%d)", dataRowStart, dataRowEnd))
+
+	k = 0
+	for i := 0; i < length; i, k = i + 1, k + 1 {
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=MAX(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+		k += 1
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=MAX(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+	}
+	// MAX VALUE ROW END
+
+	err = file.Save("test.xlsx")
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
 }
 
 /*

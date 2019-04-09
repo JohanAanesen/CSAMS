@@ -9,5 +9,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/rs/xid v1.2.1
 	github.com/shurcooL/github_flavored_markdown v0.0.0-20181002035957-2122de532470
+	github.com/tealeg/xlsx v1.0.3
 	golang.org/x/crypto v0.0.0-20190211182817-74369b46fc67
+	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 )
