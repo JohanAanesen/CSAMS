@@ -85,6 +85,13 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if the password is correct length
+	if len(password) < 6 {
+		ErrorHandler(w, r, http.StatusBadRequest)
+		log.Println("Password is to short, minimum 6 chars in length!")
+		return
+	}
+
 	// Services
 	userService := service.NewUserService(db.GetDB())
 	//courseService := service.NewCourseService(db.GetDB())
@@ -106,7 +113,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		}
 	*/
 
-	userData := model.UserPending{
+	userData := model.UserRegistrationPending{
 		Name:         name,
 		EmailStudent: email,
 		Password:     password,
@@ -132,7 +139,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	validationHash := xid.NewWithTime(time.Now()).String()
 
 	// Fill forgotten model for new insert in table
-	forgotten := model.Validation{
+	forgotten := model.ValidationEmail{
 		Hash:      validationHash,
 		TimeStamp: util.GetTimeInCorrectTimeZone(),
 	}
@@ -155,9 +162,10 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get link
-	// link := "http://" + r.Host + "/forgotpassword?id=" + hash // TODO brede : add real link here with possible courseid hash
 	baseUrl := "http://" + r.Host
 	link := baseUrl + "/confirm?id=" + validationHash
+
+	// Set subject and message
 	subject := "Confirm new User"
 	message := "Hi " + userData.Name + ",\n\n" +
 		"There has been requested to create an user on CSAMS (" + baseUrl + ")\n" +
@@ -174,58 +182,6 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	session.SaveMessageToSession("Please confirm your email first", w, r)
-
-	/*
-		// RegisterWithHashing user (insert to database)
-		userID, err := userService.RegisterWithHashing(userData, password)
-		if err != nil {
-			log.Println(err.Error())
-			RegisterGET(w, r)
-			return
-		}
-
-		// Log NewUser in the database and give error if something went wrong
-		logData := model.Log{UserID: userID, Activity: model.NewUser}
-		err = model.LogToDB(logData)
-		if err != nil {
-			log.Println("log new user to db", err.Error())
-			ErrorHandler(w, r, http.StatusInternalServerError)
-			return
-		}
-
-		user, err := userService.Fetch(userID)
-		if err != nil {
-			log.Println("user service fetch", err.Error())
-			ErrorHandler(w, r, http.StatusInternalServerError)
-			return
-		}
-
-		if user.ID != 0 {
-			//save user to session values
-			user.Authenticated = true
-			session.SaveUserToSession(*user, w, r)
-			// Add new user to course
-
-			if hash != "" {
-				hash = p.Sanitize(hash)
-				course := courseService.Exists(hash)
-				if course.ID != -1 {
-					err = courseService.AddUser(user.ID, course.ID)
-
-					if err == service.ErrUserAlreadyInCourse {
-						http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
-						return
-					}
-
-					if err != nil {
-						log.Println("course service add user", err.Error())
-						ErrorHandler(w, r, http.StatusInternalServerError)
-						return
-					}
-				}
-			}
-		}
-	*/
 
 	http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
 }
@@ -289,7 +245,7 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Check for the user with the corresponding validation id
-		newUser := model.UserPending{}
+		newUser := model.UserRegistrationPending{}
 		for _, user := range users {
 			if user.ValidationID == payload.ID {
 				newUser = *user

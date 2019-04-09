@@ -1,7 +1,7 @@
 package model
 
-// UserPending struct for keeping user_pending
-type UserPending struct {
+// UserRegistrationPending struct for keeping data for the table user_pending
+type UserRegistrationPending struct {
 	ID           int    `json:"id"`
 	Name         string `json:"name"`
 	EmailStudent string `json:"email_student"`

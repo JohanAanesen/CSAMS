@@ -114,6 +114,13 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// if no of these fields are empty, try to change password
 	if oldPass != "" && newPass != "" && repeatPass != "" {
 
+		// Check if the password is correct length
+		if len(newPass) < 6 {
+			ErrorHandler(w, r, http.StatusBadRequest)
+			log.Println("Password is to short, minimum 6 chars in length!")
+			return
+		}
+
 		// check if the old password is correct
 		err = util.CompareHashAndPassword(oldPass, hash)
 		if err != nil {

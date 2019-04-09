@@ -2,8 +2,8 @@ package model
 
 import "time"
 
-// Validation struct for keeping the data for forgotten password
-type Validation struct {
+// ValidationEmail struct for keeping the data for the validation table for confirming email address and forgotten password
+type ValidationEmail struct {
 	ID        int       `json:"id"`
 	Hash      string    `json:"hash"`
 	UserID    int       `json:"userid"`

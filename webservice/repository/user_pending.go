@@ -18,7 +18,7 @@ func NewUserPendingRepository(db *sql.DB) *UserPendingRepository {
 }
 
 // Insert inserts a new userPending in the db
-func (repo *UserPendingRepository) Insert(pending model.UserPending) (int, error) {
+func (repo *UserPendingRepository) Insert(pending model.UserRegistrationPending) (int, error) {
 	var id int64
 
 	query := "INSERT INTO `users_pending` (`name`, `email_student`, `password`, `validation_id`) VALUES (?, ?, ?, ?)"
@@ -50,8 +50,8 @@ func (repo *UserPendingRepository) Insert(pending model.UserPending) (int, error
 }
 
 // Fetch fetches all userPending in the db, but not the password
-func (repo *UserPendingRepository) FetchAll() ([]*model.UserPending, error) {
-	result := make([]*model.UserPending, 0)
+func (repo *UserPendingRepository) FetchAll() ([]*model.UserRegistrationPending, error) {
+	result := make([]*model.UserRegistrationPending, 0)
 
 	query := "SELECT `id`, `name`, `email_student`, `validation_id` FROM `users_pending` "
 
@@ -63,7 +63,7 @@ func (repo *UserPendingRepository) FetchAll() ([]*model.UserPending, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		temp := model.UserPending{}
+		temp := model.UserRegistrationPending{}
 
 		err = rows.Scan(&temp.ID, &temp.Name, &temp.EmailStudent, &temp.ValidationID)
 		if err != nil {

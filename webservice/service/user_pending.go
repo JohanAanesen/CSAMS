@@ -20,7 +20,7 @@ func NewUserPendingService(db *sql.DB) *UserPendingService {
 }
 
 // Insert func
-func (s *UserPendingService) Insert(pending model.UserPending) (int, error) {
+func (s *UserPendingService) Insert(pending model.UserRegistrationPending) (int, error) {
 
 	var err error
 
@@ -33,7 +33,7 @@ func (s *UserPendingService) Insert(pending model.UserPending) (int, error) {
 }
 
 // FetchAll fetches all rows in users_pending
-func (s *UserPendingService) FetchAll() ([]*model.UserPending, error) {
+func (s *UserPendingService) FetchAll() ([]*model.UserRegistrationPending, error) {
 	return s.userPendingRepo.FetchAll()
 }
 

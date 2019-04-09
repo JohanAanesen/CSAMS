@@ -20,7 +20,7 @@ func NewValidationService(db *sql.DB) *ValidationService {
 }
 
 // Insert func
-func (s *ValidationService) Insert(forgottenPass model.Validation) (int, error) {
+func (s *ValidationService) Insert(forgottenPass model.ValidationEmail) (int, error) {
 	var err error
 
 	// First hash the hash for more security
@@ -33,12 +33,12 @@ func (s *ValidationService) Insert(forgottenPass model.Validation) (int, error) 
 }
 
 // Match first hashes the hash and then checks if the hash match in the db
-func (s *ValidationService) Match(hash string) (bool, model.Validation, error) {
+func (s *ValidationService) Match(hash string) (bool, model.ValidationEmail, error) {
 
 	// Fetch all rows
 	forgottenPasses, err := s.validationRepo.FetchAll()
 	if err != nil {
-		return false, model.Validation{}, err
+		return false, model.ValidationEmail{}, err
 	}
 
 	for _, item := range forgottenPasses {
@@ -50,7 +50,7 @@ func (s *ValidationService) Match(hash string) (bool, model.Validation, error) {
 		}
 	}
 
-	return false, model.Validation{}, nil
+	return false, model.ValidationEmail{}, nil
 }
 
 // UpdateValidation updates the validation to a link

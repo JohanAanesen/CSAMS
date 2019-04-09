@@ -42,6 +42,14 @@ func ForgottenPOST(w http.ResponseWriter, r *http.Request) {
 	if email != "" {
 		sendEmailPOST(email, w, r)
 	} else if newPass != "" && confirmPass != "" && newPass == confirmPass {
+
+		// Check if the password is correct length
+		if len(newPass) < 6 {
+			ErrorHandler(w, r, http.StatusBadRequest)
+			log.Println("Password is to short, minimum 6 chars in length!")
+			return
+		}
+
 		changePasswordPOST(newPass, hash, w, r)
 	} else {
 		ErrorHandler(w, r, http.StatusBadRequest)
@@ -70,7 +78,7 @@ func sendEmailPOST(email string, w http.ResponseWriter, r *http.Request) {
 		hash := xid.NewWithTime(time.Now()).String()
 
 		// Fill forgotten model for new insert in table
-		forgotten := model.Validation{
+		forgotten := model.ValidationEmail{
 			UserID:    userID,
 			Hash:      hash,
 			TimeStamp: util.GetTimeInCorrectTimeZone(),
@@ -114,10 +122,10 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 
 	// Services
 	//userService := service.NewUserService(db.GetDB())
-	forgottenService := service.NewValidationService(db.GetDB())
+	validationService := service.NewValidationService(db.GetDB())
 	userService := service.NewUserService(db.GetDB())
 
-	match, payload, err := forgottenService.Match(hash)
+	match, payload, err := validationService.Match(hash)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println("hashMatch, ", err.Error())
@@ -132,7 +140,7 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 		// Check if the link has expired (after 12 hours)
 		if timeNow.After(payload.TimeStamp.Add(time.Hour * 12)) {
 			// Update forgottenPass table to be expired (one time use only!)
-			err = forgottenService.UpdateValidation(payload.ID, false)
+			err = validationService.UpdateValidation(payload.ID, false)
 			if err != nil {
 				ErrorHandler(w, r, http.StatusInternalServerError)
 				log.Println("forgotten, update validation, ", err.Error())
@@ -160,7 +168,7 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 		}
 
 		// Update forgottenPass table to be expired (one time use only!)
-		err = forgottenService.UpdateValidation(payload.ID, false)
+		err = validationService.UpdateValidation(payload.ID, false)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("forgotten, update validation, ", err.Error())
