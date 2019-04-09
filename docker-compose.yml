@@ -10,8 +10,6 @@ services:
       - 80:8088
     links:
       - database
-      - peerservice
-      - schedulerservice
     environment:
       MAIL_AUTH: "RqHDMR6WfMd9zMhr^kgDA4kZ0DJbEElu7Sb^B!#1uXVzDy%zW85yGIL#iI6D2%S*"
       DATABASE_URL: database:3306
