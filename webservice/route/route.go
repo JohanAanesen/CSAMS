@@ -125,6 +125,7 @@ func routes() http.Handler {
 	router.HandleFunc("/login", controller.LoginPOST).Methods("POST")
 	router.HandleFunc("/register", controller.RegisterGET).Methods("GET")
 	router.HandleFunc("/register", controller.RegisterPOST).Methods("POST")
+	router.HandleFunc("/privacy", controller.PrivacyGET).Methods("GET")
 	userrouter.HandleFunc("/logout", controller.LogoutGET).Methods("GET")
 
 	// Login forgotten password handler
