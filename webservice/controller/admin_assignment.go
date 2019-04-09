@@ -783,6 +783,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		processedUserReports = append(processedUserReports, temp)
 	}
 
+	/*
 	fmt.Print("Name;Email;ReviewsDone")
 	for i := 0; i < itemMaxLength; i++ {
 		a := i + 1
@@ -804,6 +805,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Println("")
 	}
+	*/
 
 	foo(processedUserReports, itemMaxLength)
 
@@ -858,6 +860,12 @@ func foo(report []model.ProcessedUserReport, length int) {
 	}
 	// HEADER ROW END
 
+	// WEIGHT ROW START
+	row = sheet.AddRow()
+	cell = row.AddCell()
+	cell.Value = "Weights"
+	// WEIGHT ROW END
+
 	// DATA ROWS START
 	for _, item := range report {
 		rowIndex += 1
@@ -893,7 +901,7 @@ func foo(report []model.ProcessedUserReport, length int) {
 	cell = row.AddCell() // Mean of all reviews
 	cell.SetFormula(fmt.Sprintf("=AVERAGE(C%d:C%d)", dataRowStart, dataRowEnd))
 
-	cellChar := []string{"D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","AA","AB","AC","AD","AE","AF","AG","AH","AI","AJ","AK"}
+	cellChar := []string{"D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","AA","AB","AC","AD","AE","AF","AG","AH","AI","AJ","AK","AL","AM","AN","AO","AP","AQ","AR","AS","AT","AU","AV","AW","AX","AY","AZ","BB"}
 
 	k := 0
 	for i := 0; i < length; i, k = i + 1, k + 1 {
