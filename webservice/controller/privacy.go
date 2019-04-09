@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-//PrivacyGET serves login page to users
+//PrivacyGET serves privay policy page
 func PrivacyGET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
