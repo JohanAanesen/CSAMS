@@ -118,3 +118,34 @@ func (s *UserService) UpdatePassword(id int, password string) error {
 
 	return s.userRepo.UpdatePassword(id, hash)
 }
+
+// FetchAllStudentEmails Fetches all student emails, both primary and secondary if not null
+func (s *UserService) FetchAllStudentEmails(courseID int) ([]string, error) {
+
+	// Create empty string array
+	var result []string
+
+	// Get all users from course
+	users, err := s.userRepo.FetchAllFromCourse(courseID)
+	if err != nil {
+		return result, err
+	}
+
+	// Loop through all users
+	for _, user := range users {
+
+		// only append to array if user is an student
+		if !user.Teacher {
+
+			// Append primary/student email
+			result = append(result, user.EmailStudent)
+
+			// Check if user has secondary/private email and append if yes
+			if user.EmailPrivate.Valid {
+				result = append(result, user.EmailPrivate.String)
+			}
+		}
+	}
+
+	return result, nil
+}
