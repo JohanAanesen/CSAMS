@@ -371,4 +371,8 @@ CREATE TABLE `validation`
 * Users can now create user through email confirmation
 
 
-### Friday 05/04/19
+## Week Ten
+### Tuesday 09/04/19
+* Fixed some smaller stuff
+* Added send email to whole course functionality
+* Have to fix it more tomorrow, but it works!
