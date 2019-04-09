@@ -152,10 +152,10 @@
                             <td><em>0</em></td>
                         {{end}}
                     {{else}}
-                    {{range .ReviewItems}}
-                        <td>{{Sprintf "%.2f" .Mean}}</td>
-                        <td><em>{{Sprintf "%.2f" .StdDev}}</em></td>
-                    {{end}}
+                        {{range .ReviewItems}}
+                            <td>{{Sprintf "%.2f" .Mean}}</td>
+                            <td><em>{{Sprintf "%.2f" .StdDev}}</em></td>
+                        {{end}}
                     {{end}}
                 </tr>
             {{end}}
