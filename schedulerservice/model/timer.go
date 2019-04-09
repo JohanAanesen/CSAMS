@@ -65,7 +65,7 @@ func UpdateTimer(newData json.RawMessage, newTime time.Time, payload Payload) bo
 //InitializeTimers fetches timers from database on startup
 func InitializeTimers() {
 
-	time.Sleep(10*time.Second) //wait 10 seconds to let db setup properly, not best fix but it does the trick
+	time.Sleep(10 * time.Second) //wait 10 seconds to let db setup properly, not best fix but it does the trick
 
 	payloads := GetPayloads()
 

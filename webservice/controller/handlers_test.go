@@ -2,11 +2,11 @@ package controller_test
 
 import (
 	"database/sql"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/controller"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/config"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
+	"github.com/JohanAanesen/CSAMS/webservice/controller"
+	"github.com/JohanAanesen/CSAMS/webservice/model"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/config"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
 	"io"
 	"net/http"
 	"net/http/httptest"

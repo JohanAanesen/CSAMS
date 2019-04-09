@@ -1,9 +1,9 @@
-package repositroy
+package repository
 
 import (
 	"database/sql"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
+	"github.com/JohanAanesen/CSAMS/webservice/model"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
 	"strings"
 )
 

@@ -2,7 +2,7 @@ package plugin_test
 
 import (
 	"bytes"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view/plugin"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/view/plugin"
 	"html/template"
 	"log"
 	"strconv"

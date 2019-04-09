@@ -3,20 +3,20 @@ package service
 import (
 	"database/sql"
 	"errors"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/repositroy"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
+	"github.com/JohanAanesen/CSAMS/webservice/model"
+	"github.com/JohanAanesen/CSAMS/webservice/repository"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
 )
 
 // UserService struct
 type UserService struct {
-	userRepo *repositroy.UserRepository
+	userRepo *repository.UserRepository
 }
 
 // NewUserService func
 func NewUserService(db *sql.DB) *UserService {
 	return &UserService{
-		userRepo: repositroy.NewUserRepository(db),
+		userRepo: repository.NewUserRepository(db),
 	}
 }
 
@@ -50,23 +50,19 @@ func (s *UserService) EmailExists(email string) (bool, int, error) {
 	return s.userRepo.EmailExists(email)
 }
 
-// Register func
-func (s *UserService) Register(user model.User, password string) (int, error) {
+// RegisterWithHashing func
+func (s *UserService) RegisterWithHashing(user model.User, password string) (int, error) {
 	hashed, err := util.GenerateFromPassword(password)
 	if err != nil {
 		return 0, err
 	}
 
-	exists, _, err := s.userRepo.EmailExists(user.EmailPrivate.String)
-	if err != nil {
-		return 0, err
-	}
-
-	if exists {
-		return 0, errors.New("email already exists")
-	}
-
 	return s.userRepo.Insert(user, hashed)
+}
+
+// Register func
+func (s *UserService) Register(user model.User, hashedPass string) (int, error) {
+	return s.userRepo.Insert(user, hashedPass)
 }
 
 // Authenticate func

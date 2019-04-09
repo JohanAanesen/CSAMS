@@ -3,7 +3,7 @@ package controller
 import (
 	"bytes"
 	"fmt"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
 	"io"
 	"log"
 	"net/http"

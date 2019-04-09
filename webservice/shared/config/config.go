@@ -2,12 +2,12 @@ package config
 
 import (
 	"encoding/json"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/email"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/server"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view/plugin"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/email"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/server"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/view/plugin"
 	"io/ioutil"
 	"log"
 	"os"

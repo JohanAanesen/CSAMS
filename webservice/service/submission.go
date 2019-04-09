@@ -2,25 +2,25 @@ package service
 
 import (
 	"database/sql"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/repositroy"
+	"github.com/JohanAanesen/CSAMS/webservice/model"
+	"github.com/JohanAanesen/CSAMS/webservice/repository"
 )
 
 // SubmissionService struct
 type SubmissionService struct {
-	submissionRepo *repositroy.SubmissionRepository
-	formRepo       *repositroy.FormRepository
-	fieldRepo      *repositroy.FieldRepository
-	assignmentRepo *repositroy.AssignmentRepository
+	submissionRepo *repository.SubmissionRepository
+	formRepo       *repository.FormRepository
+	fieldRepo      *repository.FieldRepository
+	assignmentRepo *repository.AssignmentRepository
 }
 
 // NewSubmissionService func
 func NewSubmissionService(db *sql.DB) *SubmissionService {
 	return &SubmissionService{
-		submissionRepo: repositroy.NewSubmissionRepository(db),
-		formRepo:       repositroy.NewFormRepository(db),
-		fieldRepo:      repositroy.NewFieldRepository(db),
-		assignmentRepo: repositroy.NewAssignmentRepository(db),
+		submissionRepo: repository.NewSubmissionRepository(db),
+		formRepo:       repository.NewFormRepository(db),
+		fieldRepo:      repository.NewFieldRepository(db),
+		assignmentRepo: repository.NewAssignmentRepository(db),
 	}
 }
 

@@ -4,13 +4,13 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/service"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/db"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/scheduler"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/session"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/util"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/shared/view"
+	"github.com/JohanAanesen/CSAMS/webservice/model"
+	"github.com/JohanAanesen/CSAMS/webservice/service"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/scheduler"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
 	"github.com/gorilla/mux"
 	"github.com/microcosm-cc/bluemonday"
 	"log"
@@ -614,7 +614,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
 }
 
-// AdminAssignmentSubmissionsGET servers list of all users in course to admin
+// AdminAssignmentSubmissionsGET servers list of all users in course to admin /admin/assignment/{id}/submissions
 func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	// Services
 	services := service.NewServices(db.GetDB())
@@ -768,8 +768,47 @@ func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
 }
 */
 
-// AdminAssignmentReviewsGET handles request to /admin/assignment/{id}/review/{id}
-func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
+// AdminAssignmentReviewGET handles request to /admin/assignment/{id}/review
+func AdminAssignmentReviewGET(w http.ResponseWriter, r *http.Request) {
+	// Services
+	peerReviewService := service.NewPeerReviewService(db.GetDB())
+
+	// Get URL variables
+	vars := mux.Vars(r)
+	// Get assignment id
+	assignmentID, err := strconv.Atoi(vars["assignmentID"])
+	if err != nil {
+		log.Println("string convert assignment id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	peerReviews, err := peerReviewService.FetchAllFromAssignment(assignmentID)
+	if err != nil {
+		log.Println("review answer service, fetch for target", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Set header content-type and status code
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	// Create view
+	v := view.New(r)
+	// Set template
+	v.Name = "admin/assignment/review/index"
+
+	// View variables
+	v.Vars["AssignmentID"] = assignmentID
+	v.Vars["PeerReviews"] = peerReviews
+
+	// Render view
+	v.Render(w)
+}
+
+// AdminAssignmentSingleReviewGET handles request to /admin/assignment/{id}/review/{id}
+func AdminAssignmentSingleReviewGET(w http.ResponseWriter, r *http.Request) {
 	// Services
 	userService := service.NewUserService(db.GetDB())
 	reviewAnswerService := service.NewReviewAnswerService(db.GetDB())
@@ -871,7 +910,7 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 	// Create view
 	v := view.New(r)
 	// Set template
-	v.Name = "admin/assignment/reviews"
+	v.Name = "admin/assignment/review/single"
 
 	// View variables
 	v.Vars["AssignmentID"] = assignmentID

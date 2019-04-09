@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/db"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/schedulerservice/model"
+	"github.com/JohanAanesen/CSAMS/schedulerservice/db"
+	"github.com/JohanAanesen/CSAMS/schedulerservice/model"
 )
 
 func main() {

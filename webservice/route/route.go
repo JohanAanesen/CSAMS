@@ -1,8 +1,8 @@
 package route
 
 import (
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/controller"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/route/middleware"
+	"github.com/JohanAanesen/CSAMS/webservice/controller"
+	"github.com/JohanAanesen/CSAMS/webservice/route/middleware"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -77,15 +77,16 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/assignment/update", controller.AdminUpdateAssignmentPOST).Methods("POST")
 
 	adminrouter.HandleFunc("/assignment/{id:[0-9]+}/submissions", controller.AdminAssignmentSubmissionsGET).Methods("GET")
-	//adminrouter.HandleFunc("/assignment/{id:[0-9]+}/submission", controller.AdminAssignmentSubmissionGET).Methods("GET") // TODO (Svein): Needed?
-	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/review/{userID:[0-9]+}", controller.AdminAssignmentReviewsGET).Methods("GET")
-	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}", controller.AdminAssignmentSingleSubmissionGET).Methods("GET")
 
+	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}", controller.AdminAssignmentSingleSubmissionGET).Methods("GET")
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}/create", controller.AdminAssignmentSubmissionCreateGET).Methods("GET")
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}/create", controller.AdminAssignmentSubmissionCreatePOST).Methods("POST")
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}/update", controller.AdminAssignmentSubmissionUpdateGET).Methods("GET")
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}/update", controller.AdminAssignmentSubmissionUpdatePOST).Methods("POST")
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}", controller.AdminAssignmentSubmissionDELETE).Methods("DELETE")
+
+	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/review", controller.AdminAssignmentReviewGET).Methods("GET")
+	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/review/{userID:[0-9]+}", controller.AdminAssignmentSingleReviewGET).Methods("GET")
 
 	adminrouter.HandleFunc("/submission", controller.AdminSubmissionGET).Methods("GET")
 	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreateGET).Methods("GET")
@@ -122,7 +123,7 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/settings/import", controller.AdminSettingsImportGET).Methods("GET")
 	adminrouter.HandleFunc("/settings/import", controller.AdminSettingsImportPOST).Methods("POST")
 
-	// Login/Register Handlers
+	// Login/RegisterWithHashing Handlers
 	router.HandleFunc("/login", controller.LoginGET).Methods("GET")
 	router.HandleFunc("/login", controller.LoginPOST).Methods("POST")
 	router.HandleFunc("/register", controller.RegisterGET).Methods("GET")
@@ -132,6 +133,9 @@ func routes() http.Handler {
 	// Login forgotten password handler
 	router.HandleFunc("/forgotpassword", controller.ForgottenGET).Methods("GET")
 	router.HandleFunc("/forgotpassword", controller.ForgottenPOST).Methods("POST")
+
+	// RegisterWithHashing confirm user
+	router.HandleFunc("/confirm", controller.ConfirmGET).Methods("GET")
 
 	// Set path prefix for the static-folder
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))

@@ -3,8 +3,9 @@ package service
 import (
 	"database/sql"
 	"errors"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/model"
-	"github.com/JohanAanesen/NTNU-Bachelor-Management-System-For-CS-Assignments/webservice/repositroy"
+
+	"github.com/JohanAanesen/CSAMS/webservice/model"
+	"github.com/JohanAanesen/CSAMS/webservice/repository"
 )
 
 var (
@@ -14,13 +15,13 @@ var (
 
 // CourseService struct
 type CourseService struct {
-	courseRepo *repositroy.CourseRepository
+	courseRepo *repository.CourseRepository
 }
 
 // NewCourseService func
 func NewCourseService(db *sql.DB) *CourseService {
 	return &CourseService{
-		courseRepo: repositroy.NewCourseRepository(db),
+		courseRepo: repository.NewCourseRepository(db),
 	}
 }
 
