@@ -86,29 +86,15 @@
 
                 <div class="col">
                     <h3>Peer Review</h3>
-                    <div class="form-group">
-                        <label for="reviewers">How many submissions should every student review on this
-                            assignment <br> Set to 0 to disable this feature</label>
-                        <select name="reviewers" id="reviewers" class="form-control" required>
-                            option
-                            <script>
-                                for (let i = 0; i <= 6; i++) {
-                                    document.write(`<option value="${i}">${i}</option>`);
-                                }
-                            </script>
-                        </select>
-                    </div>
-                    <hr>
-                </div>
+                    <button type="button" onclick="disableReviews()" id="disableReview" class="btn btn-danger btn-sm">Disable</button>
 
-                <div class="col">
-                    <h3>Review Form</h3>
+                    <h5>Review Form</h5>
                     <div class="form-group">
                         <label for="review_id">Select Form</label>
                         <select name="review_id" id="review_id" class="form-control">
-                            <option value="">None</option>
-                            {{range .Reviews}}
-                                <option value="{{.ID}}">{{.Form.Name}}</option>
+                            <option value="0">None</option>
+                            {{range $R := .Reviews}}
+                                <option value="{{$R.ID}}">{{$R.Form.Name}}</option>
                             {{end}}
                         </select>
                     </div>
@@ -116,10 +102,28 @@
                         <label for="review_deadline">Review Deadline</label>
                         <input type="datetime-local" name="review_deadline" id="review_deadline" class="form-control">
                     </div>
+
+                    <hr>
+
+                    <h5>Number of reviews for each student</h5>
+                    <div class="form-group">
+                        <label for="reviewers">How many submissions should every student review on this
+                            assignment <br> Set to 0 to disable this feature</label>
+                        <select name="reviewers" id="reviewers" class="form-control" required>
+                            <script>
+                                for (let i = 0; i <= 6; i++) {
+                                    if(i == 0){
+                                        document.write(`<option value="${i}">Any</option>`);
+                                    }else{
+                                        document.write(`<option value="${i}">${i}</option>`);
+                                    }
+                                }
+                            </script>
+                        </select>
+                    </div>
                     <hr>
                 </div>
             </div>
-
         </div>
 
         <div class="row mb-5">
@@ -134,6 +138,10 @@
     <script src="/static/js/simplemde.min.js"></script>
     <script src="/static/js/time.js"></script>
     <script>
+        function disableReviews(){
+            document.getElementById("review_id").selectedIndex = 0;
+        }
+
         (function () {
             // Enable the SmpleMDE
             let simplemde = new SimpleMDE({
