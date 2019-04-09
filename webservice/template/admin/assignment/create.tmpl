@@ -71,23 +71,6 @@
             <div class="col-12 col-lg">
 
                 <div class="col">
-                    <h3>Peer Review</h3>
-                    <div class="form-group">
-                        <label for="reviewers">How many submissions should every student review on this
-                            assignment, pick 0 to disable this feature</label>
-                        <select name="reviewers" id="reviewers" class="form-control" required>
-                            option
-                            <script>
-                                for (let i = 0; i <= 6; i++) {
-                                    document.write(`<option value="${i}">${i}</option>`);
-                                }
-                            </script>
-                        </select>
-                    </div>
-                    <hr>
-                </div>
-
-                <div class="col">
                     <h3>Submission Form</h3>
                     <div class="form-group">
                         <label for="submission_id">Select Form</label>
@@ -96,6 +79,23 @@
                             {{range .Submissions}}
                                 <option value="{{.ID}}">{{.Form.Name}}</option>
                             {{end}}
+                        </select>
+                    </div>
+                    <hr>
+                </div>
+
+                <div class="col">
+                    <h3>Peer Review</h3>
+                    <div class="form-group">
+                        <label for="reviewers">How many submissions should every student review on this
+                            assignment <br> Set to 0 to disable this feature</label>
+                        <select name="reviewers" id="reviewers" class="form-control" required>
+                            option
+                            <script>
+                                for (let i = 0; i <= 6; i++) {
+                                    document.write(`<option value="${i}">${i}</option>`);
+                                }
+                            </script>
                         </select>
                     </div>
                     <hr>

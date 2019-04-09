@@ -76,26 +76,6 @@
             <div class="col-12 col-lg">
 
                 <div class="col">
-                    <h3>Peer Review</h3>
-                    <div class="form-group">
-                        <label for="reviewers">How many submissions should every student review on this
-                            assignment, pick 0 to disable this feature</label>
-                        <select name="reviewers" id="reviewers" class="form-control" required>
-                            option
-                            {{if .Assignment.Reviewers.Valid}}
-                                <option value="{{.Assignment.Reviewers.Int64}}"
-                                        selected>{{.Assignment.Reviewers.Int64}}</option>{{end}}
-                            <script>
-                                for (let i = 0; i <= 6; i++) {
-                                    document.write(`<option value="${i}">${i}</option>`);
-                                }
-                            </script>
-                        </select>
-                    </div>
-                    <hr>
-                </div>
-
-                <div class="col">
                     <h3>Submission Form</h3>
                     <div class="form-group">
                         <label for="submission_id">Select Form</label>
@@ -110,19 +90,17 @@
                     </div>
 
                     <hr>
-
-                    <h6>Preview</h6>
-                    <hr>
-                    <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
-                    <hr>
                 </div>
 
                 <div class="col">
-                    <h3>Review Form</h3>
+                    <h3>Peer Review</h3>
+                    <button type="button" onclick="disableReviews()" id="disableReview" class="btn btn-danger btn-sm">Disable</button>
+
+                    <h5>Review Form</h5>
                     <div class="form-group">
                         <label for="review_id">Select Form</label>
                         <select name="review_id" id="review_id" class="form-control">
-                            <option value="">None</option>
+                            <option value="0">None</option>
                             {{range $R := .Reviews}}
                                 <option value="{{$R.ID}}"{{if eq $R.ID $A.ReviewID.Int64}} selected{{end}}>{{$R.Form.Name}}</option>
                             {{end}}
@@ -136,12 +114,29 @@
 
                     <hr>
 
-                    <h6>Preview</h6>
+                    <h5>Number of reviews for each student</h5>
+                    <div class="form-group">
+                        <label for="reviewers">How many submissions should every student review on this
+                            assignment <br> Set to 0 to disable this feature</label>
+                        <select name="reviewers" id="reviewers" class="form-control" required>
+                            option
+                            {{if .Assignment.Reviewers.Valid}}
+                                <option value="{{.Assignment.Reviewers.Int64}}"
+                                        selected>{{.Assignment.Reviewers.Int64}}</option>{{end}}
+                            <script>
+                                for (let i = 0; i <= 6; i++) {
+                                    if(i == 0){
+                                        document.write(`<option value="${i}">Any</option>`);
+                                    }else{
+                                        document.write(`<option value="${i}">${i}</option>`);
+                                    }
+                                }
+                            </script>
+                        </select>
+                    </div>
                     <hr>
-                    <div class="alert alert-info"><strong>Coming:</strong> Under development</div>
-                    <hr>
-                    <div id="review_container"></div>
                 </div>
+
             </div>
 
         </div>
@@ -159,6 +154,11 @@
     <script src="/static/js/time.js"></script>
     <script src="/static/js/simplemde.min.js"></script>
     <script>
+        function disableReviews(){
+            document.getElementById("review_id").selectedIndex = 0;
+        }
+
+
         (function () {
             // Enable the SmpleMDE
             let simplemde = new SimpleMDE({
@@ -185,7 +185,7 @@
             checkReviewValue(reviewSelect.value);
 
             reviewSelect.addEventListener('change', e => {
-                checkReviewValue(e.target.value);
+                //checkReviewValue(e.target.value);
             });
 
             function checkReviewValue(value) {
@@ -197,6 +197,10 @@
                     reviewDeadline.removeAttribute('required');
                 }
             }
+
+
+
+
         })();
 
         // On submit form, call this function
