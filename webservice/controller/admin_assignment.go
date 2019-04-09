@@ -7,7 +7,6 @@ import (
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/service"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
-	"github.com/JohanAanesen/CSAMS/webservice/shared/scheduler"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
@@ -280,27 +279,12 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	assignment.Reviewers = reviewers
 
 	// Insert data to database
-	lastID, err := assignmentService.Insert(assignment)
+	_, err = assignmentService.Insert(assignment)
 	if err != nil {
 		log.Println("assignment service, insert", err)
 		return
 	}
 
-	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute  TODO time-norwegian
-	if lastID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInCorrectTimeZone()) {
-
-		sched := scheduler.Scheduler{}
-
-		err := sched.SchedulePeerReview(
-			lastID, //assignment ID
-			int(assignment.Reviewers.Int64),
-			assignment.Deadline)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-	}
 
 	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
 }
@@ -583,32 +567,6 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
-	}
-
-	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute TODO time-norwegian
-	if assignment.ID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInCorrectTimeZone()) {
-		sched := scheduler.Scheduler{}
-
-		if sched.SchedulerExists(assignment.ID) {
-			err := sched.UpdateSchedule(
-				assignment.ID, //assignment ID
-				int(assignment.Reviewers.Int64),
-				assignment.Deadline)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-		} else {
-			err := sched.SchedulePeerReview(
-				assignment.ID, //assignment ID
-				int(assignment.Reviewers.Int64),
-				assignment.Deadline)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-		}
-
 	}
 
 	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
