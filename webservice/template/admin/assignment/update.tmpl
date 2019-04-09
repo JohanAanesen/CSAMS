@@ -79,14 +79,14 @@
                     <h3>Peer Review</h3>
                     <div class="form-group">
                         <label for="reviewers">How many submissions should every student review on this
-                            assignment:</label>
+                            assignment, pick 0 to disable this feature</label>
                         <select name="reviewers" id="reviewers" class="form-control" required>
                             option
                             {{if .Assignment.Reviewers.Valid}}
                                 <option value="{{.Assignment.Reviewers.Int64}}"
                                         selected>{{.Assignment.Reviewers.Int64}}</option>{{end}}
                             <script>
-                                for (let i = 1; i <= 6; i++) {
+                                for (let i = 0; i <= 6; i++) {
                                     document.write(`<option value="${i}">${i}</option>`);
                                 }
                             </script>
