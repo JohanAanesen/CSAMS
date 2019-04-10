@@ -27,6 +27,7 @@
         </div>
     </div>
 
+    {{if .Statistics}}
     <div class="row">
         <div class="col">
             <h4>Statistics (Review)</h4>
@@ -60,7 +61,7 @@
             <hr>
         </div>
     </div>
-
+    {{end}}
 
     <div class="row">
         <div class="col">
@@ -122,6 +123,7 @@
         </div>
     </div>
 
+        <!--
     <div class="row py-5">
         <hr>
 
@@ -161,7 +163,8 @@
             {{end}}
             </tbody>
         </table>
-    </div>
+</div>
+        -->
 {{end}}
 {{define "foot"}}
     <script src="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.js"></script>
