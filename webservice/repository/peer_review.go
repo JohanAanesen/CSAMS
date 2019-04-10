@@ -17,6 +17,31 @@ func NewPeerReviewRepository(db *sql.DB) *PeerReviewRepository {
 	}
 }
 
+// Insert func
+func (repo *PeerReviewRepository) Insert(assignmentID int, userID int, targetUserID int) (bool, error) {
+
+	query := "INSERT INTO peer_reviews(assignment_id, user_id, review_user_id) VALUES(?, ?, ?)"
+
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return false, err
+	}
+
+	_, err = tx.Exec(query, assignmentID, userID, targetUserID)
+	if err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
+	return true, err
+}
+
 // TargetExists Checks if the target exist in the table
 func (repo *PeerReviewRepository) TargetExists(assignmentID int, userID int) (bool, error) {
 	var result int

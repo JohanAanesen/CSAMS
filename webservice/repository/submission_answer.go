@@ -107,6 +107,34 @@ func (repo *SubmissionAnswerRepository) FetchAllForUserAndAssignment(userID, ass
 	return result, err
 }
 
+// FetchAllForAssignment func
+func (repo *SubmissionAnswerRepository) FetchAllForAssignment(assignmentID int) ([]*model.SubmissionAnswer, error) {
+	result := make([]*model.SubmissionAnswer, 0)
+
+	query := "SELECT us.id, us.user_id, us.assignment_id, us.submission_id, us.type, us.name, us.label, us.answer, us.comment, us.submitted FROM user_submissions AS us WHERE us.assignment_id = ?"
+
+	rows, err := repo.db.Query(query, assignmentID)
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		temp := model.SubmissionAnswer{}
+
+		err = rows.Scan(&temp.ID, &temp.UserID, &temp.AssignmentID, &temp.SubmissionID,
+			&temp.Type, &temp.Name, &temp.Label, &temp.Answer, &temp.Comment, &temp.Submitted)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, &temp)
+	}
+
+	return result, err
+}
+
 // Insert func
 func (repo *SubmissionAnswerRepository) Insert(answer model.SubmissionAnswer) (int, error) {
 	var id int64

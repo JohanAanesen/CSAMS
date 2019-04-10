@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/microcosm-cc/bluemonday"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
@@ -835,4 +836,86 @@ func AssignmentWithdrawGET(w http.ResponseWriter, r *http.Request) {
 	sess.AddFlash("Submission withdrawn!", "success")
 
 	IndexGET(w, r)
+}
+
+// AssignmentReviewRequestPOST requests a new review to be assigned
+func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
+	// Get URL variables
+	vars := mux.Vars(r)
+
+	assignmentID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Println("strconv, atoi, id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+
+	submissions, err := services.SubmissionAnswer.FetchAllFromAssignment(assignmentID)
+	if err != nil {
+		log.Println("AssignmentReviewRequestPOST, services.Submission.FetchFromAssignment", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	//remove user from submissions slice
+	for i, sub := range submissions{
+		if sub.UserID != currentUser.ID{
+			submissions[i] = submissions[len(submissions)-1] // Copy last element to index i.
+			submissions[len(submissions)-1] = nil   // Erase last element (write zero value).
+			submissions = submissions[:len(submissions)-1]   // Truncate slice.
+		}
+	}
+
+	//find the lowest amount of reviews
+	lowestNrReviews := 99999
+	submissionsAndReviews := make(map[int]int)
+
+	for _, sub := range submissions{
+		reviewsDone, err := services.ReviewAnswer.FetchForTarget(sub.UserID, assignmentID)
+		if err != nil {
+			log.Println("AssignmentReviewRequestPOST, services.ReviewAnswer.FetchForTarget", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		submissionsAndReviews[sub.UserID] = len(reviewsDone)
+
+		if len(reviewsDone) < lowestNrReviews{
+			lowestNrReviews = len(reviewsDone)
+		}
+	}
+
+	//filter the submissions with lowest reviewcount
+	submissionsFiltered := make([]int, 0)
+
+	for userID, reviews := range submissionsAndReviews{
+		if reviews == lowestNrReviews{
+			submissionsFiltered = append(submissionsFiltered, userID)
+		}
+	}
+
+	//scramble slice
+	rand := rand.New(rand.NewSource(time.Now().Unix()))
+
+	for i := range submissionsFiltered {
+		j := rand.Intn(i + 1)
+		submissionsFiltered[i], submissionsFiltered[j] = submissionsFiltered[j], submissionsFiltered[i]
+	}
+
+	//save the 0 index as a new review pair
+	inserted, err := services.PeerReview.Insert(assignmentID, currentUser.ID, submissionsFiltered[0])
+
+	//redirect
+	if inserted{
+		http.Redirect(w, r, fmt.Sprintf("/assignment/%v/submission/%v", assignmentID, submissionsFiltered[0]), http.StatusFound)
+	}else{
+		ErrorHandler(w, r, http.StatusInternalServerError)
+	}
 }

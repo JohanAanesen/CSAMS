@@ -18,6 +18,11 @@ func NewPeerReviewService(db *sql.DB) *PeerReviewService {
 	}
 }
 
+// Insert func
+func (s *PeerReviewService) Insert(assignmentID int, userID int, targetUserID int) (bool, error) {
+	return s.peerReviewRepo.Insert(assignmentID, userID, targetUserID)
+}
+
 // TargetExists checks if the target exist in the table
 func (s *PeerReviewService) TargetExists(assignmentID int, userID int) (bool, error) {
 	return s.peerReviewRepo.TargetExists(assignmentID, userID)

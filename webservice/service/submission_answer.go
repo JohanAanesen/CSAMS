@@ -31,6 +31,11 @@ func (s *SubmissionAnswerService) FetchAll() ([]*model.SubmissionAnswer, error) 
 	return s.submissionAnswerRepo.FetchAll()
 }
 
+// FetchAllFromAssignment func
+func (s *SubmissionAnswerService) FetchAllFromAssignment(assID int) ([]*model.SubmissionAnswer, error) {
+	return s.submissionAnswerRepo.FetchAllForAssignment(assID)
+}
+
 // CountForAssignment func
 func (s *SubmissionAnswerService) CountForAssignment(assignmentID int) (int, error) {
 	return s.submissionAnswerRepo.CountForAssignment(assignmentID)

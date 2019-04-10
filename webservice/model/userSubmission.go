@@ -89,7 +89,7 @@ func UpdateUserSubmission(userSub UserSubmission) error {
 	for _, answer := range userSub.Answers {
 
 		// Sql query
-		query := "UPDATE `user_submissions` SET `answer` = ?, `comment` = ? `submitted` = ? WHERE `id` = ?"
+		query := "UPDATE `user_submissions` SET `answer` = ?, `comment` = ?, `submitted` = ? WHERE `id` = ?"
 		_, err := db.GetDB().Exec(query, answer.Value, answer.Comment.String, now, answer.ID)
 
 		// Check if there was an error
