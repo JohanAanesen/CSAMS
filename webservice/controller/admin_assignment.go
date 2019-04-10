@@ -828,7 +828,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 }
 
-func foo(report []model.ProcessedUserReport, length int) {
+func foo(report []model.ProcessedUserReport, length int) error {
 	var file *xlsx.File
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
@@ -838,7 +838,7 @@ func foo(report []model.ProcessedUserReport, length int) {
 	file = xlsx.NewFile()
 	sheet, err = file.AddSheet("Sheet1")
 	if err != nil {
-		fmt.Printf(err.Error())
+		return err
 	}
 
 	rowIndex := 1
@@ -981,8 +981,10 @@ func foo(report []model.ProcessedUserReport, length int) {
 
 	err = file.Save("test.xlsx")
 	if err != nil {
-		fmt.Printf(err.Error())
+		return err
 	}
+
+	return nil
 }
 
 /*
