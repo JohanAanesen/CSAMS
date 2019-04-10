@@ -376,3 +376,14 @@ CREATE TABLE `validation`
 * Fixed some smaller stuff
 * Added send email to whole course functionality
 * Have to fix it more tomorrow, but it works!
+
+### Wednesday 10/04/19
+* Had some long meetings
+* We have established the core functionality we need to be done now and added them to trello
+* Added list of all student or private emails the email is going to be sent to
+
+### Thursday 11/04/19
+
+### Friday 12/04/19
+
+### Saturday 13/04/19

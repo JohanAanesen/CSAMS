@@ -284,6 +284,14 @@ func AdminEmailCourseGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get all students from course
+	users, err := userService.FetchAllFromCourse(id)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	// Get all emails from students in course
 	emails, err := userService.FetchAllStudentEmails(id)
 	if err != nil {
@@ -299,7 +307,8 @@ func AdminEmailCourseGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "admin/course/sendemail"
 
 	v.Vars["Course"] = course
-	v.Vars["Emails"] = emails
+	v.Vars["Users"] = users
+	v.Vars["NoOfEmails"] = len(emails)
 
 	v.Render(w)
 }

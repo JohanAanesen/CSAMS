@@ -8,11 +8,12 @@
     <hr>
 
     <div class="row">
-        <div class="col-md-6">
+        {{ if eq 0 .NoOfEmails}}
+            <h1 class="display-5 mb-3">No one in course</h1>
+        {{ else }}
 
-            {{ if eq 0 (len .Emails)}}
-                <h1 class="display-5 mb-3">No one in course</h1>
-            {{ else }}
+            <div class="col-12 col-lg">
+                <h3 class="mb-3">Email students</h3>
                 <form action="/admin/course/email/{{.Course.ID}}" class="form-signin" method="POST">
                     <div class="form-group">
                         <label for="inputsubject" class="sr-only">Subject</label>
@@ -24,16 +25,29 @@
                     <div class="form-group">
                         <label for="inputmessage" class="sr-only">Message</label>
                         <textarea name="message" id="inputmessage" class="form-control"
-                                  placeholder="Message" required></textarea>
+                                  placeholder="Message" required rows="10"></textarea>
                     </div>
-                    <p>Number of emails in total: {{len .Emails}}, including the private emails too</p>
-
                     <button class="btn btn-primary btn-block mb-3" type="submit">Send Email</button>
                 </form>
-            {{ end}}
 
-
-        </div>
+            </div>
+            <div class="col-12 col-lg">
+                <h3 class="mb-3">Emails ({{.NoOfEmails}})</h3>
+                {{ range .Users}}
+                    {{ if not .Teacher}}
+                        <ul class="list-group">
+                            {{ if .EmailPrivate.Valid}}
+                                <li class="list-group-item"><strong class="text-success">Private
+                                        Email:</strong> {{.EmailPrivate.Value}}</li>
+                            {{ else }}
+                                <li class="list-group-item"><strong class="text-primary">Student
+                                        Email:</strong> {{.EmailStudent}}</li>
+                            {{ end }}
+                        </ul>
+                    {{ end}}
+                {{end}}
+            </div>
+        {{ end}}
     </div>
 
 {{end}}

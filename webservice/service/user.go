@@ -119,7 +119,7 @@ func (s *UserService) UpdatePassword(id int, password string) error {
 	return s.userRepo.UpdatePassword(id, hash)
 }
 
-// FetchAllStudentEmails Fetches all student emails, both primary and secondary if not null
+// FetchAllStudentEmails Fetches all student emails, primary default or secondary if not null
 func (s *UserService) FetchAllStudentEmails(courseID int) ([]string, error) {
 
 	// Create empty string array
@@ -137,12 +137,12 @@ func (s *UserService) FetchAllStudentEmails(courseID int) ([]string, error) {
 		// only append to array if user is an student
 		if !user.Teacher {
 
-			// Append primary/student email
-			result = append(result, user.EmailStudent)
-
 			// Check if user has secondary/private email and append if yes
 			if user.EmailPrivate.Valid {
 				result = append(result, user.EmailPrivate.String)
+			} else {
+				// Append primary/student email
+				result = append(result, user.EmailStudent)
 			}
 		}
 	}
