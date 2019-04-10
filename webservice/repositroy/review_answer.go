@@ -180,6 +180,7 @@ func (repo *ReviewAnswerRepository) MaxScore(assignmentID int) (int, error) {
 	return result, nil
 }
 
+// FetchRawReviewForUser func
 func (repo *ReviewAnswerRepository) FetchRawReviewForUser(userID, assignmentID int) ([]*model.ReviewAnswer, error) {
 	result := make([]*model.ReviewAnswer, 0)
 

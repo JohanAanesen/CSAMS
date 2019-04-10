@@ -6,6 +6,7 @@ import (
 	"html/template"
 )
 
+// Review create template function maps related to reviews
 func Review() template.FuncMap {
 	f := make(template.FuncMap)
 

@@ -878,7 +878,7 @@ func foo(report []model.ProcessedUserReport, length int) error {
 
 	// DATA ROWS START
 	for _, item := range report {
-		rowIndex += 1
+		rowIndex++
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = item.Name
@@ -900,7 +900,7 @@ func foo(report []model.ProcessedUserReport, length int) error {
 	var dataRowEnd = rowIndex
 
 	// MEAN ROW START
-	rowIndex += 1
+	rowIndex++
 	row = sheet.AddRow()
 
 	cell = row.AddCell()
@@ -917,14 +917,14 @@ func foo(report []model.ProcessedUserReport, length int) error {
 	for i := 0; i < length; i, k = i+1, k+1 {
 		cell = row.AddCell()
 		cell.SetFormula(fmt.Sprintf("=AVERAGE(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
-		k += 1
+		k++
 		cell = row.AddCell()
 		cell.SetFormula(fmt.Sprintf("=AVERAGE(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
 	}
 	// MEAN ROW END
 
 	// STD DEV ROW START
-	rowIndex += 1
+	rowIndex++
 	row = sheet.AddRow()
 
 	cell = row.AddCell()
@@ -939,14 +939,14 @@ func foo(report []model.ProcessedUserReport, length int) error {
 	for i := 0; i < length; i, k = i+1, k+1 {
 		cell = row.AddCell()
 		cell.SetFormula(fmt.Sprintf("=STDEV(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
-		k += 1
+		k++
 		cell = row.AddCell()
 		cell.SetFormula(fmt.Sprintf("=STDEV(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
 	}
 	// STD DEV ROW END
 
 	// MIN VALUE ROW START
-	rowIndex += 1
+	rowIndex++
 	row = sheet.AddRow()
 
 	cell = row.AddCell()
@@ -961,14 +961,14 @@ func foo(report []model.ProcessedUserReport, length int) error {
 	for i := 0; i < length; i, k = i+1, k+1 {
 		cell = row.AddCell()
 		cell.SetFormula(fmt.Sprintf("=MIN(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
-		k += 1
+		k++
 		cell = row.AddCell()
 		cell.SetFormula(fmt.Sprintf("=MIN(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
 	}
 	// MIN VALUE ROW END
 
 	// MAX VALUE ROW START
-	rowIndex += 1
+	rowIndex++
 	row = sheet.AddRow()
 
 	cell = row.AddCell()
@@ -983,7 +983,7 @@ func foo(report []model.ProcessedUserReport, length int) error {
 	for i := 0; i < length; i, k = i+1, k+1 {
 		cell = row.AddCell()
 		cell.SetFormula(fmt.Sprintf("=MAX(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
-		k += 1
+		k++
 		cell = row.AddCell()
 		cell.SetFormula(fmt.Sprintf("=MAX(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
 	}
@@ -1120,6 +1120,8 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 }
 
+// AdminAssignmentReviewsUpdateGET handles GET-requests
+//  to /admin/assignment/{assignmentID:[0-9]+}/review/{targetID:[0-9]+}/{reviewerID:[0-9]+}/update
 func AdminAssignmentReviewsUpdateGET(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
@@ -1168,6 +1170,8 @@ func AdminAssignmentReviewsUpdateGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 }
 
+// AdminAssignmentReviewsUpdatePOST handles POST-requests
+//  to /admin/assignment/{assignmentID:[0-9]+}/review/{targetID:[0-9]+}/{reviewerID:[0-9]+}/update
 func AdminAssignmentReviewsUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 

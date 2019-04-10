@@ -193,6 +193,7 @@ func (s *ReviewAnswerService) FetchScoreFromReview(assignmentID, userID int) ([]
 	return result, err
 }
 
+// FetchUserReportsForAssignment func
 func (s *ReviewAnswerService) FetchUserReportsForAssignment(assignmentID int) ([]model.RawUserReport, error) {
 	assignment, err := s.assignmentRepo.Fetch(assignmentID)
 	if err != nil {
