@@ -670,6 +670,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var users []UserSubmissionData
+	var anyReviewsDone = false
 
 	for _, student := range students {
 		submitTime, submitted, err := services.SubmissionAnswer.FetchSubmittedTime(student.ID, assignment.ID)
@@ -704,6 +705,10 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		if data.ReviewsDone > 0 {
+			anyReviewsDone = true
+		}
+
 		users = append(users, data)
 	}
 
@@ -712,102 +717,104 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		return users[i].SubmittedTime.After(users[j].SubmittedTime)
 	})
 
-	stats, err := services.ReviewAnswer.FetchStatisticsForAssignment(assignment.ID)
-	if err != nil {
-		log.Println("services, review answer, fetch statistics", err.Error())
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
-
-	// TODO (Svein): Implement this to an export button, and export it
-	processedUserReports := make([]model.ProcessedUserReport, 0)
-
-	rawUserReports, err := services.ReviewAnswer.FetchUserReportsForAssignment(assignment.ID)
-	if err != nil {
-		log.Println("services, review answer, fetch user reports for assignment", err.Error())
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
-
+	var stats *util.Statistics
+	var processedUserReports = make([]model.ProcessedUserReport, 0)
 	var processedLength = 0
 	var itemMaxLength = 0
 
-	for _, item := range rawUserReports {
-		// TODO (Svein): Check all slices, not only first and last
-		if len(item.ReviewScores) == int(assignment.Reviewers.Int64) {
-			if len(item.ReviewScores[0]) != len(item.ReviewScores[int(assignment.Reviewers.Int64-1)]) {
-				log.Println("raw user report, review scores are not same length")
-				return
-			}
+	if anyReviewsDone {
+		stats, err = services.ReviewAnswer.FetchStatisticsForAssignment(assignment.ID)
+		if err != nil {
+			log.Println("services, review answer, fetch statistics", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
 		}
 
-		temp := model.ProcessedUserReport{
-			Name:        item.Name,
-			Email:       item.Email,
-			ReviewsDone: item.ReviewsDone,
+		// TODO (Svein): Implement this to an export button, and export it
+		rawUserReports, err := services.ReviewAnswer.FetchUserReportsForAssignment(assignment.ID)
+		if err != nil {
+			log.Println("services, review answer, fetch user reports for assignment", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
 		}
 
-		scores := item.ReviewScores
-		if len(scores) > 0 {
-			for i := 0; i < len(scores[0]); i++ {
-				data := make([]float64, 0)
-
-				for j := range scores {
-					data = append(data, scores[j][i])
+		for _, item := range rawUserReports {
+			// TODO (Svein): Check all slices, not only first and last
+			if len(item.ReviewScores) == int(assignment.Reviewers.Int64) {
+				if len(item.ReviewScores[0]) != len(item.ReviewScores[int(assignment.Reviewers.Int64-1)]) {
+					log.Println("raw user report, review scores are not same length")
+					return
 				}
-
-				stats := util.Statistics{
-					Entries: data,
-				}
-
-				mean, _ := stats.Average()
-				stdDev, _ := stats.StandardDeviation()
-
-				t := model.ProcessedReviewItem{
-					Mean:   mean,
-					StdDev: stdDev,
-				}
-
-				temp.ReviewItems = append(temp.ReviewItems, t)
 			}
 
-			if len(temp.ReviewItems) > itemMaxLength {
-				itemMaxLength = len(temp.ReviewItems)
+			temp := model.ProcessedUserReport{
+				Name:        item.Name,
+				Email:       item.Email,
+				ReviewsDone: item.ReviewsDone,
 			}
 
-			if processedLength == 0 {
-				processedLength = len(temp.ReviewItems)
+			scores := item.ReviewScores
+			if len(scores) > 0 {
+				for i := 0; i < len(scores[0]); i++ {
+					data := make([]float64, 0)
+
+					for j := range scores {
+						data = append(data, scores[j][i])
+					}
+
+					stats := util.Statistics{
+						Entries: data,
+					}
+
+					mean, _ := stats.Average()
+					stdDev, _ := stats.StandardDeviation()
+
+					t := model.ProcessedReviewItem{
+						Mean:   mean,
+						StdDev: stdDev,
+					}
+
+					temp.ReviewItems = append(temp.ReviewItems, t)
+				}
+
+				if len(temp.ReviewItems) > itemMaxLength {
+					itemMaxLength = len(temp.ReviewItems)
+				}
+
+				if processedLength == 0 {
+					processedLength = len(temp.ReviewItems)
+				}
 			}
+
+			processedUserReports = append(processedUserReports, temp)
 		}
-
-		processedUserReports = append(processedUserReports, temp)
 	}
 
 	/*
-	fmt.Print("Name;Email;ReviewsDone")
-	for i := 0; i < itemMaxLength; i++ {
-		a := i + 1
-		fmt.Printf(";RevItem %d Mean;RevItem %d Std Dev", a, a)
-	}
-	fmt.Println("")
-	for _, item := range processedUserReports {
-		fmt.Printf("%s;%s;%d", item.Name, item.Email, item.ReviewsDone)
-		if len(item.ReviewItems) > 0 {
-			for _, v := range item.ReviewItems {
-				str := fmt.Sprintf(";%.2f;%.2f", v.Mean, v.StdDev)
-				str = strings.Replace(str, ".", ",", -1)
-				fmt.Print(str)
-			}
-		} else {
-			for i := 0; i < itemMaxLength; i++ {
-				fmt.Printf(";0;0")
-			}
+		fmt.Print("Name;Email;ReviewsDone")
+		for i := 0; i < itemMaxLength; i++ {
+			a := i + 1
+			fmt.Printf(";RevItem %d Mean;RevItem %d Std Dev", a, a)
 		}
 		fmt.Println("")
-	}
+		for _, item := range processedUserReports {
+			fmt.Printf("%s;%s;%d", item.Name, item.Email, item.ReviewsDone)
+			if len(item.ReviewItems) > 0 {
+				for _, v := range item.ReviewItems {
+					str := fmt.Sprintf(";%.2f;%.2f", v.Mean, v.StdDev)
+					str = strings.Replace(str, ".", ",", -1)
+					fmt.Print(str)
+				}
+			} else {
+				for i := 0; i < itemMaxLength; i++ {
+					fmt.Printf(";0;0")
+				}
+			}
+			fmt.Println("")
+		}
 	*/
 
-	foo(processedUserReports, itemMaxLength)
+	//foo(processedUserReports, itemMaxLength)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -819,11 +826,14 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Assignment"] = assignment
 	v.Vars["Students"] = users
 	v.Vars["Course"] = course
-	v.Vars["Statistics"] = stats.GetDisplayStruct()
 
-	v.Vars["ProcessedReports"] = processedUserReports // TODO (Svein): Move this to a new view
-	v.Vars["ReviewItems"] = processedUserReports
-	v.Vars["ProcessLength"] = make([]struct{}, processedLength)
+	if anyReviewsDone {
+		v.Vars["Statistics"] = stats.GetDisplayStruct()
+
+		v.Vars["ProcessedReports"] = processedUserReports // TODO (Svein): Move this to a new view
+		v.Vars["ReviewItems"] = processedUserReports
+		v.Vars["ProcessLength"] = make([]struct{}, processedLength)
+	}
 
 	v.Render(w)
 }
@@ -854,9 +864,9 @@ func foo(report []model.ProcessedUserReport, length int) error {
 
 	for i := 0; i < length; i++ {
 		cell = row.AddCell()
-		cell.Value = fmt.Sprintf("ReviewItem %d Mean", i + 1)
+		cell.Value = fmt.Sprintf("ReviewItem %d Mean", i+1)
 		cell = row.AddCell()
-		cell.Value = fmt.Sprintf("ReviewItem %d Std Dev", i + 1)
+		cell.Value = fmt.Sprintf("ReviewItem %d Std Dev", i+1)
 	}
 	// HEADER ROW END
 
@@ -901,10 +911,10 @@ func foo(report []model.ProcessedUserReport, length int) error {
 	cell = row.AddCell() // Mean of all reviews
 	cell.SetFormula(fmt.Sprintf("=AVERAGE(C%d:C%d)", dataRowStart, dataRowEnd))
 
-	cellChar := []string{"D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","AA","AB","AC","AD","AE","AF","AG","AH","AI","AJ","AK","AL","AM","AN","AO","AP","AQ","AR","AS","AT","AU","AV","AW","AX","AY","AZ","BB"}
+	cellChar := []string{"D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ", "BB"}
 
 	k := 0
-	for i := 0; i < length; i, k = i + 1, k + 1 {
+	for i := 0; i < length; i, k = i+1, k+1 {
 		cell = row.AddCell()
 		cell.SetFormula(fmt.Sprintf("=AVERAGE(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
 		k += 1
@@ -926,7 +936,7 @@ func foo(report []model.ProcessedUserReport, length int) error {
 	cell.SetFormula(fmt.Sprintf("=STDEV(C%d:C%d)", dataRowStart, dataRowEnd))
 
 	k = 0
-	for i := 0; i < length; i, k = i + 1, k + 1 {
+	for i := 0; i < length; i, k = i+1, k+1 {
 		cell = row.AddCell()
 		cell.SetFormula(fmt.Sprintf("=STDEV(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
 		k += 1
@@ -948,7 +958,7 @@ func foo(report []model.ProcessedUserReport, length int) error {
 	cell.SetFormula(fmt.Sprintf("=MIN(C%d:C%d)", dataRowStart, dataRowEnd))
 
 	k = 0
-	for i := 0; i < length; i, k = i + 1, k + 1 {
+	for i := 0; i < length; i, k = i+1, k+1 {
 		cell = row.AddCell()
 		cell.SetFormula(fmt.Sprintf("=MIN(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
 		k += 1
@@ -970,7 +980,7 @@ func foo(report []model.ProcessedUserReport, length int) error {
 	cell.SetFormula(fmt.Sprintf("=MAX(C%d:C%d)", dataRowStart, dataRowEnd))
 
 	k = 0
-	for i := 0; i < length; i, k = i + 1, k + 1 {
+	for i := 0; i < length; i, k = i+1, k+1 {
 		cell = row.AddCell()
 		cell.SetFormula(fmt.Sprintf("=MAX(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
 		k += 1
@@ -1108,6 +1118,110 @@ func AdminAssignmentReviewsGET(w http.ResponseWriter, r *http.Request) {
 
 	// Render view
 	v.Render(w)
+}
+
+func AdminAssignmentReviewsUpdateGET(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	assignmentID, err := strconv.Atoi(vars["assignmentID"])
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	targetID, err := strconv.Atoi(vars["targetID"])
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	reviewerID, err := strconv.Atoi(vars["reviewerID"])
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	review, err := services.ReviewAnswer.FetchForReviewerAndTarget(reviewerID, targetID, assignmentID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/assignment/review/update"
+
+	v.Vars["Review"] = review
+	v.Vars["AssignmentID"] = assignmentID
+	v.Vars["TargetID"] = targetID
+	v.Vars["ReviewerID"] = reviewerID
+
+	v.Render(w)
+}
+
+func AdminAssignmentReviewsUpdatePOST(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	assignmentID, err := strconv.Atoi(vars["assignmentID"])
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	targetID, err := strconv.Atoi(vars["targetID"])
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	reviewerID, err := strconv.Atoi(vars["reviewerID"])
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	form, err := services.Review.FetchFromAssignment(assignmentID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	for _, field := range form.Form.Fields {
+		answer := r.FormValue(field.Name)
+		comment := r.FormValue(field.Name + "_comment")
+
+		err = services.ReviewAnswer.Update(targetID, reviewerID, assignmentID, model.ReviewAnswer{
+			Answer: answer,
+			Comment: sql.NullString{
+				String: comment,
+				Valid:  comment != "",
+			},
+			Name: field.Name,
+		})
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/admin/assignment/%d/submissions", assignmentID), http.StatusFound)
 }
 
 // AdminAssignmentSingleSubmissionGET handles GET-request at /admin/assignment/{id}/submission/{id}

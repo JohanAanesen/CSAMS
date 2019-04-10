@@ -248,6 +248,11 @@ func (s *ReviewAnswerService) FetchUserReportsForAssignment(assignmentID int) ([
 	return userReports, nil
 }
 
+// Update review answer and comment
+func (s *ReviewAnswerService) Update(targetID, reviewerID, assignmentID int, answer model.ReviewAnswer) error {
+	return s.reviewAnswerRepo.Update(targetID, reviewerID, assignmentID, answer)
+}
+
 func getWeight(review *model.ReviewAnswer) float64 {
 	switch review.Type {
 	case "checkbox":

@@ -211,3 +211,27 @@ ORDER BY f.priority`
 
 	return result, nil
 }
+
+// Update review answer and comment
+func (repo *ReviewAnswerRepository) Update(targetID, reviewerID, assignmentID int, answer model.ReviewAnswer) error {
+	query := "UPDATE user_reviews SET answer = ?, comment = ? WHERE user_reviewer = ? AND user_target = ? AND assignment_id = ? AND name = ?"
+
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, answer.Answer, answer.Comment, reviewerID, targetID, assignmentID, answer.Name)
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	return nil
+}
