@@ -4,7 +4,7 @@
 Write-Host "`nJump to project destination`n===========================" -ForegroundColor Green
 
 $start = Get-Location
-Set-Location $env:GOPATH\src\github.com\JohanAanesen\NTNU-Bachelor-Management-System-For-CS-Assignments
+Set-Location $env:GOPATH\src\github.com\JohanAanesen\CSAMS
 
 Write-Host "`nRunning go mod verify`n====================" -ForegroundColor Green
 go mod verify

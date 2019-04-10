@@ -3,20 +3,20 @@ package service
 import (
 	"database/sql"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
-	"github.com/JohanAanesen/CSAMS/webservice/repositroy"
+	"github.com/JohanAanesen/CSAMS/webservice/repository"
 )
 
 // FormService struct
 type FormService struct {
-	formRepo  *repositroy.FormRepository
-	fieldRepo *repositroy.FieldRepository
+	formRepo  *repository.FormRepository
+	fieldRepo *repository.FieldRepository
 }
 
 // NewFormService func
 func NewFormService(db *sql.DB) *FormService {
 	return &FormService{
-		formRepo:  repositroy.NewFormRepository(db),
-		fieldRepo: repositroy.NewFieldRepository(db),
+		formRepo:  repository.NewFormRepository(db),
+		fieldRepo: repository.NewFieldRepository(db),
 	}
 }
 

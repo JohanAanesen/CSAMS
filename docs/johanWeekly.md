@@ -110,3 +110,73 @@ Positives:
 Negatives:
 - Struggled with learning and understanding Docker, mostly getting it to work properly with out special use case
 - git thought i deleted 177 files and then created 177 files so i got like 7000 lines deleted and added in 2 fast commits ay
+
+Week many?
+===
+
+Considerations done in terms of removing dropped out student from review cycle
+---
+
+the dropout problem where reviews has been assigned, but one person is dropping out or being taken out of the loop
+
+User -user
+
+Dropout -dropped out user
+
+-> -Review
+
+Everybody reviews one other user example:
+- User1 -> Dropout
+- Dropoutt -> User3 -> User1
+- User3 -> User1
+
+---------dropout is taken out of the loop---------
+
+- User1 -> User3
+- User3 -> User1
+
+Everybody reviews two other users example: (minimum 4 people needed if one is to be taken out of the loop)
+
+- User1 -> Dropout
+- Dropout -> User3
+- User3 -> User4 
+- User4 -> User1
+- User1 -> User3 
+- User3 -> User1
+- Dropout -> User 4
+- User 4 -> Dropout
+
+---------dropout is taken out of the loop---------
+
+- User1 -> User4
+- User4 -> User3
+- User3 -> User4 
+- User4 -> User1
+- User1 -> User3 
+- User3 -> User1
+aka the people who where to review the dropout, will review the people the dropout where to review
+
+First picture is after dropout is taken out, second is before
+
+
+Problems related to this algorithm:
+- People who have already reviewed the dropout will have to review another student (this can be solved by rewarding some bonus points or whatever for extra work)
+
+Positives about this algorithm:
+- Smallest number of people affected
+- Can be done even if the students have started reviewing eachother
+
+
+As for Inserting a new user into an already distributed review cycle:
+- We can either just have the option to add a new user if no reviews are done yet, this is the easier choice and would not require much functionality
+- Or I have to write another algorithm which following the rules of the distributed cycle (e.g everyone reviews the 1 or more next persons) can place another user inside the cycle, meaning wherever i put the new user then the x(reviews) number of users behind have to move their 'longest' pointer towards the inserted user, and then make new pointers from the new user towards all the points that had a pointer unpointed-to..
+
+(this also requires a bit of code to figure out which pointers are going where and which pointer will be the correct one to move)
+@Christopher thoughts?
+Upsides for writing the hard insert-algoritm:
+- People can be added whenever
+- Keeps the cycle random so no two users will review each other reports (unless there isn't enough people to go around for the review count)
+
+Downsides:
+- If someone has written a review and the new user is put 'in front', then this user will have to write extra reviews because he will be assigned to the new person also.
+- The person who got the review will also get more reviews than the other people

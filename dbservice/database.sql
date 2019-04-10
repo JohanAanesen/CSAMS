@@ -177,15 +177,25 @@ CREATE TABLE `schedule_tasks`
     FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`)
 );
 
-CREATE TABLE `forgotten_password`
+CREATE TABLE `validation`
 (
     `id`        int(11)     NOT NULL AUTO_INCREMENT,
     `hash`      varchar(64) NOT NULL,
-    `user_id`   int(11)     NOT NULL,
+    `user_id`   int(11)              DEFAULT NULL,
     `valid`     tinyint(1)  NOT NULL DEFAULT 1,
     `timestamp` datetime    NOT NULL,
+    PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `users_pending`
+(
+    `id`            int(11)     NOT NULL AUTO_INCREMENT,
+    `name`          varchar(64) DEFAULT NULL,
+    `email_student` varchar(64) NOT NULL,
+    `password`      varchar(64) NOT NULL,
+    `validation_id` int(11)     NOT NULL,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`user_id`) REFERENCES users (`id`)
+    FOREIGN KEY (`validation_id`) REFERENCES validation (`id`)
 );
 
 -- not attaching any foreign keys to log because we always want it to log something even if some of the data is missing

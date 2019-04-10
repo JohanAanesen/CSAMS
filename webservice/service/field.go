@@ -3,18 +3,18 @@ package service
 import (
 	"database/sql"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
-	"github.com/JohanAanesen/CSAMS/webservice/repositroy"
+	"github.com/JohanAanesen/CSAMS/webservice/repository"
 )
 
 // FieldService struct
 type FieldService struct {
-	repo *repositroy.FieldRepository
+	repo *repository.FieldRepository
 }
 
 // NewFieldService func
 func NewFieldService(db *sql.DB) *FieldService {
 	return &FieldService{
-		repo: repositroy.NewFieldRepository(db),
+		repo: repository.NewFieldRepository(db),
 	}
 }
 

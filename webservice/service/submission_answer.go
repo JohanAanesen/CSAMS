@@ -3,21 +3,21 @@ package service
 import (
 	"database/sql"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
-	"github.com/JohanAanesen/CSAMS/webservice/repositroy"
+	"github.com/JohanAanesen/CSAMS/webservice/repository"
 	"time"
 )
 
 // SubmissionAnswerService struct
 type SubmissionAnswerService struct {
-	submissionAnswerRepo *repositroy.SubmissionAnswerRepository
-	reviewAnswerRepo     *repositroy.ReviewAnswerRepository
+	submissionAnswerRepo *repository.SubmissionAnswerRepository
+	reviewAnswerRepo     *repository.ReviewAnswerRepository
 }
 
 // NewSubmissionAnswerService func
 func NewSubmissionAnswerService(db *sql.DB) *SubmissionAnswerService {
 	return &SubmissionAnswerService{
-		submissionAnswerRepo: repositroy.NewSubmissionAnswerRepository(db),
-		reviewAnswerRepo:     repositroy.NewReviewAnswerRepository(db),
+		submissionAnswerRepo: repository.NewSubmissionAnswerRepository(db),
+		reviewAnswerRepo:     repository.NewReviewAnswerRepository(db),
 	}
 }
 

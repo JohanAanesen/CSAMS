@@ -3,26 +3,26 @@ package service
 import (
 	"database/sql"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
-	"github.com/JohanAanesen/CSAMS/webservice/repositroy"
+	"github.com/JohanAanesen/CSAMS/webservice/repository"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
 	"strconv"
 )
 
 // ReviewAnswerService struct
 type ReviewAnswerService struct {
-	reviewAnswerRepo *repositroy.ReviewAnswerRepository
-	courseRepo       *repositroy.CourseRepository
-	assignmentRepo   *repositroy.AssignmentRepository
-	userRepo         *repositroy.UserRepository
+	reviewAnswerRepo *repository.ReviewAnswerRepository
+	courseRepo       *repository.CourseRepository
+	assignmentRepo   *repository.AssignmentRepository
+	userRepo         *repository.UserRepository
 }
 
 // NewReviewAnswerService func
 func NewReviewAnswerService(db *sql.DB) *ReviewAnswerService {
 	return &ReviewAnswerService{
-		reviewAnswerRepo: repositroy.NewReviewAnswerRepository(db),
-		courseRepo:       repositroy.NewCourseRepository(db),
-		assignmentRepo:   repositroy.NewAssignmentRepository(db),
-		userRepo:         repositroy.NewUserRepository(db),
+		reviewAnswerRepo: repository.NewReviewAnswerRepository(db),
+		courseRepo:       repository.NewCourseRepository(db),
+		assignmentRepo:   repository.NewAssignmentRepository(db),
+		userRepo:         repository.NewUserRepository(db),
 	}
 }
 

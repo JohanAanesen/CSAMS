@@ -2,8 +2,9 @@
     <header>
         <nav class="navbar navbar-expand-md navbar-dark bg-dark">
             <div class="container">
-                <a href="/" class="navbar-brand">Johsvebred</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <a href="/" class="navbar-brand">CSAMS</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar"
+                        aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -13,19 +14,19 @@
                             <a href="/" class="nav-link">Home</a>
                         </li>
                         {{if .Auth}}
-                        <li class="nav-item">
-                            <a href="/user" class="nav-link">Profile</a>
-                        </li>
+                            <li class="nav-item">
+                                <a href="/user" class="nav-link">Profile</a>
+                            </li>
 
-                        {{if .IsTeacher}}
-                        <li class="nav-item">
-                            <a href="/admin" class="nav-link">Dashboard</a>
-                        </li>
-                        {{end}}
+                            {{if .IsTeacher}}
+                                <li class="nav-item">
+                                    <a href="/admin" class="nav-link">Dashboard</a>
+                                </li>
+                            {{end}}
 
-                        <li class="nav-item">
-                            <a href="/logout" class="nav-link">Sign out</a>
-                        </li>
+                            <li class="nav-item">
+                                <a href="/logout" class="nav-link">Sign out</a>
+                            </li>
                         {{end}}
                     </ul>
                 </div>
