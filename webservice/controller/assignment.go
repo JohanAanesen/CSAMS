@@ -94,13 +94,6 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hasAutoValidation, err := services.Assignment.HasAutoValidation(assignmentID)
-	if err != nil {
-		log.Println("services, assignment, has auto validation", err)
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
-
 	// Filter out the reviews that the current user already has done
 	reviewUsers, err := services.Review.FetchReviewUsers(currentUser.ID, assignment.ID)
 	if err != nil {
@@ -153,7 +146,6 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Assignment"] = assignment
 	v.Vars["Delivered"] = delivered
 	v.Vars["HasReview"] = hasReview
-	v.Vars["HasAutoValidation"] = hasAutoValidation
 	v.Vars["IsDeadlineOver"] = isDeadlineOver
 	v.Vars["CourseID"] = course.ID
 	v.Vars["Reviews"] = reviewUsers

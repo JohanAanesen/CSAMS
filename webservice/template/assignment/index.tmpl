@@ -61,7 +61,6 @@
             {{.Assignment.Name}}
         </h1>
         {{if .HasReview}}<span class="badge badge-info">Peer Review</span>{{end}}
-        {{if .HasAutoValidation}}<span class="badge badge-warning">Auto Validated</span>{{end}}
 
         <p class="lead"><strong>Deadline:</strong> {{PRETTYTIME .Assignment.Deadline}}</p>
         <div class="card mb-5">
@@ -73,9 +72,6 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{if eq $length 0}}disabled{{end}}" id="peerReview-tab" data-toggle="tab" href="#peerReview" role="tab" aria-controls="peerReview" aria-selected="false">Peer Review {{if gt $length 0}}<span class="badge badge-danger">{{$length}}</span>{{end}}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link{{if not .HasAutoValidation}} disabled{{end}}" id="participant-tab" data-toggle="tab" href="#autoValidation" role="tab" aria-controls="participants" aria-selected="false">Auto Validation</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{{if or (not .HasReview) (.IsTeacher)}} disabled{{end}}" id="viewReview-tab" data-toggle="tab" href="#viewReview" role="tab" aria-controls="viewReview" aria-selected="false">View Reviews</a>
@@ -136,10 +132,6 @@
                                 {{end}}
                             {{end}}
                         </div>
-                    </div>
-
-                    <div class="tab-pane fade" id="autoValidation" role="tabpanel" aria-labelledby="home-tab">
-                        <div>:(</div>
                     </div>
 
                     <div class="tab-pane fade" id="viewReview" role="tabpanel">
