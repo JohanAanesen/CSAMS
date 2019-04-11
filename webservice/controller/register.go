@@ -203,6 +203,7 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 	forgottenService := service.NewValidationService(db.GetDB())
 	userPendingService := service.NewUserPendingService(db.GetDB())
 	userService := service.NewUserService(db.GetDB())
+	//logService := service.NewLogsService(db.GetDB())
 
 	match, payload, err := forgottenService.Match(hash)
 	if err != nil {
@@ -283,6 +284,16 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 			RegisterGET(w, r)
 			return
 		}
+
+		/* TODO brede : uncomment this and test
+		// Log new user to db
+		err = logService.InsertNewUser(newUser.ID)
+		if err != nil {
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			log.Println("new user log", err.Error())
+			return
+		}
+		*/
 
 		session.SaveMessageToSession("You can now log in with your email and password", w, r)
 
