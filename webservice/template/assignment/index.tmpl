@@ -71,7 +71,7 @@
                            aria-controls="home" aria-selected="true">Assignment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{if eq $length 0}}disabled{{end}}" id="peerReview-tab" data-toggle="tab" href="#peerReview" role="tab" aria-controls="peerReview" aria-selected="false">Peer Review {{if gt $length 0}}<span class="badge badge-danger">{{$length}}</span>{{end}}</a>
+                        <a class="nav-link {{if not .HasReview}}disabled{{end}}" id="peerReview-tab" data-toggle="tab" href="#peerReview" role="tab" aria-controls="peerReview" aria-selected="false">Peer Review {{if gt $length 0}}<span class="badge badge-danger">{{$length}}</span>{{end}}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{{if or (not .HasReview) (.IsTeacher)}} disabled{{end}}" id="viewReview-tab" data-toggle="tab" href="#viewReview" role="tab" aria-controls="viewReview" aria-selected="false">View Reviews</a>
