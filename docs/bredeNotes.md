@@ -383,6 +383,11 @@ CREATE TABLE `validation`
 * Added list of all student or private emails the email is going to be sent to
 
 ### Thursday 11/04/19
+**I don't have too much time to work today, I will have to work some in the easter**
+* Had to set up environment on my laptop
+* Checked out an pullrequest and fixed merge conflicts when it was merged to master
+* Created a new email `csams.noreply@gmail.com` and replaced the old with this
+* 
 
 ### Friday 12/04/19
 
