@@ -3,7 +3,6 @@ package service
 import (
 	"database/sql"
 	"errors"
-
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/repository"
 )

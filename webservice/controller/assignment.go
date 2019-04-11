@@ -156,7 +156,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["HasAutoValidation"] = hasAutoValidation
 	v.Vars["IsDeadlineOver"] = isDeadlineOver
 	v.Vars["CourseID"] = course.ID
-	v.Vars["Reviews"] = filteredSubmissionReviews
+	v.Vars["Reviews"] = reviewUsers
 	v.Vars["HasBeenValidated"] = hasBeenValidated
 	v.Vars["MyReviews"] = reviews
 	v.Vars["IsTeacher"] = currentUser.Teacher
@@ -607,18 +607,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hasBeenReviewed, err := services.ReviewAnswer.HasBeenReviewed(user.ID, currentUser.ID, assignment.ID)
-	if err != nil {
-		log.Println("has been reviewed", err.Error())
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
-
-	if hasBeenReviewed && !currentUser.Teacher {
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return
-	}
-
 	// Give error if user isn't teacher or reviewer for this user
 	isUserTheReviewer, err := services.Review.IsUserTheReviewer(currentUser.ID, userID, assignment.ID)
 	if err != nil {
@@ -659,11 +647,34 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get review form for the assignment
-	review, err := services.Review.FetchFromAssignment(assignment.ID)
+	reviewForm, err := services.Review.FetchFromAssignment(assignment.ID)
 	if err != nil {
 		log.Println("get single review", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
+	}
+
+	review, err := services.ReviewAnswer.FetchForReviewerAndTarget(currentUser.ID, userID, assignment.ID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	if len(review) == 0 {
+		for _, field := range reviewForm.Form.Fields {
+			ra := model.ReviewAnswer{}
+
+			ra.Name = field.Name
+			ra.Type = field.Type
+			ra.Label = field.Label
+			ra.Description = field.Description
+			ra.Choices = field.Choices
+			ra.Required = field.Required
+			ra.HasComment = field.HasComment
+
+			review = append(review, &ra)
+		}
 	}
 
 	// Set header content-type and status code
@@ -682,9 +693,8 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["IsTeacher"] = currentUser.Teacher
 	v.Vars["Fields"] = form.Form.Fields
 	v.Vars["Answers"] = assignmentAnswers
-	if review.FormID != 0 {
-		v.Vars["Review"] = review
-	}
+
+	v.Vars["Review"] = review
 
 	// Render view
 	v.Render(w)
@@ -729,11 +739,6 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if hasBeenReviewed {
-		IndexGET(w, r)
-		return
-	}
-
 	// Parse form from the request
 	err = r.ParseForm()
 	if err != nil {
@@ -747,6 +752,30 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("get review form from assignment id", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	if hasBeenReviewed {
+		for _, field := range form.Form.Fields {
+			answer := r.FormValue(field.Name)
+			comment := r.FormValue(field.Name + "_comment")
+
+			err = services.ReviewAnswer.Update(targetID, currentUser.ID, assignmentID, model.ReviewAnswer{
+				Answer: answer,
+				Comment: sql.NullString{
+					String: comment,
+					Valid:  comment != "",
+				},
+				Name: field.Name,
+			})
+			if err != nil {
+				log.Println(err.Error())
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
+		}
+
+		http.Redirect(w, r, fmt.Sprintf("/assignment/%d", assignment.ID), http.StatusFound)
 		return
 	}
 

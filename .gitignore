@@ -21,3 +21,5 @@ out/*
 tls/
 /dbservice/data/*
 */vendor/*
+
+*.xlsx

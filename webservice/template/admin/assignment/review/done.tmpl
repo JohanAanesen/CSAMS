@@ -4,74 +4,8 @@
     <div class="row">
         <div class="col">
             <h1 class="display-4">
-                Reviews for {{GET_USERNAME .User.ID}}
+                Reviews done by {{GET_USERNAME .User.ID}}
             </h1>
-            <hr>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg">
-            <h4>Statistics (User)</h4>
-            <table class="table table-striped table-sm">
-                <tr>
-                    <td>Entries</td>
-                    <td>{{.UserStatistics.Entries}}</td>
-                </tr>
-                <tr>
-                    <td>Absolute Min / Max</td>
-                    <td>{{.UserStatistics.AbsMin}} / {{.UserStatistics.AbsMax}}</td>
-                </tr>
-                <tr>
-                    <td>Local Min / Max</td>
-                    <td>{{Sprintf "%.2f / %.2f" .UserStatistics.LocalMin .UserStatistics.LocalMax}}</td>
-                </tr>
-                <tr>
-                    <td>Average score</td>
-                    <td>{{Sprintf "%.2f" .UserStatistics.Average}}</td>
-                </tr>
-                <tr>
-                    <td>Average percent</td>
-                    <td>{{Sprintf "%.2f%%" .UserStatistics.Percent}}</td>
-                </tr>
-                <tr>
-                    <td>Standard Deviation</td>
-                    <td>{{Sprintf "%.2f" .UserStatistics.StandardDeviation}}</td>
-                </tr>
-            </table>
-
-            <hr>
-        </div>
-
-        <div class="col-lg">
-            <h4>Statistics (Assignment)</h4>
-            <table class="table table-striped table-sm">
-                <tr>
-                    <td>Entries</td>
-                    <td>{{.Statistics.Entries}}</td>
-                </tr>
-                <tr>
-                    <td>Absolute Min / Max</td>
-                    <td>{{.Statistics.AbsMin}} / {{.Statistics.AbsMax}}</td>
-                </tr>
-                <tr>
-                    <td>Local Min / Max</td>
-                    <td>{{Sprintf "%.2f / %.2f" .Statistics.LocalMin .Statistics.LocalMax}}</td>
-                </tr>
-                <tr>
-                    <td>Average score</td>
-                    <td>{{Sprintf "%.2f" .Statistics.Average}}</td>
-                </tr>
-                <tr>
-                    <td>Average percent</td>
-                    <td>{{Sprintf "%.2f%%" .Statistics.Percent}}</td>
-                </tr>
-                <tr>
-                    <td>Standard Deviation</td>
-                    <td>{{Sprintf "%.2f" .Statistics.StandardDeviation}}</td>
-                </tr>
-            </table>
-
             <hr>
         </div>
     </div>
@@ -86,8 +20,9 @@
 
     <div class="row">
         <div class="col-12">
-            <h3>Reviews ({{len .Reviews}})</h3>
+            <h3>Reviews done: ({{len .Reviews}})</h3>
         </div>
+
         {{range $index, $R := .Reviews}}
             <div class="col-lg-6">
                 <form>
@@ -95,8 +30,8 @@
                         {{$temp := index . 0}}
                         <div class="card-header bg-secondary">
                             <h5 class="card-title text-light mb-0">
-                                Review by {{GET_USERNAME $temp.UserReviewer}} (Score: {{Sprintf "%.2f" (index $ReviewScores $zeroIndex)}})
-                                <a href="/admin/assignment/{{$AID}}/review/{{$UID}}/{{$temp.UserReviewer}}/update" class="btn btn-outline-light btn-sm float-right">Edit</a>
+                                Reviewed for {{GET_USERNAME $temp.UserTarget}}
+                                <a href="/admin/assignment/{{$AID}}/review/{{$temp.UserTarget}}/{{$UID}}/update" class="btn btn-outline-light btn-sm float-right">Edit</a>
                             </h5>
                             {{$i = INCREMENT $i}}
                             {{$zeroIndex = INCREMENT $zeroIndex}}
