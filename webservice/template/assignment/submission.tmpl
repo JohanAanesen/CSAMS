@@ -9,7 +9,10 @@
                    class="btn btn-outline-dark mb-3">Go Backs</a>
                 <div class="col my-1 container pt-3 jumbotron">
                     {{if .Delivered}}
-                        <h1 class="display-4">Reviewing assignment: {{.Assignment.Name}}</h1>
+                        <h1 class="display-4">
+                            Reviewing assignment:<br>
+                            <small>{{.Assignment.Name}}</small>
+                        </h1>
                         <h4>{{.Course.Code}} {{.Course.Name}}</h4>
 
                         <hr>
@@ -55,6 +58,7 @@
                                     {{else if eq .Type "url"}}
                                         <label for="{{.Name}}">{{.Label}}</label>
                                         <input type="url" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
+                                        <a href="{{.Answer}}" target="_blank">Open in a new tab</a>
                                     {{else if eq .Type "textarea"}}
                                         <label for="{{.Name}}">{{.Label}}</label>
                                         <textarea name="{{.Name}}" id="{{.Name}}" class="form-control" disabled>{{.Answer}}</textarea>
@@ -83,82 +87,71 @@
                         {{end}}
 
                     {{else}}
-
                         <h1 class="display-4">This assignment has not yet been submitted.</h1>
-
                     {{end}}
 
                 </div>
             </div>
 
             <div class="col-12 mb-3">
+                <h2 class="display-4">Review Form:</h2>
+                <hr>
+
                 <form action="/assignment/{{.Assignment.ID}}/submission/{{.User.ID}}" method="POST">
-                {{range .Review.Form.Fields}}
-                    {{if eq .Type "radio"}}
-                        {{$A := .}}
-                        {{$V := 1}}
-                        <fieldset class="mb-3">
-                            <legend>{{.Label}}</legend>
-                            {{range .Choices}}
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="{{$A.Name}}" id="{{$A.Name}}_{{$V}}" value="{{$V}}"{{if $A.Required}} required{{end}}>
-                                    <label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
-                                </div>
-                                {{$V = INCREMENT $V}}
-                            {{end}}
-                            <small class="form-text text-muted">{{.Description}}</small>
-                        </fieldset>
-                    {{else if eq .Type "multi-checkbox"}}
-                        {{$A := .}}
-                        {{$V := 1}}
-                        <fieldset class="mb-3">
-                            <legend>{{.Label}}</legend>
-                            {{range .Choices}}
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="{{$A.Name}}" id="{{$A.Name}}_{{$V}}" value="{{$V}}"{{if $A.Required}} required{{end}}>
-                                    <label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
-                                </div>
-                                {{$V = INCREMENT $V}}
-                            {{end}}
-                            <small class="form-text text-muted">{{.Description}}</small>
-                        </fieldset>
-                    {{else}}
-                        <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
-                            {{if eq .Type "text"}}
-                                <label for="{{.Name}}">{{.Label}}</label>
-                                <input type="text" name="{{.Name}}" id="{{.Name}}" class="form-control"{{if .Required}} required{{end}}>
-                            {{else if eq .Type "url"}}
-                                <label for="{{.Name}}">{{.Label}}</label>
-                                <input type="url" name="{{.Name}}" id="{{.Name}}" class="form-control"{{if .Required}} required{{end}}>
-                            {{else if eq .Type "textarea"}}
-                                <label for="{{.Name}}">{{.Label}}</label>
-                                <textarea name="{{.Name}}" id="{{.Name}}" class="form-control"{{if .Required}} required{{end}}></textarea>
-                            {{else if eq .Type "number"}}
-                                <label for="{{.Name}}">{{.Label}}</label>
-                                <input type="number" name="{{.Name}}" id="{{.Name}}" class="form-control"{{if .Required}} required{{end}}>
-                            {{else if eq .Type "checkbox"}}
-                                <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input"{{if .Required}} required{{end}}>
-                                <label class="form-check-inline" for="{{.Name}}">{{.Label}}</label>
-                            {{else if eq .Type "paragraph"}}
-                                <h3>{{.Label}}</h3>
-                                <p class="lead">{{.Description}}</p>
-                                <hr>
-                            {{end}}
-
-                            {{if ne .Type "paragraph"}}
+                    {{range .Review}}
+                        {{if eq .Type "radio"}}
+                            {{$A := .}}
+                            {{$Answer := ATOI .Answer}}
+                            {{$V := 1}}
+                            <fieldset class="mb-3">
+                                <legend class="lead">{{.Label}}</legend>
+                                {{range .Choices}}
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="{{$A.Name}}" id="{{$A.Name}}_{{$V}}" value="{{$V}}"{{if eq $V $Answer}} checked{{end}}>
+                                        <label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
+                                    </div>
+                                    {{$V = INCREMENT $V}}
+                                {{end}}
                                 <small class="form-text text-muted">{{.Description}}</small>
-                            {{end}}
-                        </div>
-                    {{end}}
-                    {{if .HasComment}}
-                        <div class="form-group form-check">
-                            <label for="{{.Name}}_comment">Comment <em>({{.Label}})</em></label>
-                            <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3" class="form-control"></textarea>
-                        </div>
-                    {{end}}
-                {{end}}
+                            </fieldset>
+                        {{else}}
+                            <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
+                                {{if eq .Type "text"}}
+                                    <label for="{{.Name}}">{{.Label}}</label>
+                                    <input type="text" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}">
+                                {{else if eq .Type "url"}}
+                                    <label for="{{.Name}}">{{.Label}}</label>
+                                    <input type="url" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}">
+                                    <a href="{{.Answer}}" target="_blank">Open in new tab</a>
+                                {{else if eq .Type "textarea"}}
+                                    <label for="{{.Name}}">{{.Label}}</label>
+                                    <textarea name="{{.Name}}" id="{{.Name}}" class="form-control" rows="5" disabled>{{.Answer}}</textarea>
+                                {{else if eq .Type "number"}}
+                                    <label for="{{.Name}}">{{.Label}}</label>
+                                    <input type="number" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}">
+                                {{else if eq .Type "checkbox"}}
+                                    <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input"{{if eq .Answer "on"}} checked{{end}}>
+                                    <label class="form-check-inline" for="{{.Name}}">{{.Label}}</label>
+                                {{else if eq .Type "paragraph"}}
+                                    <legend>{{.Label}}</legend>
+                                    <p class="lead">{{.Description}}</p>
+                                {{end}}
 
-                <input type="submit" class="btn btn-primary">
+                                {{if ne .Type "paragraph"}}
+                                    <small class="form-text text-muted">{{.Description}}</small>
+                                {{end}}
+                            </div>
+                        {{end}}
+                        {{if .HasComment}}
+                            <div class="form-group form-check">
+                                <label for="{{.Name}}_comment">Comment</label>
+                                <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3" class="form-control">{{.Comment.String}}</textarea>
+                            </div>
+                        {{end}}
+                        <hr>
+                    {{end}}
+
+                    <input type="submit" class="btn btn-success btn-block btn-lg" value="Update">
                 </form>
             </div>
 

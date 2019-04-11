@@ -158,3 +158,81 @@ func (repo *ReviewAnswerRepository) CountReviewsDone(userID, assignmentID int) (
 
 	return result, err
 }
+
+// MaxScore func
+func (repo *ReviewAnswerRepository) MaxScore(assignmentID int) (int, error) {
+	var result int
+
+	query := `SELECT SUM(f.weight) FROM fields AS f INNER JOIN reviews AS r ON r.form_id = f.form_id INNER JOIN assignments AS a ON a.review_id = r.id WHERE a.id = ?`
+
+	rows, err := repo.db.Query(query, assignmentID)
+	if err != nil {
+		return 0, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&result)
+		if err != nil {
+			return 0, err
+		}
+	}
+
+	return result, nil
+}
+
+// FetchRawReviewForUser func
+func (repo *ReviewAnswerRepository) FetchRawReviewForUser(userID, assignmentID int) ([]*model.ReviewAnswer, error) {
+	result := make([]*model.ReviewAnswer, 0)
+
+	query := `SELECT ur.type, ur.answer, f.choices, f.weight FROM user_reviews AS ur
+INNER JOIN fields AS f ON f.name = ur.name
+INNER JOIN reviews AS r ON f.form_id = r.form_id
+INNER JOIN assignments AS a ON a.review_id = r.id
+WHERE a.id = ? AND ur.user_target = ? AND f.weight != 0
+ORDER BY f.priority`
+
+	rows, err := repo.db.Query(query, assignmentID, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		temp := model.ReviewAnswer{}
+		var choices string
+
+		err = rows.Scan(&temp.Type, &temp.Answer, &choices, &temp.Weight)
+		if err != nil {
+			return nil, err
+		}
+
+		temp.Choices = strings.Split(choices, "|")
+
+		result = append(result, &temp)
+	}
+
+	return result, nil
+}
+
+// Update review answer and comment
+func (repo *ReviewAnswerRepository) Update(targetID, reviewerID, assignmentID int, answer model.ReviewAnswer) error {
+	query := "UPDATE user_reviews SET answer = ?, comment = ? WHERE user_reviewer = ? AND user_target = ? AND assignment_id = ? AND name = ?"
+
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, answer.Answer, answer.Comment, reviewerID, targetID, assignmentID, answer.Name)
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	return nil
+}

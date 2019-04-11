@@ -1484,7 +1484,10 @@ function Field(args) {
             document.getElementById(`choices_${this.id}`).value = this.choices;
         }
 
-        document.getElementById(`weight_${this.id}`).value = this.weight;
+        let weightField = document.getElementById(`weight_${this.id}`);
+        if (weightField !== null) {
+            weightField.value = this.weight;
+        }
     };
 
     /**
