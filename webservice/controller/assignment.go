@@ -12,7 +12,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/microcosm-cc/bluemonday"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
@@ -901,13 +900,8 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	//scramble slice
-	rand := rand.New(rand.NewSource(time.Now().Unix()))
-
-	for i := range submissionsFiltered {
-		j := rand.Intn(i + 1)
-		submissionsFiltered[i], submissionsFiltered[j] = submissionsFiltered[j], submissionsFiltered[i]
-	}
+	//shuffle slice
+	submissionsFiltered = util.ShuffleIntSlice(submissionsFiltered)
 
 	//save the 0 index as a new review pair
 	inserted, err := services.PeerReview.Insert(assignmentID, currentUser.ID, submissionsFiltered[0])
