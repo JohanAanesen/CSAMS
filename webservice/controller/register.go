@@ -156,11 +156,11 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 
 	// Get link
 	// link := "http://" + r.Host + "/forgotpassword?id=" + hash // TODO brede : add real link here with possible courseid hash
-	baseUrl := "http://" + r.Host
-	link := baseUrl + "/confirm?id=" + validationHash
+	baseURL := "http://" + r.Host
+	link := baseURL + "/confirm?id=" + validationHash
 	subject := "Confirm new User"
 	message := "Hi " + userData.Name + ",\n\n" +
-		"There has been requested to create an user on CSAMS (" + baseUrl + ")\n" +
+		"There has been requested to create an user on CSAMS (" + baseURL + ")\n" +
 		"If this was not you, please disregard this email.\n\n" +
 		"Click this link to confirm your email:\n" +
 		link

@@ -49,7 +49,7 @@ func (repo *UserPendingRepository) Insert(pending model.UserPending) (int, error
 	return int(id), nil
 }
 
-// Fetch fetches all userPending in the db, but not the password
+// FetchAll fetches all userPending in the db, but not the password
 func (repo *UserPendingRepository) FetchAll() ([]*model.UserPending, error) {
 	result := make([]*model.UserPending, 0)
 
