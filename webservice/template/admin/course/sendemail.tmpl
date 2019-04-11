@@ -32,7 +32,9 @@
 
             </div>
             <div class="col-12 col-lg">
-                <h3 class="mb-3">Emails ({{.NoOfEmails}})</h3>
+
+                <h3 class="mb-3">Emails({{.NoOfEmails}}): student({{.NoOfStudent}}) + private({{.NoOfPrivate}})</h3>
+
                 {{ range .Users}}
                     {{ if not .Teacher}}
                         <ul class="list-group">

@@ -387,7 +387,7 @@ CREATE TABLE `validation`
 * Had to set up environment on my laptop
 * Checked out an pullrequest and fixed merge conflicts when it was merged to master
 * Created a new email `csams.noreply@gmail.com` and replaced the old with this
-* 
+* Added count of how many student, private and total emails there is
 
 ### Friday 12/04/19
 

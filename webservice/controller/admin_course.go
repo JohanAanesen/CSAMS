@@ -292,6 +292,25 @@ func AdminEmailCourseGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Declare variables
+	var noOfPrivate int
+	var noOfStudent int
+
+	// Count number of private and student emails
+	for _, user := range users {
+
+		// Don't count with the teachers
+		if !user.Teacher {
+
+			// Count private if user have private email
+			if user.EmailPrivate.Valid {
+				noOfPrivate++
+			} else {
+				noOfStudent++
+			}
+		}
+	}
+
 	// Get all emails from students in course
 	emails, err := userService.FetchAllStudentEmails(id)
 	if err != nil {
@@ -309,6 +328,8 @@ func AdminEmailCourseGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Course"] = course
 	v.Vars["Users"] = users
 	v.Vars["NoOfEmails"] = len(emails)
+	v.Vars["NoOfPrivate"] = noOfPrivate
+	v.Vars["NoOfStudent"] = noOfStudent
 
 	v.Render(w)
 }
