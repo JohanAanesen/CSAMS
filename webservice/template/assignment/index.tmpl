@@ -112,17 +112,24 @@
 
                     <div class="tab-pane fade" id="peerReview" role="tabpanel" aria-labelledby="home-tab">
                         <div class="row">
+                            {{$UID := .CurrentUser.ID}}
+                            {{$AID := .Assignment.ID}}
                             {{if gt $length 0}}
                                 {{range .Reviews}}
                                     <div class="col-md-6 col-sm-12 mb-3">
                                         <div class="card shadow-sm">
                                             <div class="card-body">
-                                                <h2 class="display-5">User {{.ID}}</h2>
-                                                <h5>
+                                                <h2 class="display-4">Review</h2>
+                                                <h6>
                                                     <span class="badge badge-info">Peer-Review</span>
-                                                </h5>
+                                                    {{if HasBeenReviewed .ID $UID $AID}}<span class="badge badge-success">Performed</span>{{end}}
+                                                </h6>
                                                 <hr class="bg-light">
-                                                <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-dark btn-lg">Review</a>
+                                                {{if HasBeenReviewed .ID $UID $AID}}
+                                                    <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-info">Update Review</a>
+                                                {{else}}
+                                                    <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-dark">Perform Review</a>
+                                                {{end}}
                                             </div>
                                         </div>
                                     </div>

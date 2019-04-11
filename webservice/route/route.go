@@ -78,6 +78,8 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/assignment/update", controller.AdminUpdateAssignmentPOST).Methods("POST")
 
 	adminrouter.HandleFunc("/assignment/{id:[0-9]+}/submissions", controller.AdminAssignmentSubmissionsGET).Methods("GET")
+	//adminrouter.HandleFunc("/assignment/{id:[0-9]+}/submission", controller.AdminAssignmentSubmissionGET).Methods("GET") // TODO (Svein): Needed?
+	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}", controller.AdminAssignmentSingleSubmissionGET).Methods("GET")
 
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}", controller.AdminAssignmentSingleSubmissionGET).Methods("GET")
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}/create", controller.AdminAssignmentSubmissionCreateGET).Methods("GET")
@@ -86,8 +88,13 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}/update", controller.AdminAssignmentSubmissionUpdatePOST).Methods("POST")
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/submission/{userID:[0-9]+}", controller.AdminAssignmentSubmissionDELETE).Methods("DELETE")
 
+	//adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/review/{userID:[0-9]+}", controller.AdminAssignmentReviewsGET).Methods("GET")
+	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/review/{targetID:[0-9]+}/{reviewerID:[0-9]+}/update", controller.AdminAssignmentReviewsUpdateGET).Methods("GET")
+	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/review/{targetID:[0-9]+}/{reviewerID:[0-9]+}/update", controller.AdminAssignmentReviewsUpdatePOST).Methods("POST")
+
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/review", controller.AdminAssignmentReviewGET).Methods("GET")
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/review/{userID:[0-9]+}", controller.AdminAssignmentSingleReviewGET).Methods("GET")
+	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/reviews_done/{userID:[0-9]+}", controller.AdminAssignmentSingleReviewsDoneGET).Methods("GET")
 
 	adminrouter.HandleFunc("/submission", controller.AdminSubmissionGET).Methods("GET")
 	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreateGET).Methods("GET")

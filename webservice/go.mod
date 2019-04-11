@@ -21,6 +21,8 @@ require (
 	github.com/sourcegraph/annotate v0.0.0-20160123013949-f4cad6c6324d // indirect
 	github.com/sourcegraph/syntaxhighlight v0.0.0-20170531221838-bd320f5d308e // indirect
 	github.com/stretchr/testify v1.3.0 // indirect
+	github.com/tealeg/xlsx v1.0.3
 	golang.org/x/crypto v0.0.0-20190403202508-8e1b8d32e692
 	google.golang.org/appengine v1.5.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 )

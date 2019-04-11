@@ -12,6 +12,7 @@ import (
 	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
 	"github.com/gorilla/mux"
 	"github.com/microcosm-cc/bluemonday"
+	"github.com/tealeg/xlsx"
 	"log"
 	"net/http"
 	"sort"
@@ -627,6 +628,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var users []UserSubmissionData
+	var anyReviewsDone = false
 
 	for _, student := range students {
 		submitTime, submitted, err := services.SubmissionAnswer.FetchSubmittedTime(student.ID, assignment.ID)
@@ -661,6 +663,10 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		if data.ReviewsDone > 0 {
+			anyReviewsDone = true
+		}
+
 		users = append(users, data)
 	}
 
@@ -668,6 +674,105 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	sort.Slice(users, func(i, j int) bool {
 		return users[i].SubmittedTime.After(users[j].SubmittedTime)
 	})
+
+	var stats *util.Statistics
+	var processedUserReports = make([]model.ProcessedUserReport, 0)
+	var processedLength = 0
+	var itemMaxLength = 0
+
+	if anyReviewsDone {
+		stats, err = services.ReviewAnswer.FetchStatisticsForAssignment(assignment.ID)
+		if err != nil {
+			log.Println("services, review answer, fetch statistics", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		// TODO (Svein): Implement this to an export button, and export it
+		rawUserReports, err := services.ReviewAnswer.FetchUserReportsForAssignment(assignment.ID)
+		if err != nil {
+			log.Println("services, review answer, fetch user reports for assignment", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		for _, item := range rawUserReports {
+			// TODO (Svein): Check all slices, not only first and last
+			if len(item.ReviewScores) == int(assignment.Reviewers.Int64) {
+				if len(item.ReviewScores[0]) != len(item.ReviewScores[int(assignment.Reviewers.Int64-1)]) {
+					log.Println("raw user report, review scores are not same length")
+					return
+				}
+			}
+
+			temp := model.ProcessedUserReport{
+				Name:        item.Name,
+				Email:       item.Email,
+				ReviewsDone: item.ReviewsDone,
+			}
+
+			scores := item.ReviewScores
+			if len(scores) > 0 {
+				for i := 0; i < len(scores[0]); i++ {
+					data := make([]float64, 0)
+
+					for j := range scores {
+						data = append(data, scores[j][i])
+					}
+
+					stats := util.Statistics{
+						Entries: data,
+					}
+
+					mean, _ := stats.Average()
+					stdDev, _ := stats.StandardDeviation()
+
+					t := model.ProcessedReviewItem{
+						Mean:   mean,
+						StdDev: stdDev,
+					}
+
+					temp.ReviewItems = append(temp.ReviewItems, t)
+				}
+
+				if len(temp.ReviewItems) > itemMaxLength {
+					itemMaxLength = len(temp.ReviewItems)
+				}
+
+				if processedLength == 0 {
+					processedLength = len(temp.ReviewItems)
+				}
+			}
+
+			processedUserReports = append(processedUserReports, temp)
+		}
+	}
+
+	/*
+		fmt.Print("Name;Email;ReviewsDone")
+		for i := 0; i < itemMaxLength; i++ {
+			a := i + 1
+			fmt.Printf(";RevItem %d Mean;RevItem %d Std Dev", a, a)
+		}
+		fmt.Println("")
+		for _, item := range processedUserReports {
+			fmt.Printf("%s;%s;%d", item.Name, item.Email, item.ReviewsDone)
+			if len(item.ReviewItems) > 0 {
+				for _, v := range item.ReviewItems {
+					str := fmt.Sprintf(";%.2f;%.2f", v.Mean, v.StdDev)
+					str = strings.Replace(str, ".", ",", -1)
+					fmt.Print(str)
+				}
+			} else {
+				for i := 0; i < itemMaxLength; i++ {
+					fmt.Printf(";0;0")
+				}
+			}
+			fmt.Println("")
+		}
+	*/
+
+	//foo(processedUserReports, itemMaxLength)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -680,7 +785,174 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Students"] = users
 	v.Vars["Course"] = course
 
+	if anyReviewsDone {
+		v.Vars["Statistics"] = stats.GetDisplayStruct()
+
+		v.Vars["ProcessedReports"] = processedUserReports // TODO (Svein): Move this to a new view
+		v.Vars["ReviewItems"] = processedUserReports
+		v.Vars["ProcessLength"] = make([]struct{}, processedLength)
+	}
+
 	v.Render(w)
+}
+
+func foo(report []model.ProcessedUserReport, length int) error {
+	var file *xlsx.File
+	var sheet *xlsx.Sheet
+	var row *xlsx.Row
+	var cell *xlsx.Cell
+	var err error
+
+	file = xlsx.NewFile()
+	sheet, err = file.AddSheet("Sheet1")
+	if err != nil {
+		return err
+	}
+
+	rowIndex := 1
+
+	// HEADER ROW START
+	row = sheet.AddRow()
+	cell = row.AddCell()
+	cell.Value = "Name"
+	cell = row.AddCell()
+	cell.Value = "Email"
+	cell = row.AddCell()
+	cell.Value = "Reviews Done"
+
+	for i := 0; i < length; i++ {
+		cell = row.AddCell()
+		cell.Value = fmt.Sprintf("ReviewItem %d Mean", i+1)
+		cell = row.AddCell()
+		cell.Value = fmt.Sprintf("ReviewItem %d Std Dev", i+1)
+	}
+	// HEADER ROW END
+
+	// WEIGHT ROW START
+	row = sheet.AddRow()
+	cell = row.AddCell()
+	cell.Value = "Weights"
+	// WEIGHT ROW END
+
+	// DATA ROWS START
+	for _, item := range report {
+		rowIndex++
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = item.Name
+		cell = row.AddCell()
+		cell.Value = item.Email
+		cell = row.AddCell()
+		cell.SetInt(item.ReviewsDone)
+
+		for _, k := range item.ReviewItems {
+			cell = row.AddCell()
+			cell.SetFloat(k.Mean)
+			cell = row.AddCell()
+			cell.SetFloat(k.StdDev)
+		}
+	}
+	// DATA ROWS END
+
+	var dataRowStart = 2
+	var dataRowEnd = rowIndex
+
+	// MEAN ROW START
+	rowIndex++
+	row = sheet.AddRow()
+
+	cell = row.AddCell()
+	cell.Value = "Mean of total"
+	cell = row.AddCell() // Blank cel
+	cell.Value = ""
+
+	cell = row.AddCell() // Mean of all reviews
+	cell.SetFormula(fmt.Sprintf("=AVERAGE(C%d:C%d)", dataRowStart, dataRowEnd))
+
+	cellChar := []string{"D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ", "BB"}
+
+	k := 0
+	for i := 0; i < length; i, k = i+1, k+1 {
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=AVERAGE(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+		k++
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=AVERAGE(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+	}
+	// MEAN ROW END
+
+	// STD DEV ROW START
+	rowIndex++
+	row = sheet.AddRow()
+
+	cell = row.AddCell()
+	cell.Value = "Std dev of total"
+	cell = row.AddCell() // Blank cel
+	cell.Value = ""
+
+	cell = row.AddCell() // Std dev of all reviews done
+	cell.SetFormula(fmt.Sprintf("=STDEV(C%d:C%d)", dataRowStart, dataRowEnd))
+
+	k = 0
+	for i := 0; i < length; i, k = i+1, k+1 {
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=STDEV(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+		k++
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=STDEV(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+	}
+	// STD DEV ROW END
+
+	// MIN VALUE ROW START
+	rowIndex++
+	row = sheet.AddRow()
+
+	cell = row.AddCell()
+	cell.Value = "Minimum value"
+	cell = row.AddCell() // Blank cel
+	cell.Value = ""
+
+	cell = row.AddCell() // Minimum value of all reviews done
+	cell.SetFormula(fmt.Sprintf("=MIN(C%d:C%d)", dataRowStart, dataRowEnd))
+
+	k = 0
+	for i := 0; i < length; i, k = i+1, k+1 {
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=MIN(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+		k++
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=MIN(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+	}
+	// MIN VALUE ROW END
+
+	// MAX VALUE ROW START
+	rowIndex++
+	row = sheet.AddRow()
+
+	cell = row.AddCell()
+	cell.Value = "Maximum value"
+	cell = row.AddCell() // Blank cel
+	cell.Value = ""
+
+	cell = row.AddCell() // Maximum value of all reviews done
+	cell.SetFormula(fmt.Sprintf("=MAX(C%d:C%d)", dataRowStart, dataRowEnd))
+
+	k = 0
+	for i := 0; i < length; i, k = i+1, k+1 {
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=MAX(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+		k++
+		cell = row.AddCell()
+		cell.SetFormula(fmt.Sprintf("=MAX(%s%d:%s%d)", cellChar[k], dataRowStart, cellChar[k], dataRowEnd))
+	}
+	// MAX VALUE ROW END
+
+	err = file.Save("test.xlsx")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 /*
@@ -768,8 +1040,7 @@ func AdminAssignmentReviewGET(w http.ResponseWriter, r *http.Request) {
 // AdminAssignmentSingleReviewGET handles request to /admin/assignment/{id}/review/{id}
 func AdminAssignmentSingleReviewGET(w http.ResponseWriter, r *http.Request) {
 	// Services
-	userService := service.NewUserService(db.GetDB())
-	reviewAnswerService := service.NewReviewAnswerService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	// Get URL variables
 	vars := mux.Vars(r)
@@ -789,7 +1060,7 @@ func AdminAssignmentSingleReviewGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reviews, err := reviewAnswerService.FetchForUser(userID, assignmentID)
+	reviews, err := services.ReviewAnswer.FetchForUser(userID, assignmentID)
 	if err != nil {
 		log.Println("review answer service, fetch for target", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -797,68 +1068,32 @@ func AdminAssignmentSingleReviewGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user data
-	user, err := userService.Fetch(userID)
+	user, err := services.User.Fetch(userID)
 	if err != nil {
 		log.Println("user service, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	type WeightData struct {
-		IsWeighted bool
-		Total      float32
-		Score      float32
-		Percent    float32
+	assignmentStats, err := services.ReviewAnswer.FetchStatisticsForAssignment(assignmentID)
+	if err != nil {
+		log.Println("services, review answer, fetch statistics for assignment", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
-	weights := make([]WeightData, 0)
-
-	for _, review := range reviews {
-		var totalWeight float32
-		var weightScore float32
-
-		for _, item := range review {
-			totalWeight += float32(item.Weight)
-			if item.Type == "checkbox" {
-				if item.Answer == "on" {
-					weightScore += float32(item.Weight)
-				}
-
-			} else if item.Type == "radio" {
-				for k := range item.Choices {
-					ans, _ := strconv.Atoi(item.Answer)
-					if ans == (k + 1) {
-						K := float32(k + 1)
-						L := float32(len(item.Choices))
-						V := float32(item.Weight) * (K / L)
-						weightScore += V
-					}
-				}
-			}
-		}
-
-		weights = append(weights, WeightData{
-			IsWeighted: totalWeight > 0,
-			Total:      totalWeight,
-			Score:      weightScore,
-			Percent:    (weightScore / totalWeight) * 100.0,
-		})
+	userStats, err := services.ReviewAnswer.FetchStatisticsForAssignmentAndUser(assignmentID, user.ID)
+	if err != nil {
+		log.Println("services, review answer, fetch statistics for assignment and user", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
-	totalWeights := WeightData{
-		IsWeighted: false,
-	}
-	var sum float32
-	for _, item := range weights {
-		sum += item.Score
-	}
-
-	if sum > 0 {
-		avg := sum / float32(len(weights))
-		totalWeights.IsWeighted = true
-		totalWeights.Score = avg
-		totalWeights.Total = weights[0].Total
-		totalWeights.Percent = (totalWeights.Score / totalWeights.Total) * 100.0
+	reviewScores, err := services.ReviewAnswer.FetchScoreFromReview(assignmentID, userID)
+	if err != nil {
+		log.Println("services, review answer, fetch score from review", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	// Set header content-type and status code
@@ -874,19 +1109,182 @@ func AdminAssignmentSingleReviewGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["AssignmentID"] = assignmentID
 	v.Vars["User"] = user
 	v.Vars["Reviews"] = reviews
-	v.Vars["Weights"] = weights
-	v.Vars["TotalWeights"] = totalWeights
+	v.Vars["ReviewScores"] = reviewScores
+	v.Vars["Statistics"] = assignmentStats.GetDisplayStruct()
+	v.Vars["UserStatistics"] = userStats.GetDisplayStruct()
 
 	// Render view
 	v.Render(w)
 }
 
+// AdminAssignmentSingleReviewsDoneGET handles GET-request to /admin/assignment/{id}/reviews_done/{id}
+func AdminAssignmentSingleReviewsDoneGET(w http.ResponseWriter, r *http.Request) {
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Get URL variables
+	vars := mux.Vars(r)
+	// Get assignment id
+	assignmentID, err := strconv.Atoi(vars["assignmentID"])
+	if err != nil {
+		log.Println("string convert assignment id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get user id
+	userID, err := strconv.Atoi(vars["userID"])
+	if err != nil {
+		log.Println("string convert user id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	reviews, err := services.ReviewAnswer.FetchForReviewUser(userID, assignmentID)
+	if err != nil {
+		log.Println("review answer service, fetch for target", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get user data
+	user, err := services.User.Fetch(userID)
+	if err != nil {
+		log.Println("user service, fetch", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Set header content-type and status code
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	// Create view
+	v := view.New(r)
+	// Set template
+	v.Name = "admin/assignment/review/done"
+
+	// View variables
+	v.Vars["AssignmentID"] = assignmentID
+	v.Vars["User"] = user
+	v.Vars["Reviews"] = reviews
+
+	// Render view
+	v.Render(w)
+}
+
+// AdminAssignmentReviewsUpdateGET handles GET-requests
+//  to /admin/assignment/{assignmentID:[0-9]+}/review/{targetID:[0-9]+}/{reviewerID:[0-9]+}/update
+func AdminAssignmentReviewsUpdateGET(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	assignmentID, err := strconv.Atoi(vars["assignmentID"])
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	targetID, err := strconv.Atoi(vars["targetID"])
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	reviewerID, err := strconv.Atoi(vars["reviewerID"])
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	review, err := services.ReviewAnswer.FetchForReviewerAndTarget(reviewerID, targetID, assignmentID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/assignment/review/update"
+
+	v.Vars["Review"] = review
+	v.Vars["AssignmentID"] = assignmentID
+	v.Vars["TargetID"] = targetID
+	v.Vars["ReviewerID"] = reviewerID
+
+	v.Render(w)
+}
+
+// AdminAssignmentReviewsUpdatePOST handles POST-requests
+//  to /admin/assignment/{assignmentID:[0-9]+}/review/{targetID:[0-9]+}/{reviewerID:[0-9]+}/update
+func AdminAssignmentReviewsUpdatePOST(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	assignmentID, err := strconv.Atoi(vars["assignmentID"])
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	targetID, err := strconv.Atoi(vars["targetID"])
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	reviewerID, err := strconv.Atoi(vars["reviewerID"])
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	form, err := services.Review.FetchFromAssignment(assignmentID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	for _, field := range form.Form.Fields {
+		answer := r.FormValue(field.Name)
+		comment := r.FormValue(field.Name + "_comment")
+
+		err = services.ReviewAnswer.Update(targetID, reviewerID, assignmentID, model.ReviewAnswer{
+			Answer: answer,
+			Comment: sql.NullString{
+				String: comment,
+				Valid:  comment != "",
+			},
+			Name: field.Name,
+		})
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/admin/assignment/%d/submissions", assignmentID), http.StatusFound)
+}
+
 // AdminAssignmentSingleSubmissionGET handles GET-request at /admin/assignment/{id}/submission/{id}
 func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	// Services
-	submissionService := service.NewSubmissionService(db.GetDB())
-	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
-	userService := service.NewUserService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	// Get URL variables
 	vars := mux.Vars(r)
@@ -907,7 +1305,7 @@ func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) 
 	}
 
 	//user := model.GetUser(userID)
-	user, err := userService.Fetch(userID)
+	user, err := services.User.Fetch(userID)
 	if err != nil {
 		log.Println("user service, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -915,7 +1313,7 @@ func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Get form and log possible error
-	_, err = submissionService.FetchFromAssignment(assignmentID)
+	_, err = services.Submission.FetchFromAssignment(assignmentID)
 	if err != nil {
 		log.Println("get submission form from assignment id", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -924,7 +1322,7 @@ func AdminAssignmentSingleSubmissionGET(w http.ResponseWriter, r *http.Request) 
 
 	// Get answers to user if he has delivered
 	//answers, err := model.GetUserAnswers(user.ID, assignmentID)
-	answers, err := submissionAnswerService.FetchUserAnswers(user.ID, assignmentID)
+	answers, err := services.SubmissionAnswer.FetchUserAnswers(user.ID, assignmentID)
 	if err != nil {
 		log.Println("get user answers", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
