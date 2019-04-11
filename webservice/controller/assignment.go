@@ -877,45 +877,38 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 	services := service.NewServices(db.GetDB())
 
 
-	submissions, err := services.SubmissionAnswer.FetchAllFromAssignment(assignmentID)
+	usersDelivered, err := services.SubmissionAnswer.FetchUsersDeliveredFromAssignment(assignmentID)
 	if err != nil {
 		log.Println("AssignmentReviewRequestPOST, services.Submission.FetchFromAssignment", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	//remove user from submissions slice
-	for i, sub := range submissions{
-		if sub.UserID != currentUser.ID{
-			submissions[i] = submissions[len(submissions)-1] // Copy last element to index i.
-			submissions[len(submissions)-1] = nil   // Erase last element (write zero value).
-			submissions = submissions[:len(submissions)-1]   // Truncate slice.
-		}
-	}
-
 	//find the lowest amount of reviews
 	lowestNrReviews := 99999
-	submissionsAndReviews := make(map[int]int)
+	usersAndReviews := make(map[int]int)
 
-	for _, sub := range submissions{
-		reviewsDone, err := services.ReviewAnswer.FetchForTarget(sub.UserID, assignmentID)
-		if err != nil {
-			log.Println("AssignmentReviewRequestPOST, services.ReviewAnswer.FetchForTarget", err)
-			ErrorHandler(w, r, http.StatusInternalServerError)
-			return
-		}
+	for _, user := range usersDelivered{
+		if user != currentUser.ID { //don't include self
+			reviewsDone, err := services.ReviewAnswer.FetchForTarget(user, assignmentID)
+			if err != nil {
+				log.Println("AssignmentReviewRequestPOST, services.ReviewAnswer.FetchForTarget", err)
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
 
-		submissionsAndReviews[sub.UserID] = len(reviewsDone)
+			usersAndReviews[user] = len(reviewsDone)
 
-		if len(reviewsDone) < lowestNrReviews{
-			lowestNrReviews = len(reviewsDone)
+			if len(reviewsDone) < lowestNrReviews {
+				lowestNrReviews = len(reviewsDone)
+			}
 		}
 	}
 
 	//filter the submissions with lowest reviewcount
 	submissionsFiltered := make([]int, 0)
 
-	for userID, reviews := range submissionsAndReviews{
+	for userID, reviews := range usersAndReviews{
 		if reviews == lowestNrReviews{
 			submissionsFiltered = append(submissionsFiltered, userID)
 		}

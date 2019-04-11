@@ -36,6 +36,11 @@ func (s *SubmissionAnswerService) FetchAllFromAssignment(assID int) ([]*model.Su
 	return s.submissionAnswerRepo.FetchAllForAssignment(assID)
 }
 
+// FetchUsersDelivered func
+func (s *SubmissionAnswerService) FetchUsersDeliveredFromAssignment(assID int) ([]int, error){
+	return s.submissionAnswerRepo.FetchUsersDeliveredFromAssignment(assID)
+}
+
 // CountForAssignment func
 func (s *SubmissionAnswerService) CountForAssignment(assignmentID int) (int, error) {
 	return s.submissionAnswerRepo.CountForAssignment(assignmentID)

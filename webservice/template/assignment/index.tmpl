@@ -107,6 +107,9 @@
                     </div>
 
                     <div class="tab-pane fade" id="peerReview" role="tabpanel" aria-labelledby="home-tab">
+                        <form action="/assignment/{{.Assignment.ID}}/requestreview" id="newReviewForm" method="post">
+                            <button type="submit" form="newReviewForm" class="btn btn-outline-success my-3">New Review</button>
+                        </form>
                         <div class="row">
                             {{$UID := .CurrentUser.ID}}
                             {{$AID := .Assignment.ID}}

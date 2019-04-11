@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
 	"strings"
@@ -129,7 +130,38 @@ func (repo *SubmissionAnswerRepository) FetchAllForAssignment(assignmentID int) 
 			return result, err
 		}
 
+		fmt.Println(temp.UserID)
+
 		result = append(result, &temp)
+	}
+
+
+
+	return result, err
+}
+
+// FetchAllForAssignment func
+func (repo *SubmissionAnswerRepository) FetchUsersDeliveredFromAssignment(assignmentID int) ([]int, error) {
+	result := make([]int, 0)
+
+	query := "SELECT DISTINCT us.user_id FROM user_submissions AS us WHERE us.assignment_id = ?"
+
+	rows, err := repo.db.Query(query, assignmentID)
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var temp int
+
+		err = rows.Scan(&temp)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, temp)
 	}
 
 	return result, err
