@@ -6,6 +6,7 @@ import (
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
 	"log"
+	"time"
 )
 
 // Activity enum for keeping track of log Activity
@@ -28,7 +29,20 @@ const (
 	// TODO Brede : add more activities later :)
 )
 
-// Log struct to hold log-data
+// Logs struct for keeping logs data
+type Logs struct {
+	ID           int            `json:"id"`            // [NOT NULL][all] Object identification
+	UserID       int            `json:"user_id"`       // [NOT NULL][all] User identification
+	Timestamp    time.Time      `json:"timestamp"`     // [NOT NULL][all] Timestamp the logging happened
+	Activity     Activity       `json:"activity"`      // [NOT NULL][all] User Activity
+	AssignmentId sql.NullInt64  `json:"assignment_id"` // [NULLABLE][DeliveredAssignment/FinishedPeerReview/PeerReviewDone/CreatAssignment] ID to relative assignment
+	CourseID     sql.NullInt64  `json:"course_id"`     // [NULLABLE][JoinedCourse/CreatedCourse] ID to relative course
+	SubmissionID sql.NullInt64  `json:"submission_id"` // [NULLABLE][DeliveredAssignment/FinishedPeerReview/PeerReviewDone] ID to relative submission
+	OldValue     sql.NullString `json:"old_value"`     // [NULLABLE][ChangeName/ChangeEmail/UpdateAdminFAQ] Value before changing name/email/faq
+	NewValue     sql.NullString `json:"new_value"`     // [NULLABLE][ChangeName/ChangeEmail/UpdateAdminFAQ] Value after changing name/email/faq
+}
+
+// Log struct to hold log-data // TODO brede remove this, [deprecated]
 type Log struct {
 	UserID       int      // [NOT NULL][all] User identification
 	Activity     Activity // [NOT NULL][all] User Activity
