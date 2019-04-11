@@ -112,7 +112,7 @@
                             </td>
                             <td>
                                 {{if .Submitted}}
-                                    <a href="#" class="btn btn-dark btn-xs">{{.ReviewsDone}} / {{$A.Reviewers.Int64}}</a>
+                                    <a href="/admin/assignment/{{$A.ID}}/reviews_done/{{.User.ID}}" class="btn btn-dark btn-xs">{{.ReviewsDone}} / {{$A.Reviewers.Int64}}</a>
                                 {{end}}
                             </td>
                         </tr>

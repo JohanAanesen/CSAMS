@@ -62,6 +62,27 @@ func (s *ReviewAnswerService) FetchForUser(userID, assignmentID int) ([][]*model
 	return result, err
 }
 
+// FetchForReviewUser func
+func (s *ReviewAnswerService) FetchForReviewUser(userID, assignmentID int) ([][]*model.ReviewAnswer, error) {
+	result := make([][]*model.ReviewAnswer, 0)
+
+	targets, err := s.FetchUsersTargets(userID, assignmentID)
+	if err != nil {
+		return result, err
+	}
+
+	for _, targetID := range targets {
+		review, err := s.FetchForReviewerAndTarget(userID, targetID, assignmentID)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, review)
+	}
+
+	return result, err
+}
+
 // FetchReviewUsers func
 func (s *ReviewAnswerService) FetchReviewUsers(target, assignmentID int) ([]int, error) {
 	users := make([]int, 0)
@@ -74,6 +95,24 @@ func (s *ReviewAnswerService) FetchReviewUsers(target, assignmentID int) ([]int,
 	for _, answer := range answers {
 		if !util.Contains(users, answer.UserReviewer) {
 			users = append(users, answer.UserReviewer)
+		}
+	}
+
+	return users, err
+}
+
+// FetchUsersTargets func
+func (s *ReviewAnswerService) FetchUsersTargets(userID, assignmentID int) ([]int, error) {
+	users := make([]int, 0)
+
+	answers, err := s.FetchForReviewer(userID, assignmentID)
+	if err != nil {
+		return users, err
+	}
+
+	for _, answer := range answers {
+		if !util.Contains(users, answer.UserTarget) {
+			users = append(users, answer.UserTarget)
 		}
 	}
 

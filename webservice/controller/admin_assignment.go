@@ -1159,6 +1159,62 @@ func AdminAssignmentSingleReviewGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 }
 
+// AdminAssignmentSingleReviewsDoneGET handles GET-request to /admin/assignment/{id}/reviews_done/{id}
+func AdminAssignmentSingleReviewsDoneGET(w http.ResponseWriter, r *http.Request) {
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Get URL variables
+	vars := mux.Vars(r)
+	// Get assignment id
+	assignmentID, err := strconv.Atoi(vars["assignmentID"])
+	if err != nil {
+		log.Println("string convert assignment id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get user id
+	userID, err := strconv.Atoi(vars["userID"])
+	if err != nil {
+		log.Println("string convert user id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	reviews, err := services.ReviewAnswer.FetchForReviewUser(userID, assignmentID)
+	if err != nil {
+		log.Println("review answer service, fetch for target", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get user data
+	user, err := services.User.Fetch(userID)
+	if err != nil {
+		log.Println("user service, fetch", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Set header content-type and status code
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	// Create view
+	v := view.New(r)
+	// Set template
+	v.Name = "admin/assignment/review/done"
+
+	// View variables
+	v.Vars["AssignmentID"] = assignmentID
+	v.Vars["User"] = user
+	v.Vars["Reviews"] = reviews
+
+	// Render view
+	v.Render(w)
+}
+
 // AdminAssignmentReviewsUpdateGET handles GET-requests
 //  to /admin/assignment/{assignmentID:[0-9]+}/review/{targetID:[0-9]+}/{reviewerID:[0-9]+}/update
 func AdminAssignmentReviewsUpdateGET(w http.ResponseWriter, r *http.Request) {

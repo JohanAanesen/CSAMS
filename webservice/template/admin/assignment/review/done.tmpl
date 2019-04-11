@@ -1,0 +1,109 @@
+{{define "title"}}Reviews{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+    <div class="row">
+        <div class="col">
+            <h1 class="display-4">
+                Reviews done by {{GET_USERNAME .User.ID}}
+            </h1>
+            <hr>
+        </div>
+    </div>
+
+    {{$AID := .AssignmentID}}
+    {{$UID := .User.ID}}
+
+    {{$WEIGHTS := .Weights}}
+    {{$i := 1}}
+    {{$ReviewScores := .ReviewScores}}
+    {{$zeroIndex := 0}}
+
+    <div class="row">
+        <div class="col-12">
+            <h3>Reviews done: ({{len .Reviews}})</h3>
+        </div>
+
+        {{range $index, $R := .Reviews}}
+            <div class="col-lg-6">
+                <form>
+                    <div class="card mb-3">
+                        {{$temp := index . 0}}
+                        <div class="card-header bg-secondary">
+                            <h5 class="card-title text-light mb-0">
+                                Reviewed for {{GET_USERNAME $temp.UserTarget}}
+                                <a href="/admin/assignment/{{$AID}}/review/{{$temp.UserTarget}}/{{$UID}}/update" class="btn btn-outline-light btn-sm float-right">Edit</a>
+                            </h5>
+                            {{$i = INCREMENT $i}}
+                            {{$zeroIndex = INCREMENT $zeroIndex}}
+                        </div>
+                        <div class="card-body">
+                            {{range $R}}
+                                {{if eq .Type "radio"}}
+                                    {{$A := .}}
+                                    {{$Answer := ATOI .Answer}}
+                                    {{$V := 1}}
+                                    <fieldset class="mb-3">
+                                        <legend class="lead">{{.Label}}&nbsp;<em>(Weight: {{.Weight}})</em></legend>
+                                        {{range .Choices}}
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="{{$A.Name}}" id="{{$A.Name}}_{{$V}}" value="{{$V}}"{{if eq $V $Answer}} checked{{end}} disabled>
+                                                <label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
+                                            </div>
+                                            {{$V = INCREMENT $V}}
+                                        {{end}}
+                                        <small class="form-text text-muted">{{.Description}}</small>
+                                    </fieldset>
+                                {{else}}
+                                    <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
+                                        {{if eq .Type "text"}}
+                                            <label for="{{.Name}}">{{.Label}}&nbsp;<em>(Weight: {{.Weight}})</em></label>
+                                            <input type="text" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
+                                        {{else if eq .Type "url"}}
+                                            <label for="{{.Name}}">{{.Label}}&nbsp;<em>(Weight: {{.Weight}})</em></label>
+                                            <input type="url" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
+                                            <a href="{{.Answer}}" target="_blank">Open in new tab</a>
+                                        {{else if eq .Type "textarea"}}
+                                            <label for="{{.Name}}">{{.Label}}&nbsp;<em>(Weight: {{.Weight}})</em></label>
+                                            <textarea name="{{.Name}}" id="{{.Name}}" class="form-control" rows="5" disabled>{{.Answer}}</textarea>
+                                        {{else if eq .Type "number"}}
+                                            <label for="{{.Name}}">{{.Label}}&nbsp;<em>(Weight: {{.Weight}})</em></label>
+                                            <input type="number" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
+                                        {{else if eq .Type "checkbox"}}
+                                            <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input"{{if eq .Answer "on"}} checked{{end}} disabled>
+                                            <label class="form-check-inline" for="{{.Name}}">{{.Label}}&nbsp;<em>(Weight: {{.Weight}})</em></label>
+                                        {{else if eq .Type "paragraph"}}
+                                            <legend>{{.Label}}</legend>
+                                            <p class="lead">{{.Description}}</p>
+                                        {{end}}
+
+                                        {{if ne .Type "paragraph"}}
+                                            <small class="form-text text-muted">{{.Description}}</small>
+                                        {{end}}
+                                    </div>
+                                {{end}}
+                                {{if .HasComment}}
+                                    <div class="form-group form-check">
+                                        <label for="{{.Name}}_comment">Comment</label>
+                                        <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3" class="form-control" disabled>{{.Comment.String}}</textarea>
+                                    </div>
+                                {{end}}
+                                <hr>
+                            {{end}}
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        {{end}}
+
+        {{if eq $i 1}}
+            <div class="col">
+                <h3>This assignment has not been reviewed yet.</h3>
+            </div>
+        {{end}}
+    </div>
+
+    <hr>
+    <a href="/admin/assignment/{{.AssignmentID}}/submissions" class="btn btn-outline-dark mb-5">Go back</a>
+{{end}}
+{{define "foot"}}{{end}}

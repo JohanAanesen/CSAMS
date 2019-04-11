@@ -93,6 +93,7 @@ func routes() http.Handler {
 
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/review", controller.AdminAssignmentReviewGET).Methods("GET")
 	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/review/{userID:[0-9]+}", controller.AdminAssignmentSingleReviewGET).Methods("GET")
+	adminrouter.HandleFunc("/assignment/{assignmentID:[0-9]+}/reviews_done/{userID:[0-9]+}", controller.AdminAssignmentSingleReviewsDoneGET).Methods("GET")
 
 	adminrouter.HandleFunc("/submission", controller.AdminSubmissionGET).Methods("GET")
 	adminrouter.HandleFunc("/submission/create", controller.AdminSubmissionCreateGET).Methods("GET")
