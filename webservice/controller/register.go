@@ -286,7 +286,6 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// TODO brede : uncomment this and test
 		// Log new user to db
 		err = logService.InsertNewUser(user.ID)
 		if err != nil {

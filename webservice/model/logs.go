@@ -46,7 +46,6 @@ const (
 	// FAQ
 	AdminCreateFAQ Activity = "ADMIN-CREATE-FAQ" // Admin FAQ is created
 	AdminUpdateFAQ Activity = "ADMIN-UPDATE-FAQ" // Admin FAQ is updated
-	AdminDeleteFAQ Activity = "ADMIN-DELETE-FAQ" // Admin FAQ is deleted
 	// Manage students
 	AdminEmailCourseStudents     Activity = "ADMIN-EMAIL-STUDENTS-IN-COURSE"   // Admin emailed all students in course through the system
 	AdminRemoveUserFromCourse    Activity = "ADMIN-REMOVE-USER-FROM-COURSE"    // Admin removed one user from course

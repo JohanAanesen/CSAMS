@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/repository"
+	"strings"
 )
 
 // LogsService struct
@@ -61,8 +62,8 @@ func (s *LogsService) InsertChangeEmail(userID int, oldValue string, newValue st
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertChangeFAQ inserts a change FAQ log
-func (s *LogsService) InsertChangeFAQ(userID int, oldValue string, newValue string) error {
+// InsertUpdateFAQ inserts a updated FAQ log
+func (s *LogsService) InsertUpdateFAQ(userID int, oldValue string, newValue string) error {
 
 	// Save log in struct
 	// logx since log is already an package
@@ -470,6 +471,33 @@ func (s *LogsService) InsertDeleteReviewForm(userID int, reviewID int) error {
 	logx.ReviewID = sql.NullInt64{
 		Int64: int64(reviewID),
 		Valid: reviewID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertEmailStudents inserts a new email students log
+func (s *LogsService) InsertEmailStudents(userID int, courseID int, emails []string) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminEmailCourseStudents,
+	}
+
+	// Add courseID to struct
+	logx.CourseID = sql.NullInt64{
+		Int64: int64(courseID),
+		Valid: courseID != 0,
+	}
+
+	emailsString := strings.Join(emails, ",")
+
+	// Add newvalue to struct, all the emails sent to
+	logx.NewValue = sql.NullString{
+		String: emailsString,
+		Valid:  emailsString != "",
 	}
 
 	return s.logsRepo.Insert(logx)

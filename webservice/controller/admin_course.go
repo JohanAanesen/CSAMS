@@ -93,7 +93,7 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	*/
 
 	// Add user to course
-		err = courseService.AddUser(currentUser.ID, course.ID)
+	err = courseService.AddUser(currentUser.ID, course.ID)
 	if err == service.ErrUserAlreadyInCourse {
 		http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
 		return
@@ -105,7 +105,6 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	// Log joinedCourse in the db and give error if something went wrong
 	/* TODO brede : log
 	logData = model.Log{UserID: currentUser.ID, Activity: model.JoinedCourse, CourseID: course.ID}
@@ -115,7 +114,7 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-	 */
+	*/
 
 	//IndexGET(w, r) //success redirect to homepage
 	http.Redirect(w, r, "/admin/course", http.StatusFound) //success redirect to homepage
@@ -341,7 +340,7 @@ func AdminEmailCourseGET(w http.ResponseWriter, r *http.Request) {
 func AdminEmailCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	courseID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -357,14 +356,17 @@ func AdminEmailCoursePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	currentUser := session.GetUserFromSession(r)
+
 	// Services
 	userService := service.NewUserService(db.GetDB())
+	loggingService := service.NewLogsService(db.GetDB())
 
 	// Structs
 	mailservice := mail.Mail{}
 
 	// Get all emails from students in course
-	emails, err := userService.FetchAllStudentEmails(id)
+	emails, err := userService.FetchAllStudentEmails(courseID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -375,6 +377,14 @@ func AdminEmailCoursePOST(w http.ResponseWriter, r *http.Request) {
 	err = mailservice.SendMultipleRecipient(emails, subject, message)
 	if err != nil {
 		log.Println("sendmultiplerecipients", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log event to db
+	err = loggingService.InsertEmailStudents(currentUser.ID, courseID, emails)
+	if err != nil {
+		log.Println("logging email to students", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}

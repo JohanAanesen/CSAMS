@@ -116,6 +116,8 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 		err = createUpdateDeleteReviewForm(tx, logx, date)
 	case model.AdminDeleteReviewForm:
 		err = createUpdateDeleteReviewForm(tx, logx, date)
+	case model.AdminEmailCourseStudents:
+		err = emailCourseStudents(tx, logx, date)
 	default:
 		log.Println("error: wrong log.activity!")
 		return errors.New("error: wrong log.activity type")
@@ -204,6 +206,14 @@ func createUpdateDeleteSubmissionForm(tx *sql.Tx, logx model.Logs, date string) 
 func createUpdateDeleteReviewForm(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `review_id`) "+
 		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.ReviewID)
+
+	return err
+}
+
+// emailCourseStudents query for emailing students
+func emailCourseStudents(tx *sql.Tx, logx model.Logs, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `course_id`, `new_value`) "+
+		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.CourseID, logx.NewValue)
 
 	return err
 }
