@@ -184,6 +184,13 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		Valid: val != 0,
 	}
 
+	var groupAssignment bool
+
+	groupAssignmentValue := r.FormValue("group_assignment")
+	if groupAssignmentValue == "on" {
+		groupAssignment = true
+	}
+
 	val = 0
 
 	if r.FormValue("review_id") != "" {
@@ -279,6 +286,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	assignment.SubmissionID = submissionID
 	assignment.ReviewID = reviewID
 	assignment.Reviewers = reviewers
+	assignment.GroupDelivery = groupAssignment
 
 	// Insert data to database
 	lastID, err := assignmentService.Insert(assignment)

@@ -70,59 +70,69 @@
 
             <div class="col-12 col-lg">
 
-                <div class="col">
-                    <h3>Submission Form</h3>
-                    <div class="form-group">
-                        <label for="submission_id">Select Form</label>
-                        <select name="submission_id" id="submission_id" class="form-control">
-                            <option value="">None</option>
-                            {{range .Submissions}}
-                                <option value="{{.ID}}">{{.Form.Name}}</option>
-                            {{end}}
-                        </select>
-                    </div>
-                    <hr>
+                <h3>Submission Form</h3>
+                <div class="form-group">
+                    <label for="submission_id">Select Form</label>
+                    <select name="submission_id" id="submission_id" class="form-control">
+                        <option value="0">None</option>
+                        {{range .Submissions}}
+                            <option value="{{.ID}}">{{.Form.Name}}</option>
+                        {{end}}
+                    </select>
                 </div>
 
-                <div class="col">
-                    <h3>Peer Review</h3>
-                    <button type="button" onclick="disableReviews()" id="disableReview" class="btn btn-danger btn-sm">Disable</button>
-
-                    <h5>Review Form</h5>
-                    <div class="form-group">
-                        <label for="review_id">Select Form</label>
-                        <select name="review_id" id="review_id" class="form-control">
-                            <option value="0">None</option>
-                            {{range $R := .Reviews}}
-                                <option value="{{$R.ID}}">{{$R.Form.Name}}</option>
-                            {{end}}
-                        </select>
+                <div id="submission_container" class="sr-only">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="group_assignment">
+                        <label class="custom-control-label" for="group_assignment">Enable group assignment</label>
                     </div>
-                    <div class="form-group sr-only" id="review_deadline_container">
+                </div>
+
+
+                <hr>
+
+
+                <h3>Peer Review</h3>
+
+                <h5>Review Form</h5>
+                <div class="form-group">
+                    <label for="review_id">Select Form</label>
+                    <select name="review_id" id="review_id" class="form-control">
+                        <option value="0">None</option>
+                        {{range $R := .Reviews}}
+                            <option value="{{$R.ID}}">{{$R.Form.Name}}</option>
+                        {{end}}
+                    </select>
+                </div>
+
+                <div class="sr-only" id="review_deadline_container">
+                    <button type="button" id="toggleReview" class="btn btn-danger btn-sm mb-3">Disable</button>
+
+                    <div class="form-group">
                         <label for="review_deadline">Review Deadline</label>
                         <input type="datetime-local" name="review_deadline" id="review_deadline" class="form-control">
                     </div>
 
                     <hr>
 
-                    <h5>Number of reviews for each student</h5>
+                    <h5>Required reviews done</h5>
                     <div class="form-group">
-                        <label for="reviewers">How many submissions should every student review on this
-                            assignment <br> Set to 0 to disable this feature</label>
+                        <label for="reviewers">How many submissions is required for each student to review on this assignment.</label>
                         <select name="reviewers" id="reviewers" class="form-control" required>
                             <script>
                                 for (let i = 0; i <= 6; i++) {
-                                    if(i == 0){
+                                    if (i === 0){
                                         document.write(`<option value="${i}">Any</option>`);
-                                    }else{
+                                    } else {
                                         document.write(`<option value="${i}">${i}</option>`);
                                     }
                                 }
                             </script>
                         </select>
+                        <small class="form-text text-muted">Set to <code>Any</code> for no requirements.</small>
                     </div>
-                    <hr>
                 </div>
+
             </div>
         </div>
 
@@ -138,10 +148,6 @@
     <script src="/static/js/simplemde.min.js"></script>
     <script src="/static/js/time.js"></script>
     <script>
-        function disableReviews(){
-            document.getElementById("review_id").selectedIndex = 0;
-        }
-
         (function () {
             // Enable the SmpleMDE
             let simplemde = new SimpleMDE({
@@ -150,31 +156,37 @@
                 lineWrapping: true,
             });
 
-            let publishNowButton = document.getElementById('publish_now');
-            let publish = document.getElementById('publish');
-            let deadline = document.getElementById('deadline');
-
-
-            // TODO time-norwegian
-            /*
-            publishNowButton.addEventListener('click', () => {
-                publish.value = getTimeInNorwegian().toNORString();
-            });
-            */
-
-            let reviewDeadline = document.getElementById('review_deadline');
-            let reviewDeadlineContainer = document.getElementById('review_deadline_container');
             let reviewSelect = document.getElementById('review_id');
+            let reviewDeadlineContainer = document.getElementById('review_deadline_container');
+            let reviewDeadline = document.getElementById('review_deadline');
+            let toggleReviewBtn = document.getElementById('toggleReview');
+
+            toggleReviewBtn.addEventListener('click', () => {
+                reviewSelect.selectedIndex = 0;
+                reviewDeadlineContainer.classList.add('sr-only');
+                reviewDeadline.removeAttribute('required');
+            });
 
             reviewSelect.addEventListener('change', e => {
-                console.log('change', e.target.value);
-                if (e.target.value !== "") {
+                if (e.target.value !== '0') {
                     reviewDeadlineContainer.classList.remove('sr-only');
                     reviewDeadline.setAttribute('required', '');
                 } else {
                     reviewDeadlineContainer.classList.add('sr-only');
                     reviewDeadline.removeAttribute('required');
                 }
+            });
+
+            let submissionSelect = document.getElementById('submission_id');
+            let submissionContainer = document.getElementById('submission_container');
+
+            submissionSelect.addEventListener('change', e => {
+                if (e.target.value !== '0') {
+                    submissionContainer.classList.remove('sr-only');
+                } else {
+                    submissionContainer.classList.add('sr-only');
+                }
+
             });
         })();
     </script>

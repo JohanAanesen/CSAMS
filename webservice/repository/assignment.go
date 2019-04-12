@@ -125,8 +125,8 @@ func (repo *AssignmentRepository) Insert(assignment model.Assignment) (int, erro
 	}
 
 	if assignment.SubmissionID.Valid {
-		query := "UPDATE assignments SET submission_id = ? WHERE id = ?"
-		_, err := tx.Exec(query, assignment.SubmissionID, id)
+		query := "UPDATE assignments SET submission_id = ?, group_delivery = ? WHERE id = ?"
+		_, err := tx.Exec(query, assignment.SubmissionID, assignment.GroupDelivery, id)
 		if err != nil {
 			tx.Rollback()
 			return int(id), err
