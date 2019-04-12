@@ -397,6 +397,10 @@ CREATE TABLE `validation`
 * Implemented one function for one logging event in service so it's easier to use, ut more dups
 * Added new logging events
 * Implemented functions for all student activity
+* Added `review_id` to `logs` table and logs struct
 
+### Sunday - EASTER - 14/04/19
 
-### Saturday 13/04/19
+### Monday - EASTER - 15/04/19
+
+### Tuesday - EASTER - 16/04/19

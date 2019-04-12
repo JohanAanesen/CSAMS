@@ -74,19 +74,13 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 		err = newUser(tx, logx, date)
 	case model.ChangeEmail:
 		err = changeEmailUpdateFaq(tx, logx, date)
-	case model.AdminUpdateFAQ:
-		err = changeEmailUpdateFaq(tx, logx, date)
 	case model.ChangePassword:
 		err = changePassword(tx, logx, date)
 	case model.ChangePasswordEmail:
 		err = changePassword(tx, logx, date)
-	case model.AdminCreatAssignment:
-		err = createAssignment(tx, logx, date)
 	case model.DeliveredSubmission:
 		err = deliveredAssFinishedPeer(tx, logx, date)
 	case model.UpdateSubmission:
-		err = deliveredAssFinishedPeer(tx, logx, date)
-	case model.AdminDeleteAssignment:
 		err = deliveredAssFinishedPeer(tx, logx, date)
 	case model.FinishedOnePeerReview:
 		err = finishedOnePeerReview(tx, logx, date)
@@ -96,6 +90,14 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 		err = joinCreateDeleteCourse(tx, logx, date)
 	case model.LeftCourse:
 		err = joinCreateDeleteCourse(tx, logx, date)
+	case model.AdminUpdateFAQ:
+		err = changeEmailUpdateFaq(tx, logx, date)
+	case model.AdminCreatAssignment:
+		err = createAssignment(tx, logx, date)
+	case model.AdminDeleteAssignment:
+		err = deliveredAssFinishedPeer(tx, logx, date)
+	case model.AdminUpdateAssignment:
+		err = deliveredAssFinishedPeer(tx, logx, date)
 	case model.AdminCreatedCourse:
 		err = joinCreateDeleteCourse(tx, logx, date)
 	default:

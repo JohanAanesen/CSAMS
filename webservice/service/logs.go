@@ -156,6 +156,31 @@ func (s *LogsService) InsertChangeAssignment(userID int, assignmentID int, submi
 	return s.logsRepo.Insert(logx)
 }
 
+// InsertUpdateAssignment inserts a change password log
+func (s *LogsService) InsertUpdateAssignment(userID int, assignmentID int, submissionID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminUpdateAssignment,
+	}
+
+	// Add assignmentID to struct
+	logx.AssignmentId = sql.NullInt64{
+		Int64: int64(assignmentID),
+		Valid: assignmentID != 0,
+	}
+
+	// Add submissionID to struct
+	logx.SubmissionID = sql.NullInt64{
+		Int64: int64(submissionID),
+		Valid: submissionID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
 // InsertDeleteAssignment inserts a change password log
 func (s *LogsService) InsertDeleteAssignment(userID int, assignmentID int, submissionID int) error {
 
