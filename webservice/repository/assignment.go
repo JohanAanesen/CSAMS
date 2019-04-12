@@ -35,7 +35,7 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 	// Query the query string with the id as a parameter
 	rows, err := repo.db.Query(query, id)
 	if err != nil {
-		return &result, err
+		return nil, err
 	}
 	// Close connection last
 	defer rows.Close()
@@ -48,7 +48,7 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 			&result.Publish, &result.Deadline, &result.CourseID, &result.SubmissionID,
 			&result.ReviewID, &reviewDeadline, &result.Reviewers, &result.ValidationID)
 		if err != nil {
-			return &result, err
+			return nil, err
 		}
 		// Check if review deadline return is valid
 		if reviewDeadline.Valid {
@@ -60,7 +60,7 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 		}
 	}
 	// Return result
-	return &result, err
+	return &result, nil
 }
 
 // FetchAll all assignment from the database
@@ -72,7 +72,7 @@ func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 	// Perform query
 	rows, err := repo.db.Query(query)
 	if err != nil {
-		return result, err
+		return nil, err
 	}
 	// Close connection
 	defer rows.Close()
@@ -86,7 +86,7 @@ func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 			&temp.Publish, &temp.Deadline, &temp.CourseID, &temp.SubmissionID,
 			&temp.ReviewID, &reviewDeadline, &temp.Reviewers, &temp.ValidationID)
 		if err != nil {
-			return result, err
+			return nil, err
 		}
 		// Check if review deadline string is valid
 		if reviewDeadline.Valid {
@@ -100,7 +100,7 @@ func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 		result = append(result, &temp)
 	}
 	// Return result
-	return result, err
+	return result, nil
 }
 
 // Insert an assignment into the database
@@ -174,7 +174,7 @@ func (repo *AssignmentRepository) Insert(assignment model.Assignment) (int, erro
 		return int(id), err
 	}
 	// Return last inserted id
-	return int(id), err
+	return int(id), nil
 }
 
 // Update assignment in the database
