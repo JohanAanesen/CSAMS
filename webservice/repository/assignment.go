@@ -161,7 +161,7 @@ func (repo *AssignmentRepository) Insert(assignment model.Assignment) (int, erro
 
 // Update func
 func (repo *AssignmentRepository) Update(assignment model.Assignment) error {
-	query := "UPDATE assignments SET name = ?, description = ?, publish = ?, deadline = ?, course_id = ?, review_id = ?, review_deadline = ? WHERE id = ?"
+	query := "UPDATE assignments SET name = ?, description = ?, publish = ?, deadline = ?, course_id = ? WHERE id = ?"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
@@ -169,7 +169,7 @@ func (repo *AssignmentRepository) Update(assignment model.Assignment) error {
 	}
 
 	_, err = tx.Exec(query, assignment.Name, assignment.Description,
-		assignment.Publish, assignment.Deadline, assignment.CourseID, assignment.ID, assignment.ReviewID, assignment.ReviewDeadline)
+		assignment.Publish, assignment.Deadline, assignment.CourseID, assignment.ID)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -184,18 +184,18 @@ func (repo *AssignmentRepository) Update(assignment model.Assignment) error {
 		}
 	}
 
-	if assignment.Reviewers.Valid {
-		query := "UPDATE assignments SET reviewers = ? WHERE id = ?"
-		_, err := tx.Exec(query, assignment.Reviewers, assignment.ID)
+	if assignment.ReviewID.Valid {
+		query := "UPDATE assignments SET review_id = ?, review_deadline = ? WHERE id = ?"
+		_, err := tx.Exec(query, assignment.ReviewID, assignment.ReviewDeadline, assignment.ID)
 		if err != nil {
 			tx.Rollback()
 			return err
 		}
 	}
 
-	if !assignment.ReviewID.Valid {
-		query := "UPDATE assignments SET review_id = NULL WHERE id = ?"
-		_, err := tx.Exec(query, assignment.ID)
+	if assignment.Reviewers.Valid {
+		query := "UPDATE assignments SET reviewers = ? WHERE id = ?"
+		_, err := tx.Exec(query, assignment.Reviewers, assignment.ID)
 		if err != nil {
 			tx.Rollback()
 			return err

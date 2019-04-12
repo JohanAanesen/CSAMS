@@ -206,6 +206,24 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+	reviewID := sql.NullInt64{
+		Int64: int64(val),
+		Valid: val != 0,
+	}
+
+	if r.FormValue("reviewers") != "" {
+		val, err = strconv.Atoi(r.FormValue("reviewers"))
+		if err != nil {
+			log.Println("reviewers")
+			log.Println(err)
+			return
+		}
+	}
+	reviewers := sql.NullInt64{
+		Int64: int64(val),
+		Valid: val != 0,
+	}
+
 	// Check if there are any error messages
 	if len(errorMessages) != 0 {
 		// TODO (Svein): Keep data from the previous submit
@@ -249,24 +267,6 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 		v.Render(w)
 		return
-	}
-
-	reviewID := sql.NullInt64{
-		Int64: int64(val),
-		Valid: val != 0,
-	}
-
-	if r.FormValue("reviewers") != "" {
-		val, err = strconv.Atoi(r.FormValue("reviewers"))
-		if err != nil {
-			log.Println("reviewers")
-			log.Println(err)
-			return
-		}
-	}
-	reviewers := sql.NullInt64{
-		Int64: int64(val),
-		Valid: val != 0,
 	}
 
 	// Put all data into an Assignment-struct
