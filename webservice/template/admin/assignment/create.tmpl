@@ -70,54 +70,52 @@
 
             <div class="col-12 col-lg">
 
-                <div class="col">
-                    <h3>Peer Review</h3>
-                    <div class="form-group">
-                        <label for="reviewers">How many submissions should every student review on this
-                            assignment:</label>
-                        <select name="reviewers" id="reviewers" class="form-control" required>
-                            option
-                            <script>
-                                for (let i = 1; i <= 6; i++) {
-                                    document.write(`<option value="${i}">${i}</option>`);
-                                }
-                            </script>
-                        </select>
-                    </div>
-                    <hr>
+                <h3>Peer Review</h3>
+                <div class="form-group">
+                    <label for="reviewers">How many submissions should every student review on this
+                        assignment:</label>
+                    <select name="reviewers" id="reviewers" class="form-control" required>
+                        option
+                        <script>
+                            for (let i = 0; i <= 6; i++) {
+                                document.write(`<option value="${i}">${i}</option>`);
+                            }
+                        </script>
+                    </select>
                 </div>
 
-                <div class="col">
-                    <h3>Submission Form</h3>
-                    <div class="form-group">
-                        <label for="submission_id">Select Form</label>
-                        <select name="submission_id" id="submission_id" class="form-control">
-                            <option value="">None</option>
-                            {{range .Submissions}}
-                                <option value="{{.ID}}">{{.Form.Name}}</option>
-                            {{end}}
-                        </select>
-                    </div>
-                    <hr>
+                <hr>
+
+                <h3>Submission Form</h3>
+                <div class="form-group">
+                    <label for="submission_id">Select Form</label>
+                    <select name="submission_id" id="submission_id" class="form-control">
+                        <option value="">None</option>
+                        {{range .Submissions}}
+                            <option value="{{.ID}}">{{.Form.Name}}</option>
+                        {{end}}
+                    </select>
                 </div>
 
-                <div class="col">
-                    <h3>Review Form</h3>
-                    <div class="form-group">
-                        <label for="review_id">Select Form</label>
-                        <select name="review_id" id="review_id" class="form-control">
-                            <option value="">None</option>
-                            {{range .Reviews}}
-                                <option value="{{.ID}}">{{.Form.Name}}</option>
-                            {{end}}
-                        </select>
-                    </div>
-                    <div class="form-group sr-only" id="review_deadline_container">
-                        <label for="review_deadline">Review Deadline</label>
-                        <input type="datetime-local" name="review_deadline" id="review_deadline" class="form-control">
-                    </div>
-                    <hr>
+                <hr>
+
+                <h3>Review Form</h3>
+                <div class="form-group">
+                    <label for="review_id">Select Form</label>
+                    <select name="review_id" id="review_id" class="form-control">
+                        <option value="">None</option>
+                        {{range .Reviews}}
+                            <option value="{{.ID}}">{{.Form.Name}}</option>
+                        {{end}}
+                    </select>
                 </div>
+                <div class="form-group sr-only" id="review_deadline_container">
+                    <label for="review_deadline">Review Deadline</label>
+                    <input type="datetime-local" name="review_deadline" id="review_deadline" class="form-control">
+                </div>
+
+                <hr>
+
             </div>
 
         </div>
