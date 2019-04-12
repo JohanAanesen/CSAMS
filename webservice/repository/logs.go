@@ -25,7 +25,7 @@ func (repo *LogsRepository) FetchAll() ([]*model.Logs, error) {
 	result := make([]*model.Logs, 0)
 
 	// Query to be executed
-	query := "SELECT `id`, `user_id`, `timestamp`, `activity`, `assignment_id`, `course_id`, `submission_id`, `old_value`, `new_value`, `affected_user_id` FROM `logs`"
+	query := "SELECT `id`, `user_id`, `timestamp`, `activity`, `assignment_id`, `course_id`, `submission_id`, `review_id`, `old_value`, `new_value`, `affected_user_id` FROM `logs`"
 
 	// Run query
 	rows, err := repo.db.Query(query)
@@ -41,8 +41,8 @@ func (repo *LogsRepository) FetchAll() ([]*model.Logs, error) {
 		temp := model.Logs{}
 
 		// Add to temporary struct
-		err = rows.Scan(&temp.ID, &temp.UserID, &temp.Timestamp, &temp.Activity, &temp.AssignmentId, &temp.CourseID,
-			&temp.SubmissionID, &temp.OldValue, &temp.NewValue, &temp.AffectedUserID)
+		err = rows.Scan(&temp.ID, &temp.UserID, &temp.Timestamp, &temp.Activity, &temp.AssignmentID, &temp.CourseID,
+			&temp.SubmissionID, &temp.ReviewID, &temp.OldValue, &temp.NewValue, &temp.AffectedUserID)
 		if err != nil {
 			return result, err
 		}
@@ -100,6 +100,18 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 		err = deliveredAssFinishedPeer(tx, logx, date)
 	case model.AdminCreatedCourse:
 		err = joinCreateDeleteCourse(tx, logx, date)
+	case model.AdminCreateSubmissionForm:
+		err = createUpdateDeleteSubmissionForm(tx, logx, date)
+	case model.AdminUpdateSubmissionForm:
+		err = createUpdateDeleteSubmissionForm(tx, logx, date)
+	case model.AdminDeleteSubmissionForm:
+		err = createUpdateDeleteSubmissionForm(tx, logx, date)
+	case model.AdminCreateReviewForm:
+		err = createUpdateDeleteReviewForm(tx, logx, date)
+	case model.AdminUpdateReviewForm:
+		err = createUpdateDeleteReviewForm(tx, logx, date)
+	case model.AdminDeleteReviewForm:
+		err = createUpdateDeleteReviewForm(tx, logx, date)
 	default:
 		log.Println("error: wrong log.activity!")
 		return errors.New("error: wrong log.activity type")
@@ -147,7 +159,7 @@ func changePassword(tx *sql.Tx, logx model.Logs, date string) error {
 // deliveredAssFinishedPeer query for inserting delete/update/deliver assignment and one review done and all reviews on one users review done log
 func deliveredAssFinishedPeer(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `assignment_id`, `submission_id`) "+
-		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentId, logx.SubmissionID)
+		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentID, logx.SubmissionID)
 
 	return err
 }
@@ -155,7 +167,7 @@ func deliveredAssFinishedPeer(tx *sql.Tx, logx model.Logs, date string) error {
 // finishedOnePeerReview query for inserting when one user has review another users submission
 func finishedOnePeerReview(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `assignment_id`, `submission_id`, `affected_user_id`) "+
-		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentId, logx.SubmissionID, logx.AffectedUserID)
+		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentID, logx.SubmissionID, logx.AffectedUserID)
 
 	return err
 }
@@ -163,7 +175,7 @@ func finishedOnePeerReview(tx *sql.Tx, logx model.Logs, date string) error {
 // createAssignment query for inserting create assignment log
 func createAssignment(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`, `Activity`, `assignment_id`) "+
-		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentId)
+		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentID)
 
 	return err
 }
@@ -172,6 +184,22 @@ func createAssignment(tx *sql.Tx, logx model.Logs, date string) error {
 func joinCreateDeleteCourse(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `course_id`) "+
 		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.CourseID)
+
+	return err
+}
+
+// createUpdateDeleteSubmissionForm query for inserting create/update submission form
+func createUpdateDeleteSubmissionForm(tx *sql.Tx, logx model.Logs, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `submission_id`) "+
+		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.SubmissionID)
+
+	return err
+}
+
+// createUpdateDeleteReviewForm query for inserting create/update review form
+func createUpdateDeleteReviewForm(tx *sql.Tx, logx model.Logs, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `review_id`) "+
+		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.ReviewID)
 
 	return err
 }

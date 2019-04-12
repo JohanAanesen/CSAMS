@@ -35,8 +35,10 @@ const (
 	// Forms
 	AdminCreateSubmissionForm Activity = "ADMIN-SUBMISSION-FORM-CREATE" // Admin submission form is created
 	AdminUpdateSubmissionForm Activity = "ADMIN-SUBMISSION-FORM-UPDATE" // Admin submission form is updated
+	AdminDeleteSubmissionForm Activity = "ADMIN-SUBMISSION-FORM-DELETE" // Admin submission form is deleted
 	AdminCreateReviewForm     Activity = "ADMIN-REVIEW-FORM-CREATE"     // Admin review form is created
 	AdminUpdateReviewForm     Activity = "ADMIN-REVIEW-FORM-UPDATE"     // Admin review form is updated
+	AdminDeleteReviewForm     Activity = "ADMIN-REVIEW-FORM-DELETE"     // Admin review form is deleted
 	// Course
 	AdminCreatedCourse Activity = "ADMIN-COURSE-CREATE" // Admin course is created
 	AdminUpdateCourse  Activity = "ADMIN-COURSE-UPDATE" // Admin course is updated
@@ -60,7 +62,7 @@ type Logs struct {
 	UserID         int            `json:"user_id"`          // [NOT NULL][all]
 	Timestamp      time.Time      `json:"timestamp"`        // [NOT NULL][all]
 	Activity       Activity       `json:"activity"`         // [NOT NULL][all]
-	AssignmentId   sql.NullInt64  `json:"assignment_id"`    // [NULLABLE]
+	AssignmentID   sql.NullInt64  `json:"assignment_id"`    // [NULLABLE]
 	CourseID       sql.NullInt64  `json:"course_id"`        // [NULLABLE]
 	SubmissionID   sql.NullInt64  `json:"submission_id"`    // [NULLABLE]
 	ReviewID       sql.NullInt64  `json:"review_id"`        // [NULLABLE]

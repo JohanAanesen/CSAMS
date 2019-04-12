@@ -123,7 +123,7 @@ func (s *LogsService) InsertAssignment(userID int, assignmentID int) error {
 	}
 
 	// Add assignmentID to struct
-	logx.AssignmentId = sql.NullInt64{
+	logx.AssignmentID = sql.NullInt64{
 		Int64: int64(assignmentID),
 		Valid: assignmentID != 0,
 	}
@@ -142,7 +142,7 @@ func (s *LogsService) InsertChangeAssignment(userID int, assignmentID int, submi
 	}
 
 	// Add assignmentID to struct
-	logx.AssignmentId = sql.NullInt64{
+	logx.AssignmentID = sql.NullInt64{
 		Int64: int64(assignmentID),
 		Valid: assignmentID != 0,
 	}
@@ -167,7 +167,7 @@ func (s *LogsService) InsertUpdateAssignment(userID int, assignmentID int, submi
 	}
 
 	// Add assignmentID to struct
-	logx.AssignmentId = sql.NullInt64{
+	logx.AssignmentID = sql.NullInt64{
 		Int64: int64(assignmentID),
 		Valid: assignmentID != 0,
 	}
@@ -192,7 +192,7 @@ func (s *LogsService) InsertDeleteAssignment(userID int, assignmentID int, submi
 	}
 
 	// Add assignmentID to struct
-	logx.AssignmentId = sql.NullInt64{
+	logx.AssignmentID = sql.NullInt64{
 		Int64: int64(assignmentID),
 		Valid: assignmentID != 0,
 	}
@@ -217,7 +217,7 @@ func (s *LogsService) InsertFinishedOnePeerReview(userID int, assignmentID int, 
 	}
 
 	// Add assignmentID to struct
-	logx.AssignmentId = sql.NullInt64{
+	logx.AssignmentID = sql.NullInt64{
 		Int64: int64(assignmentID),
 		Valid: assignmentID != 0,
 	}
@@ -247,7 +247,7 @@ func (s *LogsService) InsertUpdateOnePeerReview(userID int, assignmentID int, su
 	}
 
 	// Add assignmentID to struct
-	logx.AssignmentId = sql.NullInt64{
+	logx.AssignmentID = sql.NullInt64{
 		Int64: int64(assignmentID),
 		Valid: assignmentID != 0,
 	}
@@ -276,7 +276,7 @@ func (s *LogsService) InsertCourse(userID int, courseID int) error {
 		Activity: model.AdminCreatedCourse,
 	}
 
-	// Add assignmentID to struct
+	// Add courseID to struct
 	logx.CourseID = sql.NullInt64{
 		Int64: int64(courseID),
 		Valid: courseID != 0,
@@ -295,7 +295,7 @@ func (s *LogsService) InsertJoinCourse(userID int, courseID int) error {
 		Activity: model.JoinedCourse,
 	}
 
-	// Add assignmentID to struct
+	// Add courseID to struct
 	logx.CourseID = sql.NullInt64{
 		Int64: int64(courseID),
 		Valid: courseID != 0,
@@ -314,10 +314,124 @@ func (s *LogsService) InsertLeftCourse(userID int, courseID int) error {
 		Activity: model.LeftCourse,
 	}
 
-	// Add assignmentID to struct
+	// Add courseID to struct
 	logx.CourseID = sql.NullInt64{
 		Int64: int64(courseID),
 		Valid: courseID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertSubmissionForm inserts a new submission form
+func (s *LogsService) InsertSubmissionForm(userID int, submissionID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminCreateSubmissionForm,
+	}
+
+	// Add submissionID to struct
+	logx.SubmissionID = sql.NullInt64{
+		Int64: int64(submissionID),
+		Valid: submissionID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertUpdateSubmissionForm inserts a new submission form
+func (s *LogsService) InsertUpdateSubmissionForm(userID int, submissionID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminUpdateSubmissionForm,
+	}
+
+	// Add submissionID to struct
+	logx.SubmissionID = sql.NullInt64{
+		Int64: int64(submissionID),
+		Valid: submissionID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertDeleteSubmissionForm inserts a new submission form
+func (s *LogsService) InsertDeleteSubmissionForm(userID int, submissionID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminDeleteSubmissionForm,
+	}
+
+	// Add submissionID to struct
+	logx.SubmissionID = sql.NullInt64{
+		Int64: int64(submissionID),
+		Valid: submissionID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertReviewForm inserts a new review form
+func (s *LogsService) InsertReviewForm(userID int, reviewID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminCreateReviewForm,
+	}
+
+	// Add reviewID to struct
+	logx.ReviewID = sql.NullInt64{
+		Int64: int64(reviewID),
+		Valid: reviewID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertUpdateReviewForm inserts a new review form
+func (s *LogsService) InsertUpdateReviewForm(userID int, reviewID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminUpdateReviewForm,
+	}
+
+	// Add reviewID to struct
+	logx.ReviewID = sql.NullInt64{
+		Int64: int64(reviewID),
+		Valid: reviewID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertDeleteReviewForm inserts a new review form
+func (s *LogsService) InsertDeleteReviewForm(userID int, reviewID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminDeleteReviewForm,
+	}
+
+	// Add reviewID to struct
+	logx.ReviewID = sql.NullInt64{
+		Int64: int64(reviewID),
+		Valid: reviewID != 0,
 	}
 
 	return s.logsRepo.Insert(logx)
