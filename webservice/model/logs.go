@@ -56,14 +56,15 @@ const (
 
 // Logs struct for keeping logs data
 type Logs struct {
-	ID             int            `json:"id"`               // [NOT NULL][all] Object identification
-	UserID         int            `json:"user_id"`          // [NOT NULL][all] User identification
-	Timestamp      time.Time      `json:"timestamp"`        // [NOT NULL][all] Timestamp the logging happened
-	Activity       Activity       `json:"activity"`         // [NOT NULL][all] User Activity
-	AssignmentId   sql.NullInt64  `json:"assignment_id"`    // [NULLABLE][DeliveredSubmission/FinishedOnePeerReview/PeerReviewDone/AdminCreatAssignment] ID to relative assignment
-	CourseID       sql.NullInt64  `json:"course_id"`        // [NULLABLE][JoinedCourse/AdminCreatedCourse] ID to relative course
-	SubmissionID   sql.NullInt64  `json:"submission_id"`    // [NULLABLE][DeliveredSubmission/FinishedOnePeerReview/PeerReviewDone] ID to relative submission
-	OldValue       sql.NullString `json:"old_value"`        // [NULLABLE][ChangeName/ChangeEmail/AdminUpdateFAQ] Value before changing name/email/faq
-	NewValue       sql.NullString `json:"new_value"`        // [NULLABLE][ChangeName/ChangeEmail/AdminUpdateFAQ] Value after changing name/email/faq
-	AffectedUserID sql.NullInt64  `json:"affected_user_id"` // [NULLABLE] [FinishedOnePeerReview] Value of student that has had the submission reviewed by one other student
+	ID             int            `json:"id"`               // [NOT NULL][all]
+	UserID         int            `json:"user_id"`          // [NOT NULL][all]
+	Timestamp      time.Time      `json:"timestamp"`        // [NOT NULL][all]
+	Activity       Activity       `json:"activity"`         // [NOT NULL][all]
+	AssignmentId   sql.NullInt64  `json:"assignment_id"`    // [NULLABLE]
+	CourseID       sql.NullInt64  `json:"course_id"`        // [NULLABLE]
+	SubmissionID   sql.NullInt64  `json:"submission_id"`    // [NULLABLE]
+	ReviewID       sql.NullInt64  `json:"review_id"`        // [NULLABLE]
+	OldValue       sql.NullString `json:"old_value"`        // [NULLABLE]
+	NewValue       sql.NullString `json:"new_value"`        // [NULLABLE]
+	AffectedUserID sql.NullInt64  `json:"affected_user_id"` // [NULLABLE]
 }

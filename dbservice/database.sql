@@ -208,6 +208,7 @@ CREATE TABLE `logs`
     `assignment_id`    int(11) DEFAULT NULL,
     `course_id`        int(11) DEFAULT NULL,
     `submission_id`    int(11) DEFAULT NULL,
+    `review_id`        int(11) DEFAULT NULL,
     `old_value`        text    DEFAULT NULL,
     `new_value`        text    DEFAULT NULL,
     `affected_user_id` int(11) DEFAULT NULL,
