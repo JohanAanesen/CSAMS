@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"github.com/JohanAanesen/CSAMS/schedulerservice/db"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
 	"log"
@@ -26,7 +25,7 @@ func (repo *LogsRepository) FetchAll() ([]*model.Logs, error) {
 	result := make([]*model.Logs, 0)
 
 	// Query to be executed
-	query := "SELECT `id`, `userid`, `timestamp`, `activity`, `assignmentid`, `courseid`, `submissionid`, `oldvalue`, `newValue` FROM `logs`"
+	query := "SELECT `id`, `user_id`, `timestamp`, `activity`, `assignment_id`, `course_id`, `submission_id`, `old_value`, `new_value` FROM `logs`"
 
 	// Run query
 	rows, err := repo.db.Query(query)
@@ -62,7 +61,7 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 	// Different sql queries to different log types belows
 	var err error
 
-	tx, err := db.GetDB().Begin() //start transaction
+	tx, err := repo.db.Begin() //start transaction
 	if err != nil {
 		return err
 	}
@@ -118,35 +117,35 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 
 /* TODO brede add this
 func changeEmailUpdateFaq(tx *sql.Tx, logx model.Logs, date string) error {
-	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`, `Activity`, `oldvalue`, `newvalue`) "+
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`, `Activity`, `old_value`, `new_value`) "+
 		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.OldValue, logx.NewValue)
 
 	return err
 }
 
 func changePassword(tx *sql.Tx, logx model.Logs, date string) error {
-	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`, `Activity`) "+
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`, `Activity`) "+
 		"VALUES (?, ?, ?)", logx.UserID, date, logx.Activity)
 
 	return err
 }
 
 func deliveredAssFinishedPeer(tx *sql.Tx, logx model.Logs, date string) error {
-	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`,  `Activity`, `assignmentid`,  `submissionid`) "+
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `assignment_id`,  `submission_id`) "+
 		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentId, logx.SubmissionID)
 
 	return err
 }
 
 func createAssignment(tx *sql.Tx, logx model.Logs, date string) error {
-	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`, `Activity`, `assignmentid`) "+
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`, `Activity`, `assignment_id`) "+
 		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentId)
 
 	return err
 }
 
 func joinCreateCourse(tx *sql.Tx, logx model.Logs, date string) error {
-	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`,  `Activity`, `courseid`) "+
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `course_id`) "+
 		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.CourseID)
 
 	return err
@@ -155,7 +154,7 @@ func joinCreateCourse(tx *sql.Tx, logx model.Logs, date string) error {
 
 // newUser query for inserting new user log
 func newUser(tx *sql.Tx, logx model.Logs, date string) error {
-	_, err := tx.Query("INSERT INTO `logs` (`userid`, `timestamp`, `Activity`) "+
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`, `Activity`) "+
 		"VALUES (?, ?, ?)", logx.UserID, date, logx.Activity)
 
 	return err

@@ -201,14 +201,14 @@ CREATE TABLE `users_pending`
 -- not attaching any foreign keys to log because we always want it to log something even if some of the data is missing
 CREATE TABLE `logs`
 (
-    `id`           int(11)                            NOT NULL AUTO_INCREMENT,
-    `userid`       int(11)                            NOT NULL,
-    `timestamp`    datetime                           NOT NULL,
-    `activity`     varchar(32) COLLATE utf8_danish_ci NOT NULL,
-    `assignmentid` int(11) DEFAULT NULL,
-    `courseid`     int(11) DEFAULT NULL,
-    `submissionid` int(11) DEFAULT NULL,
-    `oldvalue`     text    DEFAULT NULL,
-    `newValue`     text    DEFAULT NULL,
+    `id`            int(11)     NOT NULL AUTO_INCREMENT,
+    `user_id`       int(11)     NOT NULL,
+    `timestamp`     datetime    NOT NULL,
+    `activity`      varchar(64) NOT NULL,
+    `assignment_id` int(11) DEFAULT NULL,
+    `course_id`     int(11) DEFAULT NULL,
+    `submission_id` int(11) DEFAULT NULL,
+    `old_value`     text    DEFAULT NULL,
+    `new_value`     text    DEFAULT NULL,
     PRIMARY KEY (`id`)
 );

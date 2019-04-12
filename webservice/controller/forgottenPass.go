@@ -175,6 +175,7 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 			return
 		}
 
+		/* TODO brede : log
 		// Add log for updated password
 		logData := model.Log{UserID: payload.UserID, Activity: model.ChangePassword}
 		err = model.LogToDB(logData)
@@ -183,6 +184,8 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 			log.Println("log, user change password, ", err.Error())
 			return
 		}
+
+		*/
 
 		// Give feedback
 		session.GetAndDeleteMessageFromSession(w, r)

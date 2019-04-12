@@ -203,7 +203,7 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 	forgottenService := service.NewValidationService(db.GetDB())
 	userPendingService := service.NewUserPendingService(db.GetDB())
 	userService := service.NewUserService(db.GetDB())
-	//logService := service.NewLogsService(db.GetDB())
+	logService := service.NewLogsService(db.GetDB())
 
 	match, payload, err := forgottenService.Match(hash)
 	if err != nil {
@@ -264,13 +264,14 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 
 		// Create new user
 		user := model.User{
+			ID:           newUser.ID,
 			Name:         newUser.Name,
 			EmailStudent: newUser.EmailStudent,
 			Teacher:      false,
 		}
 
 		// Get correct password from user
-		password, err := userPendingService.FetchPassword(newUser.ID)
+		password, err := userPendingService.FetchPassword(user.ID)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("userpending, fetch password, ", err.Error())
@@ -285,15 +286,14 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		/* TODO brede : uncomment this and test
+		// TODO brede : uncomment this and test
 		// Log new user to db
-		err = logService.InsertNewUser(newUser.ID)
+		err = logService.InsertNewUser(user.ID)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("new user log", err.Error())
 			return
 		}
-		*/
 
 		session.SaveMessageToSession("You can now log in with your email and password", w, r)
 

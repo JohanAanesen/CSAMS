@@ -513,6 +513,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		item.SubmissionID = int(assignment.SubmissionID.Int64)
 	}
 
+	/* TODO brede : log
 	var activity model.Activity
 
 	// Insert or update answers
@@ -539,6 +540,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
+	*/
 
 	sess, err := session.Instance(r)
 	if err != nil {
@@ -845,6 +847,7 @@ func AssignmentWithdrawGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	/* TODO brede : log
 	// Log assignment deletion
 	logData := model.Log{UserID: currentUser.ID, Activity: model.DeleteAssignment, AssignmentID: assignmentID, SubmissionID: -1} // TODO brede : get submission id here
 	err = model.LogToDB(logData)
@@ -853,6 +856,8 @@ func AssignmentWithdrawGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
+
+	 */
 
 	sess, err := session.Instance(r)
 	if err != nil {

@@ -391,5 +391,7 @@ CREATE TABLE `validation`
 * STarted on logs converting to service/repository
 
 ### Friday 12/04/19
+* Fixed nil pointer bug when logging, I used `db.GetDB().Begin()` instead of `repo.db.Begin()`
+* Changed name on variable names fro logs in database to have underscore instead of camelcase
 
 ### Saturday 13/04/19

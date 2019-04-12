@@ -2,7 +2,6 @@ package controller
 
 import (
 	"database/sql"
-	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/service"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
@@ -95,20 +94,24 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		/* TODO brede : log
 		// Save information to log struct
 		logData := model.Log{UserID: currentUser.ID, Activity: model.ChangeEmail, OldValue: currentUser.EmailPrivate.String, NewValue: secondaryEmail}
+		*/
 
 		//update session
 		currentUser.EmailPrivate = updatedUser.EmailPrivate
 		session.SaveUserToSession(currentUser, w, r)
 
+		/* TODO brede : log
 		// Log email change in the database and give error if something went wrong
-		err = model.LogToDB(logData) // TODO (svein): Make this to a function, eg.: func LogChangeEmail(userID, oldValue, newValue) error {}
+		err = model.LogToDB(logData)
 		if err != nil {
 			log.Println(err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
+		*/
 	}
 
 	// if no of these fields are empty, try to change password
@@ -144,16 +147,19 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		/* TODO brede : log
 		// Save information to log struct
 		logData := model.Log{UserID: currentUser.ID, Activity: model.ChangePassword}
 
 		// Log password change in the database and give error if something went wrong
-		err = model.LogToDB(logData) // TODO (Svein): Make this logging into a function: func LogChangePassword(userID, oldHash?, newHash?) error {}
+		err = model.LogToDB(logData)
 		if err != nil {
 			log.Println(err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
+
+		*/
 
 	}
 

@@ -81,8 +81,8 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	// Convert from int64 to int
 	course.ID = int(lastID)
 
-	// TODO (Svein): Create functions that does this, eg.: LogCourseCreated(currentUser.ID, course.ID)
 	// Log createCourse in the database and give error if something went wrong
+	/* TODO brede : log
 	logData := model.Log{UserID: currentUser.ID, Activity: model.CreatedCourse, CourseID: course.ID}
 	err = model.LogToDB(logData)
 	if err != nil {
@@ -90,9 +90,10 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
+	*/
 
 	// Add user to course
-	err = courseService.AddUser(currentUser.ID, course.ID)
+		err = courseService.AddUser(currentUser.ID, course.ID)
 	if err == service.ErrUserAlreadyInCourse {
 		http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
 		return
@@ -104,8 +105,9 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO (Svein): Create functions that does this, eg.: LogCourseJoined(currentUser.ID, course.ID)
+
 	// Log joinedCourse in the db and give error if something went wrong
+	/* TODO brede : log
 	logData = model.Log{UserID: currentUser.ID, Activity: model.JoinedCourse, CourseID: course.ID}
 	err = model.LogToDB(logData)
 	if err != nil {
@@ -113,6 +115,7 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
+	 */
 
 	//IndexGET(w, r) //success redirect to homepage
 	http.Redirect(w, r, "/admin/course", http.StatusFound) //success redirect to homepage

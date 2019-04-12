@@ -168,7 +168,7 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO (Svein): Make this to a function, eg.: LogUserJoinedCourse(userID, courseID)
+	/* TODO brede : log
 	// Log joinedCourse in the database and give error if something went wrong
 	logData := model.Log{UserID: currentUser.ID, Activity: model.JoinedCourse, CourseID: course.ID}
 	err = model.LogToDB(logData)
@@ -178,6 +178,8 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
+
+	*/
 
 	// Give feedback to user
 	session.SaveMessageToSession("You joined "+course.Code+" - "+course.Name, w, r)
