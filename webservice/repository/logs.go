@@ -74,26 +74,30 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 		err = newUser(tx, logx, date)
 	case model.ChangeEmail:
 		err = changeEmailUpdateFaq(tx, logx, date)
-	case model.AdminChangeFaq:
+	case model.AdminUpdateFAQ:
 		err = changeEmailUpdateFaq(tx, logx, date)
 	case model.ChangePassword:
 		err = changePassword(tx, logx, date)
-	case model.CreatAssignment:
+	case model.ChangePasswordEmail:
+		err = changePassword(tx, logx, date)
+	case model.AdminCreatAssignment:
 		err = createAssignment(tx, logx, date)
-	case model.DeliveredAssignment:
+	case model.DeliveredSubmission:
 		err = deliveredAssFinishedPeer(tx, logx, date)
-	case model.UpdateAssignment:
+	case model.UpdateSubmission:
 		err = deliveredAssFinishedPeer(tx, logx, date)
-	case model.DeleteAssignment:
-		err = deliveredAssFinishedPeer(tx, logx, date)
-	case model.PeerReviewDone:
+	case model.AdminDeleteAssignment:
 		err = deliveredAssFinishedPeer(tx, logx, date)
 	case model.FinishedOnePeerReview:
 		err = finishedOnePeerReview(tx, logx, date)
+	case model.UpdateOnePeerReview:
+		err = finishedOnePeerReview(tx, logx, date)
 	case model.JoinedCourse:
-		err = joinCreateCourse(tx, logx, date)
-	case model.CreatedCourse:
-		err = joinCreateCourse(tx, logx, date)
+		err = joinCreateDeleteCourse(tx, logx, date)
+	case model.LeftCourse:
+		err = joinCreateDeleteCourse(tx, logx, date)
+	case model.AdminCreatedCourse:
+		err = joinCreateDeleteCourse(tx, logx, date)
 	default:
 		log.Println("error: wrong log.activity!")
 		return errors.New("error: wrong log.activity type")
@@ -162,8 +166,8 @@ func createAssignment(tx *sql.Tx, logx model.Logs, date string) error {
 	return err
 }
 
-// joinCreateCourse query for inserting join/create course log
-func joinCreateCourse(tx *sql.Tx, logx model.Logs, date string) error {
+// joinCreateDeleteCourse query for inserting join/create course log
+func joinCreateDeleteCourse(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `course_id`) "+
 		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.CourseID)
 

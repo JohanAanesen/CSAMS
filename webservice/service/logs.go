@@ -68,7 +68,7 @@ func (s *LogsService) InsertChangeFAQ(userID int, oldValue string, newValue stri
 	// logx since log is already an package
 	logx := model.Logs{
 		UserID:   userID,
-		Activity: model.AdminChangeFaq,
+		Activity: model.AdminUpdateFAQ,
 	}
 
 	// Add oldValue to struct
@@ -99,6 +99,19 @@ func (s *LogsService) InsertChangePassword(userID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
+// InsertChangePasswordEmail inserts a change password log
+func (s *LogsService) InsertChangePasswordEmail(userID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.ChangePasswordEmail,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
 // InsertAssignment inserts a change password log
 func (s *LogsService) InsertAssignment(userID int, assignmentID int) error {
 
@@ -106,7 +119,7 @@ func (s *LogsService) InsertAssignment(userID int, assignmentID int) error {
 	// logx since log is already an package
 	logx := model.Logs{
 		UserID:   userID,
-		Activity: model.DeliveredAssignment,
+		Activity: model.DeliveredSubmission,
 	}
 
 	// Add assignmentID to struct
@@ -125,7 +138,7 @@ func (s *LogsService) InsertChangeAssignment(userID int, assignmentID int, submi
 	// logx since log is already an package
 	logx := model.Logs{
 		UserID:   userID,
-		Activity: model.UpdateAssignment,
+		Activity: model.UpdateSubmission,
 	}
 
 	// Add assignmentID to struct
@@ -150,32 +163,7 @@ func (s *LogsService) InsertDeleteAssignment(userID int, assignmentID int, submi
 	// logx since log is already an package
 	logx := model.Logs{
 		UserID:   userID,
-		Activity: model.DeleteAssignment,
-	}
-
-	// Add assignmentID to struct
-	logx.AssignmentId = sql.NullInt64{
-		Int64: int64(assignmentID),
-		Valid: assignmentID != 0,
-	}
-
-	// Add submissionID to struct
-	logx.SubmissionID = sql.NullInt64{
-		Int64: int64(submissionID),
-		Valid: submissionID != 0,
-	}
-
-	return s.logsRepo.Insert(logx)
-}
-
-// InsertAllReviewsDone is for when all reviews to one submission is done
-func (s *LogsService) InsertAllReviewsDone(userID int, assignmentID int, submissionID int) error {
-
-	// Save log in struct
-	// logx since log is already an package
-	logx := model.Logs{
-		UserID:   userID,
-		Activity: model.PeerReviewDone,
+		Activity: model.AdminDeleteAssignment,
 	}
 
 	// Add assignmentID to struct
@@ -223,6 +211,36 @@ func (s *LogsService) InsertFinishedOnePeerReview(userID int, assignmentID int, 
 	return s.logsRepo.Insert(logx)
 }
 
+// InsertUpdateOnePeerReview is for when one user has updated peer review
+func (s *LogsService) InsertUpdateOnePeerReview(userID int, assignmentID int, submissionID int, affectedUserID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.UpdateOnePeerReview,
+	}
+
+	// Add assignmentID to struct
+	logx.AssignmentId = sql.NullInt64{
+		Int64: int64(assignmentID),
+		Valid: assignmentID != 0,
+	}
+
+	// Add submissionID to struct
+	logx.SubmissionID = sql.NullInt64{
+		Int64: int64(submissionID),
+		Valid: submissionID != 0,
+	}
+
+	// Add affectedUserID to struct
+	logx.AffectedUserID = sql.NullInt64{
+		Int64: int64(affectedUserID),
+		Valid: affectedUserID != 0,
+	}
+	return s.logsRepo.Insert(logx)
+}
+
 // InsertCourse inserts a new course log
 func (s *LogsService) InsertCourse(userID int, courseID int) error {
 
@@ -230,7 +248,7 @@ func (s *LogsService) InsertCourse(userID int, courseID int) error {
 	// logx since log is already an package
 	logx := model.Logs{
 		UserID:   userID,
-		Activity: model.CreatedCourse,
+		Activity: model.AdminCreatedCourse,
 	}
 
 	// Add assignmentID to struct
@@ -250,6 +268,25 @@ func (s *LogsService) InsertJoinCourse(userID int, courseID int) error {
 	logx := model.Logs{
 		UserID:   userID,
 		Activity: model.JoinedCourse,
+	}
+
+	// Add assignmentID to struct
+	logx.CourseID = sql.NullInt64{
+		Int64: int64(courseID),
+		Valid: courseID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertLeftCourse inserts a new join course log
+func (s *LogsService) InsertLeftCourse(userID int, courseID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.LeftCourse,
 	}
 
 	// Add assignmentID to struct

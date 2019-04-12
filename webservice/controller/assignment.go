@@ -519,10 +519,10 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	// Insert or update answers
 	if !delivered {
 		err = submissionAnswerService.Insert(submissionAnswers)
-		activity = model.DeliveredAssignment
+		activity = model.DeliveredSubmission
 	} else {
 		err = submissionAnswerService.Update(submissionAnswers)
-		activity = model.UpdateAssignment
+		activity = model.UpdateSubmission
 	}
 
 	// Check for error
@@ -849,7 +849,7 @@ func AssignmentWithdrawGET(w http.ResponseWriter, r *http.Request) {
 
 	/* TODO brede : log
 	// Log assignment deletion
-	logData := model.Log{UserID: currentUser.ID, Activity: model.DeleteAssignment, AssignmentID: assignmentID, SubmissionID: -1} // TODO brede : get submission id here
+	logData := model.Log{UserID: currentUser.ID, Activity: model.AdminDeleteAssignment, AssignmentID: assignmentID, SubmissionID: -1} // TODO brede : get submission id here
 	err = model.LogToDB(logData)
 	if err != nil {
 		log.Println(err.Error())

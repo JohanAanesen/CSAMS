@@ -83,7 +83,7 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Log createCourse in the database and give error if something went wrong
 	/* TODO brede : log
-	logData := model.Log{UserID: currentUser.ID, Activity: model.CreatedCourse, CourseID: course.ID}
+	logData := model.Log{UserID: currentUser.ID, Activity: model.AdminCreatedCourse, CourseID: course.ID}
 	err = model.LogToDB(logData)
 	if err != nil {
 		log.Println("log to DB", err)

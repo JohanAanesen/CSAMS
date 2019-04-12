@@ -396,5 +396,7 @@ CREATE TABLE `validation`
 * Removed all uses of old logging function and changed name from `log.go` to `logs.go`
 * Implemented one function for one logging event in service so it's easier to use, ut more dups
 * Added new logging events
+* Implemented functions for all student activity
+
 
 ### Saturday 13/04/19
