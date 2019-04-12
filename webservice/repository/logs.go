@@ -25,7 +25,7 @@ func (repo *LogsRepository) FetchAll() ([]*model.Logs, error) {
 	result := make([]*model.Logs, 0)
 
 	// Query to be executed
-	query := "SELECT `id`, `user_id`, `timestamp`, `activity`, `assignment_id`, `course_id`, `submission_id`, `old_value`, `new_value` FROM `logs`"
+	query := "SELECT `id`, `user_id`, `timestamp`, `activity`, `assignment_id`, `course_id`, `submission_id`, `old_value`, `new_value`, `affected_user_id` FROM `logs`"
 
 	// Run query
 	rows, err := repo.db.Query(query)
@@ -41,9 +41,8 @@ func (repo *LogsRepository) FetchAll() ([]*model.Logs, error) {
 		temp := model.Logs{}
 
 		// Add to temporary struct
-		err = rows.Scan(&temp.ID, &temp.UserID, &temp.Timestamp, &temp.Activity,
-			&temp.AssignmentId, &temp.CourseID, &temp.SubmissionID, &temp.OldValue,
-			&temp.NewValue)
+		err = rows.Scan(&temp.ID, &temp.UserID, &temp.Timestamp, &temp.Activity, &temp.AssignmentId, &temp.CourseID,
+			&temp.SubmissionID, &temp.OldValue, &temp.NewValue, &temp.AffectedUserID)
 		if err != nil {
 			return result, err
 		}
@@ -71,30 +70,30 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 
 	// Check what needs to be logged
 	switch logx.Activity {
-	case model.ChangeEmail:
-		//err = changeEmailUpdateFaq(tx, logx, date)
-	case model.UpdateAdminFAQ:
-		//err = changeEmailUpdateFaq(tx, logx, date)
-	case model.ChangePassword:
-		//err = changePassword(tx, logx, date)
-	case model.DeliveredAssignment:
-		//err = deliveredAssFinishedPeer(tx, logx, date)
-	case model.UpdateAssignment:
-		//err = deliveredAssFinishedPeer(tx, logx, date)
-	case model.DeleteAssignment:
-		//err = deliveredAssFinishedPeer(tx, logx, date)
-	case model.FinishedPeerReview:
-		//err = deliveredAssFinishedPeer(tx, logx, date)
-	case model.PeerReviewDone:
-		//err = deliveredAssFinishedPeer(tx, logx, date)
-	case model.CreatAssignment:
-		//err = createAssignment(tx, logx, date)
-	case model.JoinedCourse:
-		//err = joinCreateCourse(tx, logx, date)
-	case model.CreatedCourse:
-		//err = joinCreateCourse(tx, logx, date)
 	case model.NewUser:
 		err = newUser(tx, logx, date)
+	case model.ChangeEmail:
+		err = changeEmailUpdateFaq(tx, logx, date)
+	case model.ChangeAdminFAQ:
+		err = changeEmailUpdateFaq(tx, logx, date)
+	case model.ChangePassword:
+		err = changePassword(tx, logx, date)
+	case model.CreatAssignment:
+		err = createAssignment(tx, logx, date)
+	case model.DeliveredAssignment:
+		err = deliveredAssFinishedPeer(tx, logx, date)
+	case model.UpdateAssignment:
+		err = deliveredAssFinishedPeer(tx, logx, date)
+	case model.DeleteAssignment:
+		err = deliveredAssFinishedPeer(tx, logx, date)
+	case model.PeerReviewDone:
+		err = deliveredAssFinishedPeer(tx, logx, date)
+	case model.FinishedOnePeerReview:
+		err = finishedOnePeerReview(tx, logx, date)
+	case model.JoinedCourse:
+		err = joinCreateCourse(tx, logx, date)
+	case model.CreatedCourse:
+		err = joinCreateCourse(tx, logx, date)
 	default:
 		log.Println("error: wrong log.activity!")
 		return errors.New("error: wrong log.activity type")
@@ -115,7 +114,15 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 	return nil
 }
 
-/* TODO brede add this
+// newUser query for inserting new user log
+func newUser(tx *sql.Tx, logx model.Logs, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`, `Activity`) "+
+		"VALUES (?, ?, ?)", logx.UserID, date, logx.Activity)
+
+	return err
+}
+
+// changeEmailUpdateFaq query for inserting change email or update faq log
 func changeEmailUpdateFaq(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`, `Activity`, `old_value`, `new_value`) "+
 		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.OldValue, logx.NewValue)
@@ -123,6 +130,7 @@ func changeEmailUpdateFaq(tx *sql.Tx, logx model.Logs, date string) error {
 	return err
 }
 
+// changePassword query for inserting change password log
 func changePassword(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`, `Activity`) "+
 		"VALUES (?, ?, ?)", logx.UserID, date, logx.Activity)
@@ -130,13 +138,23 @@ func changePassword(tx *sql.Tx, logx model.Logs, date string) error {
 	return err
 }
 
+// deliveredAssFinishedPeer query for inserting delete/update/deliver assignment and one review done and all reviews on one users review done log
 func deliveredAssFinishedPeer(tx *sql.Tx, logx model.Logs, date string) error {
-	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `assignment_id`,  `submission_id`) "+
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `assignment_id`, `submission_id`) "+
 		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentId, logx.SubmissionID)
 
 	return err
 }
 
+// finishedOnePeerReview query for inserting when one user has review another users submission
+func finishedOnePeerReview(tx *sql.Tx, logx model.Logs, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `assignment_id`, `submission_id`, `affected_user_id`) "+
+		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentId, logx.SubmissionID, logx.AffectedUserID)
+
+	return err
+}
+
+// createAssignment query for inserting create assignment log
 func createAssignment(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`, `Activity`, `assignment_id`) "+
 		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentId)
@@ -144,18 +162,10 @@ func createAssignment(tx *sql.Tx, logx model.Logs, date string) error {
 	return err
 }
 
+// joinCreateCourse query for inserting join/create course log
 func joinCreateCourse(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `course_id`) "+
 		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.CourseID)
-
-	return err
-}
-*/
-
-// newUser query for inserting new user log
-func newUser(tx *sql.Tx, logx model.Logs, date string) error {
-	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`, `Activity`) "+
-		"VALUES (?, ?, ?)", logx.UserID, date, logx.Activity)
 
 	return err
 }
