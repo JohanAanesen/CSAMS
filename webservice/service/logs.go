@@ -285,6 +285,44 @@ func (s *LogsService) InsertCourse(userID int, courseID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
+// InsertUpdateCourse inserts a new update course log
+func (s *LogsService) InsertUpdateCourse(userID int, courseID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminUpdateCourse,
+	}
+
+	// Add courseID to struct
+	logx.CourseID = sql.NullInt64{
+		Int64: int64(courseID),
+		Valid: courseID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertDeleteCourse inserts a new delete course log
+func (s *LogsService) InsertDeleteCourse(userID int, courseID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminDeleteCourse,
+	}
+
+	// Add courseID to struct
+	logx.CourseID = sql.NullInt64{
+		Int64: int64(courseID),
+		Valid: courseID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
 // InsertJoinCourse inserts a new join course log
 func (s *LogsService) InsertJoinCourse(userID int, courseID int) error {
 

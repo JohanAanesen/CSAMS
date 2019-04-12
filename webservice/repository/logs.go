@@ -87,9 +87,9 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 	case model.UpdateOnePeerReview:
 		err = finishedOnePeerReview(tx, logx, date)
 	case model.JoinedCourse:
-		err = joinCreateDeleteCourse(tx, logx, date)
+		err = joinCreateUpdateDeleteCourse(tx, logx, date)
 	case model.LeftCourse:
-		err = joinCreateDeleteCourse(tx, logx, date)
+		err = joinCreateUpdateDeleteCourse(tx, logx, date)
 	case model.AdminUpdateFAQ:
 		err = changeEmailUpdateFaq(tx, logx, date)
 	case model.AdminCreatAssignment:
@@ -99,7 +99,11 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 	case model.AdminUpdateAssignment:
 		err = deliveredAssFinishedPeer(tx, logx, date)
 	case model.AdminCreatedCourse:
-		err = joinCreateDeleteCourse(tx, logx, date)
+		err = joinCreateUpdateDeleteCourse(tx, logx, date)
+	case model.AdminUpdateCourse:
+		err = joinCreateUpdateDeleteCourse(tx, logx, date)
+	case model.AdminDeleteCourse:
+		err = joinCreateUpdateDeleteCourse(tx, logx, date)
 	case model.AdminCreateSubmissionForm:
 		err = createUpdateDeleteSubmissionForm(tx, logx, date)
 	case model.AdminUpdateSubmissionForm:
@@ -180,8 +184,8 @@ func createAssignment(tx *sql.Tx, logx model.Logs, date string) error {
 	return err
 }
 
-// joinCreateDeleteCourse query for inserting join/create course log
-func joinCreateDeleteCourse(tx *sql.Tx, logx model.Logs, date string) error {
+// joinCreateUpdateDeleteCourse query for inserting join/create course log
+func joinCreateUpdateDeleteCourse(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `course_id`) "+
 		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.CourseID)
 
