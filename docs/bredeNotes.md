@@ -395,5 +395,6 @@ CREATE TABLE `validation`
 * Changed name on variable names fro logs in database to have underscore instead of camelcase
 * Removed all uses of old logging function and changed name from `log.go` to `logs.go`
 * Implemented one function for one logging event in service so it's easier to use, ut more dups
+* Added new logging events
 
 ### Saturday 13/04/19

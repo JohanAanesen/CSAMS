@@ -74,7 +74,7 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 		err = newUser(tx, logx, date)
 	case model.ChangeEmail:
 		err = changeEmailUpdateFaq(tx, logx, date)
-	case model.ChangeAdminFAQ:
+	case model.AdminChangeFaq:
 		err = changeEmailUpdateFaq(tx, logx, date)
 	case model.ChangePassword:
 		err = changePassword(tx, logx, date)

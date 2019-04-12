@@ -86,7 +86,7 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// Collect the log data
 	logData := model.Log{
 		UserID:   currentUser.ID,
-		Activity: model.ChangeAdminFAQ,
+		Activity: model.AdminChangeFaq,
 		OldValue: content.Questions,
 		NewValue: updatedFAQ,
 	}

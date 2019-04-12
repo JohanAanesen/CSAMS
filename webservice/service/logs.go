@@ -68,7 +68,7 @@ func (s *LogsService) InsertChangeFAQ(userID int, oldValue string, newValue stri
 	// logx since log is already an package
 	logx := model.Logs{
 		UserID:   userID,
-		Activity: model.ChangeAdminFAQ,
+		Activity: model.AdminChangeFaq,
 	}
 
 	// Add oldValue to struct
