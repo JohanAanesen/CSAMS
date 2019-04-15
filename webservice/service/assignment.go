@@ -66,12 +66,22 @@ func (s *AssignmentService) HasAutoValidation(assignmentID int) (bool, error) {
 	return assignment.ValidationID.Valid, err
 }
 
-// Insert func
+// Insert an assignment to the database
 func (s *AssignmentService) Insert(assignment model.Assignment) (int, error) {
 	return s.assignmentRepo.Insert(assignment)
 }
 
-// Update func
+// Update an assignment
 func (s *AssignmentService) Update(assignment model.Assignment) error {
 	return s.assignmentRepo.Update(assignment)
+}
+
+// IsGroupBased checks if assignment is group based
+func (s *AssignmentService) IsGroupBased(assignmentID int) (bool, error) {
+	assignment, err := s.assignmentRepo.Fetch(assignmentID)
+	if err != nil {
+		return false, err
+	}
+
+	return assignment.GroupDelivery, nil
 }
