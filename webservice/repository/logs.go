@@ -87,9 +87,9 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 	case model.UpdateOnePeerReview:
 		err = finishedOnePeerReview(tx, logx, date)
 	case model.JoinedCourse:
-		err = joinCreateUpdateDeleteCourse(tx, logx, date)
+		err = manageCourse(tx, logx, date)
 	case model.LeftCourse:
-		err = joinCreateUpdateDeleteCourse(tx, logx, date)
+		err = manageCourse(tx, logx, date)
 	case model.AdminUpdateFAQ:
 		err = changeEmailUpdateFaq(tx, logx, date)
 	case model.AdminCreatAssignment:
@@ -99,25 +99,35 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 	case model.AdminUpdateAssignment:
 		err = deliveredAssFinishedPeer(tx, logx, date)
 	case model.AdminCreatedCourse:
-		err = joinCreateUpdateDeleteCourse(tx, logx, date)
+		err = manageCourse(tx, logx, date)
 	case model.AdminUpdateCourse:
-		err = joinCreateUpdateDeleteCourse(tx, logx, date)
+		err = manageCourse(tx, logx, date)
 	case model.AdminDeleteCourse:
-		err = joinCreateUpdateDeleteCourse(tx, logx, date)
+		err = manageCourse(tx, logx, date)
 	case model.AdminCreateSubmissionForm:
-		err = createUpdateDeleteSubmissionForm(tx, logx, date)
+		err = manageSubmissionForm(tx, logx, date)
 	case model.AdminUpdateSubmissionForm:
-		err = createUpdateDeleteSubmissionForm(tx, logx, date)
+		err = manageSubmissionForm(tx, logx, date)
 	case model.AdminDeleteSubmissionForm:
-		err = createUpdateDeleteSubmissionForm(tx, logx, date)
+		err = manageSubmissionForm(tx, logx, date)
 	case model.AdminCreateReviewForm:
-		err = createUpdateDeleteReviewForm(tx, logx, date)
+		err = manageReviewForm(tx, logx, date)
 	case model.AdminUpdateReviewForm:
-		err = createUpdateDeleteReviewForm(tx, logx, date)
+		err = manageReviewForm(tx, logx, date)
 	case model.AdminDeleteReviewForm:
-		err = createUpdateDeleteReviewForm(tx, logx, date)
+		err = manageReviewForm(tx, logx, date)
 	case model.AdminEmailCourseStudents:
 		err = emailCourseStudents(tx, logx, date)
+	case model.AdminRemoveUserFromCourse:
+		err = adminRemoveUserFromCourse(tx, logx, date)
+	case model.AdminChangeStudentPassword:
+		err = adminChangeUserPassword(tx, logx, date)
+	case model.AdminCreateSubmissionForUser:
+		err = adminManageSubmissionForUser(tx, logx, date)
+	case model.AdminUpdateSubmissionForUser:
+		err = adminManageSubmissionForUser(tx, logx, date)
+	case model.AdminDeleteSubmissionForUser:
+		err = adminManageSubmissionForUser(tx, logx, date)
 	default:
 		log.Println("error: wrong log.activity!")
 		return errors.New("error: wrong log.activity type")
@@ -186,24 +196,24 @@ func createAssignment(tx *sql.Tx, logx model.Logs, date string) error {
 	return err
 }
 
-// joinCreateUpdateDeleteCourse query for inserting join/create course log
-func joinCreateUpdateDeleteCourse(tx *sql.Tx, logx model.Logs, date string) error {
+// manageCourse query for inserting join/create course log
+func manageCourse(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `course_id`) "+
 		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.CourseID)
 
 	return err
 }
 
-// createUpdateDeleteSubmissionForm query for inserting create/update submission form
-func createUpdateDeleteSubmissionForm(tx *sql.Tx, logx model.Logs, date string) error {
+// manageSubmissionForm query for inserting create/update submission form
+func manageSubmissionForm(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `submission_id`) "+
 		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.SubmissionID)
 
 	return err
 }
 
-// createUpdateDeleteReviewForm query for inserting create/update review form
-func createUpdateDeleteReviewForm(tx *sql.Tx, logx model.Logs, date string) error {
+// manageReviewForm query for inserting create/update review form
+func manageReviewForm(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `review_id`) "+
 		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.ReviewID)
 
@@ -214,6 +224,30 @@ func createUpdateDeleteReviewForm(tx *sql.Tx, logx model.Logs, date string) erro
 func emailCourseStudents(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `course_id`, `new_value`) "+
 		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.CourseID, logx.NewValue)
+
+	return err
+}
+
+// adminRemoveUserFromCourse
+func adminRemoveUserFromCourse(tx *sql.Tx, logx model.Logs, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `course_id`, `affected_user_id`) "+
+		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.CourseID, logx.AffectedUserID)
+
+	return err
+}
+
+// adminChangeUserPassword
+func adminChangeUserPassword(tx *sql.Tx, logx model.Logs, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `affected_user_id`) "+
+		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AffectedUserID)
+
+	return err
+}
+
+// adminManageSubmissionForUser
+func adminManageSubmissionForUser(tx *sql.Tx, logx model.Logs, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `assignment_id`, `submission_id`, `affected_user_id`) "+
+		"VALUES (?, ?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentID, logx.SubmissionID, logx.AffectedUserID)
 
 	return err
 }

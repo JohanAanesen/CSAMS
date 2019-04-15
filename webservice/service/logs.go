@@ -502,3 +502,140 @@ func (s *LogsService) InsertEmailStudents(userID int, courseID int, emails []str
 
 	return s.logsRepo.Insert(logx)
 }
+
+// InsertAdminRemoveUserFromCourse inserts a remove student from course log
+func (s *LogsService) InsertAdminRemoveUserFromCourse(userID int, courseID int, studentID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminRemoveUserFromCourse,
+	}
+
+	// Add courseID to struct
+	logx.CourseID = sql.NullInt64{
+		Int64: int64(courseID),
+		Valid: courseID != 0,
+	}
+
+	// Add AffectedUserID to struct
+	logx.AffectedUserID = sql.NullInt64{
+		Int64: int64(studentID),
+		Valid: studentID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertAdminChangeUserPassword inserts a change student password log
+func (s *LogsService) InsertAdminChangeUserPassword(userID int, studentID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminChangeStudentPassword,
+	}
+
+	// Add AffectedUserID to struct
+	logx.AffectedUserID = sql.NullInt64{
+		Int64: int64(studentID),
+		Valid: studentID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertAdminCreateSubmissionForUser inserts a create submission for student log
+func (s *LogsService) InsertAdminCreateSubmissionForUser(userID int, assignmentID int, submissionID int, studentID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminCreateSubmissionForUser,
+	}
+
+	// Add assignmentID to struct
+	logx.AssignmentID = sql.NullInt64{
+		Int64: int64(assignmentID),
+		Valid: assignmentID != 0,
+	}
+
+	// Add submissionID to struct
+	logx.SubmissionID = sql.NullInt64{
+		Int64: int64(submissionID),
+		Valid: submissionID != 0,
+	}
+
+	// Add AffectedUserID to struct
+	logx.AffectedUserID = sql.NullInt64{
+		Int64: int64(studentID),
+		Valid: studentID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertAdminUpdateSubmissionForUser inserts a update submission for student log
+func (s *LogsService) InsertAdminUpdateSubmissionForUser(userID int, assignmentID int, submissionID int, studentID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminUpdateSubmissionForUser,
+	}
+
+	// Add assignmentID to struct
+	logx.AssignmentID = sql.NullInt64{
+		Int64: int64(assignmentID),
+		Valid: assignmentID != 0,
+	}
+
+	// Add submissionID to struct
+	logx.SubmissionID = sql.NullInt64{
+		Int64: int64(submissionID),
+		Valid: submissionID != 0,
+	}
+
+	// Add AffectedUserID to struct
+	logx.AffectedUserID = sql.NullInt64{
+		Int64: int64(studentID),
+		Valid: studentID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertAdminDeleteSubmissionForUser inserts a delete submission for student log
+func (s *LogsService) InsertAdminDeleteSubmissionForUser(userID int, assignmentID int, submissionID int, studentID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminDeleteSubmissionForUser,
+	}
+
+	// Add assignmentID to struct
+	logx.AssignmentID = sql.NullInt64{
+		Int64: int64(assignmentID),
+		Valid: assignmentID != 0,
+	}
+
+	// Add submissionID to struct
+	logx.SubmissionID = sql.NullInt64{
+		Int64: int64(submissionID),
+		Valid: submissionID != 0,
+	}
+
+	// Add AffectedUserID to struct
+	logx.AffectedUserID = sql.NullInt64{
+		Int64: int64(studentID),
+		Valid: studentID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}

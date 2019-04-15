@@ -399,8 +399,8 @@ CREATE TABLE `validation`
 * Implemented functions for all student activity
 * Added `review_id` to `logs` table and logs struct
 
-### Sunday - EASTER - 14/04/19
+### Monday - EASTER EDITION - 15/04/19
+* Finished the last functions for logging `admin control student` logging. It's a lot of functions now, and most are almost identical.
+I'm considering solving this another way to have less code...
 
-### Monday - EASTER - 15/04/19
-
-### Tuesday - EASTER - 16/04/19
+### Tuesday - EASTER EDITION - 16/04/19
