@@ -1,0 +1,193 @@
+{{define "title"}}Create Assignment{{end}}
+{{define "head"}}
+    <link rel="stylesheet" href="/static/css/simplemde.min.css">
+    <style>
+        .CodeMirror {
+            height: 300px;
+        }
+        .CodeMirror-code::selection {
+            background: #000;
+        }
+        .CodeMirror-code::-moz-selection {
+            background: #000;
+        }
+    </style>
+{{end}}
+{{define "content"}}
+    {{if .Errors}}
+        {{range .Errors}}
+            <div class="alert alert-warning">{{.}}</div>
+        {{end}}
+    {{end}}
+
+    {{$A := .Assignment}}
+    <form action="/admin/assignment/update" method="POST">
+        <div class="row">
+            <div class="col">
+                <h1 class="display-4">Update assignment</h1>
+            </div>
+        </div>
+
+        <hr>
+        <div class="row">
+            <div class="col-12 col-lg">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Assignment Name"
+                           value="{{.AssignmentName}}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="course_id">Course</label>
+                    <select name="course_id" id="course_id" class="form-control" required>
+                        {{range $C := .Courses}}
+                            <option value="{{$C.ID}}"{{if eq $C.ID $A.CourseID}} selected{{end}}>{{$C.Code}} {{$C.Name}}</option>
+                        {{end}}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="publish">Publish</label>
+                    <div class="input-group">
+                        <input type="datetime-local" name="publish" id="publish" class="form-control" value="{{.Publish}}" required>
+                        <!-- TODO uncomment after alpha
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="publish_now">Now</button>
+                        </div>
+                        -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="deadline">Deadline</label>
+                    <input type="datetime-local" name="deadline" id="deadline" class="form-control" value="{{.Deadline}}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="simplemde">Description</label>
+                    <textarea name="description" id="simplemde"
+                              placeholder="Description (Hint: Markdown)">{{.Assignment.Description}}</textarea>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg">
+
+                <h3>Submission Form</h3>
+                <div class="form-group">
+                    <label for="submission_id">Select Form</label>
+                    <select name="submission_id" id="submission_id" class="form-control">
+                        <option value="0">None</option>
+                        {{range $S := .Submissions}}
+                            <option value="{{$S.ID}}"{{if eq $S.ID $A.SubmissionID.Int64}} selected{{end}}>{{$S.Form.Name}}</option>
+                        {{end}}
+                    </select>
+                </div>
+
+                <div id="submission_container" {{if not .Assignment.SubmissionID.Valid}}class="sr-only"{{end}}>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="group_assignment" name="group_assignment"{{if .Assignment.GroupDelivery}} checked{{end}}>
+                        <label class="custom-control-label" for="group_assignment">Enable group assignment</label>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h3>Peer Review</h3>
+
+                <h5>Review Form</h5>
+                <div class="form-group">
+                    <label for="review_id">Select Form</label>
+                    <select name="review_id" id="review_id" class="form-control">
+                        <option value="0">None</option>
+                        {{range $R := .Reviews}}
+                            <option value="{{$R.ID}}"{{if eq $R.ID $A.ReviewID.Int64}} selected{{end}}>{{$R.Form.Name}}</option>
+                        {{end}}
+                    </select>
+                </div>
+
+                <div id="review_deadline_container" {{if not .Assignment.ReviewID.Valid}}class="sr-only"{{end}}>
+                    <button type="button" id="toggleReview" class="btn btn-danger btn-sm mb-3">Disable</button>
+
+                    <div class="form-group">
+                        <label for="review_deadline">Review Deadline</label>
+                        <input type="datetime-local" name="review_deadline" id="review_deadline" class="form-control" value="{{.ReviewDeadline}}">
+                    </div>
+
+                    <hr>
+
+                    <h5>Required reviews done</h5>
+                    <div class="form-group">
+                        <label for="reviewers">How many submissions is required for each student to review on this assignment.</label>
+                        <select name="reviewers" id="reviewers" class="form-control" required>
+                            {{if .Assignment.Reviewers.Valid}}
+                                <option value="{{.Assignment.Reviewers.Int64}}" selected>{{.Assignment.Reviewers.Int64}}</option>
+                            {{end}}
+                            <option value="0">Any</option>
+                            <script>
+                                for (let i = 1; i <= 6; i++) {
+                                    document.write(`<option value="${i}">${i}</option>`);
+                                }
+                            </script>
+                        </select>
+                        <small class="form-text text-muted">Set to <code>Any</code> for no requirements.</small>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col">
+                <input type="submit" class="btn btn-success btn-lg btn-block" id="submit">
+            </div>
+        </div>
+
+    </form>
+{{end}}
+{{define "foot"}}
+    <script src="/static/js/simplemde.min.js"></script>
+    <script src="/static/js/time.js"></script>
+    <script>
+        (function () {
+            // Enable the SmpleMDE
+            let simplemde = new SimpleMDE({
+                element: document.getElementById('simplemde'),
+                hideIcons: ["side-by-side", "fullscreen"],
+                lineWrapping: true,
+            });
+
+            let reviewSelect = document.getElementById('review_id');
+            let reviewDeadlineContainer = document.getElementById('review_deadline_container');
+            let reviewDeadline = document.getElementById('review_deadline');
+            let toggleReviewBtn = document.getElementById('toggleReview');
+
+            toggleReviewBtn.addEventListener('click', () => {
+                reviewSelect.selectedIndex = 0;
+                reviewDeadlineContainer.classList.add('sr-only');
+                reviewDeadline.removeAttribute('required');
+            });
+
+            reviewSelect.addEventListener('change', e => {
+                if (e.target.value !== '0') {
+                    reviewDeadlineContainer.classList.remove('sr-only');
+                    reviewDeadline.setAttribute('required', '');
+                } else {
+                    reviewDeadlineContainer.classList.add('sr-only');
+                    reviewDeadline.removeAttribute('required');
+                }
+            });
+
+            let submissionSelect = document.getElementById('submission_id');
+            let submissionContainer = document.getElementById('submission_container');
+
+            submissionSelect.addEventListener('change', e => {
+                if (e.target.value !== '0') {
+                    submissionContainer.classList.remove('sr-only');
+                } else {
+                    submissionContainer.classList.add('sr-only');
+                }
+
+            });
+        })();
+    </script>
+{{end}}
