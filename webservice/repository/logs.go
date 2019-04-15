@@ -78,11 +78,11 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 	case model.ChangePasswordEmail:
 		err = changePassword(tx, logx, date)
 	case model.CreateSubmission:
-		err = manageAssignmentAndFinishedPeer(tx, logx, date)
+		err = deliverAssignmentAndFinishedPeer(tx, logx, date)
 	case model.UpdateSubmission:
-		err = manageAssignmentAndFinishedPeer(tx, logx, date)
+		err = deliverAssignmentAndFinishedPeer(tx, logx, date)
 	case model.DeleteSubmission:
-		err = manageAssignmentAndFinishedPeer(tx, logx, date)
+		err = deliverAssignmentAndFinishedPeer(tx, logx, date)
 	case model.FinishedOnePeerReview:
 		err = finishedOnePeerReview(tx, logx, date)
 	case model.UpdateOnePeerReview:
@@ -93,12 +93,12 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 		err = manageCourse(tx, logx, date)
 	case model.AdminUpdateFAQ:
 		err = changeEmailUpdateFaq(tx, logx, date)
-	case model.AdminCreatAssignment:
-		err = createAssignment(tx, logx, date)
+	case model.AdminCreateAssignment:
+		err = manageAssignment(tx, logx, date)
 	case model.AdminDeleteAssignment:
-		err = manageAssignmentAndFinishedPeer(tx, logx, date)
+		err = manageAssignment(tx, logx, date)
 	case model.AdminUpdateAssignment:
-		err = manageAssignmentAndFinishedPeer(tx, logx, date)
+		err = manageAssignment(tx, logx, date)
 	case model.AdminCreatedCourse:
 		err = manageCourse(tx, logx, date)
 	case model.AdminUpdateCourse:
@@ -173,8 +173,8 @@ func changePassword(tx *sql.Tx, logx model.Logs, date string) error {
 	return err
 }
 
-// manageAssignmentAndFinishedPeer query for inserting delete/update/deliver assignment and one review done and all reviews on one users review done log
-func manageAssignmentAndFinishedPeer(tx *sql.Tx, logx model.Logs, date string) error {
+// deliverAssignmentAndFinishedPeer query for inserting deliver assignment and one review done and all reviews on one users review done log
+func deliverAssignmentAndFinishedPeer(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `assignment_id`, `submission_id`) "+
 		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentID, logx.SubmissionID)
 
@@ -189,8 +189,8 @@ func finishedOnePeerReview(tx *sql.Tx, logx model.Logs, date string) error {
 	return err
 }
 
-// createAssignment query for inserting create assignment log
-func createAssignment(tx *sql.Tx, logx model.Logs, date string) error {
+// manageAssignment query for inserting create assignment log
+func manageAssignment(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`, `Activity`, `assignment_id`) "+
 		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentID)
 

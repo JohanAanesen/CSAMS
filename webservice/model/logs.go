@@ -30,7 +30,7 @@ const (
 
 	/////// Admin logs ///////
 	// Assignment
-	AdminCreatAssignment  Activity = "ADMIN-ASSIGNMENT-CREATE" // Admin assignment is created
+	AdminCreateAssignment Activity = "ADMIN-ASSIGNMENT-CREATE" // Admin assignment is created
 	AdminDeleteAssignment Activity = "ADMIN-ASSIGNMENT-DELETE" // Admin assignment is deleted
 	AdminUpdateAssignment Activity = "ADMIN-ASSIGNMENT-UPDATE" // Admin assignment is updated
 	// Forms

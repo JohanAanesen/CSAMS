@@ -406,6 +406,7 @@ I'm considering solving this another way to have less code...
     * Profile information change for students
     * Create/update/delete submission for students
     * Create/update user review for students
+    * Create/update assignment
 
 
 ### Tuesday - EASTER EDITION - 16/04/19

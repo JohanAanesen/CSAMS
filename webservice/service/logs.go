@@ -188,8 +188,27 @@ func (s *LogsService) InsertDeleteSubmission(userID int, assignmentID int, submi
 	return s.logsRepo.Insert(logx)
 }
 
+// InsertAdminCreateAssignment inserts a create assignment log
+func (s *LogsService) InsertAdminCreateAssignment(userID int, assignmentID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminCreateAssignment,
+	}
+
+	// Add assignmentID to struct
+	logx.AssignmentID = sql.NullInt64{
+		Int64: int64(assignmentID),
+		Valid: assignmentID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
 // InsertAdminUpdateAssignment inserts a change password log
-func (s *LogsService) InsertAdminUpdateAssignment(userID int, assignmentID int, submissionID int) error {
+func (s *LogsService) InsertAdminUpdateAssignment(userID int, assignmentID int) error {
 
 	// Save log in struct
 	// logx since log is already an package
@@ -204,17 +223,11 @@ func (s *LogsService) InsertAdminUpdateAssignment(userID int, assignmentID int, 
 		Valid: assignmentID != 0,
 	}
 
-	// Add submissionID to struct
-	logx.SubmissionID = sql.NullInt64{
-		Int64: int64(submissionID),
-		Valid: submissionID != 0,
-	}
-
 	return s.logsRepo.Insert(logx)
 }
 
 // InsertAdminDeleteAssignment inserts a change password log
-func (s *LogsService) InsertAdminDeleteAssignment(userID int, assignmentID int, submissionID int) error {
+func (s *LogsService) InsertAdminDeleteAssignment(userID int, assignmentID int) error {
 
 	// Save log in struct
 	// logx since log is already an package
@@ -227,12 +240,6 @@ func (s *LogsService) InsertAdminDeleteAssignment(userID int, assignmentID int, 
 	logx.AssignmentID = sql.NullInt64{
 		Int64: int64(assignmentID),
 		Valid: assignmentID != 0,
-	}
-
-	// Add submissionID to struct
-	logx.SubmissionID = sql.NullInt64{
-		Int64: int64(submissionID),
-		Valid: submissionID != 0,
 	}
 
 	return s.logsRepo.Insert(logx)

@@ -13,9 +13,8 @@
 - [X] JoinedCourse
 
 **Admin**
-- [ ] AdminCreatAssignment  
-- [ ] AdminDeleteAssignment 
-- [ ] AdminUpdateAssignment 
+- [X] AdminCreateAssignment  
+- [X] AdminUpdateAssignment  
 - [ ] AdminCreateSubmissionForm 
 - [ ] AdminUpdateSubmissionForm 
 - [ ] AdminDeleteSubmissionForm
@@ -37,5 +36,6 @@
 - [ ] AdminCreateFAQ
 
 **No triggers for yet**
-- [ ] LeftCourse  
+- [ ] LeftCourse 
+- [ ] AdminDeleteAssignment
 	

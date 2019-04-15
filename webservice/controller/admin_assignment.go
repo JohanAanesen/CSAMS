@@ -125,6 +125,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	// Services
 	courseService := service.NewCourseService(db.GetDB())
 	assignmentService := service.NewAssignmentService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	// Current user
 	currentUser := session.GetUserFromSession(r)
@@ -281,19 +282,28 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	assignment.Reviewers = reviewers
 
 	// Insert data to database
-	lastID, err := assignmentService.Insert(assignment)
+	assignmentID, err := assignmentService.Insert(assignment)
 	if err != nil {
-		log.Println("assignment service, insert", err)
+		log.Println("assignment service, insert", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log assignment creation to db
+	err = services.Logs.InsertAdminCreateAssignment(currentUser.ID, assignmentID)
+	if err != nil {
+		log.Println("log, create assignment", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute  TODO time-norwegian
-	if lastID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInCorrectTimeZone()) {
+	if assignmentID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInCorrectTimeZone()) {
 
 		sched := scheduler.Scheduler{}
 
 		err := sched.SchedulePeerReview(
-			lastID, //assignment ID
+			assignmentID, //assignment ID
 			int(assignment.Reviewers.Int64),
 			assignment.Deadline)
 		if err != nil {
@@ -436,6 +446,9 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	// Services
 	assignmentService := service.NewAssignmentService(db.GetDB())
 	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
+	services := service.NewServices(db.GetDB())
+
+	currentUser := session.GetUserFromSession(r)
 
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err != nil {
@@ -579,9 +592,18 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	assignment.ReviewID = reviewID
 	assignment.Reviewers = reviewers
 
+	// Update assignment
 	err = assignmentService.Update(assignment)
 	if err != nil {
 		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log update to db
+	err = services.Logs.InsertAdminUpdateAssignment(currentUser.ID, assignment.ID)
+	if err != nil {
+		log.Println("log, update assignment ", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
