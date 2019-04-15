@@ -239,7 +239,7 @@ func (s *LogsService) InsertAdminDeleteAssignment(userID int, assignmentID int, 
 }
 
 // InsertFinishedOnePeerReview is for when one user has finished peer reviewing another users submission
-func (s *LogsService) InsertFinishedOnePeerReview(userID int, assignmentID int, submissionID int, affectedUserID int) error {
+func (s *LogsService) InsertFinishedOnePeerReview(userID int, assignmentID int, affectedUserID int) error {
 
 	// Save log in struct
 	// logx since log is already an package
@@ -254,12 +254,6 @@ func (s *LogsService) InsertFinishedOnePeerReview(userID int, assignmentID int, 
 		Valid: assignmentID != 0,
 	}
 
-	// Add submissionID to struct
-	logx.SubmissionID = sql.NullInt64{
-		Int64: int64(submissionID),
-		Valid: submissionID != 0,
-	}
-
 	// Add affectedUserID to struct
 	logx.AffectedUserID = sql.NullInt64{
 		Int64: int64(affectedUserID),
@@ -269,7 +263,7 @@ func (s *LogsService) InsertFinishedOnePeerReview(userID int, assignmentID int, 
 }
 
 // InsertUpdateOnePeerReview is for when one user has updated peer review
-func (s *LogsService) InsertUpdateOnePeerReview(userID int, assignmentID int, submissionID int, affectedUserID int) error {
+func (s *LogsService) InsertUpdateOnePeerReview(userID int, assignmentID int, affectedUserID int) error {
 
 	// Save log in struct
 	// logx since log is already an package
@@ -282,12 +276,6 @@ func (s *LogsService) InsertUpdateOnePeerReview(userID int, assignmentID int, su
 	logx.AssignmentID = sql.NullInt64{
 		Int64: int64(assignmentID),
 		Valid: assignmentID != 0,
-	}
-
-	// Add submissionID to struct
-	logx.SubmissionID = sql.NullInt64{
-		Int64: int64(submissionID),
-		Valid: submissionID != 0,
 	}
 
 	// Add affectedUserID to struct

@@ -183,8 +183,8 @@ func manageAssignmentAndFinishedPeer(tx *sql.Tx, logx model.Logs, date string) e
 
 // finishedOnePeerReview query for inserting when one user has review another users submission
 func finishedOnePeerReview(tx *sql.Tx, logx model.Logs, date string) error {
-	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `assignment_id`, `submission_id`, `affected_user_id`) "+
-		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentID, logx.SubmissionID, logx.AffectedUserID)
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `assignment_id`, `affected_user_id`) "+
+		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentID, logx.AffectedUserID)
 
 	return err
 }

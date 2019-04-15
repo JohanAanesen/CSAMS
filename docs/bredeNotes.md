@@ -405,7 +405,7 @@ I'm considering solving this another way to have less code...
 * Implemented and tested:
     * Profile information change for students
     * Create/update/delete submission for students
-    
+    * Create/update user review for students
 
 
 ### Tuesday - EASTER EDITION - 16/04/19

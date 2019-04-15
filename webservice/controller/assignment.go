@@ -767,6 +767,8 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if hasBeenReviewed {
+
+		// Update answers/submission
 		for _, field := range form.Form.Fields {
 			answer := r.FormValue(field.Name)
 			comment := r.FormValue(field.Name + "_comment")
@@ -784,6 +786,14 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 				ErrorHandler(w, r, http.StatusInternalServerError)
 				return
 			}
+		}
+
+		// Log updated review
+		err = services.Logs.InsertUpdateOnePeerReview(currentUser.ID, assignmentID, targetID)
+		if err != nil {
+			log.Println("log, update review", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
 		}
 
 		http.Redirect(w, r, fmt.Sprintf("/assignment/%d", assignment.ID), http.StatusFound)
@@ -819,6 +829,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		reviewAnswer = append(reviewAnswer, temp)
 	}
 
+	// Insert answers
 	for _, item := range reviewAnswer {
 		_, err = services.ReviewAnswer.Insert(item)
 		if err != nil {
@@ -826,6 +837,14 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
+	}
+
+	// Log new review
+	err = services.Logs.InsertFinishedOnePeerReview(currentUser.ID, assignmentID, targetID)
+	if err != nil {
+		log.Println("log, update review", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/assignment/%d", assignment.ID), http.StatusFound)

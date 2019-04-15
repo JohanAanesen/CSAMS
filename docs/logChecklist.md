@@ -1,5 +1,6 @@
 # Log functions checklist
 ## Implemented and works
+**Users**
 - [X] NewUser           
 - [X] ChangeEmail         
 - [X] ChangePassword    
@@ -7,10 +8,11 @@
 - [X] CreateSubmission 
 - [X] UpdateSubmission
 - [X] DeleteSubmission   
-- [ ] FinishedOnePeerReview 
-- [ ] UpdateOnePeerReview   
+- [X] FinishedOnePeerReview 
+- [X] UpdateOnePeerReview   
 - [X] JoinedCourse
-- [ ] LeftCourse  
+
+**Admin**
 - [ ] AdminCreatAssignment  
 - [ ] AdminDeleteAssignment 
 - [ ] AdminUpdateAssignment 
@@ -33,4 +35,7 @@
 
 **No functions for yet:**
 - [ ] AdminCreateFAQ
+
+**No triggers for yet**
+- [ ] LeftCourse  
 	
