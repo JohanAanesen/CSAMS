@@ -100,7 +100,7 @@ func (s *LogsService) InsertChangePassword(userID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertChangePasswordEmail inserts a change password log
+// InsertChangePasswordEmail inserts a change password with email log
 func (s *LogsService) InsertChangePasswordEmail(userID int) error {
 
 	// Save log in struct
@@ -113,14 +113,14 @@ func (s *LogsService) InsertChangePasswordEmail(userID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertAssignment inserts a change password log
-func (s *LogsService) InsertAssignment(userID int, assignmentID int) error {
+// InsertSubmission inserts a new user submission log
+func (s *LogsService) InsertSubmission(userID int, assignmentID int, submissionID int) error {
 
 	// Save log in struct
 	// logx since log is already an package
 	logx := model.Logs{
 		UserID:   userID,
-		Activity: model.DeliveredSubmission,
+		Activity: model.CreateSubmission,
 	}
 
 	// Add assignmentID to struct
@@ -129,11 +129,17 @@ func (s *LogsService) InsertAssignment(userID int, assignmentID int) error {
 		Valid: assignmentID != 0,
 	}
 
+	// Add submissionID to struct
+	logx.SubmissionID = sql.NullInt64{
+		Int64: int64(submissionID),
+		Valid: submissionID != 0,
+	}
+
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertChangeAssignment inserts a change password log
-func (s *LogsService) InsertChangeAssignment(userID int, assignmentID int, submissionID int) error {
+// InsertUpdateSubmission inserts a update user submission log
+func (s *LogsService) InsertUpdateSubmission(userID int, assignmentID int, submissionID int) error {
 
 	// Save log in struct
 	// logx since log is already an package
@@ -157,8 +163,33 @@ func (s *LogsService) InsertChangeAssignment(userID int, assignmentID int, submi
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertUpdateAssignment inserts a change password log
-func (s *LogsService) InsertUpdateAssignment(userID int, assignmentID int, submissionID int) error {
+// InsertDeleteSubmission inserts a delete user submission log
+func (s *LogsService) InsertDeleteSubmission(userID int, assignmentID int, submissionID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.DeleteSubmission,
+	}
+
+	// Add assignmentID to struct
+	logx.AssignmentID = sql.NullInt64{
+		Int64: int64(assignmentID),
+		Valid: assignmentID != 0,
+	}
+
+	// Add submissionID to struct
+	logx.SubmissionID = sql.NullInt64{
+		Int64: int64(submissionID),
+		Valid: submissionID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertAdminUpdateAssignment inserts a change password log
+func (s *LogsService) InsertAdminUpdateAssignment(userID int, assignmentID int, submissionID int) error {
 
 	// Save log in struct
 	// logx since log is already an package
@@ -182,8 +213,8 @@ func (s *LogsService) InsertUpdateAssignment(userID int, assignmentID int, submi
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertDeleteAssignment inserts a change password log
-func (s *LogsService) InsertDeleteAssignment(userID int, assignmentID int, submissionID int) error {
+// InsertAdminDeleteAssignment inserts a change password log
+func (s *LogsService) InsertAdminDeleteAssignment(userID int, assignmentID int, submissionID int) error {
 
 	// Save log in struct
 	// logx since log is already an package

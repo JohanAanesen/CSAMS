@@ -18,8 +18,9 @@ const (
 
 	/////// Course logs ///////
 	// Submission
-	DeliveredSubmission Activity = "SUBMISSION-DELIVERED" // User delivered assignment submission
-	UpdateSubmission    Activity = "SUBMISSION-UPDATED"   // User re-delivered assignment submission
+	CreateSubmission Activity = "SUBMISSION-CREATE"  // User submission is created
+	UpdateSubmission Activity = "SUBMISSION-UPDATE" // User submission is updated
+	DeleteSubmission Activity = "SUBMISSION-DELETE"  // User submission is deleted
 	// Review
 	FinishedOnePeerReview Activity = "FINISHED-ONE-PEER-REVIEW" // User is done with one peer review (that this user did)
 	UpdateOnePeerReview   Activity = "UPDATE-ONE-PEER-REVIEW"   // User changed one peer review

@@ -104,6 +104,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 	// Services
 	userService := service.NewUserService(db.GetDB())
 	courseService := service.NewCourseService(db.GetDB())
+	logService := service.NewLogsService(db.GetDB())
 
 	email := r.FormValue("email")       // email
 	password := r.FormValue("password") // password
@@ -146,6 +147,13 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 			if err != nil {
 				log.Println("add user to course", err)
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
+
+			err = logService.InsertJoinCourse(user.ID, course.ID)
+			if err != nil {
+				log.Println("log, ", err)
 				ErrorHandler(w, r, http.StatusInternalServerError)
 				return
 			}

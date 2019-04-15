@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
-	"log"
 )
 
 // LogsRepository struct
@@ -78,10 +77,12 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 		err = changePassword(tx, logx, date)
 	case model.ChangePasswordEmail:
 		err = changePassword(tx, logx, date)
-	case model.DeliveredSubmission:
-		err = deliveredAssFinishedPeer(tx, logx, date)
+	case model.CreateSubmission:
+		err = manageAssignmentAndFinishedPeer(tx, logx, date)
 	case model.UpdateSubmission:
-		err = deliveredAssFinishedPeer(tx, logx, date)
+		err = manageAssignmentAndFinishedPeer(tx, logx, date)
+	case model.DeleteSubmission:
+		err = manageAssignmentAndFinishedPeer(tx, logx, date)
 	case model.FinishedOnePeerReview:
 		err = finishedOnePeerReview(tx, logx, date)
 	case model.UpdateOnePeerReview:
@@ -95,9 +96,9 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 	case model.AdminCreatAssignment:
 		err = createAssignment(tx, logx, date)
 	case model.AdminDeleteAssignment:
-		err = deliveredAssFinishedPeer(tx, logx, date)
+		err = manageAssignmentAndFinishedPeer(tx, logx, date)
 	case model.AdminUpdateAssignment:
-		err = deliveredAssFinishedPeer(tx, logx, date)
+		err = manageAssignmentAndFinishedPeer(tx, logx, date)
 	case model.AdminCreatedCourse:
 		err = manageCourse(tx, logx, date)
 	case model.AdminUpdateCourse:
@@ -129,8 +130,8 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 	case model.AdminDeleteSubmissionForUser:
 		err = adminManageSubmissionForUser(tx, logx, date)
 	default:
-		log.Println("error: wrong log.activity!")
-		return errors.New("error: wrong log.activity type")
+		var ErrLogActivityNotFound = errors.New("error: log activity not found")
+		return ErrLogActivityNotFound
 	}
 
 	// Handle possible error
@@ -172,8 +173,8 @@ func changePassword(tx *sql.Tx, logx model.Logs, date string) error {
 	return err
 }
 
-// deliveredAssFinishedPeer query for inserting delete/update/deliver assignment and one review done and all reviews on one users review done log
-func deliveredAssFinishedPeer(tx *sql.Tx, logx model.Logs, date string) error {
+// manageAssignmentAndFinishedPeer query for inserting delete/update/deliver assignment and one review done and all reviews on one users review done log
+func manageAssignmentAndFinishedPeer(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `assignment_id`, `submission_id`) "+
 		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentID, logx.SubmissionID)
 

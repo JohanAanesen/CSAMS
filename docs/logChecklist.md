@@ -4,8 +4,9 @@
 - [X] ChangeEmail         
 - [X] ChangePassword    
 - [X] ChangePasswordEmail
-- [ ] DeliveredSubmission 
-- [ ] UpdateSubmission   
+- [X] CreateSubmission 
+- [X] UpdateSubmission
+- [X] DeleteSubmission   
 - [ ] FinishedOnePeerReview 
 - [ ] UpdateOnePeerReview   
 - [X] JoinedCourse
@@ -23,13 +24,13 @@
 - [ ] AdminUpdateCourse
 - [ ] AdminDeleteCourse
 - [ ] AdminUpdateFAQ 
-- [X] AdminEmailCourseStudents  
-
-**No functions for yet:**
-- [ ] AdminCreateFAQ
+- [X] AdminEmailCourseStudents
 - [ ] AdminRemoveUserFromCourse
 - [ ] AdminChangeStudentPassword  
 - [ ] AdminCreateSubmissionForUser 
 - [ ] AdminUpdateSubmissionForUser 
-- [ ] AdminDeleteSubmissionForUser 
+- [ ] AdminDeleteSubmissionForUser
+
+**No functions for yet:**
+- [ ] AdminCreateFAQ
 	
