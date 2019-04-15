@@ -6,6 +6,7 @@ import (
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/service"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
 	"github.com/gorilla/mux"
 	"log"
@@ -105,11 +106,23 @@ func AdminReviewCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Create new review service
 	reviewService := service.NewReviewService(db.GetDB())
+	services := service.NewServices(db.GetDB())
+
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
 
 	// Insert data to database
-	_, err = reviewService.Insert(form)
+	reviewID, err := reviewService.Insert(form)
 	if err != nil {
 		log.Println("review insert", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log create review to db
+	err = services.Logs.InsertAdminReviewForm(currentUser.ID, reviewID)
+	if err != nil {
+		log.Println("log, create review", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -241,10 +254,33 @@ func AdminReviewUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Services
 	reviewService := service.NewReviewService(db.GetDB())
+	services := service.NewServices(db.GetDB())
+
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
+	// Update form
 	err = reviewService.Update(form)
 	if err != nil {
 		log.Println("update review form", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get review for logging purposes
+	review, err := services.Review.FetchFromFormID(form.ID)
+	if err != nil {
+		log.Println("review, fetch from form id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log update review to db
+	err = services.Logs.InsertAdminUpdateReviewForm(currentUser.ID, review.ID)
+	if err != nil {
+		log.Println("log, update review", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -259,6 +295,13 @@ func AdminReviewDELETE(w http.ResponseWriter, r *http.Request) {
 	temp := struct {
 		ID int `json:"id"`
 	}{}
+
+	// Services
+	reviewService := service.NewReviewService(db.GetDB())
+	services := service.NewServices(db.GetDB())
+
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
 
 	// Decode JSON
 	err := json.NewDecoder(r.Body).Decode(&temp)
@@ -275,8 +318,15 @@ func AdminReviewDELETE(w http.ResponseWriter, r *http.Request) {
 		Location string `json:"location"`
 	}{}
 
+	// Get review for logging purposes
+	review, err := services.Review.FetchFromFormID(temp.ID)
+	if err != nil {
+		log.Println("review, fetch from form id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	// Delete the review from database, if error, set error messages, if ok, set success message
-	reviewService := service.NewReviewService(db.GetDB())
 	err = reviewService.Delete(temp.ID)
 	if err != nil {
 		msg.Code = http.StatusInternalServerError
@@ -286,6 +336,14 @@ func AdminReviewDELETE(w http.ResponseWriter, r *http.Request) {
 		msg.Code = http.StatusOK
 		msg.Message = "Deletion successful"
 		msg.Location = "/admin/review"
+	}
+
+	// Log delete review to db
+	err = services.Logs.InsertAdminDeleteReviewForm(currentUser.ID, review.ID)
+	if err != nil {
+		log.Println("log, delete review", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	// Write response code to header, and content type to JSON
@@ -350,6 +408,9 @@ func AdminReviewUpdateWeightsPOST(w http.ResponseWriter, r *http.Request) {
 	// Services
 	services := service.NewServices(db.GetDB())
 
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
 	form, err := services.Form.Fetch(formID)
 	if err != nil {
 		log.Println("services, form, fetch", err.Error())
@@ -380,6 +441,22 @@ func AdminReviewUpdateWeightsPOST(w http.ResponseWriter, r *http.Request) {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
+	}
+
+	// Get review for logging purposes
+	review, err := services.Review.FetchFromFormID(form.ID)
+	if err != nil {
+		log.Println("review, fetch from form id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log update review to db
+	err = services.Logs.InsertAdminUpdateReviewForm(currentUser.ID, review.ID)
+	if err != nil {
+		log.Println("log, update review", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	// Redirect

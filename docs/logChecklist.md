@@ -18,9 +18,9 @@
 - [X] AdminCreateSubmissionForm 
 - [X] AdminUpdateSubmissionForm 
 - [X] AdminDeleteSubmissionForm
-- [ ] AdminCreateReviewForm
-- [ ] AdminUpdateReviewForm
-- [ ] AdminDeleteReviewForm  
+- [X] AdminCreateReviewForm
+- [X] AdminUpdateReviewForm
+- [X] AdminDeleteReviewForm  
 - [ ] AdminCreatedCourse 
 - [ ] AdminUpdateCourse
 - [ ] AdminDeleteCourse

@@ -312,6 +312,14 @@ func AdminSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 	// Get current user
 	currentUser := session.GetUserFromSession(r)
 
+	// Fetch submission for logging purposes
+	submission, err := services.Submission.FetchFromFormID(temp.ID)
+	if err != nil {
+		log.Println("submission, fetch from form id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	// Delete the submission from database, if error, set error messages, if ok, set success message
 	err = submissionService.Delete(temp.ID)
 	if err != nil {
@@ -322,14 +330,6 @@ func AdminSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 		msg.Code = http.StatusOK
 		msg.Message = "Deletion successful"
 		msg.Location = "/admin/submission"
-	}
-
-	// Fetch submission for logging purposes
-	submission, err := services.Submission.FetchFromFormID(temp.ID)
-	if err != nil {
-		log.Println("submission, fetch from form id", err)
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
 	}
 
 	// Log delete submission form to db

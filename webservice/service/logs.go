@@ -445,8 +445,8 @@ func (s *LogsService) InsertAdminDeleteSubmissionForm(userID int, submissionID i
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertReviewForm inserts a new review form
-func (s *LogsService) InsertReviewForm(userID int, reviewID int) error {
+// InsertAdminReviewForm inserts a new review form
+func (s *LogsService) InsertAdminReviewForm(userID int, reviewID int) error {
 
 	// Save log in struct
 	// logx since log is already an package
@@ -464,8 +464,8 @@ func (s *LogsService) InsertReviewForm(userID int, reviewID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertUpdateReviewForm inserts a new review form
-func (s *LogsService) InsertUpdateReviewForm(userID int, reviewID int) error {
+// InsertAdminUpdateReviewForm inserts a new review form
+func (s *LogsService) InsertAdminUpdateReviewForm(userID int, reviewID int) error {
 
 	// Save log in struct
 	// logx since log is already an package
@@ -483,8 +483,8 @@ func (s *LogsService) InsertUpdateReviewForm(userID int, reviewID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertDeleteReviewForm inserts a new review form
-func (s *LogsService) InsertDeleteReviewForm(userID int, reviewID int) error {
+// InsertAdminDeleteReviewForm inserts a new review form
+func (s *LogsService) InsertAdminDeleteReviewForm(userID int, reviewID int) error {
 
 	// Save log in struct
 	// logx since log is already an package
