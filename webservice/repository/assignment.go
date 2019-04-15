@@ -31,7 +31,7 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 	// Initialize an empty assignment
 	result := model.Assignment{}
 	// Query string
-	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, review_deadline, reviewers, validation_id FROM assignments WHERE id = ?"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, review_deadline, reviewers, validation_id, group_delivery FROM assignments WHERE id = ?"
 	// Query the query string with the id as a parameter
 	rows, err := repo.db.Query(query, id)
 	if err != nil {
@@ -46,7 +46,7 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 		// Scan columns from the row
 		err = rows.Scan(&result.ID, &result.Name, &result.Description, &result.Created,
 			&result.Publish, &result.Deadline, &result.CourseID, &result.SubmissionID,
-			&result.ReviewID, &reviewDeadline, &result.Reviewers, &result.ValidationID)
+			&result.ReviewID, &reviewDeadline, &result.Reviewers, &result.ValidationID, &result.GroupDelivery)
 		if err != nil {
 			return nil, err
 		}
@@ -68,7 +68,7 @@ func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 	// Create empty assignment slice
 	result := make([]*model.Assignment, 0)
 	// Query string
-	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, review_deadline, reviewers, validation_id FROM assignments"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, review_deadline, reviewers, validation_id, group_delivery FROM assignments"
 	// Perform query
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -84,7 +84,7 @@ func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 		// Scan all columns from row
 		err = rows.Scan(&temp.ID, &temp.Name, &temp.Description, &temp.Created,
 			&temp.Publish, &temp.Deadline, &temp.CourseID, &temp.SubmissionID,
-			&temp.ReviewID, &reviewDeadline, &temp.Reviewers, &temp.ValidationID)
+			&temp.ReviewID, &reviewDeadline, &temp.Reviewers, &temp.ValidationID, &temp.GroupDelivery)
 		if err != nil {
 			return nil, err
 		}
@@ -196,9 +196,14 @@ func (repo *AssignmentRepository) Update(assignment model.Assignment) error {
 	// Check if submission ID is valid
 	if assignment.SubmissionID.Valid {
 		// Query string
-		query := "UPDATE assignments SET submission_id = ? WHERE id = ?"
+		query := "UPDATE assignments SET submission_id = ?, group_delivery = ? WHERE id = ?"
+		// Set group delivery to zero, and to 1 if is true
+		groupDelivery := 0
+		if assignment.GroupDelivery {
+			groupDelivery = 1
+		}
 		// Execute query
-		_, err := tx.Exec(query, assignment.SubmissionID, assignment.ID)
+		_, err := tx.Exec(query, assignment.SubmissionID, groupDelivery, assignment.ID)
 		if err != nil {
 			tx.Rollback()
 			return err
