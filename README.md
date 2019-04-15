@@ -74,13 +74,3 @@ Examples:
 ## Go Module
 * See [quick start](https://github.com/golang/go/wiki/Modules#quick-start) for Modules
 
-## Go Get's
-* go get -u github.com/go-sql-driver/mysql
-* go get github.com/gorilla/sessions
-* go get -u github.com/gorilla/mux
-* go get github.com/gorilla/handlers
-* go get github.com/gorilla/securecookie
-* go get golang.org/x/crypto/bcrypt
-* go get -u github.com/go-chi/chi
-* go get -u github.com/shurcooL/github_flavored_markdown
-* go get github.com/rs/xid
