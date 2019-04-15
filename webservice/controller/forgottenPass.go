@@ -124,6 +124,7 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 	//userService := service.NewUserService(db.GetDB())
 	validationService := service.NewValidationService(db.GetDB())
 	userService := service.NewUserService(db.GetDB())
+	logService := service.NewLogsService(db.GetDB())
 
 	match, payload, err := validationService.Match(hash)
 	if err != nil {
@@ -175,17 +176,13 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 			return
 		}
 
-		/* TODO brede : log
-		// Add log for updated password
-		logData := model.Log{UserID: payload.UserID, Activity: model.ChangePassword}
-		err = model.LogToDB(logData)
+		// Log password change to db
+		err = logService.InsertChangePasswordEmail(payload.UserID)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
-			log.Println("log, user change password, ", err.Error())
+			log.Println("log, user change password with email, ", err.Error())
 			return
 		}
-
-		*/
 
 		// Give feedback
 		session.GetAndDeleteMessageFromSession(w, r)

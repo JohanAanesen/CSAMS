@@ -94,24 +94,17 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		/* TODO brede : log
-		// Save information to log struct
-		logData := model.Log{UserID: currentUser.ID, Activity: model.ChangeEmail, OldValue: currentUser.EmailPrivate.String, NewValue: secondaryEmail}
-		*/
+		// Log changes to db
+		err = services.Logs.InsertChangeEmail(currentUser.ID, currentUser.EmailPrivate.String, secondaryEmail)
+		if err != nil {
+			log.Println("log, change secondary email ", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 
 		//update session
 		currentUser.EmailPrivate = updatedUser.EmailPrivate
 		session.SaveUserToSession(currentUser, w, r)
-
-		/* TODO brede : log
-		// Log email change in the database and give error if something went wrong
-		err = model.LogToDB(logData)
-		if err != nil {
-			log.Println(err.Error())
-			ErrorHandler(w, r, http.StatusInternalServerError)
-			return
-		}
-		*/
 	}
 
 	// if no of these fields are empty, try to change password
@@ -147,19 +140,13 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		/* TODO brede : log
-		// Save information to log struct
-		logData := model.Log{UserID: currentUser.ID, Activity: model.ChangePassword}
-
 		// Log password change in the database and give error if something went wrong
-		err = model.LogToDB(logData)
+		err = services.Logs.InsertChangePassword(currentUser.ID)
 		if err != nil {
-			log.Println(err.Error())
+			log.Println("log, change password ", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
-
-		*/
 
 	}
 

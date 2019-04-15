@@ -1,14 +1,14 @@
 # Log functions checklist
 ## Implemented and works
 - [X] NewUser           
-- [ ] ChangeEmail         
-- [ ] ChangePassword    
-- [ ] ChangePasswordEmail
+- [X] ChangeEmail         
+- [X] ChangePassword    
+- [X] ChangePasswordEmail
 - [ ] DeliveredSubmission 
 - [ ] UpdateSubmission   
 - [ ] FinishedOnePeerReview 
 - [ ] UpdateOnePeerReview   
-- [ ] JoinedCourse
+- [X] JoinedCourse
 - [ ] LeftCourse  
 - [ ] AdminCreatAssignment  
 - [ ] AdminDeleteAssignment 

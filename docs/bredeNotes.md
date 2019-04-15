@@ -402,5 +402,6 @@ CREATE TABLE `validation`
 ### Monday - EASTER EDITION - 15/04/19
 * Finished the last functions for logging `admin control student` logging. It's a lot of functions now, and most are almost identical.
 I'm considering solving this another way to have less code...
+* Implemented and tested change logging for students
 
 ### Tuesday - EASTER EDITION - 16/04/19
