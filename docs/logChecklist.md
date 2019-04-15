@@ -15,9 +15,9 @@
 **Admin**
 - [X] AdminCreateAssignment  
 - [X] AdminUpdateAssignment  
-- [ ] AdminCreateSubmissionForm 
-- [ ] AdminUpdateSubmissionForm 
-- [ ] AdminDeleteSubmissionForm
+- [X] AdminCreateSubmissionForm 
+- [X] AdminUpdateSubmissionForm 
+- [X] AdminDeleteSubmissionForm
 - [ ] AdminCreateReviewForm
 - [ ] AdminUpdateReviewForm
 - [ ] AdminDeleteReviewForm  

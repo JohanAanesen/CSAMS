@@ -6,6 +6,7 @@ import (
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/service"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
 	"github.com/gorilla/mux"
 	"log"
@@ -104,10 +105,23 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Services
 	submissionService := service.NewSubmissionService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
-	_, err = submissionService.Insert(form)
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
+	// Insert new submission form
+	submissionID, err := submissionService.Insert(form)
 	if err != nil {
 		log.Println("insert submission", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log new submission form to db
+	err = services.Logs.InsertAdminSubmissionForm(currentUser.ID, submissionID)
+	if err != nil {
+		log.Println("log, create submission form", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -236,11 +250,31 @@ func AdminSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Services
 	submissionService := service.NewSubmissionService(db.GetDB())
+	services := service.NewServices(db.GetDB())
+
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
 
 	// Update form
 	err = submissionService.Update(form)
 	if err != nil {
 		log.Println("update submission", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Fetch submission for logging purposes
+	submission, err := services.Submission.FetchFromFormID(form.ID)
+	if err != nil {
+		log.Println("submission, fetch from form id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log update submission form to db
+	err = services.Logs.InsertAdminUpdateSubmissionForm(currentUser.ID, submission.ID)
+	if err != nil {
+		log.Println("log, update submission form", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -273,6 +307,10 @@ func AdminSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 
 	// Services
 	submissionService := service.NewSubmissionService(db.GetDB())
+	services := service.NewServices(db.GetDB())
+
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
 
 	// Delete the submission from database, if error, set error messages, if ok, set success message
 	err = submissionService.Delete(temp.ID)
@@ -284,6 +322,22 @@ func AdminSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 		msg.Code = http.StatusOK
 		msg.Message = "Deletion successful"
 		msg.Location = "/admin/submission"
+	}
+
+	// Fetch submission for logging purposes
+	submission, err := services.Submission.FetchFromFormID(temp.ID)
+	if err != nil {
+		log.Println("submission, fetch from form id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log delete submission form to db
+	err = services.Logs.InsertAdminDeleteSubmissionForm(currentUser.ID, submission.ID)
+	if err != nil {
+		log.Println("log, delete submission form", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	// Write response code to header, and content type to JSON
@@ -348,6 +402,9 @@ func AdminSubmissionUpdateWeightsPOST(w http.ResponseWriter, r *http.Request) {
 	// Services
 	services := service.NewServices(db.GetDB())
 
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
 	form, err := services.Form.Fetch(formID)
 	if err != nil {
 		log.Println("services, form, fetch", err.Error())
@@ -378,6 +435,23 @@ func AdminSubmissionUpdateWeightsPOST(w http.ResponseWriter, r *http.Request) {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
+	}
+
+	// Fetch submission for logging purposes
+	submission, err := services.Submission.FetchFromFormID(formID)
+	if err != nil {
+		log.Println("submission, fetch from form id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// TODO brede : own log for weights?
+	// Log update submission form to db
+	err = services.Logs.InsertAdminUpdateSubmissionForm(currentUser.ID, submission.ID)
+	if err != nil {
+		log.Println("log, update submission form", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	// Redirect

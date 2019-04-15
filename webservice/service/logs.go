@@ -388,8 +388,8 @@ func (s *LogsService) InsertLeftCourse(userID int, courseID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertSubmissionForm inserts a new submission form
-func (s *LogsService) InsertSubmissionForm(userID int, submissionID int) error {
+// InsertAdminSubmissionForm inserts a new submission form
+func (s *LogsService) InsertAdminSubmissionForm(userID int, submissionID int) error {
 
 	// Save log in struct
 	// logx since log is already an package
@@ -407,8 +407,8 @@ func (s *LogsService) InsertSubmissionForm(userID int, submissionID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertUpdateSubmissionForm inserts a new submission form
-func (s *LogsService) InsertUpdateSubmissionForm(userID int, submissionID int) error {
+// InsertAdminUpdateSubmissionForm inserts a new submission form
+func (s *LogsService) InsertAdminUpdateSubmissionForm(userID int, submissionID int) error {
 
 	// Save log in struct
 	// logx since log is already an package
@@ -426,8 +426,8 @@ func (s *LogsService) InsertUpdateSubmissionForm(userID int, submissionID int) e
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertDeleteSubmissionForm inserts a new submission form
-func (s *LogsService) InsertDeleteSubmissionForm(userID int, submissionID int) error {
+// InsertAdminDeleteSubmissionForm inserts a new submission form
+func (s *LogsService) InsertAdminDeleteSubmissionForm(userID int, submissionID int) error {
 
 	// Save log in struct
 	// logx since log is already an package
