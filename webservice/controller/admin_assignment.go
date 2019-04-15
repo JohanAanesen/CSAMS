@@ -7,7 +7,6 @@ import (
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/service"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
-	"github.com/JohanAanesen/CSAMS/webservice/shared/scheduler"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
@@ -297,7 +296,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute  TODO time-norwegian
 	if lastID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInCorrectTimeZone()) {
-
+		/*
 		sched := scheduler.Scheduler{}
 
 		err := sched.SchedulePeerReview(
@@ -308,6 +307,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 			return
 		}
+		*/
 
 	}
 
@@ -596,6 +596,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 
 	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute TODO time-norwegian
 	if assignment.ID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInCorrectTimeZone()) {
+		/*
 		sched := scheduler.Scheduler{}
 
 		if sched.SchedulerExists(assignment.ID) {
@@ -617,6 +618,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
+		 */
 
 	}
 
