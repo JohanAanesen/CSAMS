@@ -24,14 +24,13 @@ import (
 // AdminAssignmentGET handles GET-request at /admin/assignment
 func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	// Services
-	courseService := service.NewCourseService(db.GetDB())
-	assignmentService := service.NewAssignmentService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	// Current user
 	currentUser := session.GetUserFromSession(r)
 
 	//get courses to user/teacher
-	courses, err := courseService.FetchAllForUserOrdered(currentUser.ID)
+	courses, err := services.Course.FetchAllForUserOrdered(currentUser.ID)
 	if err != nil {
 		log.Println("course service fetch all for user ordered", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -47,7 +46,7 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	var activeAssignments []ActiveAssignment
 
 	for _, course := range courses { //iterate all courses
-		assignments, err := assignmentService.FetchFromCourse(course.ID)
+		assignments, err := services.Assignment.FetchFromCourse(course.ID)
 		if err != nil {
 			log.Println("fetch from course", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
@@ -420,7 +419,7 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
-	v.Name = "admin/assignment/update"
+	v.Name = "admin/assignment/update_new"
 
 	v.Vars["Assignment"] = assignment
 	v.Vars["SubmissionCount"] = submissionCount
