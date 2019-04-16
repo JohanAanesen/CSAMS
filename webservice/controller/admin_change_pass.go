@@ -20,6 +20,12 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 	// Get form value
 	vars := r.FormValue("vars")
 
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
 	// Remove user from course
 	userid := r.FormValue("removeVars")
 	if userid != "" {
@@ -46,10 +52,19 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = removeUserFromCourse(uid, cid)
+		// Remove user from course
+		err = services.Course.RemoveUser(uid, cid)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println(err.Error())
+			return
+		}
+
+		// Log removal of user from course
+		err = services.Logs.InsertAdminRemoveUserFromCourse(currentUser.ID, cid, uid)
+		if err != nil {
+			log.Println("log, admin remove user from course")
+			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
 	}
@@ -84,10 +99,14 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Log change users password
+		err = services.Logs.InsertAdminChangeUserPassword(currentUser.ID, id)
+		if err != nil {
+			log.Println("log, admin change users password")
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 	}
-
-	// Services
-	services := service.NewServices(db.GetDB())
 
 	// Get courses
 	courses, err := services.Course.FetchAllForUserOrdered(session.GetUserFromSession(r).ID)
@@ -105,19 +124,6 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Courses"] = courses
 
 	v.Render(w)
-}
-
-// removeUserFromCourse removes user from course
-func removeUserFromCourse(userID int, courseID int) error {
-	// Services
-	services := service.NewServices(db.GetDB())
-	// Try to remove user from course
-	err := services.Course.RemoveUser(userID, courseID)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // AdminGetUsersPOST serves the same page as above, but with the list of all students in a course

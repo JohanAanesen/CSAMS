@@ -23,13 +23,16 @@
 - [X] AdminDeleteReviewForm  
 - [X] AdminCreatedCourse 
 - [X] AdminUpdateCourse
-- [ ] AdminUpdateFAQ 
 - [X] AdminEmailCourseStudents
-- [ ] AdminRemoveUserFromCourse
-- [ ] AdminChangeStudentPassword  
+- [X] AdminRemoveUserFromCourse
+- [X] AdminChangeStudentPassword  
 - [ ] AdminCreateSubmissionForUser 
 - [ ] AdminUpdateSubmissionForUser 
 - [ ] AdminDeleteSubmissionForUser
+
+**Bug**
+- [ ] AdminUpdateFAQ : `http: panic serving [::1]:8348: runtime error: invalid memory address or nil pointer dereference`
+
 
 **No functions for yet:**
 - [ ] AdminCreateFAQ

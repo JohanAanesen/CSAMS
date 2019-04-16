@@ -411,6 +411,8 @@ I'm considering solving this another way to have less code...
     * Create/Update/Delete review form
 
 ### Tuesday - EASTER EDITION - 16/04/19
-* Found a bug when updating faq, converting to service and repository now
+* Found a bug when updating faq, converting to service and repository gave another nil panic bug, so im waiting to implement that for later
 * Implemented and tested:
     * Join/create/update course
+    * change student pass/remove student from course by admin
+   
