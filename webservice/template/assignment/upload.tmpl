@@ -122,9 +122,9 @@
 
         // Set the date we're counting down to
 
-        let countDownDate = new Date({{ .Assignment.Deadline }}); // TODO time this converts to wrong timezone
+        let countDownDate = new Timestamp({{ .Assignment.Deadline }}); // TODO time this converts to wrong timezone
 
-        // let countDownDate = new Date("Jan 5, 2021 15:37:25").getTime();
+        // let countDownDate = new Timestamp("Jan 5, 2021 15:37:25").getTime();
 
         console.log({{.Assignment.Deadline}});
         console.log(countDownDate);

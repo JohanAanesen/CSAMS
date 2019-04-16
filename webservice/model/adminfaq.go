@@ -9,8 +9,9 @@ import (
 
 // Faq Struct for keeping the frequently asked questions under /admin/faq
 type Faq struct {
-	Date      time.Time // Last edited time
-	Questions string    // The markdown with questions and answers
+	ID        int       `json:"id"`
+	Timestamp time.Time `json:"timestamp"`
+	Questions string    `json:"questions"`
 }
 
 // GetDateAndQuestionsFAQ returns the date and question from the faq
@@ -36,7 +37,7 @@ func GetDateAndQuestionsFAQ() Faq {
 		}
 
 		content = Faq{
-			Date:      timestamp,
+			Timestamp: timestamp,
 			Questions: questions,
 		}
 	}
