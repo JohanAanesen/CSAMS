@@ -151,9 +151,10 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+			// Log user join course
 			err = logService.InsertJoinCourse(user.ID, course.ID)
 			if err != nil {
-				log.Println("log, ", err)
+				log.Println("log, join course ", err)
 				ErrorHandler(w, r, http.StatusInternalServerError)
 				return
 			}

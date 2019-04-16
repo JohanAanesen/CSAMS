@@ -188,7 +188,7 @@ func (repo *CourseRepository) UserInCourse(userID, courseID int) (bool, error) {
 }
 
 // Update func
-func (repo *CourseRepository) Update(id int, course model.Course) error {
+func (repo *CourseRepository) Update(course model.Course) error {
 	query := "UPDATE course SET coursecode = ?, coursename = ?, description = ?, semester = ? WHERE id = ?"
 
 	tx, err := repo.db.Begin()
@@ -196,7 +196,7 @@ func (repo *CourseRepository) Update(id int, course model.Course) error {
 		return err
 	}
 
-	_, err = tx.Exec(query, course.Code, course.Name, course.Description, course.Semester, id)
+	_, err = tx.Exec(query, course.Code, course.Name, course.Description, course.Semester, course.ID)
 	if err != nil {
 		tx.Rollback()
 		return err

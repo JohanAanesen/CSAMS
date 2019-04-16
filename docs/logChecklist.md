@@ -21,9 +21,8 @@
 - [X] AdminCreateReviewForm
 - [X] AdminUpdateReviewForm
 - [X] AdminDeleteReviewForm  
-- [ ] AdminCreatedCourse 
-- [ ] AdminUpdateCourse
-- [ ] AdminDeleteCourse
+- [X] AdminCreatedCourse 
+- [X] AdminUpdateCourse
 - [ ] AdminUpdateFAQ 
 - [X] AdminEmailCourseStudents
 - [ ] AdminRemoveUserFromCourse
@@ -38,4 +37,4 @@
 **No triggers for yet**
 - [ ] LeftCourse 
 - [ ] AdminDeleteAssignment
-	
+- [ ] AdminDeleteCourse

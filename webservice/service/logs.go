@@ -293,8 +293,8 @@ func (s *LogsService) InsertUpdateOnePeerReview(userID int, assignmentID int, af
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertCourse inserts a new course log
-func (s *LogsService) InsertCourse(userID int, courseID int) error {
+// InsertAdminCourse inserts a new course log
+func (s *LogsService) InsertAdminCourse(userID int, courseID int) error {
 
 	// Save log in struct
 	// logx since log is already an package
@@ -312,8 +312,8 @@ func (s *LogsService) InsertCourse(userID int, courseID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertUpdateCourse inserts a new update course log
-func (s *LogsService) InsertUpdateCourse(userID int, courseID int) error {
+// InsertAdminUpdateCourse inserts a new update course log
+func (s *LogsService) InsertAdminUpdateCourse(userID int, courseID int) error {
 
 	// Save log in struct
 	// logx since log is already an package
@@ -331,8 +331,8 @@ func (s *LogsService) InsertUpdateCourse(userID int, courseID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertDeleteCourse inserts a new delete course log
-func (s *LogsService) InsertDeleteCourse(userID int, courseID int) error {
+// InsertAdminDeleteCourse inserts a new delete course log
+func (s *LogsService) InsertAdminDeleteCourse(userID int, courseID int) error {
 
 	// Save log in struct
 	// logx since log is already an package

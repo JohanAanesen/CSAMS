@@ -411,3 +411,6 @@ I'm considering solving this another way to have less code...
     * Create/Update/Delete review form
 
 ### Tuesday - EASTER EDITION - 16/04/19
+* Found a bug when updating faq, converting to service and repository now
+* Implemented and tested:
+    * Join/create/update course

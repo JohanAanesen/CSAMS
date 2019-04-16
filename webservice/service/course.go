@@ -97,8 +97,8 @@ func (s *CourseService) Insert(course model.Course) (int, error) {
 }
 
 // Update a course in the database
-func (s *CourseService) Update(id int, course model.Course) error {
-	return s.courseRepo.Update(id, course)
+func (s *CourseService) Update(course model.Course) error {
+	return s.courseRepo.Update(course)
 }
 
 // Delete a course in the database

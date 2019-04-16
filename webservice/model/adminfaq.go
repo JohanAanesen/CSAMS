@@ -18,7 +18,7 @@ func GetDateAndQuestionsFAQ() Faq {
 	content := Faq{Questions: "-1"}
 
 	//insert into database
-	rows, err := db.GetDB().Query("SELECT timestamp, questions FROM `adminfaq` WHERE id = 1") // OBS! ID is always 1 since it's only one entry in the table
+	rows, err := db.GetDB().Query("SELECT `timestamp`, `questions` FROM `adminfaq` WHERE `id` = 1") // OBS! ID is always 1 since it's only one entry in the table
 
 	// Log error
 	if err != nil {

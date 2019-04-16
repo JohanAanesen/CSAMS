@@ -1,7 +1,10 @@
 package controller
 
 import (
+	"github.com/JohanAanesen/CSAMS/schedulerservice/db"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
+	"github.com/JohanAanesen/CSAMS/webservice/service"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
 	"log"
 	"net/http"
@@ -11,7 +14,7 @@ import (
 func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 	content := model.GetDateAndQuestionsFAQ() // TODO (Svein): Move this to 'settings'
 	if content.Questions == "-1" { // TODO (Svein): Allow blank FAQ
-		log.Println("Something went wrong with getting the faq (admin.go)")
+		log.Println("Something went wrong with getting the faq")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -30,7 +33,7 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 func AdminFaqEditGET(w http.ResponseWriter, r *http.Request) {
 	content := model.GetDateAndQuestionsFAQ() // TODO (Svein): Move this to 'settings'
 	if content.Questions == "-1" { // TODO (Svein): Allow blank FAQ
-		log.Println("Something went wrong with getting the faq (admin.go)")
+		log.Println("Something went wrong with getting the faq")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -50,22 +53,25 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// Check that the questions arrived
 	updatedFAQ := r.FormValue("rawQuestions")
 	if updatedFAQ == "" {
-		log.Println("Form is empty! (admin.go)")
+		log.Println("Form is empty!")
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
 
+	// Services
+	services := service.NewServices(db.GetDB())
+
 	// Check that it's possible to get the old faq from db
 	content := model.GetDateAndQuestionsFAQ()
 	if content.Questions == "-1" {
-		log.Println("Something went wrong with getting the faq (admin.go)")
+		log.Println("Something went wrong with getting the faq")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	// Check that it's changes to the new faq
 	if content.Questions == updatedFAQ {
-		log.Println("Old and new faq can not be equal! (admin.go)")
+		log.Println("Old and new faq can not be equal!")
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
@@ -78,28 +84,16 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/* TODO brede : log
 	// Get user for logging purposes
 	currentUser := session.GetUserFromSession(r)
 
-
-	// Collect the log data
-	logData := model.Log{
-		UserID:   currentUser.ID,
-		Activity: model.AdminUpdateFAQ,
-		OldValue: content.Questions,
-		NewValue: updatedFAQ,
-	}
-
-	// Log that a teacher has changed the faq
-	err = model.LogToDB(logData)
+	// Log update faq to db
+	err = services.Logs.InsertUpdateFAQ(currentUser.ID, content.Questions, updatedFAQ)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("log, update faq ", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	*/
 
 	//AdminFaqGET(w, r)
 	http.Redirect(w, r, "/admin/faq", http.StatusFound)

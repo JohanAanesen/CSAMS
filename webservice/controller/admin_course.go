@@ -69,28 +69,25 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Services
 	courseService := service.NewCourseService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
-	lastID, err := courseService.Insert(course)
+	var err error
+
+	// Insert new course
+	course.ID, err = courseService.Insert(course)
 	if err != nil {
 		log.Println("course service insert", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	// Get course id
-	// Convert from int64 to int
-	course.ID = int(lastID)
-
-	// Log createCourse in the database and give error if something went wrong
-	/* TODO brede : log
-	logData := model.Log{UserID: currentUser.ID, Activity: model.AdminCreatedCourse, CourseID: course.ID}
-	err = model.LogToDB(logData)
+	// Log create course to db
+	err = services.Logs.InsertAdminCourse(currentUser.ID, course.ID)
 	if err != nil {
-		log.Println("log to DB", err)
+		log.Println("log, create course ", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-	*/
 
 	// Add user to course
 	err = courseService.AddUser(currentUser.ID, course.ID)
@@ -105,16 +102,13 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Log joinedCourse in the db and give error if something went wrong
-	/* TODO brede : log
-	logData = model.Log{UserID: currentUser.ID, Activity: model.JoinedCourse, CourseID: course.ID}
-	err = model.LogToDB(logData)
+	// Log join course to db
+	err = services.Logs.InsertJoinCourse(currentUser.ID, course.ID)
 	if err != nil {
-		log.Println("log to DB", err)
+		log.Println("log, admin join course ", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-	*/
 
 	//IndexGET(w, r) //success redirect to homepage
 	http.Redirect(w, r, "/admin/course", http.StatusFound) //success redirect to homepage
@@ -181,6 +175,10 @@ func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Services
 	courseService := service.NewCourseService(db.GetDB())
+	services := service.NewServices(db.GetDB())
+
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
 
 	//get course from database
 	course, err := courseService.Fetch(id)
@@ -191,15 +189,24 @@ func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//update variables
+	course.ID = id
 	course.Name = newName
 	course.Code = newCode
 	course.Description = newDescription
 	course.Semester = newSemester
 
 	//save to database
-	err = courseService.Update(id, *course)
+	err = courseService.Update(*course)
 	if err != nil {
 		log.Println(err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log update course to db
+	err = services.Logs.InsertAdminUpdateCourse(currentUser.ID, course.ID)
+	if err != nil {
+		log.Println("log, update course ", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
