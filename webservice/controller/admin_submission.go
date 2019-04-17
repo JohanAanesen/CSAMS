@@ -272,10 +272,10 @@ func AdminSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 	}{}
 
 	// Services
-	submissionService := service.NewSubmissionService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	// Delete the submission from database, if error, set error messages, if ok, set success message
-	err = submissionService.Delete(temp.ID)
+	err = services.Submission.Delete(temp.ID)
 	if err != nil {
 		msg.Code = http.StatusInternalServerError
 		msg.Message = err.Error()
