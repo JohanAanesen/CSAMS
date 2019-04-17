@@ -60,6 +60,9 @@
                                 <h3 class="display-5">Submission</h3>
                                 <h5>
                                     <span class="badge {{if DEADLINEDUE .Assignment.Deadline}}badge-dark{{ else}} badge-secondary{{end}}">{{.CourseCode}}</span>
+                                    {{if .Assignment.GroupDelivery}}
+                                        <span class="badge badge-info">Group Based</span>
+                                    {{end}}
                                     <!-- Only display submission status if it's a student -->
                                     {{ if $s }}
                                         {{if .Delivered }}
