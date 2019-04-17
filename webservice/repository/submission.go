@@ -131,9 +131,9 @@ func (repo *SubmissionRepository) Update(id int, submission model.Submission) er
 	return err
 }
 
-// Delete func
-func (repo *SubmissionRepository) Delete(id int) error {
-	query := "DELETE FROM submissions WHERE id = ?"
+// DeleteByFormID func
+func (repo *SubmissionRepository) DeleteByFormID(id int) error {
+	query := "DELETE FROM submissions WHERE form_id = ?"
 
 	tx, err := repo.db.Begin()
 	if err != nil {

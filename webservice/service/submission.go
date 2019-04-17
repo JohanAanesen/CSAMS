@@ -120,7 +120,7 @@ func (s *SubmissionService) Update(form model.Form) error {
 
 // Delete func
 func (s *SubmissionService) Delete(id int) error {
-	err := s.submissionRepo.Delete(id)
+	err := s.submissionRepo.DeleteByFormID(id)
 	if err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func (s *SubmissionService) Delete(id int) error {
 		return err
 	}
 
-	return err
+	return nil
 }
 
 // IsUsed func
