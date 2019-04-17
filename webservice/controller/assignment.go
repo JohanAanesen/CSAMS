@@ -133,6 +133,8 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	// TODO time-norwegian
 	var isDeadlineOver = assignment.Deadline.Before(util.GetTimeInCorrectTimeZone())
 
+	var isReviewDeadlineOver = assignment.ReviewDeadline.Before(util.GetTimeInCorrectTimeZone())
+
 	// TODO : make this dynamic
 	var hasBeenValidated = false
 
@@ -147,6 +149,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Delivered"] = delivered
 	v.Vars["HasReview"] = hasReview
 	v.Vars["IsDeadlineOver"] = isDeadlineOver
+	v.Vars["IsReviewDeadlineOver"] = isReviewDeadlineOver
 	v.Vars["CourseID"] = course.ID
 	v.Vars["Reviews"] = reviewUsers
 	v.Vars["HasBeenValidated"] = hasBeenValidated
@@ -592,10 +595,9 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check review deadline
-	now := time.Now().Add(1 * time.Hour) // TODO (Svein): Fix this
-	if assignment.ReviewDeadline.Before(now) {
-		log.Println("DEBUG:", assignment.ReviewDeadline.UTC(), "after", now.UTC())
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	if assignment.ReviewDeadline.Before(util.GetTimeInCorrectTimeZone()) {
+		log.Println("DEBUG:", assignment.ReviewDeadline.UTC(), "after", util.GetTimeInCorrectTimeZone())
+		ErrorHandler(w, r, http.StatusTeapot)
 		return
 	}
 
@@ -865,7 +867,7 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 
 	assignmentID, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		log.Println("strconv, atoi, id", err)
+		log.Println("AssignmentReviewRequestPOST, strconv, atoi, id", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -876,6 +878,20 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 	// Services
 	services := service.NewServices(db.GetDB())
 
+	//get assignment info
+	assignment, err := services.Assignment.Fetch(assignmentID)
+	if err != nil {
+		log.Println("AssignmentReviewRequestPOST, services.Assignment.Fetch", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	//check that user is asking before the deadline
+	if assignment.ReviewDeadline.Before(util.GetTimeInCorrectTimeZone()){
+		log.Println("AssignmentReviewRequestPOST, assignment.ReviewDeadline.Before", err)
+		ErrorHandler(w, r, http.StatusTeapot)
+		return
+	}
 
 	usersDelivered, err := services.SubmissionAnswer.FetchUsersDeliveredFromAssignment(assignmentID)
 	if err != nil {
@@ -884,12 +900,26 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//get all the users that the user is currently "reviewing"
+	alreadyTargets, err := services.PeerReview.FetchReviewTargetsToUser(currentUser.ID, assignmentID)
+	if err != nil {
+		log.Println("AssignmentReviewRequestPOST, services.Submission.FetchReviewTargetsToUser", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+
 	//find the lowest amount of reviews
 	lowestNrReviews := 99999
 	usersAndReviews := make(map[int]int)
 
+	//set the review count on already reviewed users very high
+	for _, target := range alreadyTargets{
+		usersAndReviews[target.TargetID] = 99999
+	}
+
 	for _, user := range usersDelivered{
-		if user != currentUser.ID { //don't include self
+		if user != currentUser.ID && usersAndReviews[user] != 99999 { //don't include self or already reviewed targets
 			reviewsDone, err := services.ReviewAnswer.FetchForTarget(user, assignmentID)
 			if err != nil {
 				log.Println("AssignmentReviewRequestPOST, services.ReviewAnswer.FetchForTarget", err)
@@ -903,6 +933,12 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 				lowestNrReviews = len(reviewsDone)
 			}
 		}
+	}
+
+	//if you have reviewed everyone
+	if lowestNrReviews > 99998{
+		ErrorHandler(w, r, http.StatusForbidden)
+		return
 	}
 
 	//filter the submissions with lowest reviewcount

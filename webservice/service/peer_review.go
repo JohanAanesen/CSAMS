@@ -30,16 +30,10 @@ func (s *PeerReviewService) TargetExists(assignmentID int, userID int) (bool, er
 
 // FetchAllFromAssignment func
 func (s *PeerReviewService) FetchAllFromAssignment(assignmentID int) ([]*model.PeerReview, error) {
-	result := make([]*model.PeerReview, 0)
+	return s.peerReviewRepo.FetchPeerReviewsFromAssignment(assignmentID)
+}
 
-	peerReviewPtr, err := s.peerReviewRepo.FetchPeerReviewsFromAssignment(assignmentID)
-	if err != nil {
-		return result, err
-	}
-
-	for _, peerReview := range peerReviewPtr {
-		result = append(result, peerReview)
-	}
-
-	return result, err
+// FetchPeerReviewsToUser
+func (s *PeerReviewService) FetchReviewTargetsToUser(userID int, assignmentID int)([]*model.PeerReview, error) {
+	return s.peerReviewRepo.FetchReviewTargetsToUser(userID, assignmentID)
 }

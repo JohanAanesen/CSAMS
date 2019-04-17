@@ -47,6 +47,7 @@
     {{$id := .Assignment.ID}}
     {{$reviewsDone := len .Reviews}}
     {{$reviewsLeft := NULLINT64MINUSINT .Assignment.Reviewers $reviewsDone}}
+    {{$reviewDeadlineOver := .IsReviewDeadlineOver}}
     <div class="container pt-3">
         {{if .Delivered}}
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -111,9 +112,11 @@
                         {{if gt .Assignment.Reviewers.Value $reviewsDone }}
                             <p>You have <span style="color: red;">{{$reviewsLeft}}</span> reviews left to do!</p>
                         {{end}}
-                        <form action="/assignment/{{.Assignment.ID}}/requestreview" id="newReviewForm" method="post">
-                            <button type="submit" form="newReviewForm" class="btn btn-outline-success my-3">New Review</button>
-                        </form>
+                        {{if not $reviewDeadlineOver}}
+                            <form action="/assignment/{{.Assignment.ID}}/requestreview" id="newReviewForm" method="post">
+                                <button type="submit" form="newReviewForm" class="btn btn-outline-success my-3">New Review</button>
+                            </form>
+                        {{end}}
                         <div class="row">
                             {{$UID := .CurrentUser.ID}}
                             {{$AID := .Assignment.ID}}
@@ -125,13 +128,13 @@
                                                 <h2 class="display-4">Review</h2>
                                                 <h6>
                                                     <span class="badge badge-info">Peer-Review</span>
-                                                    {{if HasBeenReviewed .ID $UID $AID}}<span class="badge badge-success">Performed</span>{{end}}
+                                                    {{if HasBeenReviewed .ID $UID $AID}}<span class="badge badge-success">Reviewed</span>{{end}}
                                                 </h6>
                                                 <hr class="bg-light">
-                                                {{if HasBeenReviewed .ID $UID $AID}}
+                                                {{if and (HasBeenReviewed .ID $UID $AID) (not $reviewDeadlineOver)}}
                                                     <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-info">Update Review</a>
-                                                {{else}}
-                                                    <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-dark">Perform Review</a>
+                                                {{else if not $reviewDeadlineOver}}
+                                                    <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-dark">Do Review</a>
                                                 {{end}}
                                             </div>
                                         </div>

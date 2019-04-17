@@ -93,3 +93,29 @@ func (repo *PeerReviewRepository) FetchPeerReviewsFromAssignment(assignmentID in
 
 	return result, err
 }
+
+// FetchReviewTargetsToUser func
+func (repo *PeerReviewRepository) FetchReviewTargetsToUser(userID int, assignmentID int) ([]*model.PeerReview, error){
+
+	result := make([]*model.PeerReview, 0)
+	query := "SELECT pr.id, pr.user_id, pr.review_user_id, pr.assignment_id FROM peer_reviews AS pr WHERE pr.user_id = ? AND pr.assignment_id = ?"
+
+	rows, err := repo.db.Query(query, userID, assignmentID)
+	if err != nil {
+		return result, err
+	}
+
+	for rows.Next() {
+		var temp model.PeerReview
+
+		err = rows.Scan(&temp.ID, &temp.ReviewerID, &temp.TargetID, &temp.AssignmentID)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, &temp)
+	}
+
+	return result, err
+
+}
