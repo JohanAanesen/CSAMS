@@ -296,16 +296,16 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute  TODO time-norwegian
 	if lastID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInCorrectTimeZone()) {
 		/*
-		sched := scheduler.Scheduler{}
+			sched := scheduler.Scheduler{}
 
-		err := sched.SchedulePeerReview(
-			lastID, //assignment ID
-			int(assignment.Reviewers.Int64),
-			assignment.Deadline)
-		if err != nil {
-			log.Println(err)
-			return
-		}
+			err := sched.SchedulePeerReview(
+				lastID, //assignment ID
+				int(assignment.Reviewers.Int64),
+				assignment.Deadline)
+			if err != nil {
+				log.Println(err)
+				return
+			}
 		*/
 
 	}
@@ -576,6 +576,11 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		Valid: val != 0,
 	}
 
+	groupDelivery := r.FormValue("group_assignment")
+	if groupDelivery == "on" {
+		assignment.GroupDelivery = true
+	}
+
 	assignment.ID = id
 	assignment.Name = p.Sanitize(r.FormValue("name"))
 	assignment.Description = p.Sanitize(r.FormValue("description"))
@@ -596,28 +601,28 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute TODO time-norwegian
 	if assignment.ID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInCorrectTimeZone()) {
 		/*
-		sched := scheduler.Scheduler{}
+			sched := scheduler.Scheduler{}
 
-		if sched.SchedulerExists(assignment.ID) {
-			err := sched.UpdateSchedule(
-				assignment.ID, //assignment ID
-				int(assignment.Reviewers.Int64),
-				assignment.Deadline)
-			if err != nil {
-				log.Println(err)
-				return
+			if sched.SchedulerExists(assignment.ID) {
+				err := sched.UpdateSchedule(
+					assignment.ID, //assignment ID
+					int(assignment.Reviewers.Int64),
+					assignment.Deadline)
+				if err != nil {
+					log.Println(err)
+					return
+				}
+			} else {
+				err := sched.SchedulePeerReview(
+					assignment.ID, //assignment ID
+					int(assignment.Reviewers.Int64),
+					assignment.Deadline)
+				if err != nil {
+					log.Println(err)
+					return
+				}
 			}
-		} else {
-			err := sched.SchedulePeerReview(
-				assignment.ID, //assignment ID
-				int(assignment.Reviewers.Int64),
-				assignment.Deadline)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-		}
-		 */
+		*/
 
 	}
 
