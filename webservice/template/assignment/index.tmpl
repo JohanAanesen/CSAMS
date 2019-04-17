@@ -55,13 +55,14 @@
                 </button>
             </div>
         {{end}}
-        <a href="/course/{{.CourseID}}" class="btn btn-outline-dark">Go Back</a>
+        <a href="/course/{{.CourseID}}" class="btn btn-outline-dark mb-3">Go Back</a>
 
         <h1 class="display-4">
             {{.Assignment.Name}}
         </h1>
         {{if .HasReview}}<span class="badge badge-info">Peer Review</span>{{end}}
         {{if .HasAutoValidation}}<span class="badge badge-warning">Auto Validated</span>{{end}}
+        {{if .Assignment.GroupDelivery}}<span class="badge badge-info">Group Based</span>{{end}}
 
         <p class="lead"><strong>Deadline:</strong> {{PRETTYTIME .Assignment.Deadline}}</p>
         <div class="card mb-5">
@@ -80,6 +81,11 @@
                     <li class="nav-item">
                         <a class="nav-link{{if or (not .HasReview) (.IsTeacher)}} disabled{{end}}" id="viewReview-tab" data-toggle="tab" href="#viewReview" role="tab" aria-controls="viewReview" aria-selected="false">View Reviews</a>
                     </li>
+                    {{if .Assignment.GroupDelivery}}
+                        <li class="nav-item">
+                            <a class="nav-link" id="group-tab" data-toggle="tab" href="#group" role="tab" aria-controls="home" aria-selected="true">Group</a>
+                        </li>
+                    {{end}}
                     {{if .IsTeacher}}
                         <li class="nav-item">
                             <a href="/admin/assignment/{{.Assignment.ID}}/submissions" class="nav-link">See submissions</a>
@@ -234,6 +240,12 @@
                             {{end}}
                         </div>
                     </div>
+
+                    {{if .Assignment.GroupDelivery}}
+                        <div class="tab-pane fade" id="group" role="tabpanel" aria-labelledby="group-tab">
+                            <h1>CRUD group</h1>
+                        </div>
+                    {{end}}
 
                 </div>
             </div>
