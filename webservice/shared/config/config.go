@@ -88,6 +88,8 @@ func Initialize(configFile string) *Configuration {
 		plugin.HasPrefix(),
 		plugin.Sprintf(),
 		plugin.Review(),
+		plugin.Minus(),
+		plugin.NullInt64MinusInt(),
 	)
 
 	return cfg

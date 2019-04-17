@@ -45,7 +45,8 @@
 {{end}}
 {{define "content"}}
     {{$id := .Assignment.ID}}
-    {{$length := len .Reviews}}
+    {{$reviewsDone := len .Reviews}}
+    {{$reviewsLeft := NULLINT64MINUSINT .Assignment.Reviewers $reviewsDone}}
     <div class="container pt-3">
         {{if .Delivered}}
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -71,7 +72,7 @@
                            aria-controls="home" aria-selected="true">Assignment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{if or (not .HasReview) (not .IsDeadlineOver)}}disabled{{end}}" id="peerReview-tab" data-toggle="tab" href="#peerReview" role="tab" aria-controls="peerReview" aria-selected="false">Peer Review {{if gt $length 0}}<span class="badge badge-danger">{{$length}}</span>{{end}}</a>
+                        <a class="nav-link {{if or (not .HasReview) (not .IsDeadlineOver)}}disabled{{end}}" id="peerReview-tab" data-toggle="tab" href="#peerReview" role="tab" aria-controls="peerReview" aria-selected="false">Peer Review {{if gt $reviewsLeft 0}}<span class="badge badge-danger">{{$reviewsLeft}}</span>{{end}}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{{if or (or (not .HasReview) (not .IsDeadlineOver)) (.IsTeacher)}} disabled{{end}}" id="viewReview-tab" data-toggle="tab" href="#viewReview" role="tab" aria-controls="viewReview" aria-selected="false">View Reviews</a>
@@ -107,13 +108,16 @@
                     </div>
 
                     <div class="tab-pane fade" id="peerReview" role="tabpanel" aria-labelledby="home-tab">
+                        {{if gt .Assignment.Reviewers.Value $reviewsDone }}
+                            <p>You have <span style="color: red;">{{$reviewsLeft}}</span> reviews left to do!</p>
+                        {{end}}
                         <form action="/assignment/{{.Assignment.ID}}/requestreview" id="newReviewForm" method="post">
                             <button type="submit" form="newReviewForm" class="btn btn-outline-success my-3">New Review</button>
                         </form>
                         <div class="row">
                             {{$UID := .CurrentUser.ID}}
                             {{$AID := .Assignment.ID}}
-                            {{if gt $length 0}}
+                            {{if gt $reviewsDone 0}}
                                 {{range .Reviews}}
                                     <div class="col-md-6 col-sm-12 mb-3">
                                         <div class="card shadow-sm">
