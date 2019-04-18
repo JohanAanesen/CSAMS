@@ -5,9 +5,11 @@
         .CodeMirror {
             height: 300px;
         }
+
         .CodeMirror-code::selection {
             background: #000;
         }
+
         .CodeMirror-code::-moz-selection {
             background: #000;
         }
@@ -94,7 +96,9 @@
 
                 <div class="col">
                     <h3>Peer Review</h3>
-                    <button type="button" onclick="disableReviews()" id="disableReview" class="btn btn-danger btn-sm">Disable</button>
+                    <button type="button" onclick="disableReviews()" id="disableReview" class="btn btn-danger btn-sm">
+                        Disable
+                    </button>
 
                     <h5>Review Form</h5>
                     <div class="form-group">
@@ -120,14 +124,16 @@
                             assignment <br> Set to 0 to disable this feature</label>
                         <select name="reviewers" id="reviewers" class="form-control" required>
                             option
-                            {{if .Assignment.Reviewers.Valid}}
-                                <option value="{{.Assignment.Reviewers.Int64}}"
-                                        selected>{{.Assignment.Reviewers.Int64}}</option>{{end}}
+                            {{if and .Assignment.Reviewers.Valid (eq .Assignment.Reviewers.Value 0)}}
+                                <option value="{{.Assignment.Reviewers.Int64}}" selected>Any</option>
+                            {{else if .Assignment.Reviewers.Valid}}
+                                <option value="{{.Assignment.Reviewers.Int64}}" selected>{{.Assignment.Reviewers.Int64}}</option>
+                            {{end}}
                             <script>
                                 for (let i = 0; i <= 6; i++) {
-                                    if(i == 0){
+                                    if (i == 0) {
                                         document.write(`<option value="${i}">Any</option>`);
-                                    }else{
+                                    } else {
                                         document.write(`<option value="${i}">${i}</option>`);
                                     }
                                 }
@@ -154,7 +160,7 @@
     <script src="/static/js/time.js"></script>
     <script src="/static/js/simplemde.min.js"></script>
     <script>
-        function disableReviews(){
+        function disableReviews() {
             document.getElementById("review_id").selectedIndex = 0;
         }
 
@@ -197,8 +203,6 @@
                     reviewDeadline.removeAttribute('required');
                 }
             }
-
-
 
 
         })();

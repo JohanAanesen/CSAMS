@@ -191,6 +191,13 @@ func (repo *AssignmentRepository) Update(assignment model.Assignment) error {
 			tx.Rollback()
 			return err
 		}
+	}else{
+		query := "UPDATE assignments SET review_id = ? WHERE id = ?"
+		_, err := tx.Exec(query, sql.NullInt64{Valid:false}, assignment.ID)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
 	}
 
 	if assignment.Reviewers.Valid {
