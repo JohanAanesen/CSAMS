@@ -57,6 +57,14 @@
                 </button>
             </div>
         {{end}}
+        {{ if .Message }}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Notice!</strong> {{.Message}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {{end}}
         <a href="/course/{{.CourseID}}" class="btn btn-outline-dark">Go Back</a>
 
         <h1 class="display-4">
