@@ -191,11 +191,11 @@
             checkReviewValue(reviewSelect.value);
 
             reviewSelect.addEventListener('change', e => {
-                //checkReviewValue(e.target.value);
+                checkReviewValue(e.target.value);
             });
 
             function checkReviewValue(value) {
-                if (value !== "") {
+                if (value !== "0") {
                     reviewDeadlineContainer.classList.remove('sr-only');
                     reviewDeadline.setAttribute('required', '');
                 } else {

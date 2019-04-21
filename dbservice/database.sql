@@ -111,8 +111,7 @@ CREATE TABLE `assignments`
     `reviewers`       int(11)  DEFAULT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`course_id`) REFERENCES course (`id`),
-    FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`),
-    FOREIGN KEY (`review_id`) REFERENCES reviews (`id`)
+    FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`)
 );
 
 CREATE TABLE `peer_reviews`

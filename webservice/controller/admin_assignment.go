@@ -192,18 +192,19 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Get the time.Time object from the deadline string
-		reviewDeadline, err := util.DatetimeLocalToRFC3339(r.FormValue("review_deadline"))
-		if err != nil {
-			errorMessages = append(errorMessages, "Error: Something wrong with the review deadline datetime.")
-		}
+		if val != 0 {
+			// Get the time.Time object from the deadline string
+			reviewDeadline, err := util.DatetimeLocalToRFC3339(r.FormValue("review_deadline"))
+			if err != nil {
+				errorMessages = append(errorMessages, "Error: Something wrong with the review deadline datetime.")
+			}
 
-		if deadline.After(reviewDeadline) {
-			errorMessages = append(errorMessages, "Error: Review deadline cannot be before Assignment Deadline.")
-		} else {
-			assignment.ReviewDeadline = reviewDeadline
+			if deadline.After(reviewDeadline) {
+				errorMessages = append(errorMessages, "Error: Review deadline cannot be before Assignment Deadline.")
+			} else {
+				assignment.ReviewDeadline = reviewDeadline
+			}
 		}
-
 	}
 
 	reviewID := sql.NullInt64{
@@ -518,22 +519,26 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Get the time.Time object from the deadline string
-		reviewDeadline, err := util.DatetimeLocalToRFC3339(r.FormValue("review_deadline"))
-		if err != nil {
-			log.Println(err)
-			ErrorHandler(w, r, http.StatusInternalServerError)
-			return
-		}
+		if val != 0 {
+			// Get the time.Time object from the deadline string
+			reviewDeadline, err := util.DatetimeLocalToRFC3339(r.FormValue("review_deadline"))
+			if err != nil {
+				log.Println(err)
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
 
-		// Check that review deadline isn't before assignment deadline
-		if deadline.After(reviewDeadline) {
-			log.Println("error: review deadline cannot be before assignment deadline")
-			ErrorHandler(w, r, http.StatusBadRequest)
-			return
-		}
+			// Check that review deadline isn't before assignment deadline
+			if deadline.After(reviewDeadline) {
+				log.Println("error: review deadline cannot be before assignment deadline")
+				ErrorHandler(w, r, http.StatusBadRequest)
+				return
+			}
 
-		assignment.ReviewDeadline = reviewDeadline
+			assignment.ReviewDeadline = reviewDeadline
+		}else {
+			assignment.ReviewDeadline = time.Now()
+		}
 	}
 
 	reviewID := sql.NullInt64{
