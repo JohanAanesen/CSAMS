@@ -16,6 +16,11 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request, status int) {
 	v.Vars["ErrorCode"] = status
 	v.Vars["ErrorMessage"] = http.StatusText(status)
 
+	if status == 99999{
+		v.Vars["ErrorCode"] = "Review Error"
+		v.Vars["ErrorMessage"] = "You have reviewed every submission on this assignment!"
+	}
+
 	v.Render(w)
 }
 

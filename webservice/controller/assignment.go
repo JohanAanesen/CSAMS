@@ -937,7 +937,7 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 
 	//if you have reviewed everyone
 	if lowestNrReviews > 99998{
-		ErrorHandler(w, r, http.StatusForbidden)
+		ErrorHandler(w, r, 99999)
 		return
 	}
 
