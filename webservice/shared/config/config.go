@@ -90,6 +90,7 @@ func Initialize(configFile string) *Configuration {
 		plugin.Review(),
 		plugin.Minus(),
 		plugin.NullInt64MinusInt(),
+		plugin.NullInt64EqualsInt(),
 	)
 
 	return cfg

@@ -124,7 +124,7 @@
                             assignment <br> Set to 0 to disable this feature</label>
                         <select name="reviewers" id="reviewers" class="form-control" required>
                             option
-                            {{if and .Assignment.Reviewers.Valid (eq .Assignment.Reviewers.Value 0)}}
+                            {{if and .Assignment.Reviewers.Valid (NULLINT64EQUALSINT .Assignment.Reviewers 0)}}
                                 <option value="{{.Assignment.Reviewers.Int64}}" selected>Any</option>
                             {{else if .Assignment.Reviewers.Valid}}
                                 <option value="{{.Assignment.Reviewers.Int64}}" selected>{{.Assignment.Reviewers.Int64}}</option>
@@ -164,8 +164,8 @@
             document.getElementById("review_id").selectedIndex = 0;
         }
 
+        window.onload = function () {
 
-        (function () {
             // Enable the SmpleMDE
             let simplemde = new SimpleMDE({
                 element: document.getElementById('simplemde'),
@@ -205,10 +205,7 @@
             }
 
 
-        })();
-
-        // On submit form, call this function
-        window.onload = function () {
+            // On submit form, call this function
             document.getElementById('assignmentForm').onsubmit = function () {
                 CheckSubmissionForm();
             };
