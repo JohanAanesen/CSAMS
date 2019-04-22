@@ -89,3 +89,19 @@ func (s *GroupService) AddUser(groupID, userID int) error {
 func (s *GroupService) RemoveUser(groupID, userID int) error {
 	return s.groupRepo.RemoveUser(groupID, userID)
 }
+
+// UserInAnyGroup checks if user is in any group for a given assignment
+func (s *GroupService) UserInAnyGroup(userID, assignmentID int) (bool, error) {
+	userIDs, err := s.groupRepo.FetchUsersInGroups(assignmentID)
+	if err != nil {
+		return false, err
+	}
+
+	for _, id := range userIDs {
+		if id == userID {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}

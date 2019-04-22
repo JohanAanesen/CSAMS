@@ -195,3 +195,28 @@ func (repo *GroupRepository) RemoveUser(groupID, userID int) error {
 
 	return nil
 }
+
+// FetchUsersInGroups fetches all users who are in group in a given assigment
+func (repo *GroupRepository) FetchUsersInGroups(assignmentID int) ([]int, error) {
+	result := make([]int, 0)
+
+	query := "SELECT ug.user_id FROM user_groups AS ug INNER JOIN groups AS g ON ug.group_id = g.id WHERE g.assignment_id = ?"
+
+	rows, err := repo.db.Query(query, assignmentID)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var temp int
+
+		err = rows.Scan(&temp)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, temp)
+	}
+
+	return result, nil
+}
