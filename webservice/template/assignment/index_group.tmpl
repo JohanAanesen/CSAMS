@@ -242,13 +242,13 @@
                             {{if .HasGroup}}
 
                             {{else}}
-                            <a href="#" class="btn btn-primary mb-3">Create new</a>
+                            <a href="/assignment/{{.Assignment.ID}}/group/create" class="btn btn-primary mb-3">Create new</a>
 
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th>Group Name</th>
-                                    <th>Foo</th>
+                                    <th>Actions</th>
                                 </tr>
                                 </thead>
 
@@ -256,7 +256,7 @@
                                 {{range .Groups}}
                                     <tr>
                                         <td>{{.Name}}</td>
-                                        <td>Bar</td>
+                                        <td><a href="#" class="btn btn-info btn-sm">Join</a></td>
                                     </tr>
                                 {{end}}
                                 </tbody>

@@ -51,6 +51,10 @@ func routes() http.Handler {
 	userrouter.HandleFunc("/assignment/{id:[0-9]+}/submission/{userid:[0-9]+}", controller.AssignmentUserSubmissionGET).Methods("GET")
 	userrouter.HandleFunc("/assignment/{id:[0-9]+}/submission/{userid:[0-9]+}", controller.AssignmentUserSubmissionPOST).Methods("POST")
 
+	// Assignment-Group Handlers
+	userrouter.HandleFunc("/assignment/{id:[0-9]+}/group/create", controller.AssignmentGroupCreateGET).Methods("GET")
+	userrouter.HandleFunc("/assignment/{id:[0-9]+}/group/create", controller.AssignmentGroupCreatePOST).Methods("POST")
+
 	// User-page Handlers
 	userrouter.HandleFunc("/user", controller.UserGET).Methods("GET")
 	userrouter.HandleFunc("/user/update", controller.UserUpdatePOST).Methods("POST")
