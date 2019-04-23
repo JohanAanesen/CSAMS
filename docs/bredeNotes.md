@@ -421,6 +421,7 @@ I'm considering solving this another way to have less code...
 ### Tuesday - 23/04/19
 * Implemented and tested Create/update/delete submission for student by admin
 * Fixed log update faq bug, it was the wrong import for db...
+* Implemented use of repository/service for admin faq and removed deprecated use in model/
 
 ### Wednesday - 24/04/19
 

@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/service"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
@@ -13,10 +12,16 @@ import (
 // AdminFaqGET handles GET-request at admin/faq/index
 func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 
-	// TODO brede : use service/repository here
-	content := model.GetDateAndQuestionsFAQ() // TODO (Svein): Move this to 'settings'
-	if content.Questions == "-1" { // TODO (Svein): Allow blank FAQ
-		log.Println("Something went wrong with getting the faq")
+	// TODO (Svein): Move this to 'settings'
+	// TODO (Svein): Allow blank FAQ
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Get current faq, date and questions
+	content, err := services.FAQ.Fetch()
+	if err != nil {
+		log.Println("services, faq, fetch", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -34,10 +39,16 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 // AdminFaqEditGET returns the edit view for the faq
 func AdminFaqEditGET(w http.ResponseWriter, r *http.Request) {
 
-	// TODO brede : use service/repository here
-	content := model.GetDateAndQuestionsFAQ() // TODO (Svein): Move this to 'settings'
-	if content.Questions == "-1" { // TODO (Svein): Allow blank FAQ
-		log.Println("Something went wrong with getting the faq")
+	// TODO (Svein): Move this to 'settings'
+	// TODO (Svein): Allow blank FAQ
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Get current faq, date and questions
+	content, err := services.FAQ.Fetch()
+	if err != nil {
+		log.Println("services, faq, fetch", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -62,11 +73,16 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO brede : use service/repository here
-	// Check that it's possible to get the old faq from db
-	content := model.GetDateAndQuestionsFAQ()
-	if content.Questions == "-1" {
-		log.Println("Something went wrong with getting the faq")
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Get user for logging purposes
+	currentUser := session.GetUserFromSession(r)
+
+	// Get current unchanged faq
+	content, err := services.FAQ.Fetch()
+	if err != nil {
+		log.Println("services, faq, fetch", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -78,20 +94,13 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO brede : use service/repository here
-	// Check that it went okay to add new faq to db
-	err := model.UpdateFAQ(updatedFAQ)
+	// Update faq questions
+	err = services.FAQ.Update(updatedFAQ)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("services, faq, update", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	// Get user for logging purposes
-	currentUser := session.GetUserFromSession(r)
-
-	// Services
-	services := service.NewServices(db.GetDB())
 
 	// Log update faq to db
 	err = services.Logs.InsertUpdateFAQ(currentUser.ID, content.Questions, updatedFAQ)
