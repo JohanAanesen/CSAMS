@@ -666,7 +666,7 @@ func (s *LogsService) InsertAdminDeleteSubmissionForUser(userID int, assignmentI
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertAdminCreateGroup
+// InsertAdminCreateGroup inserts a create group log
 func (s *LogsService) InsertAdminCreateGroup(userID int, groupID int) error {
 
 	// Save log in struct
@@ -685,7 +685,7 @@ func (s *LogsService) InsertAdminCreateGroup(userID int, groupID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertAdminDeleteGroup
+// InsertAdminDeleteGroup inserts a delete group log
 func (s *LogsService) InsertAdminDeleteGroup(userID int, groupID int) error {
 
 	// Save log in struct
@@ -704,7 +704,7 @@ func (s *LogsService) InsertAdminDeleteGroup(userID int, groupID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertAdminEditGroupName
+// InsertAdminEditGroupName inserts a edit group name log
 func (s *LogsService) InsertAdminEditGroupName(userID int, groupID int, oldValue string, newValue string) error {
 
 	// Save log in struct
@@ -735,7 +735,7 @@ func (s *LogsService) InsertAdminEditGroupName(userID int, groupID int, oldValue
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertAdminAddUserToGroup
+// InsertAdminAddUserToGroup inserts a add user to group log
 func (s *LogsService) InsertAdminAddUserToGroup(userID int, groupID int, affectedUserID int) error {
 
 	// Save log in struct
@@ -760,7 +760,7 @@ func (s *LogsService) InsertAdminAddUserToGroup(userID int, groupID int, affecte
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertAdminRemoveUserFromGroup
+// InsertAdminRemoveUserFromGroup inserts a remove user from group log
 func (s *LogsService) InsertAdminRemoveUserFromGroup(userID int, groupID int, affectedUserID int) error {
 
 	// Save log in struct
@@ -785,7 +785,7 @@ func (s *LogsService) InsertAdminRemoveUserFromGroup(userID int, groupID int, af
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertCreateGroup
+// InsertCreateGroup inserts a create group log
 func (s *LogsService) InsertCreateGroup(userID int, groupID int) error {
 
 	// Save log in struct
@@ -804,7 +804,7 @@ func (s *LogsService) InsertCreateGroup(userID int, groupID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertDeleteGroup
+// InsertDeleteGroup inserts a delete group log
 func (s *LogsService) InsertDeleteGroup(userID int, groupID int) error {
 
 	// Save log in struct
@@ -823,7 +823,7 @@ func (s *LogsService) InsertDeleteGroup(userID int, groupID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertJoinGroup
+// InsertJoinGroup inserts a join group log
 func (s *LogsService) InsertJoinGroup(userID int, groupID int) error {
 
 	// Save log in struct
@@ -842,7 +842,7 @@ func (s *LogsService) InsertJoinGroup(userID int, groupID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertLeftGroup
+// InsertLeftGroup inserts a left group log
 func (s *LogsService) InsertLeftGroup(userID int, groupID int) error {
 
 	// Save log in struct
@@ -861,7 +861,7 @@ func (s *LogsService) InsertLeftGroup(userID int, groupID int) error {
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertEditGroupName
+// InsertEditGroupName inserts a edit group name log
 func (s *LogsService) InsertEditGroupName(userID int, groupID int, oldValue string, newValue string) error {
 
 	// Save log in struct
@@ -892,7 +892,7 @@ func (s *LogsService) InsertEditGroupName(userID int, groupID int, oldValue stri
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertRemoveUserFromGroup
+// InsertRemoveUserFromGroup inserts a removed user from course log
 func (s *LogsService) InsertRemoveUserFromGroup(userID int, groupID int, affectedUserID int) error {
 
 	// Save log in struct
