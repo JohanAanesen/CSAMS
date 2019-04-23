@@ -130,27 +130,27 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 	case model.AdminDeleteSubmissionForUser:
 		err = adminManageSubmissionForUser(tx, logx, date)
 	case model.AdminCreateGroup:
-
+		err = manageGroup(tx, logx, date)
 	case model.AdminDeleteGroup:
-
+		err = manageGroup(tx, logx, date)
 	case model.AdminAddUserToGroup:
-
+		err = addRemoveUserFromGroup(tx, logx, date)
 	case model.AdminRemoveUserFromGroup:
-
+		err = addRemoveUserFromGroup(tx, logx, date)
 	case model.AdminEditGroupName:
-
+		err = editGroup(tx, logx, date)
 	case model.CreateGroup:
-
+		err = manageGroup(tx, logx, date)
 	case model.DeleteGroup:
-
-	case model.EditGroupName:
-
+		err = manageGroup(tx, logx, date)
 	case model.JoinGroup:
-
+		err = manageGroup(tx, logx, date)
 	case model.LeftGroup:
-
+		err = manageGroup(tx, logx, date)
 	case model.KickedFromGroup:
-
+		err = addRemoveUserFromGroup(tx, logx, date)
+	case model.EditGroupName:
+		err = editGroup(tx, logx, date)
 	default:
 		var ErrLogActivityNotFound = errors.New("error: log activity not found")
 		return ErrLogActivityNotFound
@@ -271,6 +271,30 @@ func adminChangeUserPassword(tx *sql.Tx, logx model.Logs, date string) error {
 func adminManageSubmissionForUser(tx *sql.Tx, logx model.Logs, date string) error {
 	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `assignment_id`, `submission_id`, `affected_user_id`) "+
 		"VALUES (?, ?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.AssignmentID, logx.SubmissionID, logx.AffectedUserID)
+
+	return err
+}
+
+// manageGroup is for create and delete group by admin and student and join left by student
+func manageGroup(tx *sql.Tx, logx model.Logs, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `group_id`) "+
+		"VALUES (?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.GroupID)
+
+	return err
+}
+
+// editGroup is for admin and student edit group name
+func editGroup(tx *sql.Tx, logx model.Logs, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `group_id`, `old_value`, `new_value`) "+
+		"VALUES (?, ?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.GroupID, logx.OldValue, logx.NewValue)
+
+	return err
+}
+
+// addRemoveUserFromGroup is for admin and student kick user from group and admin add user
+func addRemoveUserFromGroup(tx *sql.Tx, logx model.Logs, date string) error {
+	_, err := tx.Query("INSERT INTO `logs` (`user_id`, `timestamp`,  `Activity`, `group_id`, `affected_user_id`) "+
+		"VALUES (?, ?, ?, ?, ?)", logx.UserID, date, logx.Activity, logx.GroupID, logx.AffectedUserID)
 
 	return err
 }

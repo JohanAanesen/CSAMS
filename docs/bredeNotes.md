@@ -438,6 +438,7 @@ JoinGroup
 LeftGroup
 KickedFromGroup
 ```
+* Added functions for logging admin group events
 
 ### Wednesday - 24/04/19
 

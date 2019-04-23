@@ -665,3 +665,122 @@ func (s *LogsService) InsertAdminDeleteSubmissionForUser(userID int, assignmentI
 
 	return s.logsRepo.Insert(logx)
 }
+
+// InsertAdminCreateGroup
+func (s *LogsService) InsertAdminCreateGroup(userID int, groupID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminCreateGroup,
+	}
+
+	// Add groupID to struct
+	logx.GroupID = sql.NullInt64{
+		Int64: int64(groupID),
+		Valid: groupID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertAdminDeleteGroup
+func (s *LogsService) InsertAdminDeleteGroup(userID int, groupID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminDeleteGroup,
+	}
+
+	// Add groupID to struct
+	logx.GroupID = sql.NullInt64{
+		Int64: int64(groupID),
+		Valid: groupID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertAdminEditGroupName
+func (s *LogsService) InsertAdminEditGroupName(userID int, groupID int, oldValue string, newValue string) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminEditGroupName,
+	}
+
+	// Add groupID to struct
+	logx.GroupID = sql.NullInt64{
+		Int64: int64(groupID),
+		Valid: groupID != 0,
+	}
+
+	// Add oldValue to struct
+	logx.OldValue = sql.NullString{
+		String: oldValue,
+		Valid:  oldValue != "",
+	}
+
+	// Add newValue to struct
+	logx.NewValue = sql.NullString{
+		String: newValue,
+		Valid:  newValue != "",
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertAdminAddUserToGroup
+func (s *LogsService) InsertAdminAddUserToGroup(userID int, groupID int, affectedUserID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminAddUserToGroup,
+	}
+
+	// Add groupID to struct
+	logx.GroupID = sql.NullInt64{
+		Int64: int64(groupID),
+		Valid: groupID != 0,
+	}
+
+	// Add affectedUserID to struct
+	logx.AffectedUserID = sql.NullInt64{
+		Int64: int64(affectedUserID),
+		Valid: affectedUserID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertAdminRemoveUserFromGroup
+func (s *LogsService) InsertAdminRemoveUserFromGroup(userID int, groupID int, affectedUserID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminRemoveUserFromGroup,
+	}
+
+	// Add groupID to struct
+	logx.GroupID = sql.NullInt64{
+		Int64: int64(groupID),
+		Valid: groupID != 0,
+	}
+
+	// Add affectedUserID to struct
+	logx.AffectedUserID = sql.NullInt64{
+		Int64: int64(affectedUserID),
+		Valid: affectedUserID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}

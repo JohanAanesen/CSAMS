@@ -30,27 +30,25 @@
 - [X] AdminUpdateSubmissionForUser 
 - [X] AdminDeleteSubmissionForUser
 - [X] AdminUpdateFAQ
+- [ ] AdminCreateGroup
+- [ ] AdminDeleteGroup
+- [ ] AdminEditGroupName
+- [ ] AdminAddUserToGroup
+- [ ] AdminRemoveUserFromGroup
 
 
-**No functions for yet:**
+## No functions for yet
 - [ ] AdminCreateFAQ
 
 
-- [ ] AdminAddUserToGroup
-- [ ] AdminRemoveUserFromGroup
-- [ ] AdminEditGroupName
-- [ ] AdminDeleteGroup
-- [ ] AdminCreateGroup
-
-
 - [ ] CreateGroup
-- [ ] EditGroupName
 - [ ] DeleteGroup
 - [ ] JoinGroup
 - [ ] LeftGroup
+- [ ] EditGroupName
 - [ ] KickedFromGroup
 
-**No triggers for yet**
+## No triggers for yet
 - [ ] LeftCourse 
 - [ ] AdminDeleteAssignment
 - [ ] AdminDeleteCourse
