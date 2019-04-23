@@ -35,18 +35,15 @@
 - [ ] AdminEditGroupName
 - [ ] AdminAddUserToGroup
 - [ ] AdminRemoveUserFromGroup
-
-
-## No functions for yet
-- [ ] AdminCreateFAQ
-
-
 - [ ] CreateGroup
 - [ ] DeleteGroup
 - [ ] JoinGroup
 - [ ] LeftGroup
 - [ ] EditGroupName
 - [ ] KickedFromGroup
+
+## No functions for yet
+- [ ] AdminCreateFAQ
 
 ## No triggers for yet
 - [ ] LeftCourse 

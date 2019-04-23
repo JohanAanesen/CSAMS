@@ -439,6 +439,7 @@ LeftGroup
 KickedFromGroup
 ```
 * Added functions for logging admin group events
+* Added functions for logging student group events
 
 ### Wednesday - 24/04/19
 

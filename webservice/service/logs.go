@@ -784,3 +784,135 @@ func (s *LogsService) InsertAdminRemoveUserFromGroup(userID int, groupID int, af
 
 	return s.logsRepo.Insert(logx)
 }
+
+// InsertCreateGroup
+func (s *LogsService) InsertCreateGroup(userID int, groupID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.CreateGroup,
+	}
+
+	// Add groupID to struct
+	logx.GroupID = sql.NullInt64{
+		Int64: int64(groupID),
+		Valid: groupID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertDeleteGroup
+func (s *LogsService) InsertDeleteGroup(userID int, groupID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.DeleteGroup,
+	}
+
+	// Add groupID to struct
+	logx.GroupID = sql.NullInt64{
+		Int64: int64(groupID),
+		Valid: groupID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertJoinGroup
+func (s *LogsService) InsertJoinGroup(userID int, groupID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.JoinGroup,
+	}
+
+	// Add groupID to struct
+	logx.GroupID = sql.NullInt64{
+		Int64: int64(groupID),
+		Valid: groupID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertLeftGroup
+func (s *LogsService) InsertLeftGroup(userID int, groupID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.LeftGroup,
+	}
+
+	// Add groupID to struct
+	logx.GroupID = sql.NullInt64{
+		Int64: int64(groupID),
+		Valid: groupID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertEditGroupName
+func (s *LogsService) InsertEditGroupName(userID int, groupID int, oldValue string, newValue string) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.EditGroupName,
+	}
+
+	// Add groupID to struct
+	logx.GroupID = sql.NullInt64{
+		Int64: int64(groupID),
+		Valid: groupID != 0,
+	}
+
+	// Add oldValue to struct
+	logx.OldValue = sql.NullString{
+		String: oldValue,
+		Valid:  oldValue != "",
+	}
+
+	// Add newValue to struct
+	logx.NewValue = sql.NullString{
+		String: newValue,
+		Valid:  newValue != "",
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertRemoveUserFromGroup
+func (s *LogsService) InsertRemoveUserFromGroup(userID int, groupID int, affectedUserID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.KickedFromGroup,
+	}
+
+	// Add groupID to struct
+	logx.GroupID = sql.NullInt64{
+		Int64: int64(groupID),
+		Valid: groupID != 0,
+	}
+
+	// Add affectedUserID to struct
+	logx.AffectedUserID = sql.NullInt64{
+		Int64: int64(affectedUserID),
+		Valid: affectedUserID != 0,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
