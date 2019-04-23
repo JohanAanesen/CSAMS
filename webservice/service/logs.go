@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/repository"
-	"log"
 	"strings"
 )
 
@@ -41,8 +40,6 @@ func (s *LogsService) InsertNewUser(userID int) error {
 // InsertChangeEmail inserts a change email log
 func (s *LogsService) InsertChangeEmail(userID int, oldValue string, newValue string) error {
 
-	log.Println(s.logsRepo)
-
 	// Save log in struct
 	// logx since log is already an package
 	logx := model.Logs{
@@ -67,8 +64,6 @@ func (s *LogsService) InsertChangeEmail(userID int, oldValue string, newValue st
 
 // InsertUpdateFAQ inserts a updated FAQ log
 func (s *LogsService) InsertUpdateFAQ(userID int, oldValue string, newValue string) error {
-
-	log.Println(s.logsRepo)
 
 	// Save log in struct
 	// logx since log is already an package
