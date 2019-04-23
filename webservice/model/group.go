@@ -6,4 +6,5 @@ type Group struct {
 	AssignmentID int    `json:"assignment_id"`
 	Name         string `json:"name"`
 	Users        []User `json:"users"`
+	Creator      int    `json:"creator"`
 }
