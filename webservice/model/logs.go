@@ -6,66 +6,66 @@ import (
 )
 
 // Activity enum for keeping track of user activity
-type Activity string
+type Activity int
 
 // Enum for logs
 const (
 	/////// System logs ///////
-	NewUser             Activity = "NEW-USER"                      // A new user is created
-	ChangeEmail         Activity = "CHANGE-EMAIL"                  // User changed email
-	ChangePassword      Activity = "CHANGE-PASSWORD"               // User changed password (DO NOT SHOW OLD/NEW PASSWORD IN LOG)
-	ChangePasswordEmail Activity = "CHANGE-PASSWORD-THROUGH-EMAIL" // User changed password through email
+	NewUser             Activity = 0 // A new user is created
+	ChangeEmail         Activity = 1 // User changed email
+	ChangePassword      Activity = 2 // User changed password (DO NOT SHOW OLD/NEW PASSWORD IN LOG)
+	ChangePasswordEmail Activity = 3 // User changed password through email
 
 	/////// Course logs ///////
 	// Submission
-	CreateSubmission Activity = "SUBMISSION-CREATE" // User submission is created
-	UpdateSubmission Activity = "SUBMISSION-UPDATE" // User submission is updated
-	DeleteSubmission Activity = "SUBMISSION-DELETE" // User submission is deleted
+	CreateSubmission Activity = 4 // User submission is created
+	UpdateSubmission Activity = 5 // User submission is updated
+	DeleteSubmission Activity = 6 // User submission is deleted
 	// Review
-	FinishedOnePeerReview Activity = "FINISHED-ONE-PEER-REVIEW" // User is done with one peer review (that this user did)
-	UpdateOnePeerReview   Activity = "UPDATE-ONE-PEER-REVIEW"   // User changed one peer review
+	FinishedOnePeerReview Activity = 7 // User is done with one peer review (that this user did)
+	UpdateOnePeerReview   Activity = 8 // User changed one peer review
 	// Course
-	JoinedCourse Activity = "JOINED-COURSE" // User joined course
-	LeftCourse   Activity = "LEFT-COURSE"   // USer left course
+	JoinedCourse Activity = 9  // User joined course
+	LeftCourse   Activity = 10 // USer left course
 	// Group
-	CreateGroup     Activity = "CREATE-GROUP"      // User created group
-	EditGroupName   Activity = "EDIT-GROUP-NAME"   // User edited group name
-	DeleteGroup     Activity = "DELETE-GROUP"      // User deleted group
-	JoinGroup       Activity = "JOIN-GROUP"        // User joined group
-	LeftGroup       Activity = "LEFT-GROUP"        // User left group
-	KickedFromGroup Activity = "KICKED-FROM-GROUP" // User kicked from group
+	CreateGroup     Activity = 11 // User created group
+	EditGroupName   Activity = 12 // User edited group name
+	DeleteGroup     Activity = 13 // User deleted group
+	JoinGroup       Activity = 14 // User joined group
+	LeftGroup       Activity = 15 // User left group
+	KickedFromGroup Activity = 16 // User kicked from group
 
 	/////// Admin logs ///////
 	// Assignment
-	AdminCreateAssignment Activity = "ADMIN-ASSIGNMENT-CREATE" // Admin assignment is created
-	AdminDeleteAssignment Activity = "ADMIN-ASSIGNMENT-DELETE" // Admin assignment is deleted
-	AdminUpdateAssignment Activity = "ADMIN-ASSIGNMENT-UPDATE" // Admin assignment is updated
+	AdminCreateAssignment Activity = 100 // Admin assignment is created
+	AdminDeleteAssignment Activity = 101 // Admin assignment is deleted
+	AdminUpdateAssignment Activity = 102 // Admin assignment is updated
 	// Forms
-	AdminCreateSubmissionForm Activity = "ADMIN-SUBMISSION-FORM-CREATE" // Admin submission form is created
-	AdminUpdateSubmissionForm Activity = "ADMIN-SUBMISSION-FORM-UPDATE" // Admin submission form is updated
-	AdminDeleteSubmissionForm Activity = "ADMIN-SUBMISSION-FORM-DELETE" // Admin submission form is deleted
-	AdminCreateReviewForm     Activity = "ADMIN-REVIEW-FORM-CREATE"     // Admin review form is created
-	AdminUpdateReviewForm     Activity = "ADMIN-REVIEW-FORM-UPDATE"     // Admin review form is updated
-	AdminDeleteReviewForm     Activity = "ADMIN-REVIEW-FORM-DELETE"     // Admin review form is deleted
+	AdminCreateSubmissionForm Activity = 103 // Admin submission form is created
+	AdminUpdateSubmissionForm Activity = 104 // Admin submission form is updated
+	AdminDeleteSubmissionForm Activity = 105 // Admin submission form is deleted
+	AdminCreateReviewForm     Activity = 106 // Admin review form is created
+	AdminUpdateReviewForm     Activity = 107 // Admin review form is updated
+	AdminDeleteReviewForm     Activity = 108 // Admin review form is deleted
 	// Course
-	AdminCreatedCourse Activity = "ADMIN-COURSE-CREATE" // Admin course is created
-	AdminUpdateCourse  Activity = "ADMIN-COURSE-UPDATE" // Admin course is updated
-	AdminDeleteCourse  Activity = "ADMIN-COURSE-DELETE" // Admin course is deleted
+	AdminCreatedCourse Activity = 109 // Admin course is created
+	AdminUpdateCourse  Activity = 110 // Admin course is updated
+	AdminDeleteCourse  Activity = 111 // Admin course is deleted
 	// FAQ
-	AdminCreateFAQ Activity = "ADMIN-CREATE-FAQ" // Admin FAQ is created
-	AdminUpdateFAQ Activity = "ADMIN-UPDATE-FAQ" // Admin FAQ is updated
+	AdminCreateFAQ Activity = 112 // Admin FAQ is created
+	AdminUpdateFAQ Activity = 113 // Admin FAQ is updated
 	// Manage students
-	AdminEmailCourseStudents     Activity = "ADMIN-EMAIL-STUDENTS-IN-COURSE"   // Admin emailed all students in course through the system
-	AdminRemoveUserFromCourse    Activity = "ADMIN-REMOVE-USER-FROM-COURSE"    // Admin removed one user from course
-	AdminChangeStudentPassword   Activity = "ADMIN-CHANGE-STUDENT-PASSWORD"    // Admin changed one users password
-	AdminCreateSubmissionForUser Activity = "ADMIN-CREATE-SUBMISSION-FOR-USER" // Admin created submission for user
-	AdminUpdateSubmissionForUser Activity = "ADMIN-UPDATE-SUBMISSION-FOR-USER" // Admin updated submission for user
-	AdminDeleteSubmissionForUser Activity = "ADMIN-DELETE-SUBMISSION-FOR-USER" // Admin deleted submission for user
-	AdminAddUserToGroup          Activity = "ADMIN-ADD-USER-TO-GROUP"          // Admin added user to group
-	AdminRemoveUserFromGroup     Activity = "ADMIN-REMOVE-USER-FROM-GROUP"     // Admin removed user from group
-	AdminEditGroupName           Activity = "ADMIN-EDIT-GROUP-NAME"            // Admin edited group name
-	AdminDeleteGroup             Activity = "ADMIN-DELETE-GROUP"               // Admin deleted group
-	AdminCreateGroup             Activity = "ADMIN-CREATE-GROUP"               // Admin created group
+	AdminEmailCourseStudents     Activity = 114 // Admin emailed all students in course through the system
+	AdminRemoveUserFromCourse    Activity = 115 // Admin removed one user from course
+	AdminChangeStudentPassword   Activity = 116 // Admin changed one users password
+	AdminCreateSubmissionForUser Activity = 117 // Admin created submission for user
+	AdminUpdateSubmissionForUser Activity = 118 // Admin updated submission for user
+	AdminDeleteSubmissionForUser Activity = 119 // Admin deleted submission for user
+	AdminAddUserToGroup          Activity = 120 // Admin added user to group
+	AdminRemoveUserFromGroup     Activity = 121 // Admin removed user from group
+	AdminEditGroupName           Activity = 122 // Admin edited group name
+	AdminDeleteGroup             Activity = 123 // Admin deleted group
+	AdminCreateGroup             Activity = 124 // Admin created group
 )
 
 // Logs struct for keeping logs data
