@@ -79,7 +79,7 @@
                     </li>
                     {{if .Assignment.GroupDelivery}}
                         <li class="nav-item">
-                            <a class="nav-link" id="group-tab" data-toggle="tab" href="#group" role="tab" aria-controls="home" aria-selected="true">Group</a>
+                            <a class="nav-link" id="group-tab" data-toggle="tab" href="#group" role="tab" aria-controls="home" aria-selected="true">Groups</a>
                         </li>
                     {{end}}
                     {{if .IsTeacher}}
@@ -235,7 +235,33 @@
 
                     {{if .Assignment.GroupDelivery}}
                         <div class="tab-pane fade" id="group" role="tabpanel" aria-labelledby="group-tab">
-                            <h1>CRUD group</h1>
+                            <h2>Groups</h2>
+
+                            <hr>
+
+                            {{if .HasGroup}}
+
+                            {{else}}
+                            <a href="#" class="btn btn-primary mb-3">Create new</a>
+
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Group Name</th>
+                                    <th>Foo</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                {{range .Groups}}
+                                    <tr>
+                                        <td>{{.Name}}</td>
+                                        <td>Bar</td>
+                                    </tr>
+                                {{end}}
+                                </tbody>
+                            </table>
+                            {{end}}
                         </div>
                     {{end}}
 
