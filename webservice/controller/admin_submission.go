@@ -118,6 +118,9 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 // AdminSubmissionUpdateGET handles GET-request @ /admin/submission/update/{id:[0-9]+}
 func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
+	//errorMessages variable
+	var errorMessages []string
+
 	// Get variables from request
 	vars := mux.Vars(r)
 	// Convert id string to int, check for errors
@@ -141,28 +144,48 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 
 	used, err := services.Submission.IsUsed(form.ID)
 	if err != nil {
-		log.Println("services, review, is used", err.Error())
+		log.Println("services, submission, is used", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	// Check if form is in use
 	if used {
-		// Set header content type and status code
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
+		errorMessages = append(errorMessages,"Form is used by an assignment.")
+		assignmentId, err := services.Submission.UsedInAssignment(form.ID)
+		if err != nil {
+			log.Println("services, submission, used in assignment", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 
-		// Create view
-		v := view.New(r)
-		// Set template file
-		v.Name = "admin/submission/update_used"
+		submissionsInAssignment, err := services.SubmissionAnswer.CountForAssignment(assignmentId)
+		if err != nil {
+			log.Println("services, submission, CountForAssignment", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 
-		// Set view variables
-		v.Vars["Form"] = form
+		if submissionsInAssignment > 0 {
+			errorMessages = append(errorMessages, "Form has submissions.")
 
-		// Render view
-		v.Render(w)
-		return
+			// Set header content type and status code
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			w.WriteHeader(http.StatusOK)
+
+			// Create view
+			v := view.New(r)
+			// Set template file
+			v.Name = "admin/submission/update_used"
+
+			// Set view variables
+			v.Vars["Form"] = form
+			v.Vars["Errors"] = errorMessages
+
+			// Render view
+			v.Render(w)
+			return
+		}
 	}
 
 	// Convert form to JSON
@@ -173,6 +196,8 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+
+
 	// Set header content-type and code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -182,6 +207,7 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 	v.Name = "admin/submission/update"
 	// View variables
 	v.Vars["formJSON"] = string(formBytes)
+	v.Vars["Errors"] = errorMessages
 	// Render view
 	v.Render(w)
 }

@@ -156,7 +156,7 @@ func (repo *SubmissionRepository) Delete(id int) error {
 
 // IsUsed func
 func (repo *SubmissionRepository) IsUsed(id int) (bool, error) {
-	query := "SELECT s.form_id FROM assignments AS a INNER JOIN submissions AS s ON a.review_id = s.id"
+	query := "SELECT s.form_id FROM assignments AS a INNER JOIN submissions AS s ON a.submission_id = s.id"
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -176,4 +176,29 @@ func (repo *SubmissionRepository) IsUsed(id int) (bool, error) {
 	}
 
 	return false, err
+}
+
+// UsedInAssignment func
+func (repo *SubmissionRepository) UsedInAssignment(id int)(int, error){
+	query := "SELECT a.id, s.form_id FROM assignments AS a INNER JOIN submissions AS s ON a.submission_id = s.id"
+
+	rows, err := repo.db.Query(query)
+	if err != nil {
+		return 0, err
+	}
+
+	for rows.Next() {
+		var assignmentId int
+		var submissionId int
+		err = rows.Scan(&assignmentId, &submissionId)
+		if err != nil {
+			return 0, err
+		}
+
+		if submissionId == id {
+			return assignmentId, nil
+		}
+	}
+
+	return 0, err
 }
