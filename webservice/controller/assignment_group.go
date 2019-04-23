@@ -88,50 +88,104 @@ func AssignmentGroupCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 // AssignmentGroupJoinGET handles GET-requests @ /assignment/{aid}/join_group/{gid}
 func AssignmentGroupJoinGET(w http.ResponseWriter, r *http.Request) {
+	// Get URL variables
 	vars := mux.Vars(r)
-
-	assignmentID, err := strconv.Atoi(vars["id"])
+	// Convert string to integer
+	assignmentID, err := strconv.Atoi(vars["aid"])
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	//currentUser := session.GetUserFromSession(r)
-
+	// Convert string to integer
+	groupID, err := strconv.Atoi(vars["gid"])
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+	// Services
 	services := service.NewServices(db.GetDB())
-
+	// Get assignment
 	assignment, err := services.Assignment.Fetch(assignmentID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
+	// Check if user is already in a group
+	alreadyInGroup, err := services.GroupService.UserInAnyGroup(currentUser.ID, assignment.ID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+	// Check if user already in a group
+	if alreadyInGroup {
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+	// Add user to group
+	err = services.GroupService.AddUser(groupID, currentUser.ID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+	// Redirect to assignment
 	http.Redirect(w, r, fmt.Sprintf("/assignment/%d", assignment.ID), http.StatusFound)
 }
 
 // AssignmentGroupLeaveGET handles GET-requests @ /assignment/{aid}/leave_group
 func AssignmentGroupLeaveGET(w http.ResponseWriter, r *http.Request) {
+	// Get URL variables
 	vars := mux.Vars(r)
-
-	assignmentID, err := strconv.Atoi(vars["id"])
+	// Convert string to integer
+	assignmentID, err := strconv.Atoi(vars["aid"])
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	//currentUser := session.GetUserFromSession(r)
-
+	// Convert string to integer
+	groupID, err := strconv.Atoi(vars["gid"])
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+	// Services
 	services := service.NewServices(db.GetDB())
-
+	// Get assignment
 	assignment, err := services.Assignment.Fetch(assignmentID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
+	// Check if user is in a group
+	alreadyInGroup, err := services.GroupService.UserInAnyGroup(currentUser.ID, assignment.ID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+	// User not in any group
+	if !alreadyInGroup {
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+	// Remove user from group
+	err = services.GroupService.RemoveUser(groupID, currentUser.ID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+	// Redirect to assignment
 	http.Redirect(w, r, fmt.Sprintf("/assignment/%d", assignment.ID), http.StatusFound)
 }
