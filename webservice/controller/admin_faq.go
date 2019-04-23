@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"github.com/JohanAanesen/CSAMS/schedulerservice/db"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/service"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
 	"log"
@@ -62,9 +62,6 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Services
-	services := service.NewServices(db.GetDB())
-
 	// TODO brede : use service/repository here
 	// Check that it's possible to get the old faq from db
 	content := model.GetDateAndQuestionsFAQ()
@@ -92,6 +89,9 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Get user for logging purposes
 	currentUser := session.GetUserFromSession(r)
+
+	// Services
+	services := service.NewServices(db.GetDB())
 
 	// Log update faq to db
 	err = services.Logs.InsertUpdateFAQ(currentUser.ID, content.Questions, updatedFAQ)

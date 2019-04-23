@@ -59,6 +59,9 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 	// Different sql queries to different log types belows
 	var err error
 
+	// TODO repo is nil when it comes from faq logging
+
+
 	tx, err := repo.db.Begin() //start transaction
 	if err != nil {
 		return err

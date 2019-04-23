@@ -29,13 +29,21 @@
 - [X] AdminCreateSubmissionForUser 
 - [X] AdminUpdateSubmissionForUser 
 - [X] AdminDeleteSubmissionForUser
-
-**Bug**
-- [ ] AdminUpdateFAQ : `http: panic serving [::1]:8348: runtime error: invalid memory address or nil pointer dereference`
+- [X] AdminUpdateFAQ
 
 
 **No functions for yet:**
 - [ ] AdminCreateFAQ
+- [ ] AdminAddUserToGroup
+- [ ] AdminKickUserFromGroup
+- [ ] AdminEditGroupName
+- [ ] AdminDeleteGroup
+- [ ] CreateGroup
+- [ ] EditGroupName
+- [ ] DeleteGroup
+- [ ] JoinGroup
+- [ ] LeftGroup
+- [ ] KickedFromGroup
 
 **No triggers for yet**
 - [ ] LeftCourse 
