@@ -133,12 +133,23 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	// TODO time-norwegian
 	var isDeadlineOver = assignment.Deadline.Before(util.GetTimeInCorrectTimeZone())
 
+	hasGroup, err := services.GroupService.UserInAnyGroup(currentUser.ID, assignment.ID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
 	// Create view
 	v := view.New(r)
-	v.Name = "assignment/index"
+	if assignment.GroupDelivery {
+		v.Name = "assignment/index_group"
+	} else {
+		v.Name = "assignment/index"
+	}
 
 	v.Vars["Assignment"] = assignment
 	v.Vars["Delivered"] = delivered
@@ -148,6 +159,8 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Reviews"] = reviewUsers
 	v.Vars["MyReviews"] = reviews
 	v.Vars["IsTeacher"] = currentUser.Teacher
+
+	v.Vars["HasGroup"] = hasGroup
 
 	v.Render(w)
 }
