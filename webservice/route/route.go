@@ -55,6 +55,9 @@ func routes() http.Handler {
 	userrouter.HandleFunc("/assignment/{id:[0-9]+}/group/create", controller.AssignmentGroupCreateGET).Methods("GET")
 	userrouter.HandleFunc("/assignment/{id:[0-9]+}/group/create", controller.AssignmentGroupCreatePOST).Methods("POST")
 
+	userrouter.HandleFunc("/assignment/{aid:[0-9]+}/join_group/{gid:[0-9]+}", controller.AssignmentGroupJoinGET).Methods("GET")
+	userrouter.HandleFunc("/assignment/{aid:[0-9]+}/leave_group", controller.AssignmentGroupLeaveGET).Methods("GET")
+
 	// User-page Handlers
 	userrouter.HandleFunc("/user", controller.UserGET).Methods("GET")
 	userrouter.HandleFunc("/user/update", controller.UserUpdatePOST).Methods("POST")
