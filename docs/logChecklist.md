@@ -34,10 +34,15 @@
 
 **No functions for yet:**
 - [ ] AdminCreateFAQ
+
+
 - [ ] AdminAddUserToGroup
-- [ ] AdminKickUserFromGroup
+- [ ] AdminRemoveUserFromGroup
 - [ ] AdminEditGroupName
 - [ ] AdminDeleteGroup
+- [ ] AdminCreateGroup
+
+
 - [ ] CreateGroup
 - [ ] EditGroupName
 - [ ] DeleteGroup

@@ -18,15 +18,22 @@ const (
 
 	/////// Course logs ///////
 	// Submission
-	CreateSubmission Activity = "SUBMISSION-CREATE"  // User submission is created
+	CreateSubmission Activity = "SUBMISSION-CREATE" // User submission is created
 	UpdateSubmission Activity = "SUBMISSION-UPDATE" // User submission is updated
-	DeleteSubmission Activity = "SUBMISSION-DELETE"  // User submission is deleted
+	DeleteSubmission Activity = "SUBMISSION-DELETE" // User submission is deleted
 	// Review
 	FinishedOnePeerReview Activity = "FINISHED-ONE-PEER-REVIEW" // User is done with one peer review (that this user did)
 	UpdateOnePeerReview   Activity = "UPDATE-ONE-PEER-REVIEW"   // User changed one peer review
 	// Course
 	JoinedCourse Activity = "JOINED-COURSE" // User joined course
 	LeftCourse   Activity = "LEFT-COURSE"   // USer left course
+	// Group
+	CreateGroup     Activity = "CREATE-GROUP"      // User created group
+	EditGroupName   Activity = "EDIT-GROUP-NAME"   // User edited group name
+	DeleteGroup     Activity = "DELETE-GROUP"      // User deleted group
+	JoinGroup       Activity = "JOIN-GROUP"        // User joined group
+	LeftGroup       Activity = "LEFT-GROUP"        // User left group
+	KickedFromGroup Activity = "KICKED-FROM-GROUP" // User kicked from group
 
 	/////// Admin logs ///////
 	// Assignment
@@ -54,6 +61,11 @@ const (
 	AdminCreateSubmissionForUser Activity = "ADMIN-CREATE-SUBMISSION-FOR-USER" // Admin created submission for user
 	AdminUpdateSubmissionForUser Activity = "ADMIN-UPDATE-SUBMISSION-FOR-USER" // Admin updated submission for user
 	AdminDeleteSubmissionForUser Activity = "ADMIN-DELETE-SUBMISSION-FOR-USER" // Admin deleted submission for user
+	AdminAddUserToGroup          Activity = "ADMIN-ADD-USER-TO-GROUP"          // Admin added user to group
+	AdminRemoveUserFromGroup     Activity = "ADMIN-REMOVE-USER-FROM-GROUP"     // Admin removed user from group
+	AdminEditGroupName           Activity = "ADMIN-EDIT-GROUP-NAME"            // Admin edited group name
+	AdminDeleteGroup             Activity = "ADMIN-DELETE-GROUP"               // Admin deleted group
+	AdminCreateGroup             Activity = "ADMIN-CREATE-GROUP"               // Admin created group
 )
 
 // Logs struct for keeping logs data
@@ -66,6 +78,7 @@ type Logs struct {
 	CourseID       sql.NullInt64  `json:"course_id"`        // [NULLABLE]
 	SubmissionID   sql.NullInt64  `json:"submission_id"`    // [NULLABLE]
 	ReviewID       sql.NullInt64  `json:"review_id"`        // [NULLABLE]
+	GroupID        sql.NullInt64  `json:"group_id"`         // [NULLABLE]
 	OldValue       sql.NullString `json:"old_value"`        // [NULLABLE]
 	NewValue       sql.NullString `json:"new_value"`        // [NULLABLE]
 	AffectedUserID sql.NullInt64  `json:"affected_user_id"` // [NULLABLE]

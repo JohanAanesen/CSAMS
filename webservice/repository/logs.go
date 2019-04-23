@@ -24,7 +24,7 @@ func (repo *LogsRepository) FetchAll() ([]*model.Logs, error) {
 	result := make([]*model.Logs, 0)
 
 	// Query to be executed
-	query := "SELECT `id`, `user_id`, `timestamp`, `activity`, `assignment_id`, `course_id`, `submission_id`, `review_id`, `old_value`, `new_value`, `affected_user_id` FROM `logs`"
+	query := "SELECT `id`, `user_id`, `timestamp`, `activity`, `assignment_id`, `course_id`, `submission_id`, `review_id`, `group_id`, `old_value`, `new_value`, `affected_user_id` FROM `logs`"
 
 	// Run query
 	rows, err := repo.db.Query(query)
@@ -41,7 +41,7 @@ func (repo *LogsRepository) FetchAll() ([]*model.Logs, error) {
 
 		// Add to temporary struct
 		err = rows.Scan(&temp.ID, &temp.UserID, &temp.Timestamp, &temp.Activity, &temp.AssignmentID, &temp.CourseID,
-			&temp.SubmissionID, &temp.ReviewID, &temp.OldValue, &temp.NewValue, &temp.AffectedUserID)
+			&temp.SubmissionID, &temp.ReviewID, &temp.GroupID, &temp.OldValue, &temp.NewValue, &temp.AffectedUserID)
 		if err != nil {
 			return result, err
 		}
@@ -58,9 +58,6 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 
 	// Different sql queries to different log types belows
 	var err error
-
-	// TODO repo is nil when it comes from faq logging
-
 
 	tx, err := repo.db.Begin() //start transaction
 	if err != nil {
@@ -132,6 +129,28 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 		err = adminManageSubmissionForUser(tx, logx, date)
 	case model.AdminDeleteSubmissionForUser:
 		err = adminManageSubmissionForUser(tx, logx, date)
+	case model.AdminCreateGroup:
+
+	case model.AdminDeleteGroup:
+
+	case model.AdminAddUserToGroup:
+
+	case model.AdminRemoveUserFromGroup:
+
+	case model.AdminEditGroupName:
+
+	case model.CreateGroup:
+
+	case model.DeleteGroup:
+
+	case model.EditGroupName:
+
+	case model.JoinGroup:
+
+	case model.LeftGroup:
+
+	case model.KickedFromGroup:
+
 	default:
 		var ErrLogActivityNotFound = errors.New("error: log activity not found")
 		return ErrLogActivityNotFound

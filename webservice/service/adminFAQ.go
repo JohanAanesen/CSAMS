@@ -18,7 +18,6 @@ func NewFAQService(db *sql.DB) *FAQService {
 	}
 }
 
-// TODO brede : why this? http: panic serving [::1]:8100: runtime error: invalid memory address or nil pointer dereference
 // Fetch fetches the one faq in db
 func (s *FAQService) Fetch() (*model.Faq, error) {
 	return s.faqRepo.Fetch()

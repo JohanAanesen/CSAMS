@@ -422,6 +422,22 @@ I'm considering solving this another way to have less code...
 * Implemented and tested Create/update/delete submission for student by admin
 * Fixed log update faq bug, it was the wrong import for db...
 * Implemented use of repository/service for admin faq and removed deprecated use in model/
+* Added `group_id` to `logs` in the db
+* Adding more logging events:
+```
+AdminAddUserToGroup
+AdminRemoveUserFromGroup
+AdminEditGroupName
+AdminDeleteGroup
+AdminCreateGroup
+
+CreateGroup
+EditGroupName
+DeleteGroup
+JoinGroup
+LeftGroup
+KickedFromGroup
+```
 
 ### Wednesday - 24/04/19
 
