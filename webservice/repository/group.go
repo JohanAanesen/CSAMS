@@ -96,14 +96,14 @@ func (repo *GroupRepository) FetchUsers(groupID int) ([]int, error) {
 func (repo *GroupRepository) Insert(group model.Group) (int64, error) {
 	var id int64
 
-	query := "INSERT INTO groups (assignment_id, name) VALUES (?, ?)"
+	query := "INSERT INTO groups (assignment_id, name, user_id) VALUES (?, ?, ?)"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
 		return id, err
 	}
 
-	rows, err := tx.Exec(query, group.AssignmentID, group.Name)
+	rows, err := tx.Exec(query, group.AssignmentID, group.Name, group.Creator)
 	if err != nil {
 		tx.Rollback()
 		return id, err
