@@ -35,6 +35,7 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "user/profile"
 
+	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w,r)
 	v.Vars["User"] = currentUser
 	v.Vars["Courses"] = courses
 
@@ -84,7 +85,8 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		// If the email already exists
 		if exist {
 			log.Println("email already exist in db")
-			ErrorHandler(w, r, http.StatusBadRequest)
+			session.SaveMessageToSession("Email already registered on a user", w, r)
+			http.Redirect(w, r, "/user", http.StatusFound)
 			return
 		}
 
@@ -151,5 +153,5 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//UserGET(w, r)
-	http.Redirect(w, r, "/user", http.StatusFound) //success redirect to homepage
+	http.Redirect(w, r, "/user", http.StatusFound) //success redirect
 }
