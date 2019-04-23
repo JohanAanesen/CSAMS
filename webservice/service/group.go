@@ -105,3 +105,13 @@ func (s *GroupService) UserInAnyGroup(userID, assignmentID int) (bool, error) {
 
 	return false, nil
 }
+
+// FetchGroupForUser fetches the group for a user in an assignment
+func (s *GroupService) FetchGroupForUser(userID, assignmentID int) (*model.Group, error) {
+	return s.groupRepo.FetchGroupForUser(userID, assignmentID)
+}
+
+// FetchUsersFromGroup fetches all users from an group
+func (s *GroupService) FetchUsersFromGroup(groupID int) ([]*model.User, error) {
+	return s.groupRepo.FetchUsersFromGroup(groupID)
+}

@@ -220,3 +220,49 @@ func (repo *GroupRepository) FetchUsersInGroups(assignmentID int) ([]int, error)
 
 	return result, nil
 }
+
+// FetchGroupForUser fetches the group for a user on an assignment
+func (repo *GroupRepository) FetchGroupForUser(userID, assignmentID int) (*model.Group, error) {
+	result := model.Group{}
+
+	query := "SELECT g.id, g.assignment_id, g.name, g.user_id FROM groups AS g INNER JOIN user_groups AS ug ON g.id = ug.group_id WHERE ug.user_id = ? AND g.assignment_id = ?"
+
+	rows, err := repo.db.Query(query, userID, assignmentID)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&result.ID, &result.AssignmentID, &result.Name, &result.Creator)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &result, nil
+}
+
+// FetchUsersFromGroup fetches all users from a group
+func (repo *GroupRepository) FetchUsersFromGroup(groupID int) ([]*model.User, error) {
+	result := make([]*model.User, 0)
+
+	query := "SELECT u.id, u.name, u.email_student, u.teahcer, u.email_private FROM users AS u INNER JOIN user_groups AS ug ON u.id = ug.user_id WHERE ug.group_id = ?"
+
+	rows, err := repo.db.Query(query, groupID)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		temp := model.User{}
+
+		err = rows.Scan(&temp.ID, &temp.Name, &temp.EmailStudent, &temp.Teacher, &temp.EmailPrivate)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, &temp)
+	}
+
+	return result, nil
+}
