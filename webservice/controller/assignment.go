@@ -138,9 +138,12 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 
 	// Create view
 	v := view.New(r)
+
+	// Check if assignment has group delivery
 	if assignment.GroupDelivery {
 		v.Name = "assignment/index_group"
 
+		// Check if current user has group
 		hasGroup, err := services.GroupService.UserInAnyGroup(currentUser.ID, assignment.ID)
 		if err != nil {
 			log.Println(err.Error())
@@ -148,6 +151,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Fetch all groups
 		groups, err := services.GroupService.FetchAll(assignment.ID)
 		if err != nil {
 			log.Println(err.Error())
@@ -157,7 +161,31 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 
 		v.Vars["HasGroup"] = hasGroup
 		v.Vars["Groups"] = groups
-	} else {
+
+		// Check if current user has a group
+		if hasGroup {
+			// Fetch group for current user
+			group, err := services.GroupService.FetchGroupForUser(currentUser.ID, assignment.ID)
+			if err != nil {
+				log.Println(err.Error())
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
+			// Fetch group members for group
+			groupMembers, err := services.GroupService.FetchUsersFromGroup(group.ID)
+			if err != nil {
+				log.Println(err.Error())
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
+			// Put members into group
+			for _, user := range groupMembers {
+				group.Users = append(group.Users, *user)
+			}
+
+			v.Vars["Group"] = group
+		}
+	} else { // Not group delivery
 		v.Name = "assignment/index"
 	}
 
