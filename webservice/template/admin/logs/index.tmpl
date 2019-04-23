@@ -1,0 +1,47 @@
+{{define "title"}}Logs{{end}}
+{{define "head"}}
+    <style>
+        .id-col {
+            font-weight: 700;
+        }
+    </style>
+{{end}}
+{{define "content"}}
+    <h2 class="display-4 mb-3">Logs</h2>
+    <hr>
+
+    <div class="row">
+        <div class="col">
+            <table class="table table-hover table-sm" id="table" data-toggle="table" data-pagination="true"
+                   data-search="true" data-page-size="100">
+                <thead class="thead-light">
+                <tr>
+                    <th data-sortable="true" scope="col">#</th>
+                    <th data-sortable="true" scope="col">Name</th>
+                    <th data-sortable="true" scope="col">Activity</th>
+                    <th data-sortable="true" scope="col">Explanation</th>
+                    <th data-sortable="true" scope="col">Teacher</th>
+                    <th data-sortable="true" scope="col">Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{range .Logs}}
+
+                    <tr>
+                        <td class="id-col">{{ .UserID }}</td>
+                        <td>{{ GET_USERNAME .UserID }}</td>
+                        <td>{{ .Activity }}</td>
+                        <td> Changed email from 'hei@st.ntnu.no' to 'hei@stud.ntnu.no'</td>
+                        <!-- TODO get explanation -->
+                        <td>Teacher</td> <!-- TODO get teacher or not -->
+                        <td>{{ .Timestamp }}</td>
+                    </tr>
+                {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{{end}}
+{{define "foot"}}
+{{end}}

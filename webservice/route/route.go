@@ -58,6 +58,8 @@ func routes() http.Handler {
 	// Admin-page Handlers
 	adminrouter.HandleFunc("/", controller.AdminGET).Methods("GET")
 
+	adminrouter.HandleFunc("/logs", controller.AdminLogsGet).Methods("GET")
+
 	adminrouter.HandleFunc("/course", controller.AdminCourseGET).Methods("GET")
 	adminrouter.HandleFunc("/course/create", controller.AdminCreateCourseGET).Methods("GET")
 	adminrouter.HandleFunc("/course/create", controller.AdminCreateCoursePOST).Methods("POST")
