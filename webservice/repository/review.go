@@ -228,3 +228,28 @@ func (repo *ReviewRepository) IsUsed(id int) (bool, error) {
 
 	return false, err
 }
+
+// UsedInAssignment func
+func (repo *ReviewRepository) UsedInAssignment(id int)(int, error){
+	query := "SELECT a.id, s.form_id FROM assignments AS a INNER JOIN reviews AS s ON a.review_id = s.id"
+
+	rows, err := repo.db.Query(query)
+	if err != nil {
+		return 0, err
+	}
+
+	for rows.Next() {
+		var reviewId int
+		var submissionId int
+		err = rows.Scan(&reviewId, &submissionId)
+		if err != nil {
+			return 0, err
+		}
+
+		if submissionId == id {
+			return reviewId, nil
+		}
+	}
+
+	return 0, err
+}

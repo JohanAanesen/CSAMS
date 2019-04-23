@@ -139,6 +139,11 @@ func (s *ReviewAnswerService) CountReviewsDone(userID, assignmentID int) (int, e
 	return s.reviewAnswerRepo.CountReviewsDone(userID, assignmentID)
 }
 
+// CountReviewsDoneOnAssignment func
+func (s *ReviewAnswerService) CountReviewsDoneOnAssignment(assignmentID int) (int, error) {
+	return s.reviewAnswerRepo.CountReviewsDoneOnAssignment(assignmentID)
+}
+
 // Insert func
 func (s *ReviewAnswerService) Insert(answer model.ReviewAnswer) (int, error) {
 	return s.reviewAnswerRepo.Insert(answer)

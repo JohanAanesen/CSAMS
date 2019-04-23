@@ -159,6 +159,30 @@ func (repo *ReviewAnswerRepository) CountReviewsDone(userID, assignmentID int) (
 	return result, err
 }
 
+// CountReviewsDoneOnAssignment func
+func (repo *ReviewAnswerRepository) CountReviewsDoneOnAssignment(assignmentID int) (int, error) {
+	var result int
+
+	query := "SELECT COUNT(DISTINCT id) FROM user_reviews WHERE assignment_id = ?"
+
+	rows, err := repo.db.Query(query, assignmentID)
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+
+	if rows.Next() {
+		err = rows.Scan(&result)
+		if err != nil {
+			return result, err
+		}
+	}
+
+	return result, err
+}
+
+
 // MaxScore func
 func (repo *ReviewAnswerRepository) MaxScore(assignmentID int) (int, error) {
 	var result int

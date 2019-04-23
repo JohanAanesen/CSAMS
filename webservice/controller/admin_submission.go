@@ -196,18 +196,20 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
-
 	// Set header content-type and code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
+
 	// Create view
 	v := view.New(r)
+
 	// Set template-file
 	v.Name = "admin/submission/update"
+
 	// View variables
 	v.Vars["formJSON"] = string(formBytes)
 	v.Vars["Errors"] = errorMessages
+
 	// Render view
 	v.Render(w)
 }
