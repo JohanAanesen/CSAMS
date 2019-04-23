@@ -219,8 +219,10 @@ CREATE TABLE `groups`
     `id`            int(11)         NOT NULL AUTO_INCREMENT,
     `assignment_id` int(11)         NOT NULL,
     `name`          varchar(255)    NOT NULL,
+    `user_id`       int(11)         NOT NULL,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`assignment_id`) REFERENCES assignments (`id`)
+    FOREIGN KEY (`assignment_id`) REFERENCES assignments (`id`),
+    FOREIGN KEY (`user_id`) REFERENCES users (`id`)
 );
 
 CREATE TABLE `user_groups`
