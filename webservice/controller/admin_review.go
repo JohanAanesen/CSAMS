@@ -162,15 +162,13 @@ func AdminReviewUpdateGET(w http.ResponseWriter, r *http.Request) {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
-		fmt.Println(assignmentId)
+
 		reviewsDone, err := services.ReviewAnswer.CountReviewsDoneOnAssignment(assignmentId)
 		if err != nil {
 			log.Println("services, submission, CountForAssignment", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
-
-
 
 		if reviewsDone > 0 {
 			errorMessages = append(errorMessages, "Form has reviews.")
