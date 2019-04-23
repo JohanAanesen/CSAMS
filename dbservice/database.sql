@@ -163,19 +163,6 @@ CREATE TABLE `user_submissions`
     FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`)
 );
 
-CREATE TABLE `schedule_tasks`
-(
-    `id`             int(11)     NOT NULL AUTO_INCREMENT,
-    `submission_id`  int(11)     NOT NULL,
-    `assignment_id`  int(11)     NOT NULL,
-    `scheduled_time` datetime    NOT NULL,
-    `task`           varchar(32) NOT NULL,
-    `data`           blob        NOT NULL,
-    PRIMARY KEY (`id`),
-    FOREIGN KEY (`assignment_id`) REFERENCES assignments (`id`),
-    FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`)
-);
-
 CREATE TABLE `validation`
 (
     `id`        int(11)     NOT NULL AUTO_INCREMENT,
