@@ -1,5 +1,6 @@
 {{define "title"}}Logs{{end}}
 {{define "head"}}
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.css">
     <style>
         .id-col {
             font-weight: 700;
@@ -12,16 +13,16 @@
 
     <div class="row">
         <div class="col">
-            <table class="table table-hover table-sm" id="table" data-toggle="table" data-pagination="true"
-                   data-search="true" data-page-size="100">
+            <table class="table table-hover table-striped table-sm" id="table" data-toggle="table"
+                   data-pagination="true" data-search="true" data-page-size="100">
                 <thead class="thead-light">
                 <tr>
                     <th data-sortable="true" scope="col">#</th>
                     <th data-sortable="true" scope="col">Name</th>
-                    <th data-sortable="true" scope="col">Activity</th>
+                    <th data-sortable="true" scope="col">Activity ID</th>
                     <th data-sortable="true" scope="col">Explanation</th>
                     <th data-sortable="true" scope="col">Teacher</th>
-                    <th data-sortable="true" scope="col">Date</th>
+                    <th data-sortable="true" scope="col">Date</th> <!-- TODO sort by time -->
                 </tr>
                 </thead>
                 <tbody>
@@ -31,10 +32,101 @@
                         <td class="id-col">{{ .UserID }}</td>
                         <td>{{ GET_USERNAME .UserID }}</td>
                         <td>{{ .Activity }}</td>
-                        <td> Changed email from 'hei@st.ntnu.no' to 'hei@stud.ntnu.no'</td>
-                        <!-- TODO get explanation -->
+                        <!-- TODO brede : complete the explanation for all 42 events -->
+                        <td>
+                            {{ if eq .Activity 0 }} <!-- User activity:  New user-->
+                            New registered user
+                            {{ else if eq .Activity 1 }} <!-- User activity:  Change Email-->
+                            Changed email from
+                            <b><i>{{if not .OldValue.Valid}}nothing{{else}}{{ .OldValue.Value }}{{end}}</i></b>
+                            to
+                            <b><i>{{ .NewValue.Value }}</i></b>
+                            {{ else if eq .Activity 2 }} <!-- User activity:  Change Password-->
+                            Changed password (not showing old and new passwords here)
+                            {{ else if eq .Activity 3 }} <!-- User activity:  Change Password through email-->
+
+                            {{ else if eq .Activity 4 }} <!-- User activity:  Create submission-->
+
+                            {{ else if eq .Activity 5 }} <!-- User activity:  Update submission-->
+
+                            {{ else if eq .Activity 6 }} <!-- User activity:  Delete submission-->
+
+                            {{ else if eq .Activity 7 }} <!-- User activity:  Finished one peer review-->
+
+                            {{ else if eq .Activity 8 }} <!-- User activity:  Updated one peer review-->
+
+                            {{ else if eq .Activity 9 }} <!-- User activity:  Joined course-->
+
+                            {{ else if eq .Activity 10 }} <!-- User activity:  Left course-->
+
+                            {{ else if eq .Activity 11 }} <!-- User activity:  Created group-->
+
+                            {{ else if eq .Activity 12 }} <!-- User activity:  Edited group name-->
+
+                            {{ else if eq .Activity 13 }} <!-- User activity:  Deleted group-->
+
+                            {{ else if eq .Activity 14 }} <!-- User activity:  Joined group-->
+
+                            {{ else if eq .Activity 15 }} <!-- User activity:  Left group-->
+
+                            {{ else if eq .Activity 16 }} <!-- User activity:  Kicked from group-->
+
+                            {{ else if eq .Activity 100 }} <!-- Admin activity:  Created assignment-->
+
+                            {{ else if eq .Activity 101 }} <!-- Admin activity:  Deleted assignment-->
+
+                            {{ else if eq .Activity 102 }} <!-- Admin activity:  Updated assignment-->
+
+                            {{ else if eq .Activity 103 }} <!-- Admin activity:  Created submission form-->
+
+                            {{ else if eq .Activity 104 }} <!-- Admin activity:  Updated submission form-->
+
+                            {{ else if eq .Activity 105 }} <!-- Admin activity:  Deleted submission form-->
+
+                            {{ else if eq .Activity 106 }} <!-- Admin activity:  Created review form-->
+
+                            {{ else if eq .Activity 107 }} <!-- Admin activity:  Updated review form-->
+
+                            {{ else if eq .Activity 108 }} <!-- Admin activity:  Deleted review form-->
+
+                            {{ else if eq .Activity 109 }} <!-- Admin activity:  Created course-->
+
+                            {{ else if eq .Activity 110 }} <!-- Admin activity:  Updated course-->
+
+                            {{ else if eq .Activity 111 }} <!-- Admin activity:  Deleted course-->
+
+                            {{ else if eq .Activity 112 }} <!-- Admin activity:  Created FAQ-->
+
+                            {{ else if eq .Activity 113 }} <!-- Admin activity:  Updated FAQ-->
+
+                            {{ else if eq .Activity 114 }} <!-- Admin activity:  Emailed all students in course-->
+
+                            {{ else if eq .Activity 115 }} <!-- Admin activity:  Removed user from course-->
+
+                            {{ else if eq .Activity 116 }} <!-- Admin activity:  Changed users password-->
+
+                            {{ else if eq .Activity 117 }} <!-- Admin activity:  Created submission for user-->
+
+                            {{ else if eq .Activity 118 }} <!-- Admin activity:  Updated submission for user-->
+
+                            {{ else if eq .Activity 119 }} <!-- Admin activity:  Deleted submission for user-->
+
+                            {{ else if eq .Activity 120 }} <!-- Admin activity:  Added user to group-->
+
+                            {{ else if eq .Activity 121 }} <!-- Admin activity:  Removed user from group-->
+
+                            {{ else if eq .Activity 122 }} <!-- Admin activity:  Edited group name-->
+
+                            {{ else if eq .Activity 123 }} <!-- Admin activity:  Deleted group-->
+
+                            {{ else if eq .Activity 124 }} <!-- Admin activity:  Created group-->
+
+                            {{ else }}
+                                error: Unknown activity ID
+                            {{ end }}
+                        </td>
                         <td>Teacher</td> <!-- TODO get teacher or not -->
-                        <td>{{ .Timestamp }}</td>
+                        <td>{{ SORTABLE_TIME .Timestamp }}</td>
                     </tr>
                 {{end}}
                 </tbody>
@@ -44,4 +136,5 @@
 
 {{end}}
 {{define "foot"}}
+    <script src="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.js"></script>
 {{end}}

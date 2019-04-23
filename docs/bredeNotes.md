@@ -440,6 +440,8 @@ KickedFromGroup
 ```
 * Added functions for logging admin group events
 * Added functions for logging student group events
+* Changed `Activity` from `logs` from string to int, to easier deal with the current 42 different logging events. Also way easier to put in the .tmpl file this way.
+
 
 ### Wednesday - 24/04/19
 
