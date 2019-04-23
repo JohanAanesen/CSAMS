@@ -26,9 +26,9 @@
 - [X] AdminEmailCourseStudents
 - [X] AdminRemoveUserFromCourse
 - [X] AdminChangeStudentPassword  
-- [ ] AdminCreateSubmissionForUser 
-- [ ] AdminUpdateSubmissionForUser 
-- [ ] AdminDeleteSubmissionForUser
+- [X] AdminCreateSubmissionForUser 
+- [X] AdminUpdateSubmissionForUser 
+- [X] AdminDeleteSubmissionForUser
 
 **Bug**
 - [ ] AdminUpdateFAQ : `http: panic serving [::1]:8348: runtime error: invalid memory address or nil pointer dereference`

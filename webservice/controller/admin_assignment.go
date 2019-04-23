@@ -1577,10 +1577,13 @@ func AdminAssignmentSubmissionCreatePOST(w http.ResponseWriter, r *http.Request)
 	// Services
 	services := service.NewServices(db.GetDB())
 
-	// Fetch user
-	user, err := services.User.Fetch(userID)
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
+	// Fetch student user
+	student, err := services.User.Fetch(userID)
 	if err != nil {
-		log.Println("services, user, fetch", err.Error())
+		log.Println("services, user student, fetch", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -1634,7 +1637,7 @@ func AdminAssignmentSubmissionCreatePOST(w http.ResponseWriter, r *http.Request)
 		}
 
 		// Get field type
-		answer.UserID = user.ID
+		answer.UserID = student.ID
 		answer.AssignmentID = assignment.ID
 		answer.SubmissionID = int(assignment.SubmissionID.Int64)
 		answer.Type = field.Type
@@ -1657,6 +1660,13 @@ func AdminAssignmentSubmissionCreatePOST(w http.ResponseWriter, r *http.Request)
 	err = services.SubmissionAnswer.Insert(submissionAnswers)
 	if err != nil {
 		log.Println("services, submission answer, insert", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	err = services.Logs.InsertAdminCreateSubmissionForUser(currentUser.ID, assignment.ID, int(assignment.SubmissionID.Int64), student.ID)
+	if err != nil {
+		log.Println("services, logs, admin create submission for user", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -1800,6 +1810,9 @@ func AdminAssignmentSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request)
 	// Services
 	services := service.NewServices(db.GetDB())
 
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
 	// Fetch user
 	user, err := services.User.Fetch(userID)
 	if err != nil {
@@ -1899,6 +1912,13 @@ func AdminAssignmentSubmissionUpdatePOST(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	err = services.Logs.InsertAdminUpdateSubmissionForUser(currentUser.ID, assignment.ID, int(assignment.SubmissionID.Int64), user.ID)
+	if err != nil {
+		log.Println("services, logs, admin update submission for user", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
 	http.Redirect(w, r,
 		fmt.Sprintf(
 			"/admin/assignment/%d/submissions",
@@ -1937,7 +1957,18 @@ func AdminAssignmentSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 	// Services
 	services := service.NewServices(db.GetDB())
 
-	err = services.SubmissionAnswer.Delete(body.AssignmentID, body.UserID)
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
+	// Fetch assignment
+	assignment, err := services.Assignment.Fetch(body.AssignmentID)
+	if err != nil {
+		log.Println("services, assignment, fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	err = services.SubmissionAnswer.Delete(assignment.ID, body.UserID)
 	if err != nil {
 		respond.Code = http.StatusInternalServerError
 		respond.Message = "Could not delete submission"
@@ -1949,6 +1980,13 @@ func AdminAssignmentSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("Something went wrong."))
 			return
 		}
+		return
+	}
+
+	err = services.Logs.InsertAdminDeleteSubmissionForUser(currentUser.ID, assignment.ID, int(assignment.SubmissionID.Int64), body.UserID)
+	if err != nil {
+		log.Println("services, logs, admin delete submission for user", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
