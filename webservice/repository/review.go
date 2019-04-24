@@ -131,8 +131,8 @@ func (repo *ReviewRepository) Update(id int, review model.Review) error {
 	return err
 }
 
-// Delete func
-func (repo *ReviewRepository) Delete(id int) error {
+// DeleteWithFormID func
+func (repo *ReviewRepository) DeleteWithFormID(id int) error {
 	query := "DELETE FROM reviews WHERE form_id = ?"
 
 	tx, err := repo.db.Begin()

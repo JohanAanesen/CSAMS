@@ -93,7 +93,7 @@ func (s *ReviewService) Update(form model.Form) error {
 
 // Delete func
 func (s *ReviewService) Delete(id int) error {
-	err := s.reviewRepo.Delete(id)
+	err := s.reviewRepo.DeleteWithFormID(id)
 	if err != nil {
 		return err
 	}
