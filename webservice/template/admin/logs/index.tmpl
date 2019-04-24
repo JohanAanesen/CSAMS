@@ -16,6 +16,17 @@
             {{ if eq ( len .Logs ) 0}}
                 <h4 class="display-6 mb-3">No logs available</h4>
             {{ else }}
+                <div>
+                    <form class="form-check form-check-inline">
+                        <input type="checkbox" name="system" value="SYSTEM" class="form-check-input" id="system">
+                        <label class="form-check-label" for="system">System Logs</label>
+                        <!-- TODO brede : get all courses this user is member of -->
+                        <input type="checkbox" name="course" value="COURSE" class="form-check-input" id="course">
+                        <label class="form-check-label" for="course">Course Logs</label>
+                        <input type="checkbox" name="admin" value="ADMIN" class="form-check-input" id="admin">
+                        <label class="form-check-label" for="admin">Admin Logs</label>
+                    </form>
+                </div>
 
                 <table class="table table-hover table-striped table-sm" id="table" data-toggle="table"
                        data-pagination="true" data-search="true" data-page-size="100">
@@ -35,7 +46,7 @@
                         <!-- Check if user is not deleted -->
                         <tr {{if not .UserName.Valid}}class="table-danger"{{end}}>
                             <td class="id-col">{{ .UserID }}</td>
-                            <td bgcolor="">{{if .UserName.Valid}}
+                            <td>{{if .UserName.Valid}}
                                     {{ .UserName.Value }}
                                 {{else}}
                                     N/A
@@ -96,7 +107,6 @@
                                 GROUP {{.GroupID.Value}}: USER LEFT a group
                                 {{ else if eq .Activity 16 }} <!-- User activity:  Kicked from group-->
                                 <!-- Convert from int64 to int -->
-                                {{ $I := INT64_TO_INT .AffectedUserID.Value}}
                                 GROUP {{.GroupID.Value}}: USER KICKED {{ $U }} from a group
 
 
@@ -134,7 +144,7 @@
                                 {{ else if eq .Activity 115 }} <!-- Admin activity:  Removed user from course-->
                                 COURSE {{.CourseID.Value}}: USER REMOVED {{ $U }} from course
                                 {{ else if eq .Activity 116 }} <!-- Admin activity:  Changed users password-->
-                                COURSE {{.CourseID.Value}}: USER CHANGED {{ $U }}'s password
+                                COURSE {{ .CourseID.Value }}: USER CHANGED {{ $U }}'s password
                                 {{ else if eq .Activity 117 }} <!-- Admin activity:  Created submission for user-->
                                 ASSIGNMENT {{ .AssignmentID.Value}}: USER CREATED submission for {{ $U }}
                                 {{ else if eq .Activity 118 }} <!-- Admin activity:  Updated submission for user-->
@@ -166,7 +176,7 @@
                                 {{ else }}
                                     N/A
                                 {{end}}
-                            </td> <!-- TODO get teacher or not -->
+                            </td>
                             <td>{{ SORTABLE_TIME .Timestamp }}</td>
                         </tr>
                     {{end}}
