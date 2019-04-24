@@ -20,11 +20,11 @@ func NewLogsRepository(db *sql.DB) *LogsRepository {
 }
 
 // FetchAll fetches all logs
-func (repo *LogsRepository) FetchAll() ([]*model.Logs, error) {
+func (repo *LogsRepository) FetchAllWithNameAndRole() ([]*model.Logs, error) {
 	result := make([]*model.Logs, 0)
 
 	// Query to be executed
-	query := "SELECT `id`, `user_id`, `timestamp`, `activity`, `assignment_id`, `course_id`, `submission_id`, `review_id`, `group_id`, `old_value`, `new_value`, `affected_user_id` FROM `logs`"
+	query := "SELECT l.id, l.user_id, u.name, u.teacher, l.timestamp, l.activity, l.assignment_id, l.course_id, l.submission_id, l.review_id, l.group_id, l.old_value, l.new_value, l.affected_user_id FROM logs AS l LEFT JOIN users AS u ON l.user_id = u.id"
 
 	// Run query
 	rows, err := repo.db.Query(query)
@@ -40,7 +40,7 @@ func (repo *LogsRepository) FetchAll() ([]*model.Logs, error) {
 		temp := model.Logs{}
 
 		// Add to temporary struct
-		err = rows.Scan(&temp.ID, &temp.UserID, &temp.Timestamp, &temp.Activity, &temp.AssignmentID, &temp.CourseID,
+		err = rows.Scan(&temp.ID, &temp.UserID, &temp.UserName, &temp.UserRole, &temp.Timestamp, &temp.Activity, &temp.AssignmentID, &temp.CourseID,
 			&temp.SubmissionID, &temp.ReviewID, &temp.GroupID, &temp.OldValue, &temp.NewValue, &temp.AffectedUserID)
 		if err != nil {
 			return result, err

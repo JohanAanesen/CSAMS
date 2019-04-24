@@ -15,9 +15,9 @@ func AdminLogsGet(w http.ResponseWriter, r *http.Request) {
 	services := service.NewServices(db.GetDB())
 
 	// Get logs
-	logs, err := services.Logs.FetchAll()
+	logs, err := services.Logs.FetchAllWithNameAndRole()
 	if err != nil {
-		log.Println("services, logs, fetchall", err.Error())
+		log.Println("services, logs, fetchallwithnameandrole", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}

@@ -445,7 +445,9 @@ KickedFromGroup
 ### Wednesday - 24/04/19
 * Completed explanation message for all logging events, just n eed to test them all
 * Created a new plugin for go template `INT64_TO_INT` to easier get username when it's `sql.nullint64`
-* TODO brede : get information if user is teacher or not
+* Got the name and role straight from the db one time, instead of asking too many times
+* Added failsafes if a user has been deleted, both `this user` and `affected user`
+* Tested all logging events that can be triggered now
 
 ### Thursday - 25/04/19
 

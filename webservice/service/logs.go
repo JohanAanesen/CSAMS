@@ -20,8 +20,8 @@ func NewLogsService(db *sql.DB) *LogsService {
 }
 
 // FetchAll fetches all logs
-func (s *LogsService) FetchAll() ([]*model.Logs, error) {
-	return s.logsRepo.FetchAll()
+func (s *LogsService) FetchAllWithNameAndRole() ([]*model.Logs, error) {
+	return s.logsRepo.FetchAllWithNameAndRole()
 }
 
 // InsertNewUser inserts a new user log

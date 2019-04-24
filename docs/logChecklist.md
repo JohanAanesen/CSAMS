@@ -1,5 +1,5 @@
 # Log functions checklist
-## Implemented and works
+## Backend
 **Users**
 - [X] NewUser           
 - [X] ChangeEmail         
@@ -30,20 +30,8 @@
 - [X] AdminUpdateSubmissionForUser 
 - [X] AdminDeleteSubmissionForUser
 - [X] AdminUpdateFAQ
-- [ ] AdminCreateGroup
-- [ ] AdminDeleteGroup
-- [ ] AdminEditGroupName
-- [ ] AdminAddUserToGroup
-- [ ] AdminRemoveUserFromGroup
-- [ ] CreateGroup
-- [ ] DeleteGroup
-- [ ] JoinGroup
-- [ ] LeftGroup
-- [ ] EditGroupName
-- [ ] KickedFromGroup
 
-# Front-end
-## Implemented and works
+## Frontend
 **Users**
 - [X] NewUser           
 - [X] ChangeEmail         
@@ -52,7 +40,7 @@
 - [X] CreateSubmission 
 - [X] UpdateSubmission
 - [X] DeleteSubmission   
-- [ ] FinishedOnePeerReview 
+- [X] FinishedOnePeerReview 
 - [X] UpdateOnePeerReview   
 - [X] JoinedCourse
 
@@ -65,31 +53,32 @@
 - [X] AdminCreateReviewForm
 - [X] AdminUpdateReviewForm
 - [X] AdminDeleteReviewForm  
-- [ ] AdminCreatedCourse 
-- [ ] AdminUpdateCourse
-- [ ] AdminEmailCourseStudents
-- [ ] AdminRemoveUserFromCourse
-- [ ] AdminChangeStudentPassword  
-- [ ] AdminCreateSubmissionForUser 
-- [ ] AdminUpdateSubmissionForUser 
-- [ ] AdminDeleteSubmissionForUser
-- [ ] AdminUpdateFAQ
-- [ ] AdminCreateGroup
-- [ ] AdminDeleteGroup
-- [ ] AdminEditGroupName
-- [ ] AdminAddUserToGroup
-- [ ] AdminRemoveUserFromGroup
+- [X] AdminCreatedCourse 
+- [X] AdminUpdateCourse
+- [X] AdminEmailCourseStudents
+- [X] AdminRemoveUserFromCourse
+- [X] AdminChangeStudentPassword  
+- [X] AdminCreateSubmissionForUser 
+- [X] AdminUpdateSubmissionForUser 
+- [X] AdminDeleteSubmissionForUser
+- [X] AdminUpdateFAQ
+
+## Other
+### No functions for yet
+- [ ] AdminCreateFAQ
+
+### No triggers for yet
+- [ ] LeftCourse 
+- [ ] AdminDeleteAssignment
+- [ ] AdminDeleteCourse
 - [ ] CreateGroup
 - [ ] DeleteGroup
 - [ ] JoinGroup
 - [ ] LeftGroup
 - [ ] EditGroupName
 - [ ] KickedFromGroup
-
-## No functions for yet
-- [ ] AdminCreateFAQ
-
-## No triggers for yet
-- [ ] LeftCourse 
-- [ ] AdminDeleteAssignment
-- [ ] AdminDeleteCourse
+- [ ] AdminCreateGroup
+- [ ] AdminDeleteGroup
+- [ ] AdminEditGroupName
+- [ ] AdminAddUserToGroup
+- [ ] AdminRemoveUserFromGroup

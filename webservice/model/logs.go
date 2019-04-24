@@ -72,6 +72,8 @@ const (
 type Logs struct {
 	ID             int            `json:"id"`               // [NOT NULL][all]
 	UserID         int            `json:"user_id"`          // [NOT NULL][all]
+	UserName       sql.NullString `json:"user_name"`        // [NULLABLE]
+	UserRole       sql.NullInt64  `json:"user_role"`        // [NULLABLE]
 	Timestamp      time.Time      `json:"timestamp"`        // [NOT NULL][all]
 	Activity       Activity       `json:"activity"`         // [NOT NULL][all]
 	AssignmentID   sql.NullInt64  `json:"assignment_id"`    // [NULLABLE]
