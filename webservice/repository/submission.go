@@ -106,7 +106,7 @@ func (repo *SubmissionRepository) Insert(form model.Form) (int, error) {
 // Update func
 func (repo *SubmissionRepository) Update(id int, submission model.Submission) error {
 	if id != submission.ID {
-		return errors.New("review repository update: id does not match")
+		return errors.New("submission repository update: id does not match")
 	}
 
 	query := "UPDATE submissions SET form_id = ? WHERE id = ?"
@@ -134,6 +134,29 @@ func (repo *SubmissionRepository) Update(id int, submission model.Submission) er
 // Delete func
 func (repo *SubmissionRepository) Delete(id int) error {
 	query := "DELETE FROM submissions WHERE id = ?"
+
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+	}
+
+	return err
+}
+
+// DeleteWithFormID func
+func (repo *SubmissionRepository) DeleteWithFormID(id int) error {
+	query := "DELETE FROM submissions WHERE form_id = ?"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
