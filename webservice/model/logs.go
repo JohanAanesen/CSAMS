@@ -8,7 +8,7 @@ import (
 // Activity enum for keeping track of user activity
 type Activity int
 
-// Enum for logs
+// Enum for logs user is 0-16 and admin is 100 - 124
 const (
 	/////// System logs ///////
 	NewUser             Activity = 0 // A new user is created

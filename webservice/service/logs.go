@@ -893,7 +893,7 @@ func (s *LogsService) InsertEditGroupName(userID int, groupID int, oldValue stri
 }
 
 // InsertRemoveUserFromGroup inserts a removed user from course log
-func (s *LogsService) InsertRemoveUserFromGroup(userID int, groupID int, affectedUserID int) error {
+func (s *LogsService) InsertRemoveUserFromGroup(userID int, groupID int, removedUser int) error {
 
 	// Save log in struct
 	// logx since log is already an package
@@ -910,8 +910,8 @@ func (s *LogsService) InsertRemoveUserFromGroup(userID int, groupID int, affecte
 
 	// Add affectedUserID to struct
 	logx.AffectedUserID = sql.NullInt64{
-		Int64: int64(affectedUserID),
-		Valid: affectedUserID != 0,
+		Int64: int64(removedUser),
+		Valid: removedUser != 0,
 	}
 
 	return s.logsRepo.Insert(logx)

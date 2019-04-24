@@ -42,6 +42,50 @@
 - [ ] EditGroupName
 - [ ] KickedFromGroup
 
+# Front-end
+## Implemented and works
+**Users**
+- [X] NewUser           
+- [X] ChangeEmail         
+- [X] ChangePassword    
+- [X] ChangePasswordEmail
+- [X] CreateSubmission 
+- [X] UpdateSubmission
+- [X] DeleteSubmission   
+- [ ] FinishedOnePeerReview 
+- [X] UpdateOnePeerReview   
+- [X] JoinedCourse
+
+**Admin**
+- [X] AdminCreateAssignment  
+- [X] AdminUpdateAssignment  
+- [X] AdminCreateSubmissionForm 
+- [X] AdminUpdateSubmissionForm 
+- [X] AdminDeleteSubmissionForm
+- [X] AdminCreateReviewForm
+- [X] AdminUpdateReviewForm
+- [X] AdminDeleteReviewForm  
+- [ ] AdminCreatedCourse 
+- [ ] AdminUpdateCourse
+- [ ] AdminEmailCourseStudents
+- [ ] AdminRemoveUserFromCourse
+- [ ] AdminChangeStudentPassword  
+- [ ] AdminCreateSubmissionForUser 
+- [ ] AdminUpdateSubmissionForUser 
+- [ ] AdminDeleteSubmissionForUser
+- [ ] AdminUpdateFAQ
+- [ ] AdminCreateGroup
+- [ ] AdminDeleteGroup
+- [ ] AdminEditGroupName
+- [ ] AdminAddUserToGroup
+- [ ] AdminRemoveUserFromGroup
+- [ ] CreateGroup
+- [ ] DeleteGroup
+- [ ] JoinGroup
+- [ ] LeftGroup
+- [ ] EditGroupName
+- [ ] KickedFromGroup
+
 ## No functions for yet
 - [ ] AdminCreateFAQ
 

@@ -13,124 +13,145 @@
 
     <div class="row">
         <div class="col">
-            <table class="table table-hover table-striped table-sm" id="table" data-toggle="table"
-                   data-pagination="true" data-search="true" data-page-size="100">
-                <thead class="thead-light">
-                <tr>
-                    <th data-sortable="true" scope="col">#</th>
-                    <th data-sortable="true" scope="col">Name</th>
-                    <th data-sortable="true" scope="col">Activity ID</th>
-                    <th data-sortable="true" scope="col">Explanation</th>
-                    <th data-sortable="true" scope="col">Teacher</th>
-                    <th data-sortable="true" scope="col">Date</th> <!-- TODO sort by time -->
-                </tr>
-                </thead>
-                <tbody>
-                {{range .Logs}}
+            {{ if eq ( len .Logs ) 0}}
+                <h4 class="display-6 mb-3">No logs available</h4>
+            {{ else }}
 
+                <table class="table table-hover table-striped table-sm" id="table" data-toggle="table"
+                       data-pagination="true" data-search="true" data-page-size="100">
+                    <thead class="thead-light">
                     <tr>
-                        <td class="id-col">{{ .UserID }}</td>
-                        <td>{{ GET_USERNAME .UserID }}</td>
-                        <td>{{ .Activity }}</td>
-                        <!-- TODO brede : complete the explanation for all 42 events -->
-                        <td>
-                            {{ if eq .Activity 0 }} <!-- User activity:  New user-->
-                            New registered user
-                            {{ else if eq .Activity 1 }} <!-- User activity:  Change Email-->
-                            Changed email from
-                            <b><i>{{if not .OldValue.Valid}}nothing{{else}}{{ .OldValue.Value }}{{end}}</i></b>
-                            to
-                            <b><i>{{ .NewValue.Value }}</i></b>
-                            {{ else if eq .Activity 2 }} <!-- User activity:  Change Password-->
-                            Changed password (not showing old and new passwords here)
-                            {{ else if eq .Activity 3 }} <!-- User activity:  Change Password through email-->
-
-                            {{ else if eq .Activity 4 }} <!-- User activity:  Create submission-->
-
-                            {{ else if eq .Activity 5 }} <!-- User activity:  Update submission-->
-
-                            {{ else if eq .Activity 6 }} <!-- User activity:  Delete submission-->
-
-                            {{ else if eq .Activity 7 }} <!-- User activity:  Finished one peer review-->
-
-                            {{ else if eq .Activity 8 }} <!-- User activity:  Updated one peer review-->
-
-                            {{ else if eq .Activity 9 }} <!-- User activity:  Joined course-->
-
-                            {{ else if eq .Activity 10 }} <!-- User activity:  Left course-->
-
-                            {{ else if eq .Activity 11 }} <!-- User activity:  Created group-->
-
-                            {{ else if eq .Activity 12 }} <!-- User activity:  Edited group name-->
-
-                            {{ else if eq .Activity 13 }} <!-- User activity:  Deleted group-->
-
-                            {{ else if eq .Activity 14 }} <!-- User activity:  Joined group-->
-
-                            {{ else if eq .Activity 15 }} <!-- User activity:  Left group-->
-
-                            {{ else if eq .Activity 16 }} <!-- User activity:  Kicked from group-->
-
-                            {{ else if eq .Activity 100 }} <!-- Admin activity:  Created assignment-->
-
-                            {{ else if eq .Activity 101 }} <!-- Admin activity:  Deleted assignment-->
-
-                            {{ else if eq .Activity 102 }} <!-- Admin activity:  Updated assignment-->
-
-                            {{ else if eq .Activity 103 }} <!-- Admin activity:  Created submission form-->
-
-                            {{ else if eq .Activity 104 }} <!-- Admin activity:  Updated submission form-->
-
-                            {{ else if eq .Activity 105 }} <!-- Admin activity:  Deleted submission form-->
-
-                            {{ else if eq .Activity 106 }} <!-- Admin activity:  Created review form-->
-
-                            {{ else if eq .Activity 107 }} <!-- Admin activity:  Updated review form-->
-
-                            {{ else if eq .Activity 108 }} <!-- Admin activity:  Deleted review form-->
-
-                            {{ else if eq .Activity 109 }} <!-- Admin activity:  Created course-->
-
-                            {{ else if eq .Activity 110 }} <!-- Admin activity:  Updated course-->
-
-                            {{ else if eq .Activity 111 }} <!-- Admin activity:  Deleted course-->
-
-                            {{ else if eq .Activity 112 }} <!-- Admin activity:  Created FAQ-->
-
-                            {{ else if eq .Activity 113 }} <!-- Admin activity:  Updated FAQ-->
-
-                            {{ else if eq .Activity 114 }} <!-- Admin activity:  Emailed all students in course-->
-
-                            {{ else if eq .Activity 115 }} <!-- Admin activity:  Removed user from course-->
-
-                            {{ else if eq .Activity 116 }} <!-- Admin activity:  Changed users password-->
-
-                            {{ else if eq .Activity 117 }} <!-- Admin activity:  Created submission for user-->
-
-                            {{ else if eq .Activity 118 }} <!-- Admin activity:  Updated submission for user-->
-
-                            {{ else if eq .Activity 119 }} <!-- Admin activity:  Deleted submission for user-->
-
-                            {{ else if eq .Activity 120 }} <!-- Admin activity:  Added user to group-->
-
-                            {{ else if eq .Activity 121 }} <!-- Admin activity:  Removed user from group-->
-
-                            {{ else if eq .Activity 122 }} <!-- Admin activity:  Edited group name-->
-
-                            {{ else if eq .Activity 123 }} <!-- Admin activity:  Deleted group-->
-
-                            {{ else if eq .Activity 124 }} <!-- Admin activity:  Created group-->
-
-                            {{ else }}
-                                error: Unknown activity ID
-                            {{ end }}
-                        </td>
-                        <td>Teacher</td> <!-- TODO get teacher or not -->
-                        <td>{{ SORTABLE_TIME .Timestamp }}</td>
+                        <th data-sortable="true" scope="col">#</th>
+                        <th data-sortable="true" scope="col">Name</th>
+                        <th data-sortable="true" scope="col">Activity ID</th>
+                        <th data-sortable="true" scope="col">Explanation</th>
+                        <th data-sortable="true" scope="col">Teacher</th>
+                        <th data-sortable="true" scope="col">Date</th> <!-- TODO sort by time -->
                     </tr>
-                {{end}}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {{range .Logs}}
+
+                        <tr>
+                            <td class="id-col">{{ .UserID }}</td>
+                            <td>{{ GET_USERNAME .UserID }}</td>
+                            <td>{{ .Activity }}</td>
+                            <!-- TODO brede : complete the explanation for all 42 events -->
+                            <td>
+
+                                <!-- Declare new variable for affected user id -->
+                                {{ $A := -1}}
+
+                                <!-- Convert from int64 to int if it's valid-->
+                                {{ if .AffectedUserID.Valid}}
+                                    {{ $A = INT64_TO_INT .AffectedUserID.Value}}
+                                {{end}}
+
+                                <!-- USER events -->
+                                {{ if eq .Activity 0 }} <!-- User activity:  New user-->
+                                NEW USER
+                                {{ else if eq .Activity 1 }} <!-- User activity:  Change Email-->
+                                EMAIL: USER CHANGED email from
+                                {{if not .OldValue.Valid}}NOTHING{{else}}<i>{{ .OldValue.Value }}</i>{{end}} to
+                                <i>{{ .NewValue.Value }}</i>
+                                {{ else if eq .Activity 2 }} <!-- User activity:  Change Password-->
+                                PASSWORD: USER CHANGED password
+                                {{ else if eq .Activity 3 }} <!-- User activity:  Change Password through email-->
+                                PASSWORD: USER CHANGED password with <i>forgotten password</i>
+                                {{ else if eq .Activity 4 }} <!-- User activity:  Create submission-->
+                                ASSIGNMENT {{ .AssignmentID.Value}}: USER DELIVERED submission
+                                {{ else if eq .Activity 5 }} <!-- User activity:  Update submission-->
+                                ASSIGNMENT {{ .AssignmentID.Value}}: USER UPDATED submission
+                                {{ else if eq .Activity 6 }} <!-- User activity:  Delete submission-->
+                                ASSIGNMENT {{ .AssignmentID.Value}}: USER DELETED submission
+                                {{ else if eq .Activity 7 }} <!-- User activity:  Finished one peer review-->
+                                ASSIGNMENT {{ .AssignmentID.Value}}: USER COMPLETED PEER REVIEW on {{GET_USERNAME $A}}'s submission
+                                {{ else if eq .Activity 8 }} <!-- User activity:  Updated one peer review-->
+                                ASSIGNMENT {{ .AssignmentID.Value}}: USER UPDATED PEER REVIEW on {{GET_USERNAME $A}}'s submission
+                                {{ else if eq .Activity 9 }} <!-- User activity:  Joined course-->
+                                COURSE {{ .CourseID.Value}}: USER JOINED
+                                {{ else if eq .Activity 10 }} <!-- User activity:  Left course-->
+                                COURSE {{ .CourseID.Value}}: USER LEFT
+                                {{ else if eq .Activity 11 }} <!-- User activity:  Created group-->
+                                GROUP {{.GroupID.Value}}: USER CREATED a group
+                                {{ else if eq .Activity 12 }} <!-- User activity:  Edited group name-->
+                                GROUP {{.GroupID.Value}}: USER CHANGED name from
+                                <i>{{.OldValue.Value}}</i> to <i>{{.NewValue.Value}}</i>
+                                {{ else if eq .Activity 13 }} <!-- User activity:  Deleted group-->
+                                GROUP {{.GroupID.Value}}: USER DELETED a group
+                                {{ else if eq .Activity 14 }} <!-- User activity:  Joined group-->
+                                GROUP {{.GroupID.Value}}: USER JOINED a group
+                                {{ else if eq .Activity 15 }} <!-- User activity:  Left group-->
+                                GROUP {{.GroupID.Value}}: USER LEFT a group
+                                {{ else if eq .Activity 16 }} <!-- User activity:  Kicked from group-->
+                                <!-- Convert from int64 to int -->
+                                {{ $I := INT64_TO_INT .AffectedUserID.Value}}
+                                GROUP {{.GroupID.Value}}: USER KICKED {{ GET_USERNAME $A }} from a group
+
+
+                                <!-- ADMIN events-->
+                                {{ else if eq .Activity 100 }} <!-- Admin activity:  Created assignment-->
+                                ASSIGNMENT {{ .AssignmentID.Value}}: USER CREATED an assignment
+                                {{ else if eq .Activity 101 }} <!-- Admin activity:  Deleted assignment-->
+                                ASSIGNMENT {{ .AssignmentID.Value}}: USER DELETED an assignment
+                                {{ else if eq .Activity 102 }} <!-- Admin activity:  Updated assignment-->
+                                ASSIGNMENT {{ .AssignmentID.Value}}: USER UPDATED an assignment
+                                {{ else if eq .Activity 103 }} <!-- Admin activity:  Created submission form-->
+                                SUBMISSION FORM {{ .SubmissionID.Value}}: USER CREATED a submission form
+                                {{ else if eq .Activity 104 }} <!-- Admin activity:  Updated submission form-->
+                                SUBMISSION FORM {{ .SubmissionID.Value}}: USER UPDATED a submission form
+                                {{ else if eq .Activity 105 }} <!-- Admin activity:  Deleted submission form-->
+                                SUBMISSION FORM {{ .SubmissionID.Value}}: USER DELETED a submission form
+                                {{ else if eq .Activity 106 }} <!-- Admin activity:  Created review form-->
+                                REVIEW FORM {{ .ReviewID.Value}}: USER CREATED a review form
+                                {{ else if eq .Activity 107 }} <!-- Admin activity:  Updated review form-->
+                                REVIEW FORM {{ .ReviewID.Value}}: USER UPDATED a review form
+                                {{ else if eq .Activity 108 }} <!-- Admin activity:  Deleted review form-->
+                                REVIEW FORM {{ .ReviewID.Value}}: USER DELETED a review form
+                                {{ else if eq .Activity 109 }} <!-- Admin activity:  Created course-->
+                                COURSE {{.CourseID.Value}}: USER CREATED a course
+                                {{ else if eq .Activity 110 }} <!-- Admin activity:  Updated course-->
+                                COURSE {{.CourseID.Value}}: USER UPDATED a course
+                                {{ else if eq .Activity 111 }} <!-- Admin activity:  Deleted course-->
+                                COURSE {{.CourseID.Value}}: USER DELETED a course
+                                {{ else if eq .Activity 112 }} <!-- Admin activity:  Created FAQ-->
+                                FAQ: USER CREATED an FAQ
+                                {{ else if eq .Activity 113 }} <!-- Admin activity:  Updated FAQ-->
+                                FAQ: USER UPDATED the FAQ
+                                {{ else if eq .Activity 114 }} <!-- Admin activity:  Emailed all students in course-->
+                                COURSE {{.CourseID.Value}}: USER EMAILED all students
+                                {{ else if eq .Activity 115 }} <!-- Admin activity:  Removed user from course-->
+                                COURSE {{.CourseID.Value}}: USER REMOVED {{ GET_USERNAME $A }} from course
+                                {{ else if eq .Activity 116 }} <!-- Admin activity:  Changed users password-->
+                                COURSE {{.CourseID.Value}}: USER CHANGED {{ GET_USERNAME $A }}'s password
+                                {{ else if eq .Activity 117 }} <!-- Admin activity:  Created submission for user-->
+                                ASSIGNMENT {{ .AssignmentID.Value}}: USER CREATED submission for {{ GET_USERNAME $A}}
+                                {{ else if eq .Activity 118 }} <!-- Admin activity:  Updated submission for user-->
+                                ASSIGNMENT {{ .AssignmentID.Value}}: USER UPDATED submission for {{ GET_USERNAME $A }}
+                                {{ else if eq .Activity 119 }} <!-- Admin activity:  Deleted submission for user-->
+                                ASSIGNMENT {{ .AssignmentID.Value}}: USER DELETED submission for {{ GET_USERNAME $A}}
+                                {{ else if eq .Activity 120 }} <!-- Admin activity:  Added user to group-->
+                                GROUP {{ .GroupID.Valuse }}: USER ADDED {{ GET_USERNAME $A }} to group
+                                {{ else if eq .Activity 121 }} <!-- Admin activity:  Removed user from group-->
+                                GROUP {{ .GroupID.Valuse }}: USER REMOVED {{ GET_USERNAME $A }} from group
+                                {{ else if eq .Activity 122 }} <!-- Admin activity:  Edited group name-->
+                                GROUP {{ .GroupID.Valuse }}: USER CHANGED name from
+                                <i>{{.OldValue.Value}}</i> to <i>{{.NewValue.Value}}</i>
+                                {{ else if eq .Activity 123 }} <!-- Admin activity:  Deleted group-->
+                                GROUP {{ .GroupID.Valuse }}: USER DELETED group
+                                {{ else if eq .Activity 124 }} <!-- Admin activity:  Created group-->
+                                GROUP {{ .GroupID.Valuse }}: USER CREATED group
+                                {{ else }}
+                                    error: Unknown activity ID
+                                {{ end }}
+                            </td>
+                            <td>Teacher</td> <!-- TODO get teacher or not -->
+                            <td>{{ SORTABLE_TIME .Timestamp }}</td>
+                        </tr>
+                    {{end}}
+                    </tbody>
+                </table>
+            {{end}}
         </div>
     </div>
 

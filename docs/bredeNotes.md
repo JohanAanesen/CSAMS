@@ -442,8 +442,10 @@ KickedFromGroup
 * Added functions for logging student group events
 * Changed `Activity` from `logs` from string to int, to easier deal with the current 42 different logging events. Also way easier to put in the .tmpl file this way.
 
-
 ### Wednesday - 24/04/19
+* Completed explanation message for all logging events, just n eed to test them all
+* Created a new plugin for go template `INT64_TO_INT` to easier get username when it's `sql.nullint64`
+* TODO brede : get information if user is teacher or not
 
 ### Thursday - 25/04/19
 

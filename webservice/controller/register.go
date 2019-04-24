@@ -279,7 +279,7 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// RegisterWithHashing user (insert to database)
-		_, err = userService.Register(user, password)
+		registeredID, err := userService.Register(user, password)
 		if err != nil {
 			log.Println(err.Error())
 			RegisterGET(w, r)
@@ -287,7 +287,7 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Log new user to db
-		err = logService.InsertNewUser(user.ID)
+		err = logService.InsertNewUser(registeredID)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("new user log", err.Error())
