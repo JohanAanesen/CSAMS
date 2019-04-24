@@ -89,6 +89,7 @@ func Initialize(configFile string) *Configuration {
 		plugin.Sprintf(),
 		plugin.Review(),
 		plugin.INT64toINT(),
+		plugin.Append(),
 	)
 
 	return cfg

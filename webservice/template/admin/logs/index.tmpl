@@ -51,8 +51,10 @@
                                 {{ if .AffectedUserID.Valid}}
                                     {{ $A := INT64_TO_INT .AffectedUserID.Value}}
                                     {{ $U = GET_USERNAME $A}}
+
+                                    <!-- If user doesn't exist, create a response string -->
                                     {{ if eq $U ""}}
-                                        {{ $U = .AffectedUserID.Value}}
+                                        {{ $U = APPEND "user with ID " (ITOA $A)}} <!-- Convert int to string also -->
                                     {{end}}
                                 {{end}}
 
