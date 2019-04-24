@@ -2,7 +2,6 @@ package service
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/repository"
 )
@@ -123,19 +122,16 @@ func (s *SubmissionService) Update(form model.Form) error {
 func (s *SubmissionService) Delete(id int) error {
 	err := s.submissionRepo.DeleteWithFormID(id)
 	if err != nil {
-		fmt.Println(1)
 		return err
 	}
 
 	err = s.fieldRepo.DeleteAll(id)
 	if err != nil {
-		fmt.Println(2)
 		return err
 	}
 
 	err = s.formRepo.Delete(id)
 	if err != nil {
-		fmt.Println(3)
 		return err
 	}
 

@@ -307,8 +307,6 @@ func AdminSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		msg.Code = http.StatusInternalServerError
 		msg.Message = err.Error()
-
-		fmt.Println(err.Error())
 		msg.Location = "/admin/submission"
 	} else {
 		msg.Code = http.StatusOK
