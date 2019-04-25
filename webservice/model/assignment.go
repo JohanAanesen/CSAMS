@@ -24,6 +24,3 @@ type Assignment struct {
 	Reviewers      sql.NullInt64 `json:"reviewers"`
 	ValidationID   sql.NullInt64 `json:"validation_id"`
 }
-
-// AssignmentRepository holds all assignments, and DB-functions
-type AssignmentRepository struct{}
