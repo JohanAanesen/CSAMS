@@ -19,7 +19,7 @@ func NewLogsRepository(db *sql.DB) *LogsRepository {
 	}
 }
 
-// FetchAll fetches all logs
+// FetchAllWithNameAndRole fetches all logs
 func (repo *LogsRepository) FetchAllWithNameAndRole() ([]*model.Logs, error) {
 	result := make([]*model.Logs, 0)
 

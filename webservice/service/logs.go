@@ -19,7 +19,7 @@ func NewLogsService(db *sql.DB) *LogsService {
 	}
 }
 
-// FetchAll fetches all logs
+// FetchAllWithNameAndRole fetches all logs
 func (s *LogsService) FetchAllWithNameAndRole() ([]*model.Logs, error) {
 	return s.logsRepo.FetchAllWithNameAndRole()
 }

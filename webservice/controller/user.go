@@ -198,7 +198,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/user", http.StatusFound) //success redirect to homepage
 }
 
-// ConfirmConfirmEmailGET validates new email requests from users
+// ConfirmEmailGET validates new email requests from users
 func ConfirmEmailGET(w http.ResponseWriter, r *http.Request) {
 	hash := r.FormValue("id")
 
