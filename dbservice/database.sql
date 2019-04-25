@@ -191,8 +191,8 @@ CREATE TABLE `users_pending`
 (
     `id`            int(11)     NOT NULL AUTO_INCREMENT,
     `name`          varchar(64) DEFAULT NULL,
-    `email_student` varchar(64) NOT NULL,
-    `password`      varchar(64) NOT NULL,
+    `email`         varchar(64) NOT NULL,
+    `password`      varchar(64) DEFAULT NULL,
     `validation_id` int(11)     NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`validation_id`) REFERENCES validation (`id`)
