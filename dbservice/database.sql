@@ -105,6 +105,7 @@ CREATE TABLE `assignments`
     `deadline`        datetime    NOT NULL,
     `course_id`       int(11)     NOT NULL,
     `submission_id`   int(11)  DEFAULT NULL,
+    `review_enabled`  tinyint(1) DEFAULT 0,
     `review_id`       int(11)  DEFAULT NULL,
     `review_deadline` datetime DEFAULT NULL,
     `validation_id`   int(11)  DEFAULT NULL,
