@@ -549,6 +549,9 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 
 // AssignmentUserSubmissionGET serves one user submission to admin and the peer reviews
 func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
+	// Services
+	services := service.NewServices(db.GetDB())
+
 	// Get parameters in the URL
 	vars := mux.Vars(r)
 
@@ -567,15 +570,12 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get relevant user
-	user := model.GetUser(userID)
-	if !user.Authenticated {
+	user, err := services.User.Fetch(userID)
+	if err != nil {
 		log.Printf("Error: Could not get user (assignment.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	// Services
-	services := service.NewServices(db.GetDB())
 
 	// Current user
 	currentUser := session.GetUserFromSession(r)
