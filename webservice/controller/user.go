@@ -137,6 +137,8 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 			log.Println(err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
+		}else{
+			session.SaveMessageToSession("Password changed successfully", w, r)
 		}
 
 		// Save information to log struct
