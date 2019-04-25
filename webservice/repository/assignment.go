@@ -30,7 +30,7 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 	*/
 	result := model.Assignment{}
 
-	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, review_deadline, reviewers, validation_id FROM assignments WHERE id = ?"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_enabled, review_id, review_deadline, reviewers, validation_id FROM assignments WHERE id = ?"
 
 	rows, err := repo.db.Query(query, id)
 	if err != nil {
@@ -43,7 +43,7 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 		var reviewDeadline sql.NullString
 
 		err = rows.Scan(&result.ID, &result.Name, &result.Description, &result.Created,
-			&result.Publish, &result.Deadline, &result.CourseID, &result.SubmissionID,
+			&result.Publish, &result.Deadline, &result.CourseID, &result.SubmissionID, &result.ReviewEnabled,
 			&result.ReviewID, &reviewDeadline, &result.Reviewers, &result.ValidationID)
 
 		if err != nil {
@@ -191,9 +191,9 @@ func (repo *AssignmentRepository) Update(assignment model.Assignment) error {
 			tx.Rollback()
 			return err
 		}
-	}else{
+	} else {
 		query := "UPDATE assignments SET review_id = ? WHERE id = ?"
-		_, err := tx.Exec(query, sql.NullInt64{Valid:false}, assignment.ID)
+		_, err := tx.Exec(query, sql.NullInt64{Valid: false}, assignment.ID)
 		if err != nil {
 			tx.Rollback()
 			return err
