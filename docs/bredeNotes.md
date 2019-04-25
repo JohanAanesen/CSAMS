@@ -450,6 +450,9 @@ KickedFromGroup
 * Tested all logging events that can be triggered now
 
 ### Thursday - 25/04/19
+* Added type (of log) to the log table in frontend
+* Added another failsafe if activity id is unknown
+* Logs is sorted by date desc now :D
 
 ### Friday - 26/04/19
 

@@ -16,17 +16,6 @@
             {{ if eq ( len .Logs ) 0}}
                 <h4 class="display-6 mb-3">No logs available</h4>
             {{ else }}
-                <div>
-                    <form class="form-check form-check-inline">
-                        <input type="checkbox" name="system" value="SYSTEM" class="form-check-input" id="system">
-                        <label class="form-check-label" for="system">System Logs</label>
-                        <!-- TODO brede : get all courses this user is member of -->
-                        <input type="checkbox" name="course" value="COURSE" class="form-check-input" id="course">
-                        <label class="form-check-label" for="course">Course Logs</label>
-                        <input type="checkbox" name="admin" value="ADMIN" class="form-check-input" id="admin">
-                        <label class="form-check-label" for="admin">Admin Logs</label>
-                    </form>
-                </div>
 
                 <table class="table table-hover table-striped table-sm" id="table" data-toggle="table"
                        data-pagination="true" data-search="true" data-page-size="100">
@@ -36,7 +25,8 @@
                         <th data-sortable="true" scope="col">Name</th>
                         <th data-sortable="true" scope="col">Activity ID</th>
                         <th data-sortable="true" scope="col">Explanation</th>
-                        <th data-sortable="true" scope="col">Teacher</th>
+                        <th data-sortable="true" scope="col">Role</th>
+                        <th data-sortable="true" scope="col">Type</th>
                         <th data-sortable="true" scope="col">Date</th> <!-- TODO sort by time -->
                     </tr>
                     </thead>
@@ -44,7 +34,7 @@
                     {{range .Logs}}
 
                         <!-- Check if user is not deleted -->
-                        <tr {{if not .UserName.Valid}}class="table-danger"{{end}}>
+                        <tr {{if or (not .UserName.Valid) (or (lt .Activity 0) (gt .Activity 124) )}}class="table-danger"{{end}}>
                             <td class="id-col">{{ .UserID }}</td>
                             <td>{{if .UserName.Valid}}
                                     {{ .UserName.Value }}
@@ -106,7 +96,6 @@
                                 {{ else if eq .Activity 15 }} <!-- User activity:  Left group-->
                                 GROUP {{.GroupID.Value}}: USER LEFT a group
                                 {{ else if eq .Activity 16 }} <!-- User activity:  Kicked from group-->
-                                <!-- Convert from int64 to int -->
                                 GROUP {{.GroupID.Value}}: USER KICKED {{ $U }} from a group
 
 
@@ -144,7 +133,7 @@
                                 {{ else if eq .Activity 115 }} <!-- Admin activity:  Removed user from course-->
                                 COURSE {{.CourseID.Value}}: USER REMOVED {{ $U }} from course
                                 {{ else if eq .Activity 116 }} <!-- Admin activity:  Changed users password-->
-                                COURSE {{ .CourseID.Value }}: USER CHANGED {{ $U }}'s password
+                                PASSWORD: USER CHANGED {{ $U }}'s password
                                 {{ else if eq .Activity 117 }} <!-- Admin activity:  Created submission for user-->
                                 ASSIGNMENT {{ .AssignmentID.Value}}: USER CREATED submission for {{ $U }}
                                 {{ else if eq .Activity 118 }} <!-- Admin activity:  Updated submission for user-->
@@ -163,7 +152,7 @@
                                 {{ else if eq .Activity 124 }} <!-- Admin activity:  Created group-->
                                 GROUP {{ .GroupID.Valuse }}: USER CREATED group
                                 {{ else }}
-                                    error: Unknown activity ID
+                                    ERROR: Unknown activity ID
                                 {{ end }}
                             </td>
                             <td>
@@ -173,6 +162,16 @@
                                     {{ else }}
                                         Student
                                     {{end}}
+                                {{ else }}
+                                    N/A
+                                {{end}}
+                            </td>
+                            <td>{{if and (le .Activity 3) (ge .Activity 0)}}
+                                    SYSTEM
+                                {{else if and (le .Activity 16) (ge .Activity 4)}}
+                                    COURSE
+                                {{ else if and (le .Activity 124) (ge .Activity 100)}}
+                                    ADMIN
                                 {{ else }}
                                     N/A
                                 {{end}}

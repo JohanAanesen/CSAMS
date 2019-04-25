@@ -24,7 +24,7 @@ func (repo *LogsRepository) FetchAllWithNameAndRole() ([]*model.Logs, error) {
 	result := make([]*model.Logs, 0)
 
 	// Query to be executed
-	query := "SELECT l.id, l.user_id, u.name, u.teacher, l.timestamp, l.activity, l.assignment_id, l.course_id, l.submission_id, l.review_id, l.group_id, l.old_value, l.new_value, l.affected_user_id FROM logs AS l LEFT JOIN users AS u ON l.user_id = u.id"
+	query := "SELECT l.id, l.user_id, u.name, u.teacher, l.timestamp, l.activity, l.assignment_id, l.course_id, l.submission_id, l.review_id, l.group_id, l.old_value, l.new_value, l.affected_user_id FROM logs AS l LEFT JOIN users AS u ON l.user_id = u.id ORDER BY l.timestamp DESC"
 
 	// Run query
 	rows, err := repo.db.Query(query)
