@@ -98,7 +98,7 @@
                             {{end}}
                         </select>
                     </div>
-                    <div class="form-group sr-only" id="review_deadline_container">
+                    <div class="form-group" id="review_deadline_container">
                         <label for="review_deadline">Review Deadline</label>
                         <input type="datetime-local" name="review_deadline" id="review_deadline" class="form-control">
                     </div>
@@ -165,6 +165,8 @@
             enabledInput.setAttribute("value", "true");
 
             reviewDeadline.removeAttribute("disabled");
+            reviewDeadline.setAttribute("required", "")
+
             reviewSelect.removeAttribute("disabled");
             reviewers.removeAttribute("disabled");
         }
@@ -177,12 +179,14 @@
             enabledInput.removeAttribute("value");
             enabledInput.setAttribute("value", "false");
 
-            reviewDeadline.setAttribute("disabled", "")
-            reviewSelect.setAttribute("disabled", "")
-            reviewers.setAttribute("disabled", "")
+            reviewDeadline.setAttribute("disabled", "");
+            reviewDeadline.removeAttribute("required");
+
+            reviewSelect.setAttribute("disabled", "");
+            reviewers.setAttribute("disabled", "");
         }
 
-        (function () {
+        window.onload = function () {
             // Enable the SimpleMDE
             let simplemde = new SimpleMDE({
                 element: document.getElementById('simplemde'),
@@ -190,18 +194,7 @@
                 lineWrapping: true,
             });
 
-            deactiveReviews()
-
-            reviewSelect.addEventListener('change', e => {
-                console.log('change', e.target.value);
-                if (e.target.value !== "") {
-                    reviewDeadlineContainer.classList.remove('sr-only');
-                    reviewDeadline.setAttribute('required', '');
-                } else {
-                    reviewDeadlineContainer.classList.add('sr-only');
-                    reviewDeadline.removeAttribute('required');
-                }
-            });
-        })();
+            deactiveReviews();
+        };
     </script>
 {{end}}
