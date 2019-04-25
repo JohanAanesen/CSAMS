@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"database/sql"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/service"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
@@ -77,15 +78,19 @@ func sendEmailPOST(email string, w http.ResponseWriter, r *http.Request) {
 		// Get new hash in 20 chars
 		hash := xid.NewWithTime(time.Now()).String()
 
-		// Fill forgotten model for new insert in table
-		forgotten := model.ValidationEmail{
-			UserID:    userID,
+		// Fill validationEmail model for new insert in table
+		validationEmail := model.ValidationEmail{
 			Hash:      hash,
 			TimeStamp: util.GetTimeInCorrectTimeZone(),
 		}
 
+		validationEmail.UserID = sql.NullInt64{
+			Int64: int64(userID),
+			Valid: userID != 0,
+		}
+
 		// Insert into the db
-		_, err := forgottenService.Insert(forgotten)
+		_, err := forgottenService.Insert(validationEmail)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("EmailExists, ", err.Error())
@@ -161,7 +166,7 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 		}
 
 		// Change password to user
-		err := userService.UpdatePassword(payload.UserID, password)
+		err := userService.UpdatePassword(int(payload.UserID.Int64), password)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("user, change password, ", err.Error())
@@ -177,7 +182,7 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 		}
 
 		// Log password change to db
-		err = logService.InsertChangePasswordEmail(payload.UserID)
+		err = logService.InsertChangePasswordEmail(int(payload.UserID.Int64))
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("log, user change password with email, ", err.Error())

@@ -453,6 +453,8 @@ KickedFromGroup
 * Added type (of log) to the log table in frontend
 * Added another failsafe if activity id is unknown
 * Logs is sorted by date desc now :D
+* User has to confirm the secondary email now by clicking a link they get sent from the systems email
+* Optimized code for confirming secondary email
 
 ### Friday - 26/04/19
 

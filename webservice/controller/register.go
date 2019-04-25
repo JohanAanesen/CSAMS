@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"database/sql"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/service"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
@@ -110,18 +111,26 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	/*
 		userData := model.User{
 			Name:         name,
-			EmailStudent: email,
+			Email: email,
 		}
 	*/
 
 	userData := model.UserRegistrationPending{
-		Name:         name,
-		EmailStudent: email,
-		Password:     password,
+		Email: email,
+	}
+
+	userData.Name = sql.NullString{
+		String: name,
+		Valid:  name != "",
+	}
+
+	userData.Password = sql.NullString{
+		String: password,
+		Valid:  password != "",
 	}
 
 	// get status if the email exists in db or not
-	exist, _, err := userService.EmailExists(userData.EmailStudent)
+	exist, _, err := userService.EmailExists(userData.Email)
 	if err != nil {
 		log.Println(err.Error())
 		RegisterGET(w, r)
@@ -139,14 +148,14 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	// Get new hash in 20 chars
 	validationHash := xid.NewWithTime(time.Now()).String()
 
-	// Fill forgotten model for new insert in table
-	forgotten := model.ValidationEmail{
+	// Fill validationEmail model for new insert in table
+	validationEmail := model.ValidationEmail{
 		Hash:      validationHash,
 		TimeStamp: util.GetTimeInCorrectTimeZone(),
 	}
 
 	// Insert into the db
-	validationID, err := validationService.Insert(forgotten)
+	validationID, err := validationService.Insert(validationEmail)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println("EmailExists, ", err.Error())
@@ -162,20 +171,21 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get link TODO brede : add real link here with possible courseid hash
+	// Get link
 	baseURL := "http://" + r.Host
 	link := baseURL + "/confirm?id=" + validationHash
 
 	// Set subject and message
-	subject := "Confirm new User"
-	message := "Hi " + userData.Name + ",\n\n" +
-		"There has been requested to create an user on CSAMS (" + baseURL + ")\n" +
-		"If this was not you, please disregard this email.\n\n" +
+	subject := "Confirm new User | CSAMS"
+	message := "Hi " + userData.Name.String + ",\n\n" +
+		"This email is sent by the CS Assignment Submission System.\n" +
+		"We have received an request to create an user on CSAMS (" + baseURL + ")\n" +
+		"If you have not requested this and suspect a hacking attempt, please contact your lecturer.\n\n" +
 		"Click this link to confirm your email:\n" +
 		link
 
 	// Send email with link
-	err = mailService.SendSingleRecipient(userData.EmailStudent, subject, message)
+	err = mailService.SendSingleRecipient(userData.Email, subject, message)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println("mail.MailForgottenPassword, ", err.Error())
@@ -265,8 +275,8 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 		// Create new user
 		user := model.User{
 			ID:           newUser.ID,
-			Name:         newUser.Name,
-			EmailStudent: newUser.EmailStudent,
+			Name:         newUser.Name.String,
+			EmailStudent: newUser.Email,
 			Teacher:      false,
 		}
 

@@ -21,14 +21,46 @@ func NewUserPendingRepository(db *sql.DB) *UserPendingRepository {
 func (repo *UserPendingRepository) Insert(pending model.UserRegistrationPending) (int, error) {
 	var id int64
 
-	query := "INSERT INTO `users_pending` (`name`, `email_student`, `password`, `validation_id`) VALUES (?, ?, ?, ?)"
+	query := "INSERT INTO `users_pending` (`name`, `email`, `password`, `validation_id`) VALUES (?, ?, ?, ?)"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
 		return int(id), err
 	}
 
-	rows, err := tx.Exec(query, pending.Name, pending.EmailStudent, pending.Password, pending.ValidationID)
+	rows, err := tx.Exec(query, pending.Name, pending.Email, pending.Password, pending.ValidationID)
+	if err != nil {
+		tx.Rollback()
+		return int(id), err
+	}
+
+	id, err = rows.LastInsertId()
+	if err != nil {
+		tx.Rollback()
+		return int(id), err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return int(id), err
+	}
+
+	return int(id), nil
+}
+
+// InsertNewEmail inserts a new userPending for emails in the db
+func (repo *UserPendingRepository) InsertNewEmail(pending model.UserRegistrationPending) (int, error) {
+	var id int64
+
+	query := "INSERT INTO `users_pending` (`email`, `validation_id`) VALUES (?, ?)"
+
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return int(id), err
+	}
+
+	rows, err := tx.Exec(query, pending.Email, pending.ValidationID)
 	if err != nil {
 		tx.Rollback()
 		return int(id), err
@@ -53,7 +85,7 @@ func (repo *UserPendingRepository) Insert(pending model.UserRegistrationPending)
 func (repo *UserPendingRepository) FetchAll() ([]*model.UserRegistrationPending, error) {
 	result := make([]*model.UserRegistrationPending, 0)
 
-	query := "SELECT `id`, `name`, `email_student`, `validation_id` FROM `users_pending` "
+	query := "SELECT `id`, `name`, `email`, `validation_id` FROM `users_pending` "
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -65,7 +97,7 @@ func (repo *UserPendingRepository) FetchAll() ([]*model.UserRegistrationPending,
 	for rows.Next() {
 		temp := model.UserRegistrationPending{}
 
-		err = rows.Scan(&temp.ID, &temp.Name, &temp.EmailStudent, &temp.ValidationID)
+		err = rows.Scan(&temp.ID, &temp.Name, &temp.Email, &temp.ValidationID)
 		if err != nil {
 			return result, err
 		}
