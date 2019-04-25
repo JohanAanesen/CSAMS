@@ -65,7 +65,7 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 	result := make([]*model.Assignment, 0)
 
-	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_id, review_deadline, reviewers, validation_id FROM assignments"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_enabled, review_id, review_deadline, reviewers, validation_id FROM assignments"
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -79,7 +79,7 @@ func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 		var reviewDeadline sql.NullString
 
 		err = rows.Scan(&temp.ID, &temp.Name, &temp.Description, &temp.Created,
-			&temp.Publish, &temp.Deadline, &temp.CourseID, &temp.SubmissionID,
+			&temp.Publish, &temp.Deadline, &temp.CourseID, &temp.SubmissionID, &temp.ReviewEnabled,
 			&temp.ReviewID, &reviewDeadline, &temp.Reviewers, &temp.ValidationID)
 		if err != nil {
 			return result, err
@@ -101,7 +101,7 @@ func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 // Insert func
 func (repo *AssignmentRepository) Insert(assignment model.Assignment) (int, error) {
 	var id int64
-	query := "INSERT INTO assignments (name, description, created, publish, deadline, course_id) VALUES (?, ?, ?, ?, ?, ?)"
+	query := "INSERT INTO assignments (name, description, created, publish, deadline, course_id, review_enabled) VALUES (?, ?, ?, ?, ?, ?, ?)"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
@@ -111,7 +111,7 @@ func (repo *AssignmentRepository) Insert(assignment model.Assignment) (int, erro
 	created := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
 	rows, err := tx.Exec(query, assignment.Name, assignment.Description, created,
-		assignment.Publish, assignment.Deadline, assignment.CourseID)
+		assignment.Publish, assignment.Deadline, assignment.CourseID, assignment.ReviewEnabled)
 	if err != nil {
 		tx.Rollback()
 		return int(id), err
@@ -161,7 +161,7 @@ func (repo *AssignmentRepository) Insert(assignment model.Assignment) (int, erro
 
 // Update func
 func (repo *AssignmentRepository) Update(assignment model.Assignment) error {
-	query := "UPDATE assignments SET name = ?, description = ?, publish = ?, deadline = ?, course_id = ? WHERE id = ?"
+	query := "UPDATE assignments SET name = ?, description = ?, publish = ?, deadline = ?, course_id = ?, review_enabled = ? WHERE id = ?"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
@@ -169,7 +169,7 @@ func (repo *AssignmentRepository) Update(assignment model.Assignment) error {
 	}
 
 	_, err = tx.Exec(query, assignment.Name, assignment.Description,
-		assignment.Publish, assignment.Deadline, assignment.CourseID, assignment.ID)
+		assignment.Publish, assignment.Deadline, assignment.CourseID, assignment.ReviewEnabled, assignment.ID)
 	if err != nil {
 		tx.Rollback()
 		return err

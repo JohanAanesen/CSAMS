@@ -86,7 +86,7 @@
 
                 <div class="col">
                     <h3>Peer Review</h3>
-                    <button type="button" onclick="disableReviews()" id="disableReview" class="btn btn-danger btn-sm">Disable</button>
+                    <button type="button" onclick="reviewButtonFunction()" id="reviewButton" class="btn btn-danger btn-sm">Disable</button>
 
                     <h5>Review Form</h5>
                     <div class="form-group">
@@ -128,6 +128,7 @@
 
         <div class="row mb-5">
             <div class="col">
+                <input type="hidden" id="review_enabled" value="false">
                 <input type="submit" class="btn btn-success btn-lg btn-block" id="submit">
             </div>
         </div>
@@ -138,8 +139,47 @@
     <script src="/static/js/simplemde.min.js"></script>
     <script src="/static/js/time.js"></script>
     <script>
-        function disableReviews(){
-            document.getElementById("review_id").selectedIndex = 0;
+
+        let enabledInput = document.getElementById("review_enabled");
+        let btn = document.getElementById("reviewButton");
+        let reviewDeadline = document.getElementById('review_deadline');
+        let reviewDeadlineContainer = document.getElementById('review_deadline_container');
+        let reviewSelect = document.getElementById('review_id');
+        let reviewers = document.getElementById('reviewers');
+
+        function reviewButtonFunction(){
+
+            if(enabledInput.getAttribute("value") == "false"){
+                activateReviews();
+            }else if(enabledInput.getAttribute("value") == "true"){
+                deactiveReviews();
+            }
+        }
+
+        function activateReviews(){
+            btn.classList.remove("btn-success");
+            btn.classList.add("btn-danger");
+            btn.innerText = "Disable";
+
+            enabledInput.removeAttribute("value");
+            enabledInput.setAttribute("value", "true");
+
+            reviewDeadline.removeAttribute("disabled");
+            reviewSelect.removeAttribute("disabled");
+            reviewers.removeAttribute("disabled");
+        }
+
+        function deactiveReviews(){
+            btn.classList.remove("btn-danger");
+            btn.classList.add("btn-success");
+            btn.innerText = "Enable";
+
+            enabledInput.removeAttribute("value");
+            enabledInput.setAttribute("value", "false");
+
+            reviewDeadline.setAttribute("disabled", "")
+            reviewSelect.setAttribute("disabled", "")
+            reviewers.setAttribute("disabled", "")
         }
 
         (function () {
@@ -150,21 +190,7 @@
                 lineWrapping: true,
             });
 
-            let publishNowButton = document.getElementById('publish_now');
-            let publish = document.getElementById('publish');
-            let deadline = document.getElementById('deadline');
-
-
-            // TODO time-norwegian
-            /*
-            publishNowButton.addEventListener('click', () => {
-                publish.value = getTimeInNorwegian().toNORString();
-            });
-            */
-
-            let reviewDeadline = document.getElementById('review_deadline');
-            let reviewDeadlineContainer = document.getElementById('review_deadline_container');
-            let reviewSelect = document.getElementById('review_id');
+            deactiveReviews()
 
             reviewSelect.addEventListener('change', e => {
                 console.log('change', e.target.value);
