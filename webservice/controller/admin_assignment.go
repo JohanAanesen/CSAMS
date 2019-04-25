@@ -516,6 +516,11 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	reviewEnabled := false
+	if r.FormValue("review_enabled") == "true"{
+		reviewEnabled = true
+	}
+
 	val = 0
 
 	if r.FormValue("review_id") != "" {
@@ -571,6 +576,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	assignment.Deadline = deadline
 	assignment.CourseID = courseID
 	assignment.SubmissionID = submissionID
+	assignment.ReviewEnabled = reviewEnabled
 	assignment.ReviewID = reviewID
 	assignment.Reviewers = reviewers
 

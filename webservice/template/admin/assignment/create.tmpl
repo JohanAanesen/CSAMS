@@ -128,7 +128,7 @@
 
         <div class="row mb-5">
             <div class="col">
-                <input type="hidden" id="review_enabled" value="false">
+                <input type="hidden" id="review_enabled" name="review_enabled" value="false">
                 <input type="submit" class="btn btn-success btn-lg btn-block" id="submit">
             </div>
         </div>
@@ -165,10 +165,10 @@
             enabledInput.setAttribute("value", "true");
 
             reviewDeadline.removeAttribute("disabled");
-            reviewDeadline.setAttribute("required", "")
+            reviewDeadline.setAttribute("required", "");
 
-            reviewSelect.removeAttribute("disabled");
-            reviewers.removeAttribute("disabled");
+            reviewSelect.removeAttribute("readonly");
+            reviewers.removeAttribute("readonly");
         }
 
         function deactiveReviews(){
@@ -182,8 +182,8 @@
             reviewDeadline.setAttribute("disabled", "");
             reviewDeadline.removeAttribute("required");
 
-            reviewSelect.setAttribute("disabled", "");
-            reviewers.setAttribute("disabled", "");
+            reviewSelect.setAttribute("readonly", "");
+            reviewers.setAttribute("readonly", "");
         }
 
         window.onload = function () {

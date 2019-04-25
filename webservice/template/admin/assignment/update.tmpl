@@ -148,7 +148,7 @@
         <div class="row mb-5">
             <div class="col">
                 <input type="hidden" name="id" value="{{.Assignment.ID}}">
-                <input type="hidden" id="review_enabled" value="{{if .Assignment.ReviewEnabled}}true{{else}}false{{end}}">
+                <input type="hidden" id="review_enabled" name="review_enabled" value="{{if .Assignment.ReviewEnabled}}true{{else}}false{{end}}">
                 <input type="submit" class="btn btn-success btn-lg btn-block" id="submit">
             </div>
         </div>
@@ -184,11 +184,11 @@
             enabledInput.removeAttribute("value");
             enabledInput.setAttribute("value", "true");
 
-            reviewDeadline.removeAttribute("disabled");
-            reviewDeadline.setAttribute("required", "")
+            reviewDeadline.removeAttribute("readonly");
+            reviewDeadline.setAttribute("required", "");
 
-            reviewSelect.removeAttribute("disabled");
-            reviewers.removeAttribute("disabled");
+            reviewSelect.removeAttribute("readonly");
+            reviewers.removeAttribute("readonly");
         }
 
         function deactiveReviews(){
@@ -199,11 +199,11 @@
             enabledInput.removeAttribute("value");
             enabledInput.setAttribute("value", "false");
 
-            reviewDeadline.setAttribute("disabled", "");
+            reviewDeadline.setAttribute("readonly", "");
             reviewDeadline.removeAttribute("required");
 
-            reviewSelect.setAttribute("disabled", "");
-            reviewers.setAttribute("disabled", "");
+            reviewSelect.setAttribute("readonly", "");
+            reviewers.setAttribute("readonly", "");
         }
 
         window.onload = function () {
@@ -259,11 +259,19 @@
                 // Check if a student has answered it and ask teacher for confirmation if so
                 let len = parseInt({{ .SubmissionCount }}, 10);
 
-                // If one or more users has answered this subForm, Ask user and if it sttill should be changed, if no, change back to original value
+                // If one or more users has answered this subForm, Ask user and if it still should be changed, if no, change back to original value
                 if (len > 0 && !confirm("WARNING! " + len + " students has already answered this submission form. Do you still want to change it? (This will delete former submissions)")) {
                     selectedSubmissionID.value = formerID;
                 }
             }
+        }
+
+        function getDate(){
+            var today = new Date();
+            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
+            return date+' '+time;
         }
     </script>
 {{end}}
