@@ -91,8 +91,6 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// TODO brede : send mail to email
-
 		mailService := mail.Mail{}
 
 		// Get new hash in 20 chars

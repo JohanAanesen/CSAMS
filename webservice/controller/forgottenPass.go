@@ -126,12 +126,9 @@ func sendEmailPOST(email string, w http.ResponseWriter, r *http.Request) {
 func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *http.Request) {
 
 	// Services
-	//userService := service.NewUserService(db.GetDB())
-	validationService := service.NewValidationService(db.GetDB())
-	userService := service.NewUserService(db.GetDB())
-	logService := service.NewLogsService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
-	match, payload, err := validationService.Match(hash)
+	match, payload, err := services.Validation.Match(hash)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println("hashMatch, ", err.Error())
@@ -146,7 +143,7 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 		// Check if the link has expired (after 12 hours)
 		if timeNow.After(payload.TimeStamp.Add(time.Hour * 12)) {
 			// Update forgottenPass table to be expired (one time use only!)
-			err = validationService.UpdateValidation(payload.ID, false)
+			err = services.Validation.UpdateValidation(payload.ID, false)
 			if err != nil {
 				ErrorHandler(w, r, http.StatusInternalServerError)
 				log.Println("forgotten, update validation, ", err.Error())
@@ -166,7 +163,7 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 		}
 
 		// Change password to user
-		err := userService.UpdatePassword(int(payload.UserID.Int64), password)
+		err := services.User.UpdatePassword(int(payload.UserID.Int64), password)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("user, change password, ", err.Error())
@@ -174,7 +171,7 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 		}
 
 		// Update forgottenPass table to be expired (one time use only!)
-		err = validationService.UpdateValidation(payload.ID, false)
+		err = services.Validation.UpdateValidation(payload.ID, false)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("forgotten, update validation, ", err.Error())
@@ -182,7 +179,7 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 		}
 
 		// Log password change to db
-		err = logService.InsertChangePasswordEmail(int(payload.UserID.Int64))
+		err = services.Logs.InsertChangePasswordEmail(int(payload.UserID.Int64))
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("log, user change password with email, ", err.Error())

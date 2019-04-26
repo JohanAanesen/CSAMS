@@ -122,13 +122,12 @@ func AdminAssignmentCreateGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminAssignmentCreatePOST handles POST-request from /admin/assigment/create
 func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
-	// Services
-	courseService := service.NewCourseService(db.GetDB())
-	assignmentService := service.NewAssignmentService(db.GetDB())
-	services := service.NewServices(db.GetDB())
 
 	// Current user
 	currentUser := session.GetUserFromSession(r)
+
+	// Services
+	services := service.NewServices(db.GetDB())
 
 	// Declare empty assignment
 	assignment := model.Assignment{}
@@ -213,7 +212,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		// TODO (Svein): Keep data from the previous submit
 		submissionService := service.NewSubmissionService(db.GetDB())
 		reviewService := service.NewReviewService(db.GetDB())
-		courses, err := courseService.FetchAllForUserOrdered(currentUser.ID)
+		courses, err := services.Course.FetchAllForUserOrdered(currentUser.ID)
 		if err != nil {
 			log.Println("course service, fetch all for user ordered", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
@@ -282,7 +281,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	assignment.Reviewers = reviewers
 
 	// Insert data to database
-	assignmentID, err := assignmentService.Insert(assignment)
+	assignmentID, err := services.Assignment.Insert(assignment)
 	if err != nil {
 		log.Println("assignment service, insert", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -319,8 +318,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 // AdminSingleAssignmentGET handles GET-request at admin/assignment/{id}
 func AdminSingleAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	// Services
-	assignmentService := service.NewAssignmentService(db.GetDB())
-	courseService := service.NewCourseService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -330,14 +328,14 @@ func AdminSingleAssignmentGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	assignment, err := assignmentService.Fetch(id)
+	assignment, err := services.Assignment.Fetch(id)
 	if err != nil {
 		log.Println("assignment service, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	course, err := courseService.Fetch(assignment.CourseID)
+	course, err := services.Course.Fetch(assignment.CourseID)
 	if err != nil {
 		log.Println("course service, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -361,11 +359,7 @@ func AdminSingleAssignmentGET(w http.ResponseWriter, r *http.Request) {
 // AdminUpdateAssignmentGET handles GET-request at /admin/assignment/update/{id}
 func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	// Services
-	courseService := service.NewCourseService(db.GetDB())
-	assignmentService := service.NewAssignmentService(db.GetDB())
-	submissionService := service.NewSubmissionService(db.GetDB())
-	reviewService := service.NewReviewService(db.GetDB())
-	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -379,7 +373,7 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	currentUser := session.GetUserFromSession(r)
 
 	// Fetch all submissions
-	submissions, err := submissionService.FetchAll()
+	submissions, err := services.Submission.FetchAll()
 	if err != nil {
 		log.Println("submission service, fetch all", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -387,7 +381,7 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch assignment
-	assignment, err := assignmentService.Fetch(id)
+	assignment, err := services.Assignment.Fetch(id)
 	if err != nil {
 		log.Println("assignment service, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -395,7 +389,7 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get number of Students that has delivered submission with specific submission form
-	submissionCount, err := submissionAnswerService.CountForAssignment(assignment.ID)
+	submissionCount, err := services.SubmissionAnswer.CountForAssignment(assignment.ID)
 	if err != nil {
 		log.Println("submission answer service, count for assignment", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -403,7 +397,7 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get courses to user
-	courses, err := courseService.FetchAllForUserOrdered(currentUser.ID)
+	courses, err := services.Course.FetchAllForUserOrdered(currentUser.ID)
 	if err != nil {
 		log.Println("course service, fetch all for user ordered", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -411,7 +405,7 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch all reviews
-	reviews, err := reviewService.FetchAll()
+	reviews, err := services.Review.FetchAll()
 	if err != nil {
 		log.Println("review service, fetch all", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -444,8 +438,6 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	p := bluemonday.UGCPolicy()
 
 	// Services
-	assignmentService := service.NewAssignmentService(db.GetDB())
-	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
 	services := service.NewServices(db.GetDB())
 
 	currentUser := session.GetUserFromSession(r)
@@ -509,7 +501,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete former submissions if admin changes submission form
-	formerAssignment, err := assignmentService.Fetch(id)
+	formerAssignment, err := services.Assignment.Fetch(id)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -530,7 +522,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 
 	// If submission id has changed, and it wasn't 'None' before, delete former submissions
 	if formerID != newID && formerID != 0 {
-		err = submissionAnswerService.DeleteFromAssignment(formerAssignment.ID)
+		err = services.SubmissionAnswer.DeleteFromAssignment(formerAssignment.ID)
 		if err != nil {
 			log.Println("submission answer service, delete from assignment", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
@@ -593,7 +585,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	assignment.Reviewers = reviewers
 
 	// Update assignment
-	err = assignmentService.Update(assignment)
+	err = services.Assignment.Update(assignment)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -1018,49 +1010,6 @@ func foo(report []model.ProcessedUserReport, length int) error {
 
 	return nil
 }
-
-/*
-TODO brede : use this with iframe after alpha
-// AdminAssignmentSubmissionGET servers one user submission in course to admin
-func AdminAssignmentSubmissionGET(w http.ResponseWriter, r *http.Request) {
-
-	vars := mux.Vars(r)
-	assignmentID, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		log.Printf("id: %v", err)
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
-
-	userID, err := strconv.Atoi(r.FormValue("userid"))
-	if err != nil {
-		log.Printf("userid: %v", err)
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
-
-	assignmentRepo := &model.AssignmentRepository{}
-
-	assignment, err := assignmentRepo.GetSingle(int(assignmentID))
-	if err != nil {
-		log.Println(err.Error())
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-
-	// TODO brede : use same page as peer rews aka. out of admin/
-	v := view.New(r)
-	v.Name = "admin/assignment/singlesubmission"
-
-	v.Vars["Assignment"] = assignment
-
-	v.Render(w)
-
-}
-*/
 
 // AdminAssignmentReviewGET handles request to /admin/assignment/{id}/review
 func AdminAssignmentReviewGET(w http.ResponseWriter, r *http.Request) {

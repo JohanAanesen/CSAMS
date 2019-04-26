@@ -210,12 +210,9 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Services
-	forgottenService := service.NewValidationService(db.GetDB())
-	userPendingService := service.NewUserPendingService(db.GetDB())
-	userService := service.NewUserService(db.GetDB())
-	logService := service.NewLogsService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
-	match, payload, err := forgottenService.Match(hash)
+	match, payload, err := services.Validation.Match(hash)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println("hashMatch, ", err.Error())
@@ -229,7 +226,7 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 		// Check if the link has expired (after 12 hours)
 		if timeNow.After(payload.TimeStamp.Add(time.Hour * 12)) {
 			// Update forgottenPass table to be expired (one time use only!)
-			err = forgottenService.UpdateValidation(payload.ID, false)
+			err = services.Validation.UpdateValidation(payload.ID, false)
 			if err != nil {
 				ErrorHandler(w, r, http.StatusInternalServerError)
 				log.Println("forgotten, update validation, ", err.Error())
@@ -249,7 +246,7 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Get all pending users
-		users, err := userPendingService.FetchAll()
+		users, err := services.UserPending.FetchAll()
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("users_pending fetch all, ", err.Error())
@@ -265,7 +262,7 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Update forgottenPass table to be expired (one time use only!)
-		err = forgottenService.UpdateValidation(newUser.ValidationID, false)
+		err = services.Validation.UpdateValidation(newUser.ValidationID, false)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("forgotten, update validation, ", err.Error())
@@ -281,7 +278,7 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Get correct password from user
-		password, err := userPendingService.FetchPassword(user.ID)
+		password, err := services.UserPending.FetchPassword(user.ID)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("userpending, fetch password, ", err.Error())
@@ -289,7 +286,7 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// RegisterWithHashing user (insert to database)
-		registeredID, err := userService.Register(user, password)
+		registeredID, err := services.User.Register(user, password)
 		if err != nil {
 			log.Println(err.Error())
 			RegisterGET(w, r)
@@ -297,7 +294,7 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Log new user to db
-		err = logService.InsertNewUser(registeredID)
+		err = services.Logs.InsertNewUser(registeredID)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("new user log", err.Error())

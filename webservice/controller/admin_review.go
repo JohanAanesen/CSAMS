@@ -104,15 +104,14 @@ func AdminReviewCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create new review service
-	reviewService := service.NewReviewService(db.GetDB())
+	// Services
 	services := service.NewServices(db.GetDB())
 
 	// Get current user
 	currentUser := session.GetUserFromSession(r)
 
 	// Insert data to database
-	reviewID, err := reviewService.Insert(form)
+	reviewID, err := services.Review.Insert(form)
 	if err != nil {
 		log.Println("review insert", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -255,14 +254,13 @@ func AdminReviewUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Services
-	reviewService := service.NewReviewService(db.GetDB())
 	services := service.NewServices(db.GetDB())
 
 	// Get current user
 	currentUser := session.GetUserFromSession(r)
 
 	// Update form
-	err = reviewService.Update(form)
+	err = services.Review.Update(form)
 	if err != nil {
 		log.Println("update review form", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -297,7 +295,6 @@ func AdminReviewDELETE(w http.ResponseWriter, r *http.Request) {
 	}{}
 
 	// Services
-	reviewService := service.NewReviewService(db.GetDB())
 	services := service.NewServices(db.GetDB())
 
 	// Get current user
@@ -327,7 +324,7 @@ func AdminReviewDELETE(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete the review from database, if error, set error messages, if ok, set success message
-	err = reviewService.Delete(temp.ID)
+	err = services.Review.Delete(temp.ID)
 	if err != nil {
 		msg.Code = http.StatusInternalServerError
 		msg.Message = err.Error()

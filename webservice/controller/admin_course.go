@@ -68,13 +68,12 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Services
-	courseService := service.NewCourseService(db.GetDB())
 	services := service.NewServices(db.GetDB())
 
 	var err error
 
 	// Insert new course
-	course.ID, err = courseService.Insert(course)
+	course.ID, err = services.Course.Insert(course)
 	if err != nil {
 		log.Println("course service insert", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -90,7 +89,7 @@ func AdminCreateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add user to course
-	err = courseService.AddUser(currentUser.ID, course.ID)
+	err = services.Course.AddUser(currentUser.ID, course.ID)
 	if err == service.ErrUserAlreadyInCourse {
 		http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
 		return
@@ -174,14 +173,13 @@ func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Services
-	courseService := service.NewCourseService(db.GetDB())
 	services := service.NewServices(db.GetDB())
 
 	// Get current user
 	currentUser := session.GetUserFromSession(r)
 
 	//get course from database
-	course, err := courseService.Fetch(id)
+	course, err := services.Course.Fetch(id)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusBadRequest)
@@ -196,7 +194,7 @@ func AdminUpdateCoursePOST(w http.ResponseWriter, r *http.Request) {
 	course.Semester = newSemester
 
 	//save to database
-	err = courseService.Update(*course)
+	err = services.Course.Update(*course)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -225,11 +223,10 @@ func AdminCourseAllAssignments(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Services
-	assignmentService := service.NewAssignmentService(db.GetDB())
-	courseService := service.NewCourseService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	// Fetch all assignments from course
-	assignments, err := assignmentService.FetchFromCourse(id)
+	assignments, err := services.Assignment.FetchFromCourse(id)
 	if err != nil {
 		log.Println("assignment service fetch from course", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -237,7 +234,7 @@ func AdminCourseAllAssignments(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//get course from database
-	course, err := courseService.Fetch(id)
+	course, err := services.Course.Fetch(id)
 	if err != nil {
 		log.Println("course service fetch", err)
 		ErrorHandler(w, r, http.StatusBadRequest)
@@ -267,11 +264,10 @@ func AdminEmailCourseGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Services
-	userService := service.NewUserService(db.GetDB())
-	courseService := service.NewCourseService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	// Check if user is an participant of said class or a teacher
-	inCourse, err := courseService.UserInCourse(session.GetUserFromSession(r).ID, id)
+	inCourse, err := services.Course.UserInCourse(session.GetUserFromSession(r).ID, id)
 	if err != nil {
 		log.Println("course service, user in course", err)
 		ErrorHandler(w, r, http.StatusUnauthorized)
@@ -286,7 +282,7 @@ func AdminEmailCourseGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get course from database
-	course, err := courseService.Fetch(id)
+	course, err := services.Course.Fetch(id)
 	if err != nil {
 		log.Println("course service fetch", err)
 		ErrorHandler(w, r, http.StatusBadRequest)
@@ -294,7 +290,7 @@ func AdminEmailCourseGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get all students from course
-	users, err := userService.FetchAllFromCourse(id)
+	users, err := services.User.FetchAllFromCourse(id)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -321,7 +317,7 @@ func AdminEmailCourseGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get all emails from students in course
-	emails, err := userService.FetchAllStudentEmails(id)
+	emails, err := services.User.FetchAllStudentEmails(id)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -366,14 +362,13 @@ func AdminEmailCoursePOST(w http.ResponseWriter, r *http.Request) {
 	currentUser := session.GetUserFromSession(r)
 
 	// Services
-	userService := service.NewUserService(db.GetDB())
-	loggingService := service.NewLogsService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	// Structs
 	mailservice := mail.Mail{}
 
 	// Get all emails from students in course
-	emails, err := userService.FetchAllStudentEmails(courseID)
+	emails, err := services.User.FetchAllStudentEmails(courseID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -389,7 +384,7 @@ func AdminEmailCoursePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Log event to db
-	err = loggingService.InsertEmailStudents(currentUser.ID, courseID, emails)
+	err = services.Logs.InsertEmailStudents(currentUser.ID, courseID, emails)
 	if err != nil {
 		log.Println("logging email to students", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)

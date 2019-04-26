@@ -104,14 +104,13 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Services
-	submissionService := service.NewSubmissionService(db.GetDB())
 	services := service.NewServices(db.GetDB())
 
 	// Get current user
 	currentUser := session.GetUserFromSession(r)
 
 	// Insert new submission form
-	submissionID, err := submissionService.Insert(form)
+	submissionID, err := services.Review.Insert(form)
 	if err != nil {
 		log.Println("insert submission", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -306,7 +305,6 @@ func AdminSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 	}{}
 
 	// Services
-	submissionService := service.NewSubmissionService(db.GetDB())
 	services := service.NewServices(db.GetDB())
 
 	// Get current user
@@ -321,7 +319,7 @@ func AdminSubmissionDELETE(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete the submission from database, if error, set error messages, if ok, set success message
-	err = submissionService.Delete(temp.ID)
+	err = services.Submission.Delete(temp.ID)
 	if err != nil {
 		msg.Code = http.StatusInternalServerError
 		msg.Message = err.Error()
@@ -445,7 +443,6 @@ func AdminSubmissionUpdateWeightsPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO brede : own log for weights?
 	// Log update submission form to db
 	err = services.Logs.InsertAdminUpdateSubmissionForm(currentUser.ID, submission.ID)
 	if err != nil {

@@ -102,9 +102,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Services
-	userService := service.NewUserService(db.GetDB())
-	courseService := service.NewCourseService(db.GetDB())
-	logService := service.NewLogsService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	email := r.FormValue("email")       // email
 	password := r.FormValue("password") // password
@@ -116,7 +114,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := userService.Authenticate(p.Sanitize(email), p.Sanitize(password))
+	user, err := services.User.Authenticate(p.Sanitize(email), p.Sanitize(password))
 	if err != nil {
 		log.Println("user service authenticate", err)
 		session.SaveMessageToSession("Wrong credentials!", w, r)
@@ -130,15 +128,15 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 	// Add new user to course, if he's not in the course
 	if hash != "" {
-		course := courseService.Exists(hash)
-		userInCourse, err := courseService.UserInCourse(currentUser.ID, course.ID)
+		course := services.Course.Exists(hash)
+		userInCourse, err := services.Course.UserInCourse(currentUser.ID, course.ID)
 		if err != nil {
 			log.Println("course service, user in course", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
 		if course.ID != -1 && !userInCourse {
-			err := courseService.AddUser(user.ID, course.ID)
+			err := services.Course.AddUser(user.ID, course.ID)
 
 			if err == service.ErrUserAlreadyInCourse {
 				http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
@@ -152,7 +150,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Log user join course
-			err = logService.InsertJoinCourse(user.ID, course.ID)
+			err = services.Logs.InsertJoinCourse(user.ID, course.ID)
 			if err != nil {
 				log.Println("log, join course ", err)
 				ErrorHandler(w, r, http.StatusInternalServerError)

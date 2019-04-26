@@ -375,13 +375,10 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	currentUser := session.GetUserFromSession(r)
 
 	// Services
-	assignmentService := service.NewAssignmentService(db.GetDB())
-	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
-	submissionService := service.NewSubmissionService(db.GetDB())
 	services := service.NewServices(db.GetDB())
 
 	// Get assignment and log possible error
-	assignment, err := assignmentService.Fetch(assignmentID)
+	assignment, err := services.Assignment.Fetch(assignmentID)
 	if err != nil {
 		log.Println("assignment service, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -421,7 +418,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get form and log possible error
-	submissionForm, err := submissionService.FetchFromAssignment(assignment.ID)
+	submissionForm, err := services.Submission.FetchFromAssignment(assignment.ID)
 	if err != nil {
 		log.Println("submission service, fetch from assignment", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -429,7 +426,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if user has uploaded already or not
-	delivered, err := submissionAnswerService.HasUserSubmitted(assignmentID, currentUser.ID)
+	delivered, err := services.SubmissionAnswer.HasUserSubmitted(assignmentID, currentUser.ID)
 	if err != nil {
 		log.Println("submission answer service, has user submitted", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -442,7 +439,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	// Get answers WITH answerID if the user has delivered
 	if delivered {
 		// Fetch answers from the user
-		submissionAnswers, err = submissionAnswerService.FetchUserAnswers(currentUser.ID, assignment.ID)
+		submissionAnswers, err = services.SubmissionAnswer.FetchUserAnswers(currentUser.ID, assignment.ID)
 		if err != nil {
 			log.Println("submission answer service, fetch user answers", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
@@ -518,7 +515,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	if !delivered {
 
 		// Insert new answer
-		err = submissionAnswerService.Insert(submissionAnswers)
+		err = services.SubmissionAnswer.Insert(submissionAnswers)
 		if err != nil {
 			log.Println("submission answer service, upload", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
@@ -535,7 +532,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	} else {
 
 		// Update answer
-		err = submissionAnswerService.Update(submissionAnswers)
+		err = services.SubmissionAnswer.Update(submissionAnswers)
 		if err != nil {
 			log.Println("submission answer service, update", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)

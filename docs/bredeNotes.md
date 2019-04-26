@@ -457,5 +457,8 @@ KickedFromGroup
 * Optimized code for confirming secondary email
 
 ### Friday - 26/04/19
+* Changed services from ex userservice to use services.User
+* Removed commented code
+* Removed some finished TODO's
 
    
