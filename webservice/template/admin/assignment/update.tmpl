@@ -214,7 +214,7 @@
                 lineWrapping: true,
             });
 
-            {{if .Assignment.ReviewDeadline}}
+            {{if not .ReviewDeadline}}
                 reviewDeadline.setAttribute("value", getDeadlinePlusOneMonth({{.Assignment.Deadline}}));
             {{end}}
 
