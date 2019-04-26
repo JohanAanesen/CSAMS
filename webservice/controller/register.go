@@ -95,10 +95,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Services
-	userService := service.NewUserService(db.GetDB())
-	//courseService := service.NewCourseService(db.GetDB())
-	userPendingService := service.NewUserPendingService(db.GetDB())
-	validationService := service.NewValidationService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	mailService := mail.Mail{}
 
@@ -106,31 +103,40 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	name = p.Sanitize(name)
 	email = p.Sanitize(email)
 	password = p.Sanitize(password)
-	hash = p.Sanitize(hash)
 
-	/*
-		userData := model.User{
-			Name:         name,
-			Email: email,
+	// Put course hash in nullstring for nicer looking code
+	courseHash := sql.NullString{
+		String: p.Sanitize(hash),
+	}
+
+	// Check if there is a hash in url for joining course
+	if hash != "" {
+		course := services.Course.Exists(hash)
+		// Course exists if courseid is not -1
+		if course.ID != -1 {
+			courseHash.Valid = true
 		}
-	*/
+	}
 
+	// New user
 	userData := model.UserRegistrationPending{
 		Email: email,
 	}
 
+	// Add name
 	userData.Name = sql.NullString{
 		String: name,
 		Valid:  name != "",
 	}
 
+	// Add password
 	userData.Password = sql.NullString{
 		String: password,
 		Valid:  password != "",
 	}
 
 	// get status if the email exists in db or not
-	exist, _, err := userService.EmailExists(userData.Email)
+	exist, _, err := services.User.EmailExists(userData.Email)
 	if err != nil {
 		log.Println(err.Error())
 		RegisterGET(w, r)
@@ -155,7 +161,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insert into the db
-	validationID, err := validationService.Insert(validationEmail)
+	validationID, err := services.Validation.Insert(validationEmail)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println("EmailExists, ", err.Error())
@@ -164,7 +170,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 
 	userData.ValidationID = validationID
 
-	_, err = userPendingService.Insert(userData)
+	_, err = services.UserPending.Insert(userData)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println("insert users_pending, ", err.Error())
@@ -174,6 +180,11 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	// Get link
 	baseURL := "http://" + r.Host
 	link := baseURL + "/confirm?id=" + validationHash
+
+	// Add courseHash if it was valid and in the url
+	if courseHash.Valid {
+		link += "&courseid=" + courseHash.String
+	}
 
 	// Set subject and message
 	subject := "Confirm new User | CSAMS"
@@ -201,6 +212,12 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 
 	hash := r.FormValue("id")
+
+	// add coursehash to nullstring for easier use
+	courseHash := sql.NullString{
+		String: r.FormValue("courseid"),
+		Valid:  r.FormValue("courseid") != "",
+	}
 
 	// Check that has is not empty
 	if hash == "" {
@@ -305,5 +322,11 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
+	// if coursehash is valid send to correct join course link
+	if courseHash.Valid {
+		http.Redirect(w, r, "/login?courseid="+courseHash.String, http.StatusFound) //success, redirect to homepage
+	} else {
+		http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
+	}
+
 }

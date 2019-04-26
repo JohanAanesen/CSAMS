@@ -460,5 +460,5 @@ KickedFromGroup
 * Changed services from ex userservice to use services.User
 * Removed commented code
 * Removed some finished TODO's
-*
+* Fixed join course through register link now
    
