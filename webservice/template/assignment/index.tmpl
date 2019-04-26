@@ -81,7 +81,7 @@
                            aria-controls="home" aria-selected="true">Assignment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{if or (not .HasReview) (not .IsDeadlineOver)}}disabled{{end}}" id="peerReview-tab" data-toggle="tab" href="#peerReview" role="tab" aria-controls="peerReview" aria-selected="false">Peer Review {{if gt $reviewsLeft 0}}<span class="badge badge-danger">{{$reviewsLeft}}</span>{{end}}</a>
+                        <a class="nav-link {{if or (not .HasReview) (not .IsDeadlineOver)}}disabled{{end}}" id="peerReview-tab" data-toggle="tab" href="#peerReview" role="tab" aria-controls="peerReview" aria-selected="false">Peer Review {{if and .HasReview (gt $reviewsLeft 0)}}<span class="badge badge-danger">{{$reviewsLeft}}</span>{{end}}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{{if or (or (not .HasReview) (not .IsDeadlineOver)) (.IsTeacher)}} disabled{{end}}" id="viewReview-tab" data-toggle="tab" href="#viewReview" role="tab" aria-controls="viewReview" aria-selected="false">Received Reviews {{if gt (len .MyReviews) 0}}<span class="badge badge-success">{{len .MyReviews}}</span>{{end}}</a>
