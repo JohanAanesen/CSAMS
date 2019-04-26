@@ -214,6 +214,9 @@
                 lineWrapping: true,
             });
 
+            {{if .Assignment.ReviewDeadline}}
+                reviewDeadline.setAttribute("value", getDeadlinePlusOneMonth({{.Assignment.Deadline}}));
+            {{end}}
 
             {{if .Assignment.ReviewEnabled}}
                 activateReviews();
@@ -266,12 +269,11 @@
             }
         }
 
-        function getDate(){
-            var today = new Date();
-            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        function getDeadlinePlusOneMonth(deadline){
+            var today = new Date(deadline);
+            today.setMonth(today.getMonth()+1);
 
-            return date+' '+time;
+            return today.toISOString().slice(0, -5);
         }
     </script>
 {{end}}
