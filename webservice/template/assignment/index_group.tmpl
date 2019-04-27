@@ -93,11 +93,17 @@
                     <li>
                         {{if .Assignment.SubmissionID.Valid}}
                             {{if not .IsTeacher}}
-                                {{if not .Delivered}}
-                                    <a style="float:right;" href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-success {{if .IsDeadlineOver}}disabled{{end}}">Deliver assignment</a>
+
+                                {{if not .HasGroup}}
+                                    <a class="btn btn-outline-primary" id="group-tab" data-toggle="tab" href="#group" role="tab" aria-controls="home" aria-selected="true">Join Group</a>
                                 {{else}}
-                                    <a href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-warning {{if .IsDeadlineOver}}disabled{{end}}">Change your submission</a>
+                                    {{if not .Delivered}}
+                                        <a style="float:right;" href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-success {{if .IsDeadlineOver}}disabled{{end}}">Deliver assignment</a>
+                                    {{else}}
+                                        <a href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-warning {{if .IsDeadlineOver}}disabled{{end}}">Change your submission</a>
+                                    {{end}}
                                 {{end}}
+
                             {{end}}
                         {{end}}
                     </li>
@@ -235,13 +241,44 @@
 
                     {{if .Assignment.GroupDelivery}}
                         <div class="tab-pane fade" id="group" role="tabpanel" aria-labelledby="group-tab">
+
+                            {{if .HasGroup}}
+                                {{$CID := .CurrentUser.ID}}
+                                {{$GCID := .Group.Creator}}
+
+                                <h2>{{.Group.Name}}</h2>
+                                {{if ne $CID $GCID}}
+                                    <a href="/assignment/{{.Assignment.ID}}/leave_group" class="btn btn-danger btn-sm mb-3">Leave Group</a>
+                                {{end}}
+
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        {{if eq .CurrentUser.ID .Group.Creator}}
+                                        <th>Action</th>
+                                        {{end}}
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                    {{range .Group.Users}}
+                                        <tr>
+                                            <td>{{.Name}}</td>
+                                            {{if eq $CID $GCID}}
+                                            <td>Foo</td>
+                                            {{end}}
+                                        </tr>
+                                    {{end}}
+                                    </tbody>
+                                </table>
+
+                            {{else}}
                             <h2>Groups</h2>
 
                             <hr>
 
-                            {{if .HasGroup}}
-
-                            {{else}}
                             <a href="/assignment/{{.Assignment.ID}}/group/create" class="btn btn-primary mb-3">Create new</a>
 
                             <table class="table table-striped">
@@ -256,7 +293,7 @@
                                 {{range .Groups}}
                                     <tr>
                                         <td>{{.Name}}</td>
-                                        <td><a href="#" class="btn btn-info btn-sm">Join</a></td>
+                                        <td><a href="/assignment/{{$AID}}/join_group/{{.ID}}" class="btn btn-info btn-sm">Join</a></td>
                                     </tr>
                                 {{end}}
                                 </tbody>

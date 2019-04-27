@@ -246,7 +246,7 @@ func (repo *GroupRepository) FetchGroupForUser(userID, assignmentID int) (*model
 func (repo *GroupRepository) FetchUsersFromGroup(groupID int) ([]*model.User, error) {
 	result := make([]*model.User, 0)
 
-	query := "SELECT u.id, u.name, u.email_student, u.teahcer, u.email_private FROM users AS u INNER JOIN user_groups AS ug ON u.id = ug.user_id WHERE ug.group_id = ?"
+	query := "SELECT u.id, u.name, u.email_student, u.email_private FROM users AS u INNER JOIN user_groups AS ug ON u.id = ug.user_id WHERE ug.group_id = ?"
 
 	rows, err := repo.db.Query(query, groupID)
 	if err != nil {
@@ -256,7 +256,7 @@ func (repo *GroupRepository) FetchUsersFromGroup(groupID int) ([]*model.User, er
 	for rows.Next() {
 		temp := model.User{}
 
-		err = rows.Scan(&temp.ID, &temp.Name, &temp.EmailStudent, &temp.Teacher, &temp.EmailPrivate)
+		err = rows.Scan(&temp.ID, &temp.Name, &temp.EmailStudent, &temp.EmailPrivate)
 		if err != nil {
 			return nil, err
 		}

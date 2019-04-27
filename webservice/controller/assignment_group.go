@@ -149,13 +149,6 @@ func AssignmentGroupLeaveGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-	// Convert string to integer
-	groupID, err := strconv.Atoi(vars["gid"])
-	if err != nil {
-		log.Println(err.Error())
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
 	// Get current user
 	currentUser := session.GetUserFromSession(r)
 	// Services
@@ -179,8 +172,15 @@ func AssignmentGroupLeaveGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
+	// Fetch group for user
+	group, err := services.GroupService.FetchGroupForUser(currentUser.ID, assignment.ID)
+	if err != nil {
+		log.Println(err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
 	// Remove user from group
-	err = services.GroupService.RemoveUser(groupID, currentUser.ID)
+	err = services.GroupService.RemoveUser(group.ID, currentUser.ID)
 	if err != nil {
 		log.Println(err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
