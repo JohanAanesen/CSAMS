@@ -63,10 +63,9 @@ func ForgottenPOST(w http.ResponseWriter, r *http.Request) {
 func sendEmailPOST(email string, w http.ResponseWriter, r *http.Request) {
 
 	// Services
-	userService := service.NewUserService(db.GetDB())
-	forgottenService := service.NewValidationService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
-	exists, userID, err := userService.EmailExists(email)
+	exists, userID, err := services.User.EmailExists(email)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println("EmailExists, ", err.Error())
@@ -90,7 +89,7 @@ func sendEmailPOST(email string, w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Insert into the db
-		_, err := forgottenService.Insert(validationEmail)
+		_, err := services.Validation.Insert(validationEmail)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("EmailExists, ", err.Error())
