@@ -467,6 +467,7 @@ KickedFromGroup
 * Fixed some issues with my branch for the pull request, ex: changing log type to plugin
 * Changed name to managae_students from change_pass
 * When giving students a new password, it's generated from js and is random each time now
+* TODO brede : `new` on faq if empty
 
 ### Tuesday - 30/04/19
 
