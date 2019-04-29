@@ -663,7 +663,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	students, err := services.User.FetchAllStudentsFromCourse(assignment.CourseID)
+	students, err := services.Course.FetchAllStudentsFromCourse(assignment.CourseID)
 	if err != nil {
 		log.Println("user service, fetch all from course", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)

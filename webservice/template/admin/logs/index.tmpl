@@ -21,7 +21,7 @@
                        data-pagination="true" data-search="true" data-page-size="100">
                     <thead class="thead-light">
                     <tr>
-                        <th data-sortable="true" scope="col">#</th>
+                        <th data-sortable="true" scope="col">User ID</th>
                         <th data-sortable="true" scope="col">Name</th>
                         <th data-sortable="true" scope="col">Activity ID</th>
                         <th data-sortable="true" scope="col">Explanation</th>
@@ -33,7 +33,7 @@
                     <tbody>
                     {{range .Logs}}
 
-                        <!-- Check if user is not deleted -->
+                        <!-- Check if user is not deleted or activity id is invalid -->
                         <tr {{if or (not .UserName.Valid) (or (lt .Activity 0) (gt .Activity 124) )}}class="table-danger"{{end}}>
                             <td class="id-col">{{ .UserID }}</td>
                             <td>{{if .UserName.Valid}}
@@ -166,16 +166,7 @@
                                     N/A
                                 {{end}}
                             </td>
-                            <td>{{if and (le .Activity 3) (ge .Activity 0)}}
-                                    SYSTEM
-                                {{else if and (le .Activity 16) (ge .Activity 4)}}
-                                    COURSE
-                                {{ else if and (le .Activity 124) (ge .Activity 100)}}
-                                    ADMIN
-                                {{ else }}
-                                    N/A
-                                {{end}}
-                            </td>
+                            <td>{{ GET_LOG_TYPE .Activity }}</td>
                             <td>{{ SORTABLE_TIME .Timestamp }}</td>
                         </tr>
                     {{end}}

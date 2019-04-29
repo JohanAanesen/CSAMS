@@ -165,7 +165,7 @@ func (s *ReviewAnswerService) FetchStatisticsForAssignment(assignmentID int) (*u
 		return nil, err
 	}
 	// Get users from course
-	users, err := s.userRepo.FetchAllStudentsFromCourse(assignment.CourseID)
+	users, err := s.courseRepo.FetchAllStudentsFromCourse(assignment.CourseID)
 	if err != nil {
 		return nil, err
 	}
@@ -239,7 +239,7 @@ func (s *ReviewAnswerService) FetchUserReportsForAssignment(assignmentID int) ([
 		return nil, err
 	}
 
-	users, err := s.userRepo.FetchAllStudentsFromCourse(assignment.CourseID)
+	users, err := s.courseRepo.FetchAllStudentsFromCourse(assignment.CourseID)
 	if err != nil {
 		return nil, err
 	}

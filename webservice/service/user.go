@@ -40,11 +40,6 @@ func (s *UserService) FetchAllFromCourse(courseID int) ([]*model.User, error) {
 	return s.userRepo.FetchAllFromCourse(courseID)
 }
 
-// FetchAllStudentsFromCourse func
-func (s *UserService) FetchAllStudentsFromCourse(courseID int) ([]*model.User, error) {
-	return s.userRepo.FetchAllStudentsFromCourse(courseID)
-}
-
 // EmailExists checks if the email exists in emailprivate and emailstudent
 func (s *UserService) EmailExists(email string) (bool, int, error) {
 	return s.userRepo.EmailExists(email)

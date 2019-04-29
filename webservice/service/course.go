@@ -44,6 +44,11 @@ func (s *CourseService) FetchAllForUserOrdered(userID int) ([]*model.Course, err
 	return s.courseRepo.FetchAllForUserOrdered(userID)
 }
 
+// FetchAllStudentsFromCourse func
+func (s *CourseService) FetchAllStudentsFromCourse(courseID int) ([]*model.User, error) {
+	return s.courseRepo.FetchAllStudentsFromCourse(courseID)
+}
+
 // Exists func
 func (s *CourseService) Exists(hash string) *model.Course {
 	result := model.Course{

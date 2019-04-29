@@ -100,6 +100,34 @@ func (repo *CourseRepository) FetchAllForUserOrdered(userID int) ([]*model.Cours
 	return result, err
 }
 
+// FetchAllStudentsFromCourse func
+func (repo *CourseRepository) FetchAllStudentsFromCourse(courseID int) ([]*model.User, error) {
+	result := make([]*model.User, 0)
+
+	query := "SELECT u.id, u.name, u.email_student, u.teacher, u.email_private FROM users AS u INNER JOIN usercourse AS uc ON u.id = uc.userid WHERE uc.courseid = ? AND u.teacher = 0"
+
+	rows, err := repo.db.Query(query, courseID)
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		temp := model.User{}
+
+		err = rows.Scan(&temp.ID, &temp.Name, &temp.EmailStudent,
+			&temp.Teacher, &temp.EmailPrivate)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, &temp)
+	}
+
+	return result, err
+}
+
 // Insert func
 func (repo *CourseRepository) Insert(course model.Course) (int, error) {
 	var id int64
