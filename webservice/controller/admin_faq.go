@@ -9,11 +9,53 @@ import (
 	"net/http"
 )
 
+// AdminFaqNewGET creates new faq and serves it to user
+func AdminFaqNewGET(w http.ResponseWriter, r *http.Request) {
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
+	// Create new FAQ
+	err := services.FAQ.InsertNew()
+	if err != nil {
+		log.Println("services, faq, indertnew faq", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log event to db
+	err = services.Logs.InsertAdminCreateFAQ(currentUser.ID)
+	if err != nil {
+		log.Println("services, logs, indertnew faq", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get new faq, date and questions
+	content, err := services.FAQ.Fetch()
+	if err != nil {
+		log.Println("services, faq, fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/faq/index"
+	v.Vars["Updated"] = content
+
+	v.Render(w)
+}
+
 // AdminFaqGET handles GET-request at admin/faq/index
 func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 
 	// TODO (Svein): Move this to 'settings'
-	// TODO (Svein): Allow blank FAQ
 
 	// Services
 	services := service.NewServices(db.GetDB())
@@ -40,7 +82,6 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 func AdminFaqEditGET(w http.ResponseWriter, r *http.Request) {
 
 	// TODO (Svein): Move this to 'settings'
-	// TODO (Svein): Allow blank FAQ
 
 	// Services
 	services := service.NewServices(db.GetDB())
@@ -103,7 +144,7 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Log update faq to db
-	err = services.Logs.InsertUpdateFAQ(currentUser.ID, content.Questions, updatedFAQ)
+	err = services.Logs.InsertAdminUpdateFAQ(currentUser.ID, content.Questions, updatedFAQ)
 	if err != nil {
 		log.Println("log, update faq ", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)

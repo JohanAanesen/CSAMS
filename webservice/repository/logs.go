@@ -93,6 +93,8 @@ func (repo *LogsRepository) Insert(logx model.Logs) error {
 		err = manageCourse(tx, logx, date)
 	case model.AdminUpdateFAQ:
 		err = changeEmailUpdateFaq(tx, logx, date)
+	case model.AdminCreateFAQ:
+		err = newUser(tx, logx, date)
 	case model.AdminCreateAssignment:
 		err = manageAssignment(tx, logx, date)
 	case model.AdminDeleteAssignment:

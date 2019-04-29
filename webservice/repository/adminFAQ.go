@@ -18,14 +18,49 @@ func NewFAQRepository(db *sql.DB) *FAQRepository {
 	}
 }
 
+// InsertNew inserts a new faq to db
+func (repo *FAQRepository) InsertNew() error {
+
+	questions := "# This FAQ is empty, press edit to fill in frequently asked questions"
+
+	// Get current Norwegian time in string format TODO time-norwegian
+	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
+
+	query := "INSERT INTO `adminfaq` (`timestamp`, `questions`) VALUES (?, ?)"
+
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	rows, err := tx.Exec(query, date, questions)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	_, err = rows.LastInsertId()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return err
+}
+
 // Fetch fetches the faq in db
 func (repo *FAQRepository) Fetch() (*model.Faq, error) {
-	id := 1
 	result := model.Faq{}
 
-	query := "SELECT id, timestamp, questions FROM adminfaq WHERE id = ?"
+	query := "SELECT id, timestamp, questions FROM adminfaq"
 
-	rows, err := repo.db.Query(query, id)
+	rows, err := repo.db.Query(query)
 	if err != nil {
 		return &result, err
 	}
@@ -48,10 +83,10 @@ func (repo *FAQRepository) Update(questions string) error {
 	// Get current Norwegian time in string format TODO time-norwegian
 	date := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 
-	query := "UPDATE `adminfaq` SET `timestamp` = ?, `questions` = ? WHERE `id` = ?"
+	query := "UPDATE `adminfaq` SET `timestamp` = ?, `questions` = ?"
 
 	//insert into database
-	rows, err := repo.db.Query(query, date, questions, 1) // OBS! ID is always 1 since it's only one entry in the table
+	rows, err := repo.db.Query(query, date, questions)
 
 	// Check for errors
 	if err != nil {

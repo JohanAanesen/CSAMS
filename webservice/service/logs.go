@@ -62,8 +62,21 @@ func (s *LogsService) InsertChangeEmail(userID int, oldValue string, newValue st
 	return s.logsRepo.Insert(logx)
 }
 
-// InsertUpdateFAQ inserts a updated FAQ log
-func (s *LogsService) InsertUpdateFAQ(userID int, oldValue string, newValue string) error {
+// InsertAdminCreateFAQ inserts a create FAQ log
+func (s *LogsService) InsertAdminCreateFAQ(userID int) error {
+
+	// Save log in struct
+	// logx since log is already an package
+	logx := model.Logs{
+		UserID:   userID,
+		Activity: model.AdminCreateFAQ,
+	}
+
+	return s.logsRepo.Insert(logx)
+}
+
+// InsertAdminUpdateFAQ inserts a updated FAQ log
+func (s *LogsService) InsertAdminUpdateFAQ(userID int, oldValue string, newValue string) error {
 
 	// Save log in struct
 	// logx since log is already an package

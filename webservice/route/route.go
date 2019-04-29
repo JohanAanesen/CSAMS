@@ -128,6 +128,7 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/changepass/list", controller.AdminGetUsersPOST).Methods("POST")
 
 	adminrouter.HandleFunc("/faq", controller.AdminFaqGET).Methods("GET")
+	adminrouter.HandleFunc("/faq/new", controller.AdminFaqNewGET).Methods("GET")
 	adminrouter.HandleFunc("/faq/edit", controller.AdminFaqEditGET).Methods("GET")
 	adminrouter.HandleFunc("/faq/update", controller.AdminFaqUpdatePOST).Methods("POST")
 

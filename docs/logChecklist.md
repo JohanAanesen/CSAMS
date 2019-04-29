@@ -29,6 +29,7 @@
 - [X] AdminCreateSubmissionForUser 
 - [X] AdminUpdateSubmissionForUser 
 - [X] AdminDeleteSubmissionForUser
+- [X] AdminCreateFAQ
 - [X] AdminUpdateFAQ
 
 ## Frontend
@@ -61,11 +62,8 @@
 - [X] AdminCreateSubmissionForUser 
 - [X] AdminUpdateSubmissionForUser 
 - [X] AdminDeleteSubmissionForUser
+- [X] AdminCreateFAQ
 - [X] AdminUpdateFAQ
-
-## Other
-### No functions for yet
-- [ ] AdminCreateFAQ
 
 ### No triggers for yet
 - [ ] LeftCourse 
