@@ -465,6 +465,7 @@ KickedFromGroup
 ## Week Twelve
 ### Monday - 29/04/19
 * Fixed some issues with my branch for the pull request, ex: changing log type to plugin
+* TODO brede : `new` on faq if empty
 
 ### Tuesday - 30/04/19
 
