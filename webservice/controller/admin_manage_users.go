@@ -6,12 +6,10 @@ import (
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
-	"github.com/rs/xid"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 // AdminChangePassGET serves the change password for students page and changes password if it's variables in the url
@@ -120,7 +118,7 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
-	v.Name = "admin/changepassword/index"
+	v.Name = "admin/managestudents/index"
 	v.Vars["Courses"] = courses
 
 	v.Render(w)
@@ -150,7 +148,7 @@ func AdminGetUsersPOST(w http.ResponseWriter, r *http.Request) {
 	// Get all students from courseID
 	students := model.GetUsersToCourse(courseID)
 	if len(students) < 0 {
-		log.Println("Error: could not get students from course! (admin_change_pass.go)")
+		log.Println("Error: could not get students from course! (admin_manage_users.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -168,23 +166,15 @@ func AdminGetUsersPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get new password in 20 chars
-	newPass := xid.NewWithTime(time.Now()).String()
-
-	// source: https://www.dotnetperls.com/substring-go
-	// Length is 8 chars now
-	safeSubstring := string([]rune(newPass)[10:18])
-
 	// Header OK
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
-	v.Name = "admin/changepassword/index"
+	v.Name = "admin/managestudents/index"
 	v.Vars["Courses"] = courses         // Send the courses back that the admin is teacher in
 	v.Vars["Students"] = students       // Send the students in course with courseID
 	v.Vars["SelectedCourse"] = courseID // Send the selected course back to fill dropdown
-	v.Vars["NewPass"] = safeSubstring   // Send new password
 
 	v.Render(w)
 

@@ -5,7 +5,7 @@ import (
 	"html/template"
 )
 
-// Atoi makes an atoi function inside templates
+// GetLogType gets the log type from the activity id, function inside templates
 func GetLogType() template.FuncMap {
 	f := make(template.FuncMap)
 

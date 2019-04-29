@@ -465,6 +465,8 @@ KickedFromGroup
 ## Week Twelve
 ### Monday - 29/04/19
 * Fixed some issues with my branch for the pull request, ex: changing log type to plugin
+* Changed name to managae_students from change_pass
+* When giving students a new password, it's generated from js and is random each time now
 
 ### Tuesday - 30/04/19
 
