@@ -184,7 +184,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reviewEnabled := false
-	if r.FormValue("review_enabled") == "true"{
+	if r.FormValue("review_enabled") == "true" {
 		reviewEnabled = true
 	}
 
@@ -521,7 +521,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reviewEnabled := false
-	if r.FormValue("review_enabled") == "true"{
+	if r.FormValue("review_enabled") == "true" {
 		reviewEnabled = true
 	}
 
@@ -551,7 +551,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 			}
 
 			assignment.ReviewDeadline = reviewDeadline
-		}else {
+		} else {
 			assignment.ReviewDeadline = time.Now()
 		}
 	}
@@ -599,7 +599,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-	
+
 	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
 }
 

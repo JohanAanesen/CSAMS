@@ -167,7 +167,7 @@ func AdminReviewUpdateGET(w http.ResponseWriter, r *http.Request) {
 	// Check if form is in use
 	if used {
 
-		errorMessages = append(errorMessages,"Form is used by an assignment.")
+		errorMessages = append(errorMessages, "Form is used by an assignment.")
 		assignmentId, err := services.Review.UsedInAssignment(form.ID)
 		if err != nil {
 			log.Println("services, submission, used in assignment", err.Error())

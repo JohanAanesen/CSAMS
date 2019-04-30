@@ -95,7 +95,7 @@ func (repo *PeerReviewRepository) FetchPeerReviewsFromAssignment(assignmentID in
 }
 
 // FetchReviewTargetsToUser func
-func (repo *PeerReviewRepository) FetchReviewTargetsToUser(userID int, assignmentID int) ([]*model.PeerReview, error){
+func (repo *PeerReviewRepository) FetchReviewTargetsToUser(userID int, assignmentID int) ([]*model.PeerReview, error) {
 
 	result := make([]*model.PeerReview, 0)
 	query := "SELECT pr.id, pr.user_id, pr.review_user_id, pr.assignment_id FROM peer_reviews AS pr WHERE pr.user_id = ? AND pr.assignment_id = ?"

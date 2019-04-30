@@ -252,7 +252,7 @@ func (repo *ReviewRepository) IsUsed(id int) (bool, error) {
 }
 
 // UsedInAssignment func
-func (repo *ReviewRepository) UsedInAssignment(id int)(int, error){
+func (repo *ReviewRepository) UsedInAssignment(id int) (int, error) {
 	query := "SELECT a.id, s.form_id FROM assignments AS a INNER JOIN reviews AS s ON a.review_id = s.id"
 
 	rows, err := repo.db.Query(query)

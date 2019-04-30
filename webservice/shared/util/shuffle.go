@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func ShuffleIntSlice(slice []int)[]int{
+func ShuffleIntSlice(slice []int) []int {
 	rand := rand.New(rand.NewSource(time.Now().Unix()))
 
 	for i := range slice {

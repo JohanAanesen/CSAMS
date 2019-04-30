@@ -135,8 +135,6 @@ func (repo *SubmissionAnswerRepository) FetchAllForAssignment(assignmentID int) 
 		result = append(result, &temp)
 	}
 
-
-
 	return result, err
 }
 

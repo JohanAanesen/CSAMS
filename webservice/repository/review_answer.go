@@ -182,7 +182,6 @@ func (repo *ReviewAnswerRepository) CountReviewsDoneOnAssignment(assignmentID in
 	return result, err
 }
 
-
 // MaxScore func
 func (repo *ReviewAnswerRepository) MaxScore(assignmentID int) (int, error) {
 	var result int

@@ -34,6 +34,6 @@ func (s *PeerReviewService) FetchAllFromAssignment(assignmentID int) ([]*model.P
 }
 
 // FetchPeerReviewsToUser
-func (s *PeerReviewService) FetchReviewTargetsToUser(userID int, assignmentID int)([]*model.PeerReview, error) {
+func (s *PeerReviewService) FetchReviewTargetsToUser(userID int, assignmentID int) ([]*model.PeerReview, error) {
 	return s.peerReviewRepo.FetchReviewTargetsToUser(userID, assignmentID)
 }

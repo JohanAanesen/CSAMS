@@ -923,7 +923,7 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//check that user is asking before the deadline
-	if assignment.ReviewDeadline.Before(util.GetTimeInCorrectTimeZone()){
+	if assignment.ReviewDeadline.Before(util.GetTimeInCorrectTimeZone()) {
 		log.Println("AssignmentReviewRequestPOST, assignment.ReviewDeadline.Before", err)
 		ErrorHandler(w, r, http.StatusTeapot)
 		return
@@ -944,17 +944,16 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	//find the lowest amount of reviews
 	lowestNrReviews := 99999
 	usersAndReviews := make(map[int]int)
 
 	//set the review count on already reviewed users very high
-	for _, target := range alreadyTargets{
+	for _, target := range alreadyTargets {
 		usersAndReviews[target.TargetID] = 99999
 	}
 
-	for _, user := range usersDelivered{
+	for _, user := range usersDelivered {
 		if user != currentUser.ID && usersAndReviews[user] != 99999 { //don't include self or already reviewed targets
 			reviewsDone, err := services.ReviewAnswer.FetchForTarget(user, assignmentID)
 			if err != nil {
@@ -972,7 +971,7 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//if you have reviewed everyone
-	if lowestNrReviews > 99998{
+	if lowestNrReviews > 99998 {
 		session.SaveMessageToSession("Review Limit Reached: You have reviewed every possible submission.", w, r)
 		AssignmentSingleGET(w, r)
 
@@ -982,8 +981,8 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 	//filter the submissions with lowest reviewcount
 	submissionsFiltered := make([]int, 0)
 
-	for userID, reviews := range usersAndReviews{
-		if reviews == lowestNrReviews{
+	for userID, reviews := range usersAndReviews {
+		if reviews == lowestNrReviews {
 			submissionsFiltered = append(submissionsFiltered, userID)
 		}
 	}
@@ -995,9 +994,9 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 	inserted, err := services.PeerReview.Insert(assignmentID, currentUser.ID, submissionsFiltered[0])
 
 	//redirect
-	if inserted{
+	if inserted {
 		http.Redirect(w, r, fmt.Sprintf("/assignment/%v/submission/%v", assignmentID, submissionsFiltered[0]), http.StatusFound)
-	}else{
+	} else {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 	}
 }

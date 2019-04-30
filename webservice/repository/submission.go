@@ -224,7 +224,7 @@ func (repo *SubmissionRepository) IsUsed(id int) (bool, error) {
 }
 
 // UsedInAssignment func
-func (repo *SubmissionRepository) UsedInAssignment(id int)(int, error){
+func (repo *SubmissionRepository) UsedInAssignment(id int) (int, error) {
 	query := "SELECT a.id, s.form_id FROM assignments AS a INNER JOIN submissions AS s ON a.submission_id = s.id"
 
 	rows, err := repo.db.Query(query)

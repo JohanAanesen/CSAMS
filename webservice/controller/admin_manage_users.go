@@ -157,7 +157,7 @@ func AdminGetUsersPOST(w http.ResponseWriter, r *http.Request) {
 
 	// Get all students from courseID
 	students, err := services.User.FetchAllFromCourse(courseID)
-	if len(students) < 0  || err != nil{
+	if len(students) < 0 || err != nil {
 		log.Println("Error: could not get students from course! (admin_change_pass.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return

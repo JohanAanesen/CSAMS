@@ -38,7 +38,7 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "user/profile"
 
-	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w,r)
+	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
 	v.Vars["User"] = currentUser
 	v.Vars["Courses"] = courses
 
@@ -182,7 +182,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 			log.Println(err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
-		}else{
+		} else {
 			session.SaveMessageToSession("Password changed successfully", w, r)
 		}
 
