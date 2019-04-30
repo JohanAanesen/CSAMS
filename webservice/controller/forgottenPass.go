@@ -186,8 +186,7 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 		}
 
 		// Give feedback
-		session.GetAndDeleteMessageFromSession(w, r)
-		session.SaveMessageToSession("You can now log in with your new password", w, r)
+		_ = session.SetFlash("You can now log in with your new password", w, r)
 		http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage //todo change redirection
 
 	} else {

@@ -38,7 +38,7 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "user/profile"
 
-	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
+	v.Vars["Message"] = session.GetFlash(w, r)
 	v.Vars["User"] = currentUser
 	v.Vars["Courses"] = courses
 
@@ -88,7 +88,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 		// If the email already exists
 		if exist {
 			log.Println("email already exist in db")
-			session.SaveMessageToSession("Email already registered on a user", w, r)
+			_ = session.SetFlash("Email already registered on a user", w, r)
 			http.Redirect(w, r, "/user", http.StatusFound)
 			return
 		}
@@ -184,7 +184,7 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		session.SaveMessageToSession("Password changed successfully", w, r)
+		_ = session.SetFlash("Password changed successfully", w, r)
 
 		// Log password change in the database and give error if something went wrong
 		err = services.Logs.InsertChangePassword(currentUser.ID)
@@ -196,8 +196,8 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	//UserGET(w, r)
-	http.Redirect(w, r, "/user", http.StatusFound) //success redirect
+	UserGET(w, r)
+	//http.Redirect(w, r, "/user", http.StatusFound) //success redirect
 }
 
 // ConfirmEmailGET validates new email requests from users
@@ -308,7 +308,7 @@ func ConfirmEmailGET(w http.ResponseWriter, r *http.Request) {
 		currentUser.EmailPrivate = user.EmailPrivate
 		session.SaveUserToSession(currentUser, w, r)
 
-		session.SaveMessageToSession("Your secondary email is now updated", w, r)
+		_ = session.SetFlash("Your secondary email is now updated", w, r)
 
 	}
 

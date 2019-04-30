@@ -145,7 +145,7 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v := view.New(r)
 	v.Name = "assignment/index"
 
-	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
+	v.Vars["Message"] = session.GetFlash(w, r)
 	v.Vars["Assignment"] = assignment
 	v.Vars["Delivered"] = delivered
 	v.Vars["HasReview"] = hasReview
@@ -972,7 +972,7 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 
 	//if you have reviewed everyone
 	if lowestNrReviews > 99998 {
-		session.SaveMessageToSession("Review Limit Reached: You have reviewed every possible submission.", w, r)
+		_ = session.SetFlash("Review Limit Reached: You have reviewed every possible submission.", w, r)
 		AssignmentSingleGET(w, r)
 
 		return

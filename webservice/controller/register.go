@@ -54,7 +54,7 @@ func RegisterGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["Name"] = name
 	v.Vars["Email"] = email
 
-	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
+	v.Vars["Message"] = session.GetFlash(w, r)
 
 	v.Render(w)
 
@@ -81,7 +81,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 
 	//check that nothing is empty and password match passwordConfirm
 	if name == "" || email == "" || password == "" || password != r.FormValue("passwordConfirm") { //login credentials cannot be empty
-		session.SaveMessageToSession("Passwords does not match or fields are empty!", w, r)
+		_ = session.SetFlash("Passwords does not match or fields are empty!", w, r)
 		log.Println("passwords does not match or fields are empty!")
 		RegisterGET(w, r)
 		return
@@ -146,7 +146,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 	// Check if email already exist in db
 	if exist {
 		log.Println("Email already exists")
-		session.SaveMessageToSession("Email already in use", w, r)
+		_ = session.SetFlash("Email already in use", w, r)
 		RegisterGET(w, r)
 		return
 	}
@@ -203,7 +203,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session.SaveMessageToSession("Please confirm your email first", w, r)
+	_ = session.SetFlash("Please confirm your email first", w, r)
 
 	http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
 }
@@ -318,7 +318,7 @@ func ConfirmGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		session.SaveMessageToSession("You can now log in with your email and password", w, r)
+		_ = session.SetFlash("You can now log in with your email and password", w, r)
 
 	}
 
