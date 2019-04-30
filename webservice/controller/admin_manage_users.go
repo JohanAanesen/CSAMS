@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/JohanAanesen/CSAMS/webservice/service"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
@@ -88,8 +87,6 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
-
-		fmt.Println(id)
 
 		// Update users password
 		err = services.User.UpdatePassword(id, pass)
