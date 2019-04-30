@@ -182,9 +182,9 @@ func UserUpdatePOST(w http.ResponseWriter, r *http.Request) {
 			log.Println(err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
-		} else {
-			session.SaveMessageToSession("Password changed successfully", w, r)
 		}
+
+		session.SaveMessageToSession("Password changed successfully", w, r)
 
 		// Log password change in the database and give error if something went wrong
 		err = services.Logs.InsertChangePassword(currentUser.ID)

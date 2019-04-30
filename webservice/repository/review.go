@@ -261,15 +261,15 @@ func (repo *ReviewRepository) UsedInAssignment(id int) (int, error) {
 	}
 
 	for rows.Next() {
-		var reviewId int
-		var submissionId int
-		err = rows.Scan(&reviewId, &submissionId)
+		var reviewID int
+		var submissionID int
+		err = rows.Scan(&reviewID, &submissionID)
 		if err != nil {
 			return 0, err
 		}
 
-		if submissionId == id {
-			return reviewId, nil
+		if submissionID == id {
+			return reviewID, nil
 		}
 	}
 

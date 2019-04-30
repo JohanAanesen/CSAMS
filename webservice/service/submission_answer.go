@@ -36,7 +36,7 @@ func (s *SubmissionAnswerService) FetchAllFromAssignment(assID int) ([]*model.Su
 	return s.submissionAnswerRepo.FetchAllForAssignment(assID)
 }
 
-// FetchUsersDelivered func
+// FetchUsersDeliveredFromAssignment func
 func (s *SubmissionAnswerService) FetchUsersDeliveredFromAssignment(assID int) ([]int, error) {
 	return s.submissionAnswerRepo.FetchUsersDeliveredFromAssignment(assID)
 }

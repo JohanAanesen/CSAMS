@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+//ShuffleIntSlice func
 func ShuffleIntSlice(slice []int) []int {
 	rand := rand.New(rand.NewSource(time.Now().Unix()))
 

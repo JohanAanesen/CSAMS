@@ -168,14 +168,14 @@ func AdminReviewUpdateGET(w http.ResponseWriter, r *http.Request) {
 	if used {
 
 		errorMessages = append(errorMessages, "Form is used by an assignment.")
-		assignmentId, err := services.Review.UsedInAssignment(form.ID)
+		assignmentID, err := services.Review.UsedInAssignment(form.ID)
 		if err != nil {
 			log.Println("services, submission, used in assignment", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
 
-		reviewsDone, err := services.ReviewAnswer.CountReviewsDoneOnAssignment(assignmentId)
+		reviewsDone, err := services.ReviewAnswer.CountReviewsDoneOnAssignment(assignmentID)
 		if err != nil {
 			log.Println("services, submission, CountForAssignment", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)

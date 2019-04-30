@@ -16,7 +16,7 @@ func Equals() template.FuncMap {
 	return f
 }
 
-// Equals function similar to eq
+// NullInt64EqualsInt function similar to eq
 func NullInt64EqualsInt() template.FuncMap {
 	f := make(template.FuncMap)
 

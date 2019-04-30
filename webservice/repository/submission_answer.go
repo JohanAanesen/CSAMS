@@ -138,7 +138,7 @@ func (repo *SubmissionAnswerRepository) FetchAllForAssignment(assignmentID int) 
 	return result, err
 }
 
-// FetchAllForAssignment func
+// FetchUsersDeliveredFromAssignment func
 func (repo *SubmissionAnswerRepository) FetchUsersDeliveredFromAssignment(assignmentID int) ([]int, error) {
 	result := make([]int, 0)
 

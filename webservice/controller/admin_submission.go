@@ -165,14 +165,14 @@ func AdminSubmissionUpdateGET(w http.ResponseWriter, r *http.Request) {
 	// Check if form is in use
 	if used {
 		errorMessages = append(errorMessages, "Form is used by an assignment.")
-		assignmentId, err := services.Submission.UsedInAssignment(form.ID)
+		assignmentID, err := services.Submission.UsedInAssignment(form.ID)
 		if err != nil {
 			log.Println("services, submission, used in assignment", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
 
-		submissionsInAssignment, err := services.SubmissionAnswer.CountForAssignment(assignmentId)
+		submissionsInAssignment, err := services.SubmissionAnswer.CountForAssignment(assignmentID)
 		if err != nil {
 			log.Println("services, submission, CountForAssignment", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
