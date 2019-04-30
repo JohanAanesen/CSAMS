@@ -34,7 +34,7 @@ services:
       DATABASE_PASSWORD: root
       DATABASE_DATABASE: cs53
       MAIL_AUTH: "RqHDMR6WfMd9zMhr^kgDA4kZ0DJbEElu7Sb^B!#1uXVzDy%zW85yGIL#iI6D2%S*"
-      USERNAME: cs.assignments.noreply@gmail.com
+      USERNAME: csams.noreply@gmail.com
       PASSWORD: $mail_pwd
     restart: always
 

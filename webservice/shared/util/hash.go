@@ -1,6 +1,8 @@
 package util
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"golang.org/x/crypto/bcrypt"
+)
 
 // GenerateFromPassword returns hashed string with cost 14
 func GenerateFromPassword(input string) (string, error) {

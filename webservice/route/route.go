@@ -56,14 +56,20 @@ func routes() http.Handler {
 	userrouter.HandleFunc("/user", controller.UserGET).Methods("GET")
 	userrouter.HandleFunc("/user/update", controller.UserUpdatePOST).Methods("POST")
 
+	userrouter.HandleFunc("/confirmemail", controller.ConfirmEmailGET).Methods("GET")
+
 	// Admin-page Handlers
 	adminrouter.HandleFunc("/", controller.AdminGET).Methods("GET")
+
+	adminrouter.HandleFunc("/logs", controller.AdminLogsGet).Methods("GET")
 
 	adminrouter.HandleFunc("/course", controller.AdminCourseGET).Methods("GET")
 	adminrouter.HandleFunc("/course/create", controller.AdminCreateCourseGET).Methods("GET")
 	adminrouter.HandleFunc("/course/create", controller.AdminCreateCoursePOST).Methods("POST")
 	adminrouter.HandleFunc("/course/update/{id:[0-9]+}", controller.AdminUpdateCourseGET).Methods("GET")
 	adminrouter.HandleFunc("/course/update", controller.AdminUpdateCoursePOST).Methods("POST")
+	adminrouter.HandleFunc("/course/email/{id:[0-9]+}", controller.AdminEmailCourseGET).Methods("GET")
+	adminrouter.HandleFunc("/course/email/{id:[0-9]+}", controller.AdminEmailCoursePOST).Methods("POST")
 
 	adminrouter.HandleFunc("/course/{id:[0-9]+}/assignments", controller.AdminCourseAllAssignments).Methods("GET")
 
@@ -120,6 +126,7 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/changepass/list", controller.AdminGetUsersPOST).Methods("POST")
 
 	adminrouter.HandleFunc("/faq", controller.AdminFaqGET).Methods("GET")
+	adminrouter.HandleFunc("/faq/new", controller.AdminFaqNewGET).Methods("GET")
 	adminrouter.HandleFunc("/faq/edit", controller.AdminFaqEditGET).Methods("GET")
 	adminrouter.HandleFunc("/faq/update", controller.AdminFaqUpdatePOST).Methods("POST")
 

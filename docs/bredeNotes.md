@@ -371,4 +371,129 @@ CREATE TABLE `validation`
 * Users can now create user through email confirmation
 
 
-### Friday 05/04/19
+## Week Ten
+### Tuesday 09/04/19
+* Fixed some smaller stuff
+* Added send email to whole course functionality
+* Have to fix it more tomorrow, but it works!
+
+### Wednesday 10/04/19
+* Had some long meetings
+* We have established the core functionality we need to be done now and added them to trello
+* Added list of all student or private emails the email is going to be sent to
+
+### Thursday 11/04/19
+**I don't have too much time to work today, I will have to work some in the easter**
+* Had to set up environment on my laptop
+* Checked out an pullrequest and fixed merge conflicts when it was merged to master
+* Created a new email `csams.noreply@gmail.com` and replaced the old with this
+* Added count of how many student, private and total emails there is
+* STarted on logs converting to service/repository
+
+### Friday 12/04/19
+* Fixed nil pointer bug when logging, I used `db.GetDB().Begin()` instead of `repo.db.Begin()`
+* Changed name on variable names fro logs in database to have underscore instead of camelcase
+* Removed all uses of old logging function and changed name from `log.go` to `logs.go`
+* Implemented one function for one logging event in service so it's easier to use, ut more dups
+* Added new logging events
+* Implemented functions for all student activity
+* Added `review_id` to `logs` table and logs struct
+
+### Monday - EASTER EDITION - 15/04/19
+* Finished the last functions for logging `admin control student` logging. It's a lot of functions now, and most are almost identical.
+I'm considering solving this another way to have less code...
+* Implemented and tested:
+    * Profile information change for students
+    * Create/update/delete submission for students
+    * Create/update user review for students
+    * Create/update assignment
+    * Create/Update/Delete submission form
+    * Create/Update/Delete review form
+
+### Tuesday - EASTER EDITION - 16/04/19
+* Found a bug when updating faq, converting to service and repository gave another nil panic bug, so im waiting to implement that for later
+* Implemented and tested:
+    * Join/create/update course
+    * change student pass/remove student from course by admin
+
+## Week Eleven
+### ~~Monday - 22/04/19~~
+### Tuesday - 23/04/19
+* Implemented and tested Create/update/delete submission for student by admin
+* Fixed log update faq bug, it was the wrong import for db...
+* Implemented use of repository/service for admin faq and removed deprecated use in model/
+* Added `group_id` to `logs` in the db
+* Adding more logging events:
+```
+AdminAddUserToGroup
+AdminRemoveUserFromGroup
+AdminEditGroupName
+AdminDeleteGroup
+AdminCreateGroup
+
+CreateGroup
+EditGroupName
+DeleteGroup
+JoinGroup
+LeftGroup
+KickedFromGroup
+```
+* Added functions for logging admin group events
+* Added functions for logging student group events
+* Changed `Activity` from `logs` from string to int, to easier deal with the current 42 different logging events. Also way easier to put in the .tmpl file this way.
+
+### Wednesday - 24/04/19
+* Completed explanation message for all logging events, just n eed to test them all
+* Created a new plugin for go template `INT64_TO_INT` to easier get username when it's `sql.nullint64`
+* Got the name and role straight from the db one time, instead of asking too many times
+* Added failsafes if a user has been deleted, both `this user` and `affected user`
+* Tested all logging events that can be triggered now
+
+### Thursday - 25/04/19
+* Added type (of log) to the log table in frontend
+* Added another failsafe if activity id is unknown
+* Logs is sorted by date desc now :D
+* User has to confirm the secondary email now by clicking a link they get sent from the systems email
+* Optimized code for confirming secondary email
+
+### Friday - 26/04/19
+* Changed services from ex userservice to use services.User
+* Removed commented code
+* Removed some finished TODO's
+* Fixed join course through register link now
+
+## Week Twelve
+### Monday - 29/04/19
+* Fixed some issues with my branch for the pull request, ex: changing log type to plugin
+* Changed name to managae_students from change_pass
+* When giving students a new password, it's generated from js and is random each time now
+* Added functionality for adding new faq and also log the event
+
+### Tuesday - 30/04/19
+
+### Wednesday - 01/05/19
+
+### Thursday - 02/05/19
+
+### Friday - 03/05/19
+
+## Week Thirteen
+### Monday - 06/05/19
+
+### Tuesday - 07/05/19
+
+### Wednesday - 08/05/19
+
+### Thursday - 09/05/19
+
+### Friday - 10/05/19
+
+## Week Fourteen
+### Monday - 13/05/19
+
+## Tuesday - 14/05/19
+
+## Wednesday - 15/05/19
+
+## Thursday - DEADLINE - 16/05/19
+   

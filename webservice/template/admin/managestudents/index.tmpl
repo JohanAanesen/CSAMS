@@ -32,7 +32,8 @@
                 <button class="btn btn-success my-3" type="submit">Get student list</button>
             </form>
 
-            <table class="table table-striped table-sm" data-toggle="table" data-pagination="true" data-search="true" data-page-size="100">
+            <table class="table table-striped table-sm" data-toggle="table" data-pagination="true" data-search="true"
+                   data-page-size="100">
                 <thead>
                 <tr>
                     <th data-sortable="true" scope="col">#</th>
@@ -84,8 +85,9 @@
          * @var id
          * */
         function changePass(studentName, id) {
+            let pass = Math.random().toString(36).substr(2, 8);
 
-            let ans = prompt("You are about to change " + studentName + "'s password to " + {{ .NewPass }} +"\nYou may also change the password yourself below.\nREMEMBER: Copy and send this password to the student!\nConfirm?", {{ .NewPass }});
+            let ans = prompt("You are about to change " + studentName + "'s password to " + pass + "\nYou may also change the password yourself below.\nREMEMBER: Copy and send this password to the student!\nConfirm?", pass);
             if (ans) {
                 window.alert("Changing password to " + ans);
                 window.location.href = window.location.origin + "/admin/changepass?vars=" + ans + '§' + id;

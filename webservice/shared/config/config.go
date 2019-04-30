@@ -91,6 +91,9 @@ func Initialize(configFile string) *Configuration {
 		plugin.Minus(),
 		plugin.NullInt64MinusInt(),
 		plugin.NullInt64EqualsInt(),
+		plugin.INT64toINT(),
+		plugin.Append(),
+		plugin.GetLogType(),
 	)
 
 	return cfg

@@ -6,7 +6,6 @@
     <h2 class="display-4 mb-3">Courses <a href="/admin/course/create" class="btn btn-success btn-sm px-3">New</a></h2>
     <hr>
     <div class="row">
-        <!-- TODO Brede : only show active courses -->
         {{ range .Courses }}
             <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 mb-3">
                 <div class="card shadow-sm">
@@ -21,6 +20,7 @@
                             <a href="/admin/course/{{.ID}}/assignments" class="btn btn-outline-dark">See
                                 Assignments</a>
                             <a href="/admin/course/update/{{.ID}}" class="btn btn-outline-dark">Edit Course</a>
+                            <a href="/admin/course/email/{{.ID}}" class="btn btn-outline-dark">Email students</a>
 
                             <!-- Hides on screens smaller than md -->
                             <a onclick="copyLinks({{.Hash}})" class="btn btn-outline-dark" data-toggle="tooltip"
@@ -43,7 +43,6 @@
                                               class="btn btn-success btn-sm px-3">New</a></h2>
     <hr>
     <div class="row">
-        <!-- TODO Brede : only show active assignments -->
         {{range .Assignments}}
             <div class="col-xl-4 col-md-6 col-sm-12 mb-3">
                 <div class="card shadow-sm{{if DEADLINEDUE .Assignment.Deadline}} bg-secondary text-light{{end}}">

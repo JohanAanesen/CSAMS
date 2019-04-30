@@ -371,12 +371,10 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	currentUser := session.GetUserFromSession(r)
 
 	// Services
-	assignmentService := service.NewAssignmentService(db.GetDB())
-	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
-	submissionService := service.NewSubmissionService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	// Get assignment and log possible error
-	assignment, err := assignmentService.Fetch(assignmentID)
+	assignment, err := services.Assignment.Fetch(assignmentID)
 	if err != nil {
 		log.Println("assignment service, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -416,7 +414,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get form and log possible error
-	submissionForm, err := submissionService.FetchFromAssignment(assignment.ID)
+	submissionForm, err := services.Submission.FetchFromAssignment(assignment.ID)
 	if err != nil {
 		log.Println("submission service, fetch from assignment", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -424,7 +422,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if user has uploaded already or not
-	delivered, err := submissionAnswerService.HasUserSubmitted(assignmentID, currentUser.ID)
+	delivered, err := services.SubmissionAnswer.HasUserSubmitted(assignmentID, currentUser.ID)
 	if err != nil {
 		log.Println("submission answer service, has user submitted", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -437,7 +435,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	// Get answers WITH answerID if the user has delivered
 	if delivered {
 		// Fetch answers from the user
-		submissionAnswers, err = submissionAnswerService.FetchUserAnswers(currentUser.ID, assignment.ID)
+		submissionAnswers, err = services.SubmissionAnswer.FetchUserAnswers(currentUser.ID, assignment.ID)
 		if err != nil {
 			log.Println("submission answer service, fetch user answers", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
@@ -509,31 +507,41 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		item.SubmissionID = int(assignment.SubmissionID.Int64)
 	}
 
-	var activity model.Activity
-
 	// Insert or update answers
 	if !delivered {
-		err = submissionAnswerService.Insert(submissionAnswers)
-		activity = model.DeliveredAssignment
+
+		// Insert new answer
+		err = services.SubmissionAnswer.Insert(submissionAnswers)
+		if err != nil {
+			log.Println("submission answer service, upload", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		// Log inserting of new submission
+		err = services.Logs.InsertSubmission(currentUser.ID, assignment.ID, int(assignment.SubmissionID.Int64))
+		if err != nil {
+			log.Println("log, insert new submission", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 	} else {
-		err = submissionAnswerService.Update(submissionAnswers)
-		activity = model.UpdateAssignment
-	}
 
-	// Check for error
-	if err != nil {
-		log.Println("submission answer service, upload/update", err)
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
+		// Update answer
+		err = services.SubmissionAnswer.Update(submissionAnswers)
+		if err != nil {
+			log.Println("submission answer service, update", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 
-	// Log assignment delivery/update
-	logData := model.Log{UserID: currentUser.ID, Activity: activity, AssignmentID: assignment.ID, SubmissionID: int(assignment.SubmissionID.Int64)}
-	err = model.LogToDB(logData)
-	if err != nil {
-		log.Println(err.Error())
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
+		// Log inserting of updated submission
+		err = services.Logs.InsertUpdateSubmission(currentUser.ID, assignment.ID, int(assignment.SubmissionID.Int64))
+		if err != nil {
+			log.Println("log, update submission", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 	}
 
 	sess, err := session.Instance(r)
@@ -751,6 +759,8 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if hasBeenReviewed {
+
+		// Update answers/submission
 		for _, field := range form.Form.Fields {
 			answer := r.FormValue(field.Name)
 			comment := r.FormValue(field.Name + "_comment")
@@ -768,6 +778,14 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 				ErrorHandler(w, r, http.StatusInternalServerError)
 				return
 			}
+		}
+
+		// Log updated review
+		err = services.Logs.InsertUpdateOnePeerReview(currentUser.ID, assignmentID, targetID)
+		if err != nil {
+			log.Println("log, update review", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
 		}
 
 		http.Redirect(w, r, fmt.Sprintf("/assignment/%d", assignment.ID), http.StatusFound)
@@ -803,6 +821,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		reviewAnswer = append(reviewAnswer, temp)
 	}
 
+	// Insert answers
 	for _, item := range reviewAnswer {
 		_, err = services.ReviewAnswer.Insert(item)
 		if err != nil {
@@ -810,6 +829,14 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
+	}
+
+	// Log new review
+	err = services.Logs.InsertFinishedOnePeerReview(currentUser.ID, assignmentID, targetID)
+	if err != nil {
+		log.Println("log, update review", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/assignment/%d", assignment.ID), http.StatusFound)
@@ -833,6 +860,7 @@ func AssignmentWithdrawGET(w http.ResponseWriter, r *http.Request) {
 	// Services
 	services := service.NewServices(db.GetDB())
 
+	// Delete user submission
 	err = services.SubmissionAnswer.Delete(assignmentID, currentUser.ID)
 	if err != nil {
 		log.Println("services, submission answer, delete", err)
@@ -840,11 +868,18 @@ func AssignmentWithdrawGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Log assignment deletion
-	logData := model.Log{UserID: currentUser.ID, Activity: model.DeleteAssignment, AssignmentID: assignmentID, SubmissionID: -1} // TODO brede : get submission id here
-	err = model.LogToDB(logData)
+	// Fetch submission id for logging purposes
+	submission, err := services.Submission.FetchFromAssignment(assignmentID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("services, submission, fetchfromassignment", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log deletion of submission
+	err = services.Logs.InsertDeleteSubmission(currentUser.ID, assignmentID, submission.ID)
+	if err != nil {
+		log.Println("log, delete submission", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}

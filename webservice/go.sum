@@ -1,3 +1,5 @@
+github.com/JohanAanesen/CSAMS/schedulerservice v0.0.0-20190411112816-963fe7b911fc h1:1pzWnrzmOktDOk64cIPeam9c8eLVJL36ivNtlbO5P/Q=
+github.com/JohanAanesen/CSAMS/schedulerservice v0.0.0-20190411112816-963fe7b911fc/go.mod h1:UeGGC3YxfZO/4DcuBmGJocfzCIOYLwN1sGyeRsGlhx8=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-sql-driver/mysql v1.4.1 h1:g24URVg0OFbNUTx9qqY1IRZ9D9z3iPyi5zKhQZpNwpA=
