@@ -53,17 +53,7 @@ func (s *AssignmentService) HasReview(assignmentID int) (bool, error) {
 		return false, err
 	}
 
-	return assignment.ReviewID.Valid, err
-}
-
-// HasAutoValidation func
-func (s *AssignmentService) HasAutoValidation(assignmentID int) (bool, error) {
-	assignment, err := s.assignmentRepo.Fetch(assignmentID)
-	if err != nil {
-		return false, err
-	}
-
-	return assignment.ValidationID.Valid, err
+	return assignment.ReviewEnabled, err
 }
 
 // Insert func

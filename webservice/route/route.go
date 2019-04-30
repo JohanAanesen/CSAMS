@@ -50,6 +50,7 @@ func routes() http.Handler {
 	userrouter.HandleFunc("/assignment/submission/update", controller.AssignmentUploadPOST).Methods("POST")
 	userrouter.HandleFunc("/assignment/{id:[0-9]+}/submission/{userid:[0-9]+}", controller.AssignmentUserSubmissionGET).Methods("GET")
 	userrouter.HandleFunc("/assignment/{id:[0-9]+}/submission/{userid:[0-9]+}", controller.AssignmentUserSubmissionPOST).Methods("POST")
+	userrouter.HandleFunc("/assignment/{id:[0-9]+}/requestreview", controller.AssignmentReviewRequestPOST).Methods("POST")
 
 	// User-page Handlers
 	userrouter.HandleFunc("/user", controller.UserGET).Methods("GET")
@@ -120,9 +121,6 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/review/update/{id:[0-9]+}/weights", controller.AdminReviewUpdateWeightsPOST).Methods("POST")
 	adminrouter.HandleFunc("/review/update", controller.AdminReviewUpdatePOST).Methods("POST")
 	adminrouter.HandleFunc("/review/delete", controller.AdminReviewDELETE).Methods("DELETE")
-
-	adminrouter.HandleFunc("/scheduler", controller.AdminSchedulerGET).Methods("GET")
-	adminrouter.HandleFunc("/scheduler/delete", controller.AdminSchedulerDELETE).Methods("POST")
 
 	adminrouter.HandleFunc("/changepass", controller.AdminChangePassGET).Methods("GET")
 	adminrouter.HandleFunc("/changepass/list", controller.AdminGetUsersPOST).Methods("POST")

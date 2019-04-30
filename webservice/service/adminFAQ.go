@@ -20,7 +20,7 @@ func NewFAQService(db *sql.DB) *FAQService {
 }
 
 // InsertNew inserts a new faq in db, if there isn't one in db already
-func (s *FAQService) InsertNew()  error {
+func (s *FAQService) InsertNew() error {
 
 	faq, err := s.faqRepo.Fetch()
 	if err != nil {

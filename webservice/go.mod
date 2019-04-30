@@ -13,7 +13,7 @@ require (
 	github.com/rs/xid v1.2.1
 	github.com/sergi/go-diff v1.0.0 // indirect
 	github.com/shurcooL/github_flavored_markdown v0.0.0-20181002035957-2122de532470
-	github.com/shurcooL/go v0.0.0-20190121191506-3fef8c783dec // indirect
+	github.com/shurcooL/go v0.0.0-20190330031554-6713ea532688 // indirect
 	github.com/shurcooL/go-goon v0.0.0-20170922171312-37c2f522c041 // indirect
 	github.com/shurcooL/highlight_diff v0.0.0-20181222201841-111da2e7d480 // indirect
 	github.com/shurcooL/highlight_go v0.0.0-20181215221002-9d8641ddf2e1 // indirect
@@ -24,6 +24,6 @@ require (
 	github.com/stretchr/testify v1.3.0 // indirect
 	github.com/tealeg/xlsx v1.0.3
 	golang.org/x/crypto v0.0.0-20190403202508-8e1b8d32e692
-	google.golang.org/appengine v1.4.0 // indirect
+	google.golang.org/appengine v1.5.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 )

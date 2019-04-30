@@ -105,14 +105,14 @@ CREATE TABLE `assignments`
     `deadline`        datetime    NOT NULL,
     `course_id`       int(11)     NOT NULL,
     `submission_id`   int(11)  DEFAULT NULL,
+    `review_enabled`  tinyint(1) NOT NULL DEFAULT 0,
     `review_id`       int(11)  DEFAULT NULL,
     `review_deadline` datetime DEFAULT NULL,
     `validation_id`   int(11)  DEFAULT NULL,
     `reviewers`       int(11)  DEFAULT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`course_id`) REFERENCES course (`id`),
-    FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`),
-    FOREIGN KEY (`review_id`) REFERENCES reviews (`id`)
+    FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`)
 );
 
 CREATE TABLE `peer_reviews`
@@ -159,19 +159,6 @@ CREATE TABLE `user_submissions`
     `answer`        text        NULL,
     `comment`       text DEFAULT NULL,
     `submitted`     timestamp   NOT NULL,
-    PRIMARY KEY (`id`),
-    FOREIGN KEY (`assignment_id`) REFERENCES assignments (`id`),
-    FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`)
-);
-
-CREATE TABLE `schedule_tasks`
-(
-    `id`             int(11)     NOT NULL AUTO_INCREMENT,
-    `submission_id`  int(11)     NOT NULL,
-    `assignment_id`  int(11)     NOT NULL,
-    `scheduled_time` datetime    NOT NULL,
-    `task`           varchar(32) NOT NULL,
-    `data`           blob        NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`assignment_id`) REFERENCES assignments (`id`),
     FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`)

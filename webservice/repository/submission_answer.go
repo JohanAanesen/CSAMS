@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
 	"strings"
@@ -102,6 +103,63 @@ func (repo *SubmissionAnswerRepository) FetchAllForUserAndAssignment(userID, ass
 		temp.Required = isRequired == 1
 
 		result = append(result, &temp)
+	}
+
+	return result, err
+}
+
+// FetchAllForAssignment func
+func (repo *SubmissionAnswerRepository) FetchAllForAssignment(assignmentID int) ([]*model.SubmissionAnswer, error) {
+	result := make([]*model.SubmissionAnswer, 0)
+
+	query := "SELECT us.id, us.user_id, us.assignment_id, us.submission_id, us.type, us.name, us.label, us.answer, us.comment, us.submitted FROM user_submissions AS us WHERE us.assignment_id = ?"
+
+	rows, err := repo.db.Query(query, assignmentID)
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		temp := model.SubmissionAnswer{}
+
+		err = rows.Scan(&temp.ID, &temp.UserID, &temp.AssignmentID, &temp.SubmissionID,
+			&temp.Type, &temp.Name, &temp.Label, &temp.Answer, &temp.Comment, &temp.Submitted)
+		if err != nil {
+			return result, err
+		}
+
+		fmt.Println(temp.UserID)
+
+		result = append(result, &temp)
+	}
+
+	return result, err
+}
+
+// FetchUsersDeliveredFromAssignment func
+func (repo *SubmissionAnswerRepository) FetchUsersDeliveredFromAssignment(assignmentID int) ([]int, error) {
+	result := make([]int, 0)
+
+	query := "SELECT DISTINCT us.user_id FROM user_submissions AS us WHERE us.assignment_id = ?"
+
+	rows, err := repo.db.Query(query, assignmentID)
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var temp int
+
+		err = rows.Scan(&temp)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, temp)
 	}
 
 	return result, err

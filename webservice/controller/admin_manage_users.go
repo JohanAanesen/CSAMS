@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/service"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
@@ -15,11 +14,11 @@ import (
 // AdminChangePassGET serves the change password for students page and changes password if it's variables in the url
 func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 
-	// Get form value
-	vars := r.FormValue("vars")
-
 	// Services
 	services := service.NewServices(db.GetDB())
+
+	// Get form value
+	vars := r.FormValue("vars")
 
 	// Get current user
 	currentUser := session.GetUserFromSession(r)
@@ -90,7 +89,7 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Update users password
-		err = model.UpdateUserPassword(id, pass)
+		err = services.User.UpdatePassword(id, pass)
 		if err != nil {
 			log.Println("update user password", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
@@ -127,6 +126,9 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 // AdminGetUsersPOST serves the same page as above, but with the list of all students in a course
 func AdminGetUsersPOST(w http.ResponseWriter, r *http.Request) {
 
+	// Services
+	services := service.NewServices(db.GetDB())
+
 	// Get form value
 	formVal := r.FormValue("course_id")
 
@@ -146,17 +148,15 @@ func AdminGetUsersPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get all students from courseID
-	students := model.GetUsersToCourse(courseID)
-	if len(students) < 0 {
-		log.Println("Error: could not get students from course! (admin_manage_users.go)")
+	students, err := services.User.FetchAllFromCourse(courseID)
+	if len(students) < 0 || err != nil {
+		log.Println("Error: could not get students from course! (admin_change_pass.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	// Get current user
 	currentUser := session.GetUserFromSession(r)
-	// Services
-	services := service.NewServices(db.GetDB())
 
 	// Get courses
 	courses, err := services.Course.FetchAllForUserOrdered(currentUser.ID)

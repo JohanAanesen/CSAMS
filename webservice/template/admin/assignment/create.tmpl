@@ -66,23 +66,6 @@
             <div class="col-12 col-lg">
 
                 <div class="col">
-                    <h3>Peer Review</h3>
-                    <div class="form-group">
-                        <label for="reviewers">How many submissions should every student review on this
-                            assignment:</label>
-                        <select name="reviewers" id="reviewers" class="form-control" required>
-                            option
-                            <script>
-                                for (let i = 1; i <= 6; i++) {
-                                    document.write(`<option value="${i}">${i}</option>`);
-                                }
-                            </script>
-                        </select>
-                    </div>
-                    <hr>
-                </div>
-
-                <div class="col">
                     <h3>Submission Form</h3>
                     <div class="form-group">
                         <label for="submission_id">Select Form</label>
@@ -97,28 +80,50 @@
                 </div>
 
                 <div class="col">
-                    <h3>Review Form</h3>
+                    <h3>Peer Review</h3>
+                    <button type="button" onclick="reviewButtonFunction()" id="reviewButton" class="btn btn-danger btn-sm">Disable</button>
+
+                    <h5>Review Form</h5>
                     <div class="form-group">
                         <label for="review_id">Select Form</label>
                         <select name="review_id" id="review_id" class="form-control">
-                            <option value="">None</option>
-                            {{range .Reviews}}
-                                <option value="{{.ID}}">{{.Form.Name}}</option>
+                            <option value="0">None</option>
+                            {{range $R := .Reviews}}
+                                <option value="{{$R.ID}}">{{$R.Form.Name}}</option>
                             {{end}}
                         </select>
                     </div>
-                    <div class="form-group sr-only" id="review_deadline_container">
+                    <div class="form-group" id="review_deadline_container">
                         <label for="review_deadline">Review Deadline</label>
                         <input type="datetime-local" name="review_deadline" id="review_deadline" class="form-control">
+                    </div>
+
+                    <hr>
+
+                    <h5>Number of reviews for each student</h5>
+                    <div class="form-group">
+                        <label for="reviewers">How many submissions should every student review on this
+                            assignment <br> Set to 0 to disable this feature</label>
+                        <select name="reviewers" id="reviewers" class="form-control" required>
+                            <script>
+                                for (let i = 0; i <= 6; i++) {
+                                    if(i == 0){
+                                        document.write(`<option value="${i}">Any</option>`);
+                                    }else{
+                                        document.write(`<option value="${i}">${i}</option>`);
+                                    }
+                                }
+                            </script>
+                        </select>
                     </div>
                     <hr>
                 </div>
             </div>
-
         </div>
 
         <div class="row mb-5">
             <div class="col">
+                <input type="hidden" id="review_enabled" name="review_enabled" value="false">
                 <input type="submit" class="btn btn-success btn-lg btn-block" id="submit">
             </div>
         </div>
@@ -129,40 +134,62 @@
     <script src="/static/js/simplemde.min.js"></script>
     <script src="/static/js/time.js"></script>
     <script>
-        (function () {
-            // Enable the SmpleMDE
+
+        let enabledInput = document.getElementById("review_enabled");
+        let btn = document.getElementById("reviewButton");
+        let reviewDeadline = document.getElementById('review_deadline');
+        let reviewDeadlineContainer = document.getElementById('review_deadline_container');
+        let reviewSelect = document.getElementById('review_id');
+        let reviewers = document.getElementById('reviewers');
+
+        function reviewButtonFunction(){
+
+            if(enabledInput.getAttribute("value") == "false"){
+                activateReviews();
+            }else if(enabledInput.getAttribute("value") == "true"){
+                deactiveReviews();
+            }
+        }
+
+        function activateReviews(){
+            btn.classList.remove("btn-success");
+            btn.classList.add("btn-danger");
+            btn.innerText = "Disable";
+
+            enabledInput.removeAttribute("value");
+            enabledInput.setAttribute("value", "true");
+
+            reviewDeadline.removeAttribute("disabled");
+            reviewDeadline.setAttribute("required", "");
+
+            reviewSelect.removeAttribute("readonly");
+            reviewers.removeAttribute("readonly");
+        }
+
+        function deactiveReviews(){
+            btn.classList.remove("btn-danger");
+            btn.classList.add("btn-success");
+            btn.innerText = "Enable";
+
+            enabledInput.removeAttribute("value");
+            enabledInput.setAttribute("value", "false");
+
+            reviewDeadline.setAttribute("disabled", "");
+            reviewDeadline.removeAttribute("required");
+
+            reviewSelect.setAttribute("readonly", "");
+            reviewers.setAttribute("readonly", "");
+        }
+
+        window.onload = function () {
+            // Enable the SimpleMDE
             let simplemde = new SimpleMDE({
                 element: document.getElementById('simplemde'),
                 hideIcons: ["side-by-side", "fullscreen"],
                 lineWrapping: true,
             });
 
-            let publishNowButton = document.getElementById('publish_now');
-            let publish = document.getElementById('publish');
-            let deadline = document.getElementById('deadline');
-
-
-            // TODO time-norwegian
-            /*
-            publishNowButton.addEventListener('click', () => {
-                publish.value = getTimeInNorwegian().toNORString();
-            });
-            */
-
-            let reviewDeadline = document.getElementById('review_deadline');
-            let reviewDeadlineContainer = document.getElementById('review_deadline_container');
-            let reviewSelect = document.getElementById('review_id');
-
-            reviewSelect.addEventListener('change', e => {
-                console.log('change', e.target.value);
-                if (e.target.value !== "") {
-                    reviewDeadlineContainer.classList.remove('sr-only');
-                    reviewDeadline.setAttribute('required', '');
-                } else {
-                    reviewDeadlineContainer.classList.add('sr-only');
-                    reviewDeadline.removeAttribute('required');
-                }
-            });
-        })();
+            deactiveReviews();
+        };
     </script>
 {{end}}

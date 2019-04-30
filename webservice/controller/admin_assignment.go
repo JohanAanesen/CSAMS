@@ -7,7 +7,6 @@ import (
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/service"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
-	"github.com/JohanAanesen/CSAMS/webservice/shared/scheduler"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
@@ -184,6 +183,11 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		Valid: val != 0,
 	}
 
+	reviewEnabled := false
+	if r.FormValue("review_enabled") == "true" {
+		reviewEnabled = true
+	}
+
 	val = 0
 
 	if r.FormValue("review_id") != "" {
@@ -193,18 +197,37 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Get the time.Time object from the deadline string
-		reviewDeadline, err := util.DatetimeLocalToRFC3339(r.FormValue("review_deadline"))
+		if val != 0 {
+			// Get the time.Time object from the deadline string
+			reviewDeadline, err := util.DatetimeLocalToRFC3339(r.FormValue("review_deadline"))
+			if err != nil {
+				errorMessages = append(errorMessages, "Error: Something wrong with the review deadline datetime.")
+			}
+
+			if deadline.After(reviewDeadline) {
+				errorMessages = append(errorMessages, "Error: Review deadline cannot be before Assignment Deadline.")
+			} else {
+				assignment.ReviewDeadline = reviewDeadline
+			}
+		}
+	}
+
+	reviewID := sql.NullInt64{
+		Int64: int64(val),
+		Valid: val != 0,
+	}
+
+	if r.FormValue("reviewers") != "" {
+		val, err = strconv.Atoi(r.FormValue("reviewers"))
 		if err != nil {
-			errorMessages = append(errorMessages, "Error: Something wrong with the review deadline datetime.")
+			log.Println("reviewers")
+			log.Println(err)
+			return
 		}
-
-		if deadline.After(reviewDeadline) {
-			errorMessages = append(errorMessages, "Error: Review deadline cannot be before Assignment Deadline.")
-		} else {
-			assignment.ReviewDeadline = reviewDeadline
-		}
-
+	}
+	reviewers := sql.NullInt64{
+		Int64: int64(val),
+		Valid: val != 0,
 	}
 
 	// Check if there are any error messages
@@ -252,24 +275,6 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reviewID := sql.NullInt64{
-		Int64: int64(val),
-		Valid: val != 0,
-	}
-
-	if r.FormValue("reviewers") != "" {
-		val, err = strconv.Atoi(r.FormValue("reviewers"))
-		if err != nil {
-			log.Println("reviewers")
-			log.Println(err)
-			return
-		}
-	}
-	reviewers := sql.NullInt64{
-		Int64: int64(val),
-		Valid: val != 0,
-	}
-
 	// Put all data into an Assignment-struct
 	assignment.Name = assignmentName
 	assignment.Description = assignmentDescription
@@ -277,6 +282,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	assignment.Deadline = deadline
 	assignment.CourseID = courseID
 	assignment.SubmissionID = submissionID
+	assignment.ReviewEnabled = reviewEnabled
 	assignment.ReviewID = reviewID
 	assignment.Reviewers = reviewers
 
@@ -294,22 +300,6 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		log.Println("log, create assignment", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
-	}
-
-	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute  TODO time-norwegian
-	if assignmentID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInCorrectTimeZone()) {
-
-		sched := scheduler.Scheduler{}
-
-		err := sched.SchedulePeerReview(
-			assignmentID, //assignment ID
-			int(assignment.Reviewers.Int64),
-			assignment.Deadline)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 	}
 
 	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
@@ -530,6 +520,11 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	reviewEnabled := false
+	if r.FormValue("review_enabled") == "true" {
+		reviewEnabled = true
+	}
+
 	val = 0
 
 	if r.FormValue("review_id") != "" {
@@ -539,27 +534,31 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Get the time.Time object from the deadline string
-		reviewDeadline, err := util.DatetimeLocalToRFC3339(r.FormValue("review_deadline"))
-		if err != nil {
-			log.Println(err)
-			ErrorHandler(w, r, http.StatusInternalServerError)
-			return
-		}
+		if val != 0 {
+			// Get the time.Time object from the deadline string
+			reviewDeadline, err := util.DatetimeLocalToRFC3339(r.FormValue("review_deadline"))
+			if err != nil {
+				log.Println(err)
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
 
-		// Check that review deadline isn't before assignment deadline 8====D
-		if deadline.After(reviewDeadline) {
-			log.Println("error: review deadline cannot be before assignment deadline")
-			ErrorHandler(w, r, http.StatusBadRequest)
-			return
-		}
+			// Check that review deadline isn't before assignment deadline
+			if deadline.After(reviewDeadline) {
+				log.Println("error: review deadline cannot be before assignment deadline")
+				ErrorHandler(w, r, http.StatusBadRequest)
+				return
+			}
 
-		assignment.ReviewDeadline = reviewDeadline
+			assignment.ReviewDeadline = reviewDeadline
+		} else {
+			assignment.ReviewDeadline = time.Now()
+		}
 	}
 
 	reviewID := sql.NullInt64{
 		Int64: int64(val),
-		Valid: val != 0,
+		Valid: val >= 0,
 	}
 
 	if r.FormValue("reviewers") != "" {
@@ -571,7 +570,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	}
 	reviewers := sql.NullInt64{
 		Int64: int64(val),
-		Valid: val != 0,
+		Valid: val >= 0,
 	}
 
 	assignment.ID = id
@@ -581,6 +580,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	assignment.Deadline = deadline
 	assignment.CourseID = courseID
 	assignment.SubmissionID = submissionID
+	assignment.ReviewEnabled = reviewEnabled
 	assignment.ReviewID = reviewID
 	assignment.Reviewers = reviewers
 
@@ -598,32 +598,6 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		log.Println("log, update assignment ", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
-	}
-
-	// if submission ID AND Reviewers is set and valid, we can schedule the peer_review service to execute TODO time-norwegian
-	if assignment.ID != 0 && assignment.SubmissionID.Valid && assignment.Reviewers.Valid && assignment.Deadline.After(util.GetTimeInCorrectTimeZone()) {
-		sched := scheduler.Scheduler{}
-
-		if sched.SchedulerExists(assignment.ID) {
-			err := sched.UpdateSchedule(
-				assignment.ID, //assignment ID
-				int(assignment.Reviewers.Int64),
-				assignment.Deadline)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-		} else {
-			err := sched.SchedulePeerReview(
-				assignment.ID, //assignment ID
-				int(assignment.Reviewers.Int64),
-				assignment.Deadline)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-		}
-
 	}
 
 	http.Redirect(w, r, "/admin/assignment", http.StatusFound)
@@ -754,7 +728,7 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 
 		for _, item := range rawUserReports {
 			// TODO (Svein): Check all slices, not only first and last
-			if len(item.ReviewScores) == int(assignment.Reviewers.Int64) {
+			if len(item.ReviewScores) == int(assignment.Reviewers.Int64) && len(item.ReviewScores) != 0 {
 				if len(item.ReviewScores[0]) != len(item.ReviewScores[int(assignment.Reviewers.Int64-1)]) {
 					log.Println("raw user report, review scores are not same length")
 					return

@@ -1,6 +1,7 @@
 package session
 
 import (
+	"fmt"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/gorilla/sessions"
 	"log"
@@ -100,71 +101,28 @@ func SaveUserToSession(user model.User, w http.ResponseWriter, r *http.Request) 
 	return true
 }
 
-// SaveMessageToSession stores a message string in session
-func SaveMessageToSession(msg string, w http.ResponseWriter, r *http.Request) bool {
-	session, err := Instance(r) //get session
-
+func SetFlash(message string, w http.ResponseWriter, r *http.Request) error {
+	session, err := Instance(r)
 	if err != nil {
-		log.Printf("Could not get instance of session: %v", err)
-		return false
+		return err
 	}
 
-	session.Values["Message"] = msg
-
-	err = session.Save(r, w) //save session changes
-
-	if err != nil {
-		//todo log this event
-		log.Printf("Could not save session: %v", err)
-		//redirect somewhere
-		return false
-	}
-
-	return true
+	session.AddFlash(message, "message")
+	return session.Save(r, w)
 }
 
-// GetAndDeleteMessageFromSession retrieves a message string from session and deletes it
-func GetAndDeleteMessageFromSession(w http.ResponseWriter, r *http.Request) string {
-	session, err := Instance(r) // get session
-
+func GetFlash(w http.ResponseWriter, r *http.Request) string {
+	session, err := Instance(r)
 	if err != nil {
-		log.Printf("Could not get instance of session: %v", err)
+		log.Println(err.Error())
 		return ""
 	}
 
-	val := session.Values["Message"]
-	var msg string
-	msg, ok := val.(string)
-	if !ok {
+	fm := session.Flashes("message")
+	if fm == nil {
 		return ""
 	}
 
-	ok = DeleteMessageFromSession(w, r)
-	if !ok {
-		return ""
-	}
-
-	return msg
-}
-
-// DeleteMessageFromSession deletes a message from the session
-func DeleteMessageFromSession(w http.ResponseWriter, r *http.Request) bool {
-	session, err := Instance(r) // get session
-
-	if err != nil {
-		log.Printf("Could not get instance of session: %v", err)
-		return false
-	}
-
-	session.Values["Message"] = ""
-
-	err = session.Save(r, w) //save session changes
-	if err != nil {
-		//todo log this event
-		log.Printf("Could not save session: %v", err)
-		//redirect somewhere
-		return false
-	}
-
-	return true
+	_ = session.Save(r, w)
+	return fmt.Sprintf("%v", fm[0])
 }

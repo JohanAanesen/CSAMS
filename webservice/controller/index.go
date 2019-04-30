@@ -103,7 +103,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["isStudent"] = !currentUser.Teacher
 	v.Vars["Courses"] = courses
 	v.Vars["Assignments"] = activeAssignments
-	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
+	v.Vars["Message"] = session.GetFlash(w, r)
 
 	v.Render(w)
 }
@@ -177,7 +177,7 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Give feedback to user
-	session.SaveMessageToSession("You joined "+course.Code+" - "+course.Name, w, r)
+	_ = session.SetFlash("You joined "+course.Code+" - "+course.Name, w, r)
 
 	//IndexGET(w, r)
 	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage

@@ -132,6 +132,9 @@ func AdminReviewCreatePOST(w http.ResponseWriter, r *http.Request) {
 
 // AdminReviewUpdateGET handles GET-requests @ /admin/review/update/{id:[0-9]+}
 func AdminReviewUpdateGET(w http.ResponseWriter, r *http.Request) {
+	//errorMessages variable
+	var errorMessages []string
+
 	// Get variables from the request
 	vars := mux.Vars(r)
 
@@ -163,22 +166,42 @@ func AdminReviewUpdateGET(w http.ResponseWriter, r *http.Request) {
 
 	// Check if form is in use
 	if used {
-		// Set header content type and status code
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
 
-		// Create view
-		v := view.New(r)
-		// Set template file
-		v.Name = "admin/review/update_used"
+		errorMessages = append(errorMessages, "Form is used by an assignment.")
+		assignmentID, err := services.Review.UsedInAssignment(form.ID)
+		if err != nil {
+			log.Println("services, submission, used in assignment", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 
-		// Set view variables
-		v.Vars["Form"] = form
+		reviewsDone, err := services.ReviewAnswer.CountReviewsDoneOnAssignment(assignmentID)
+		if err != nil {
+			log.Println("services, submission, CountForAssignment", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 
-		// Render view
-		v.Render(w)
+		if reviewsDone > 0 {
+			errorMessages = append(errorMessages, "Form has reviews.")
+			// Set header content type and status code
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			w.WriteHeader(http.StatusOK)
 
-		return
+			// Create view
+			v := view.New(r)
+			// Set template file
+			v.Name = "admin/review/update_used"
+
+			// Set view variables
+			v.Vars["Form"] = form
+			v.Vars["Errors"] = errorMessages
+
+			// Render view
+			v.Render(w)
+
+			return
+		}
 	}
 
 	// Convert form to JSON
@@ -199,6 +222,8 @@ func AdminReviewUpdateGET(w http.ResponseWriter, r *http.Request) {
 
 	// Set view variables
 	v.Vars["formJSON"] = string(formBytes)
+	v.Vars["Errors"] = errorMessages
+
 	// Render view
 	v.Render(w)
 }
