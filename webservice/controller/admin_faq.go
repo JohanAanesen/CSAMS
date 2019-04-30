@@ -1,18 +1,69 @@
 package controller
 
 import (
-	"github.com/JohanAanesen/CSAMS/webservice/model"
+	"github.com/JohanAanesen/CSAMS/webservice/service"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
 	"log"
 	"net/http"
 )
 
+// AdminFaqNewGET creates new faq and serves it to user
+func AdminFaqNewGET(w http.ResponseWriter, r *http.Request) {
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
+	// Create new FAQ
+	err := services.FAQ.InsertNew()
+	if err != nil {
+		log.Println("services, faq, indertnew faq", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log event to db
+	err = services.Logs.InsertAdminCreateFAQ(currentUser.ID)
+	if err != nil {
+		log.Println("services, logs, indertnew faq", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get new faq, date and questions
+	content, err := services.FAQ.Fetch()
+	if err != nil {
+		log.Println("services, faq, fetch", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := view.New(r)
+	v.Name = "admin/faq/index"
+	v.Vars["Updated"] = content
+
+	v.Render(w)
+}
+
 // AdminFaqGET handles GET-request at admin/faq/index
 func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
-	content := model.GetDateAndQuestionsFAQ() // TODO (Svein): Move this to 'settings'
-	if content.Questions == "-1" {            // TODO (Svein): Allow blank FAQ
-		log.Println("Something went wrong with getting the faq (admin.go)")
+
+	// TODO (Svein): Move this to 'settings'
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Get current faq, date and questions
+	content, err := services.FAQ.Fetch()
+	if err != nil {
+		log.Println("services, faq, fetch", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -29,9 +80,16 @@ func AdminFaqGET(w http.ResponseWriter, r *http.Request) {
 
 // AdminFaqEditGET returns the edit view for the faq
 func AdminFaqEditGET(w http.ResponseWriter, r *http.Request) {
-	content := model.GetDateAndQuestionsFAQ() // TODO (Svein): Move this to 'settings'
-	if content.Questions == "-1" {            // TODO (Svein): Allow blank FAQ
-		log.Println("Something went wrong with getting the faq (admin.go)")
+
+	// TODO (Svein): Move this to 'settings'
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Get current faq, date and questions
+	content, err := services.FAQ.Fetch()
+	if err != nil {
+		log.Println("services, faq, fetch", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -51,49 +109,44 @@ func AdminFaqUpdatePOST(w http.ResponseWriter, r *http.Request) {
 	// Check that the questions arrived
 	updatedFAQ := r.FormValue("rawQuestions")
 	if updatedFAQ == "" {
-		log.Println("Form is empty! (admin.go)")
+		log.Println("Form is empty!")
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
 
-	// Check that it's possible to get the old faq from db
-	content := model.GetDateAndQuestionsFAQ()
-	if content.Questions == "-1" {
-		log.Println("Something went wrong with getting the faq (admin.go)")
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Get user for logging purposes
+	currentUser := session.GetUserFromSession(r)
+
+	// Get current unchanged faq
+	content, err := services.FAQ.Fetch()
+	if err != nil {
+		log.Println("services, faq, fetch", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	// Check that it's changes to the new faq
 	if content.Questions == updatedFAQ {
-		log.Println("Old and new faq can not be equal! (admin.go)")
+		log.Println("Old and new faq can not be equal!")
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
 	}
 
-	// Check that it went okay to add new faq to db
-	err := model.UpdateFAQ(updatedFAQ)
+	// Update faq questions
+	err = services.FAQ.Update(updatedFAQ)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("services, faq, update", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	// Get user for logging purposes
-	currentUser := session.GetUserFromSession(r)
-
-	// Collect the log data
-	logData := model.Log{
-		UserID:   currentUser.ID,
-		Activity: model.UpdateAdminFAQ,
-		OldValue: content.Questions,
-		NewValue: updatedFAQ,
-	}
-
-	// Log that a teacher has changed the faq
-	err = model.LogToDB(logData)
+	// Log update faq to db
+	err = services.Logs.InsertAdminUpdateFAQ(currentUser.ID, content.Questions, updatedFAQ)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("log, update faq ", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}

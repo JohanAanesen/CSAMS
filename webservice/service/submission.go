@@ -56,6 +56,11 @@ func (s *SubmissionService) Fetch(id int) (*model.Submission, error) {
 	return s.submissionRepo.Fetch(id)
 }
 
+// FetchFromFormID fetches submission from form id
+func (s *SubmissionService) FetchFromFormID(formID int) (*model.Submission, error) {
+	return s.submissionRepo.FetchFromFormID(formID)
+}
+
 // FetchFromAssignment func
 func (s *SubmissionService) FetchFromAssignment(assignmentID int) (*model.Submission, error) {
 	result := model.Submission{}

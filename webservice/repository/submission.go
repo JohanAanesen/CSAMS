@@ -67,6 +67,28 @@ func (repo *SubmissionRepository) Fetch(id int) (*model.Submission, error) {
 	return &result, err
 }
 
+// FetchFromFormID fetches submission from formID
+func (repo *SubmissionRepository) FetchFromFormID(formID int) (*model.Submission, error) {
+	result := model.Submission{}
+	query := "SELECT id, form_id FROM submissions WHERE form_id = ?"
+
+	rows, err := repo.db.Query(query, formID)
+	if err != nil {
+		return &result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&result.ID, &result.FormID)
+		if err != nil {
+			return &result, err
+		}
+	}
+
+	return &result, err
+}
+
 // Insert func
 func (repo *SubmissionRepository) Insert(form model.Form) (int, error) {
 	formRepo := NewFormRepository(repo.db)

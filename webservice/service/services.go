@@ -16,6 +16,8 @@ type Services struct {
 	User             *UserService
 	Validation       *ValidationService
 	UserPending      *UserPendingService
+	Logs             *LogsService
+	FAQ              *FAQService
 }
 
 // NewServices func
@@ -33,5 +35,7 @@ func NewServices(db *sql.DB) *Services {
 		User:             NewUserService(db),
 		Validation:       NewValidationService(db),
 		UserPending:      NewUserPendingService(db),
+		Logs:             NewLogsService(db),
+		FAQ:              NewFAQService(db),
 	}
 }

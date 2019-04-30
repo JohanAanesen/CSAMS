@@ -18,8 +18,8 @@ func NewValidationRepository(db *sql.DB) *ValidationRepository {
 	}
 }
 
-// Insert inserts a new forgottenpass in the db
-func (repo *ValidationRepository) Insert(validation model.Validation) (int, error) {
+// Insert inserts a new validation row in the db
+func (repo *ValidationRepository) Insert(validation model.ValidationEmail) (int, error) {
 	var id int64
 
 	query := "INSERT INTO `validation` (`hash`, `user_id`, `timestamp`) VALUES (?, ?, ?)"
@@ -51,8 +51,8 @@ func (repo *ValidationRepository) Insert(validation model.Validation) (int, erro
 }
 
 // FetchAll fetches all validation rows
-func (repo *ValidationRepository) FetchAll() ([]*model.Validation, error) {
-	result := make([]*model.Validation, 0)
+func (repo *ValidationRepository) FetchAll() ([]*model.ValidationEmail, error) {
+	result := make([]*model.ValidationEmail, 0)
 
 	query := "SELECT `id`, `hash`, `user_id`, `valid`, `timestamp`  FROM `validation`"
 
@@ -64,7 +64,7 @@ func (repo *ValidationRepository) FetchAll() ([]*model.Validation, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		temp := model.Validation{}
+		temp := model.ValidationEmail{}
 
 		err = rows.Scan(&temp.ID, &temp.Hash, &temp.UserID, &temp.Valid, &temp.TimeStamp)
 		if err != nil {

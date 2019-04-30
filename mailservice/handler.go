@@ -173,11 +173,12 @@ func SendMailForgottenPassword(recipient string, link string) error {
 
 	// Convert to string array
 	userEmail := strings.Fields(recipient)
-	subject := "Forgotten Password | CS Assignments"
-	message := "Change password\n" +
-		"There has been requested a password recovery for this account\n" +
-		"If this was not you, please disregard this email.\n\n" +
-		"Click this link to reset your password:\n" +
+	subject := "Forgotten Password | CSAMS"
+	message := "Hi\n" +
+		"This email is sent by the CS Assignment Submission System.\n" +
+		"There has been requested a password recovery for this account on CSAMS\n" +
+		"If you have not requested this and suspect a hacking attempt, please contact your lecturer.\n\n" +
+		"Click this link to reset yout password:\n" +
 		link
 
 	err := sendMail("To", userEmail, subject, message)

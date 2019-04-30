@@ -67,6 +67,28 @@ func (repo *ReviewRepository) Fetch(id int) (*model.Review, error) {
 	return &result, err
 }
 
+// FetchFromFormID fetches review from formID
+func (repo *ReviewRepository) FetchFromFormID(formID int) (*model.Review, error) {
+	result := model.Review{}
+	query := "SELECT id, form_id FROM reviews WHERE form_id = ?"
+
+	rows, err := repo.db.Query(query, formID)
+	if err != nil {
+		return &result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&result.ID, &result.FormID)
+		if err != nil {
+			return &result, err
+		}
+	}
+
+	return &result, err
+}
+
 // Insert func
 func (repo *ReviewRepository) Insert(form model.Form) (int, error) {
 	formRepo := NewFormRepository(repo.db)

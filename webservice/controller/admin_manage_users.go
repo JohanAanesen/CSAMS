@@ -6,12 +6,10 @@ import (
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
-	"github.com/rs/xid"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 // AdminChangePassGET serves the change password for students page and changes password if it's variables in the url
@@ -19,6 +17,12 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 
 	// Get form value
 	vars := r.FormValue("vars")
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
 
 	// Remove user from course
 	userid := r.FormValue("removeVars")
@@ -46,10 +50,19 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = removeUserFromCourse(uid, cid)
+		// Remove user from course
+		err = services.Course.RemoveUser(uid, cid)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println(err.Error())
+			return
+		}
+
+		// Log removal of user from course
+		err = services.Logs.InsertAdminRemoveUserFromCourse(currentUser.ID, cid, uid)
+		if err != nil {
+			log.Println("log, admin remove user from course")
+			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
 	}
@@ -84,10 +97,14 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Log change users password
+		err = services.Logs.InsertAdminChangeUserPassword(currentUser.ID, id)
+		if err != nil {
+			log.Println("log, admin change users password")
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 	}
-
-	// Services
-	services := service.NewServices(db.GetDB())
 
 	// Get courses
 	courses, err := services.Course.FetchAllForUserOrdered(session.GetUserFromSession(r).ID)
@@ -101,23 +118,10 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
-	v.Name = "admin/changepassword/index"
+	v.Name = "admin/managestudents/index"
 	v.Vars["Courses"] = courses
 
 	v.Render(w)
-}
-
-// removeUserFromCourse removes user from course
-func removeUserFromCourse(userID int, courseID int) error {
-	// Services
-	services := service.NewServices(db.GetDB())
-	// Try to remove user from course
-	err := services.Course.RemoveUser(userID, courseID)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // AdminGetUsersPOST serves the same page as above, but with the list of all students in a course
@@ -144,7 +148,7 @@ func AdminGetUsersPOST(w http.ResponseWriter, r *http.Request) {
 	// Get all students from courseID
 	students := model.GetUsersToCourse(courseID)
 	if len(students) < 0 {
-		log.Println("Error: could not get students from course! (admin_change_pass.go)")
+		log.Println("Error: could not get students from course! (admin_manage_users.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -162,23 +166,15 @@ func AdminGetUsersPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get new password in 20 chars
-	newPass := xid.NewWithTime(time.Now()).String()
-
-	// source: https://www.dotnetperls.com/substring-go
-	// Length is 8 chars now
-	safeSubstring := string([]rune(newPass)[10:18])
-
 	// Header OK
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
-	v.Name = "admin/changepassword/index"
+	v.Name = "admin/managestudents/index"
 	v.Vars["Courses"] = courses         // Send the courses back that the admin is teacher in
 	v.Vars["Students"] = students       // Send the students in course with courseID
 	v.Vars["SelectedCourse"] = courseID // Send the selected course back to fill dropdown
-	v.Vars["NewPass"] = safeSubstring   // Send new password
 
 	v.Render(w)
 
