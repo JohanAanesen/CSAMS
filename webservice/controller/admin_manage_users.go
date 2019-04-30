@@ -1,10 +1,10 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/JohanAanesen/CSAMS/webservice/service"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
-	"github.com/JohanAanesen/CSAMS/webservice/shared/util"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/view"
 	"log"
 	"net/http"
@@ -81,13 +81,6 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 		// Get password
 		pass := array[0]
 
-		passHashed, err := util.GenerateFromPassword(pass)
-		if err != nil {
-			ErrorHandler(w, r, http.StatusInternalServerError)
-			log.Println("error: password couldn't be hashed")
-			return
-		}
-
 		// Get id and convert to int
 		id, err := strconv.Atoi(array[1])
 		if err != nil {
@@ -96,8 +89,10 @@ func AdminChangePassGET(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		fmt.Println(id)
+
 		// Update users password
-		err = services.User.UpdatePassword(id, passHashed)
+		err = services.User.UpdatePassword(id, pass)
 		if err != nil {
 			log.Println("update user password", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
