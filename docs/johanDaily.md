@@ -244,3 +244,171 @@ Thursday 7/3
 
 Friday 8/3
 -----------
+* Added invalid login message
+* Changed the message to be stored in session
+* Added e-mail already in use message
+* Various error messages added
+* Added CourseID and AssignmentID to admin page overview boxes on frontend
+
+Monday 11/3
+-----------
+* Changed to using showdown.js with highlight.js to convert markdown into html code and syntax highlighting for code snippets
+* Removed set header to update flash message/session message
+* Added AssignmentID to assignment details
+
+Tuesday 12/3
+-----------
+* Added scheduler files to see scheduled tasks in admin view
+* Refactored database.sql to not include everything
+* Separated out the insert to it's own database_insert.sql file
+* Updated insert file with dummy data for testing and debugging
+* Added a frontend for seeing data from the scheduler, taken from the api provided by schedulerservice
+
+Wednesday 13/3
+------------
+* Linting errors fixed in session files
+* Updated update function for assignments
+* Updated scheduler to update reviewers count
+* Imported sveins changes
+* Updated the frontend panels for scheduler in admin view
+* Added the functionality to delete scheduled tasks from the frontend
+
+Thursday 14/3
+------------
+* Fixed schedule delete form
+* Fixed lint errors
+
+*VACATION until 25/3*
+
+Tuesday 26/3
+------------
+* Fixed bug related to database not initiating timers in schedulerservice
+* Removed submissionID from peerservice and schedulerservice as it was not needed
+* Updated database table to exlude the submissionID for the same reason
+
+Thursday 28/3
+-----------
+* Added reviews overview for assignments
+* Refactored a large spelling mistake done to the repository folder, it was named repositroy, fixed it.
+* fixed count issue for reviews done
+
+Friday 29/3
+-----------
+* Moved back button to a better location in admin/assignment/review
+* Added email service template for brede
+* Fixed issue when seeing two reviews done on an assignment, only one of the reviews's radiobuttons would be selected.
+* Solved by wrapping them in its own forms.
+
+Tuesday 2/4
+-----------
+* Changed title on reviewers overview page
+* Removed redundant div row tag
+
+Thursday 4/4
+-----------
+* Merging done
+
+Monday 8/4
+-----------
+* Mailservice merge and once again updating the repositroy folder typo
+
+Tuesday 9/4
+-----------
+* Added privacy policy
+* Added it as a term of registering
+* During the monday meeting we decided that the automated way of the reviewing system was far too complex to adress minor issues like:
+    * Removing an user from the review cycle
+    * Adding a late submission to the review cycle
+    * etc
+* These scenarios would need it's own algorithms that I had been mocking up the past weeks, but it was a lot of work for code that would rarely be run
+* Decided to use a review-pool instead, so by pushing a button you would receive a review, instead of automatically assigning all the reviews at the deadline
+* Removed schedulerservice and peerservice
+* Updated docker-compose
+* Removed more traces of the services
+* Removed scheduler overview from admin page
+* Updated assignment setting with a 0 value for reviews
+* Disable reviews button added to edit assignment
+* Updated create assignment page with the same disable button
+
+Wednesday 10/4
+------------
+* Added review-pooling functionality backend
+    * This would query all submissions from the database and count all reviews done on them, then randomly distribute on of the least reviewed submissions to the user requesting to do a review.
+
+Thursday 11/4
+-----------
+* Added the slice shuffle function as a util
+* Removed traces of the auto validation service as we decided there was not enough time to do it.
+* Peer review button active when peer review is active
+* Removed penile object from comment
+* Review pooling updated, tested and bug checked, working.
+
+Friday 12/4
+-----------
+* Tried to figure out why assignments were no longer updating
+* Rolled back some files to figure out the issue
+* Was database related as well as some computer issues on my part.
+
+Wednesday 17/4
+------------
+* Fixed a 'go backs' typo on a button
+* Assignment page dynamically shows the users how many reviews they have left to do.
+
+Thursday 18/4
+-------------
+* Buttons to do reviews removed after review deadline is over
+* Reviewers count changed 0 value to 'any' so any number of reviews can be done
+
+Sunday 21/4
+--------------
+* Fixed issue with simpleMDE where it wouldn't render because of a template comparison issue
+
+Monday 22/4
+------------
+* Fixed a bug where 'any' reivewers would crash the submissions overview page for admins
+* Removed schedulerservice link
+* fixed updating review_id on assignment by deleting a foreign key
+* Changed naming in assignment tabs for reviews received
+* Added a error for reviews limit reached
+* Made that message better.
+
+Tuesday 23/4
+------------
+* Added error message when changing email to an existing email
+* Added a bootstrap badge to received reviews column on assignment page, to see how many reviews the user has received on their assignment without entering the tab.
+* Updated submissions forms so they can be deleted if they have no reviews done on the form yet
+* Same changes done to review forms.
+
+Wednesday 24/4
+------------
+* removed scheduled tasks table from database
+* fixed deleting submissions forms properly
+* updated function names for deleting review forms
+
+Thursday 25/4
+------------
+* added review_enable column to database table for assignments
+* cleared out unused functions from model/assignment
+* Removed unused structs
+* cleared out unused functions from model/course
+* cleared out unused functions from model/review
+* cleared out unused functions from model/submission
+* cleared out unused functions from model/user
+* cleared out unused functions from model/userSubmission
+* Also fixed functions still using these to use the ones in /repository instead.
+* Changed review_enabled column to normal bool, not nullable
+* added enable/disable functionality to assignment, so it's really disabled even if a review_id is specified.
+* added enable/disable funcitonality to update assignment page
+
+Friday 26/4
+------------
+* enabling/disabling peer review functionality working for assignments creating and updating.
+* If updating an assignment and the review_deadline is not set, it will be set one month after the assignment deadline
+    * This won't have any impact as long as the peer reviewing is disabled
+* changed the hasReview function to check the reviewEnabled variable instead.
+
+Tuesday 30/4
+------------
+* Fixed changing passwords on users in admin/manage students
+* Changed session messages to use the gorilla sessions.flashes instead
+* Merged the brach into master.
