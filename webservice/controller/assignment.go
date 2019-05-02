@@ -139,7 +139,6 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	var hasBeenValidated = false
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
 
 	// Create view
 	v := view.New(r)
@@ -318,7 +317,6 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
 
 	sess, err := session.Instance(r)
 	if err != nil {
@@ -682,7 +680,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 
 	// Set header content-type and status code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
 
 	// Create view
 	v := view.New(r)
