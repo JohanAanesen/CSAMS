@@ -51,7 +51,8 @@
 * We informed [Project Owner](https://www.ntnu.no/ansatte/christopher.frantz) that it's [skiday](https://www.facebook.com/events/2070975702972081/) on thursday :)
 * Document all smaller things that's vital for others later, ex. timezone in the sql file.
 
-## Monay - 04/03/19
+## Monday - 04/03/19
+**Project Owner**
 * Check url in back-end
 * Sanitize input
 * If a user has answerd submission form, don't let admin change the form
@@ -68,6 +69,67 @@
 * Make real name uneditable, maybe add username instead
 * Forgot password functionality?
 
+**Supervisor**
 * Tabs on course -> more visible
 * Maybe don't let admin submit assignment
 * Add equation possibility in MD ([mathjax](https://www.mathjax.org/))
+
+## Monday - 11/03/19(?)
+* Deploy with different settings
+* Demo of project
+* Fix timezone
+* Add which timezone it is
+* Submission forms
+* Remove name from reviewing
+* Convert weight to percent
+* Change from `update` to `re-upload`
+* Change users password (admin feature)
+
+## Thursday - 21/03/19
+* Test Protocols - QA
+    * Use cases
+* Fix JS time bug
+* Use Githubs issue tracker
+* Implement function to override scheduler, maybe delay too
+* Manage students
+    * Persistence  
+    
+## Monday - 01/04/19
+* Add buttons on submissions
+* Edit review
+* Show reviews done by user
+* Don't implement auto-validation after all :)
+* BUG: If user not in review table after deadline, it could go wrong on the assignment card.
+* Confirm submission is delivered
+* Only use one `!` after messages, instead of multiple
+* Sc in review/submission (I don't remember what this was supposed to mean)
+* Let admin change users name (We didn't implement this)
+* Separate first and last name (Not this either)
+* Maybe implement student number (nah)
+* Create an noreply email
+* Admin view, but user can't to admin stuff. Ex for student assistant
+* Separate deadline. Add 5 min or something to deadline that is displayed
+* Create new in assignment? (No idea what this is supposed to mean)
+* Add tags for submission/review
+* Marks for giving review and receive review
+
+**Supervisor**
+* Ask user before using data
+    * GDPR
+ * Wednesday 11.15 (?)
+
+## Wednesday - 11/04/19
+**Supervisor**
+* ITICSE
+* SIGCSE
+
+**Project owner**
+* Implement functionality to email all students in course
+* Split first and last name
+* BUG: if there is 0 peer review on assignment cards
+* Fix update form to none
+* Log everything. Filter by system, course, all, admin.
+* Add functionality to have group
+    * Create
+    * Equal rights
+    * Teacher can kick users
