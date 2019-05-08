@@ -169,6 +169,8 @@
                 reviewSelect.selectedIndex = 0;
                 reviewDeadlineContainer.classList.add('sr-only');
                 reviewDeadline.removeAttribute('required');
+                enabledInput.removeAttribute("value");
+                enabledInput.setAttribute("value", "false");
             });
 
             reviewSelect.addEventListener('change', e => {
