@@ -1,8 +1,86 @@
 Svein's log
 ============
+## 08/05/2019
+#### Worked on
+* Thesis
+  * Requirements chapter
+* Updating logs
+
+## 07/05/2019
+#### Worked on
+* Thesis
+  * Development Process chapter
+* Updating logs
+  
+## 06/05/2019
+#### Worked on
+* Thesis
+  * Development Process chapter
+
+## 03/05/2019
+#### Worked on
+* Thesis
+  * Development Process chapter
+
+## 02/05/2019
+#### Worked on
+* Thesis
+  * Development Process chapter
+
+## 01/05/2019
+#### Worked on
+* Thesis
+  * Development Process chapter
+
+## 30/04/2019
+#### Worked on
+* Thesis
+  * Development Process chapter
+
+## 29/04/2019
+#### Worked on
+* Fixed filtering in choices, on the Form Builder
+
+## 27/04/2019
+#### Worked on
+* Added more views for group-feature
+
+## 26/04/2019
+#### Worked on
+* Worked on another project, other course 
+
+## 25/04/2019
+#### Worked on
+* Worked on another project, other course
+
+## 24/04/2019
+#### Worked on
+* Worked on another project, other course 
+
+## 23/04/2019
+#### Worked on
+* Groups back-/front-end
+  * Creating/joining/leaving groups
+  * Functions for future implementations
+
+## 22/04/2019
+#### Worked on
+* Group back-end
+
+## 17/04/2019
+#### Worked on
+* Removed some more deprecated code
+* Fixed error on updating assignments
+* Group-based back-/front-end
+* Fixed old bug in deleting submissions
+  * Renamed functions for convenience
+
 ## 15/04/2019
 #### Worked on
 * Removed some deprecated code
+* Added new templates for group-delivery
+* Added code for implementing groups
+* Simple refactoring, usage of services
 
 ## 12/04/2019
 #### Worked on
