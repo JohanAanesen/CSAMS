@@ -102,19 +102,21 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filteredSubmissionReviews := make([]model.User, 0)
-	for _, user := range reviewUsers {
-		check, err := services.ReviewAnswer.HasBeenReviewed(user.ID, currentUser.ID, assignmentID)
-		if err != nil {
-			log.Println("services, review answer, has been reviewed", err)
-			ErrorHandler(w, r, http.StatusInternalServerError)
-			return
-		}
+	/*
+		filteredSubmissionReviews := make([]model.User, 0)
+		for _, user := range reviewUsers {
+			check, err := services.ReviewAnswer.HasBeenReviewed(user.ID, currentUser.ID, assignmentID)
+			if err != nil {
+				log.Println("services, review answer, has been reviewed", err)
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
 
-		if !check {
-			filteredSubmissionReviews = append(filteredSubmissionReviews, *user)
+			if !check {
+				filteredSubmissionReviews = append(filteredSubmissionReviews, *user)
+			}
 		}
-	}
+	*/
 
 	course, err := services.Course.Fetch(assignment.CourseID)
 	if err != nil {
@@ -1034,6 +1036,11 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 
 	//save the 0 index as a new review pair
 	inserted, err := services.PeerReview.Insert(assignmentID, currentUser.ID, submissionsFiltered[0])
+	if err != nil {
+		log.Println("AssignmentReviewRequestPOST, services.PeerReview.Insert", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
 
 	//redirect
 	if inserted {
