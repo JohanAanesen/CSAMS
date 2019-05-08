@@ -12,7 +12,7 @@ type FormService struct {
 	fieldRepo *repository.FieldRepository
 }
 
-// NewFormService func
+// NewFormService returns a pointer to a new FormService
 func NewFormService(db *sql.DB) *FormService {
 	return &FormService{
 		formRepo:  repository.NewFormRepository(db),
@@ -20,13 +20,13 @@ func NewFormService(db *sql.DB) *FormService {
 	}
 }
 
-// FetchAll func
+// FetchAll forms from the database
 func (fs *FormService) FetchAll() ([]*model.Form, error) {
 	forms, err := fs.formRepo.FetchAll()
 	return forms, err
 }
 
-// Fetch func
+// Fetch a single forms from the database
 func (fs *FormService) Fetch(id int) (*model.Form, error) {
 	form, err := fs.formRepo.Fetch(id)
 	if err != nil {
@@ -44,17 +44,17 @@ func (fs *FormService) Fetch(id int) (*model.Form, error) {
 	return form, err
 }
 
-// Insert func
+// Insert a form to the database
 func (fs *FormService) Insert(form model.Form) (int, error) {
 	return fs.formRepo.Insert(&form)
 }
 
-// Update func
+// Update a form in the database
 func (fs *FormService) Update(id int, form model.Form) error {
 	return fs.formRepo.Update(id, &form)
 }
 
-// Delete func
+// Delete a form from the database based on the ID
 func (fs *FormService) Delete(id int) error {
 	return fs.formRepo.Delete(id)
 }

@@ -11,14 +11,14 @@ type PeerReviewService struct {
 	peerReviewRepo *repository.PeerReviewRepository
 }
 
-// NewPeerReviewService func
+// NewPeerReviewService returns a pointer to a new PeerReviewService
 func NewPeerReviewService(db *sql.DB) *PeerReviewService {
 	return &PeerReviewService{
 		peerReviewRepo: repository.NewPeerReviewRepository(db),
 	}
 }
 
-// Insert func
+// Insert a new peer review
 func (s *PeerReviewService) Insert(assignmentID int, userID int, targetUserID int) (bool, error) {
 	return s.peerReviewRepo.Insert(assignmentID, userID, targetUserID)
 }
@@ -28,12 +28,12 @@ func (s *PeerReviewService) TargetExists(assignmentID int, userID int) (bool, er
 	return s.peerReviewRepo.TargetExists(assignmentID, userID)
 }
 
-// FetchAllFromAssignment func
+// FetchAllFromAssignment from the database
 func (s *PeerReviewService) FetchAllFromAssignment(assignmentID int) ([]*model.PeerReview, error) {
 	return s.peerReviewRepo.FetchPeerReviewsFromAssignment(assignmentID)
 }
 
-// FetchReviewTargetsToUser func
+// FetchReviewTargetsToUser from the database
 func (s *PeerReviewService) FetchReviewTargetsToUser(userID int, assignmentID int) ([]*model.PeerReview, error) {
 	return s.peerReviewRepo.FetchReviewTargetsToUser(userID, assignmentID)
 }

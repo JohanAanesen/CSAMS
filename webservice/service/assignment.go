@@ -11,24 +11,24 @@ type AssignmentService struct {
 	assignmentRepo *repository.AssignmentRepository
 }
 
-// NewAssignmentService func
+// NewAssignmentService returns a pointer to a new AssignmentService
 func NewAssignmentService(db *sql.DB) *AssignmentService {
 	return &AssignmentService{
 		assignmentRepo: repository.NewAssignmentRepository(db),
 	}
 }
 
-// Fetch func
+// Fetch a single assignment
 func (s *AssignmentService) Fetch(id int) (*model.Assignment, error) {
 	return s.assignmentRepo.Fetch(id)
 }
 
-// FetchAll func
+// FetchAll all assignments
 func (s *AssignmentService) FetchAll() ([]*model.Assignment, error) {
 	return s.assignmentRepo.FetchAll()
 }
 
-// FetchFromCourse func
+// FetchFromCourse all assignments from a given course
 func (s *AssignmentService) FetchFromCourse(courseID int) ([]*model.Assignment, error) {
 	result := make([]*model.Assignment, 0)
 
@@ -46,7 +46,7 @@ func (s *AssignmentService) FetchFromCourse(courseID int) ([]*model.Assignment, 
 	return result, err
 }
 
-// HasReview func
+// HasReview checks if an assignment has review
 func (s *AssignmentService) HasReview(assignmentID int) (bool, error) {
 	assignment, err := s.assignmentRepo.Fetch(assignmentID)
 	if err != nil {

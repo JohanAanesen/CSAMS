@@ -12,7 +12,7 @@ type UserPendingService struct {
 	userPendingRepo *repository.UserPendingRepository
 }
 
-// NewUserPendingService func
+// NewUserPendingService returns a pointer to a new UserPendingService
 func NewUserPendingService(db *sql.DB) *UserPendingService {
 	return &UserPendingService{
 		userPendingRepo: repository.NewUserPendingRepository(db),

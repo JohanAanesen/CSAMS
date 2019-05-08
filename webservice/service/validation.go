@@ -12,14 +12,14 @@ type ValidationService struct {
 	validationRepo *repository.ValidationRepository
 }
 
-// NewValidationService func
+// NewValidationService return a pointer to a new ValidationService
 func NewValidationService(db *sql.DB) *ValidationService {
 	return &ValidationService{
 		validationRepo: repository.NewValidationRepository(db),
 	}
 }
 
-// Insert func
+// Insert to the database
 func (s *ValidationService) Insert(forgottenPass model.ValidationEmail) (int, error) {
 	var err error
 

@@ -12,7 +12,7 @@ type GroupService struct {
 	userRepo  *repository.UserRepository
 }
 
-// NewGroupService func
+// NewGroupService returns a pointer to a new GroupService
 func NewGroupService(db *sql.DB) *GroupService {
 	return &GroupService{
 		groupRepo: repository.NewGroupRepository(db),

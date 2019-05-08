@@ -2,7 +2,7 @@ package service
 
 import "database/sql"
 
-// Services struct
+// Services struct collect all services into one struct, for less code in the handlers
 type Services struct {
 	Assignment       *AssignmentService
 	Course           *CourseService
@@ -21,7 +21,7 @@ type Services struct {
 	FAQ              *FAQService
 }
 
-// NewServices func
+// NewServices returns a pointer to a new Services
 func NewServices(db *sql.DB) *Services {
 	return &Services{
 		Assignment:       NewAssignmentService(db),

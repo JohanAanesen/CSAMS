@@ -15,7 +15,7 @@ type ReviewService struct {
 	assignmentRepo *repository.AssignmentRepository
 }
 
-// NewReviewService func
+// NewReviewService returns a pointer to a new ReviewService
 func NewReviewService(db *sql.DB) *ReviewService {
 	return &ReviewService{
 		reviewRepo:     repository.NewReviewRepository(db),
@@ -25,7 +25,7 @@ func NewReviewService(db *sql.DB) *ReviewService {
 	}
 }
 
-// FetchAll func
+// FetchAll reviews from the database
 func (s *ReviewService) FetchAll() ([]model.Review, error) {
 	result := make([]model.Review, 0)
 
@@ -52,22 +52,22 @@ func (s *ReviewService) FetchAll() ([]model.Review, error) {
 	return result, err
 }
 
-// FetchReviewUsers func
+// FetchReviewUsers fetches reviews for a user
 func (s *ReviewService) FetchReviewUsers(userID, assignmentID int) ([]*model.User, error) {
 	return s.reviewRepo.FetchReviewUsers(userID, assignmentID)
 }
 
-// IsUserTheReviewer func
+// IsUserTheReviewer checks if user is the reviewer for a target
 func (s *ReviewService) IsUserTheReviewer(userID, targetID, assignmentID int) (bool, error) {
 	return s.reviewRepo.IsUserTheReviewer(userID, targetID, assignmentID)
 }
 
-// Insert func
+// Insert review to the database
 func (s *ReviewService) Insert(form model.Form) (int, error) {
 	return s.reviewRepo.Insert(form)
 }
 
-// Update func
+// Update review in the database
 func (s *ReviewService) Update(form model.Form) error {
 	err := s.formRepo.Update(form.ID, &form)
 	if err != nil {
@@ -91,7 +91,7 @@ func (s *ReviewService) Update(form model.Form) error {
 	return err
 }
 
-// Delete func
+// Delete review from the database
 func (s *ReviewService) Delete(id int) error {
 	err := s.reviewRepo.DeleteWithFormID(id)
 	if err != nil {
@@ -111,7 +111,7 @@ func (s *ReviewService) Delete(id int) error {
 	return err
 }
 
-// FetchFromAssignment func
+// FetchFromAssignment reviews from given assignment
 func (s *ReviewService) FetchFromAssignment(assignmentID int) (*model.Review, error) {
 	result := model.Review{}
 
@@ -144,12 +144,12 @@ func (s *ReviewService) FetchFromAssignment(assignmentID int) (*model.Review, er
 	return temp, err
 }
 
-// IsUsed func
+// IsUsed checks if review-form is in use
 func (s *ReviewService) IsUsed(formID int) (bool, error) {
 	return s.reviewRepo.IsUsed(formID)
 }
 
-// UsedInAssignment func
+// UsedInAssignment checks if it is used in an assignment
 func (s *ReviewService) UsedInAssignment(formID int) (int, error) {
 	return s.reviewRepo.UsedInAssignment(formID)
 }
