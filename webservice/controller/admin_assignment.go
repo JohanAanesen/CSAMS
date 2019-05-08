@@ -1027,7 +1027,7 @@ func AdminAssignmentGetReportGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/csv; charset=utf-8")
+	w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(report))
 }
