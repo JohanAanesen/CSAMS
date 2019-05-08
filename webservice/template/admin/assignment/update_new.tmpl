@@ -141,6 +141,7 @@
         <div class="row mb-5">
             <div class="col">
                 <input type="hidden" name="id" value="{{.Assignment.ID}}">
+                <input type="hidden" id="review_enabled" name="review_enabled" value="{{if .Assignment.ReviewID.Valid}}true{{else}}false{{end}}">
                 <input type="submit" class="btn btn-success btn-lg btn-block" id="submit">
             </div>
         </div>
