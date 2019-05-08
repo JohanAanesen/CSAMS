@@ -87,7 +87,6 @@
                             {{range $S := .Submissions}}
                                 <option value="{{$S.ID}}"{{if eq $S.ID $A.SubmissionID.Int64}} selected{{end}}>{{$S.Form.Name}}</option>
                             {{end}}
-                            <!-- TODO (Svein): Create an API-call for getting the JSON og the submission form -->
                         </select>
                     </div>
 
