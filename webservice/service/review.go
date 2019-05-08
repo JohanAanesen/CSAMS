@@ -93,7 +93,7 @@ func (s *ReviewService) Update(form model.Form) error {
 
 // Delete func
 func (s *ReviewService) Delete(id int) error {
-	err := s.reviewRepo.DeleteByFormID(id)
+	err := s.reviewRepo.DeleteWithFormID(id)
 	if err != nil {
 		return err
 	}
@@ -147,4 +147,14 @@ func (s *ReviewService) FetchFromAssignment(assignmentID int) (*model.Review, er
 // IsUsed func
 func (s *ReviewService) IsUsed(formID int) (bool, error) {
 	return s.reviewRepo.IsUsed(formID)
+}
+
+// UsedInAssignment func
+func (s *ReviewService) UsedInAssignment(formID int) (int, error) {
+	return s.reviewRepo.UsedInAssignment(formID)
+}
+
+// FetchFromFormID fetches review from fromID
+func (s *ReviewService) FetchFromFormID(formID int) (*model.Review, error) {
+	return s.reviewRepo.FetchFromFormID(formID)
 }

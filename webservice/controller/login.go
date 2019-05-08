@@ -72,7 +72,6 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
 	v.Name = "login"
@@ -84,7 +83,7 @@ func LoginGET(w http.ResponseWriter, r *http.Request) {
 		v.Vars["Action"] = "?courseid=" + hash
 	}
 
-	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
+	v.Vars["Message"] = session.GetFlash(w, r)
 
 	v.Render(w)
 }
@@ -102,23 +101,22 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Services
-	userService := service.NewUserService(db.GetDB())
-	courseService := service.NewCourseService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	email := r.FormValue("email")       // email
 	password := r.FormValue("password") // password
 	hash := r.FormValue("courseid")     // courseID from link
 
 	if email == "" || password == "" { //login credentials cannot be empty
-		session.SaveMessageToSession("Credentials cannot be empty!", w, r)
+		_ = session.SetFlash("Credentials cannot be empty!", w, r)
 		LoginGET(w, r)
 		return
 	}
 
-	user, err := userService.Authenticate(p.Sanitize(email), p.Sanitize(password))
+	user, err := services.User.Authenticate(p.Sanitize(email), p.Sanitize(password))
 	if err != nil {
 		log.Println("user service authenticate", err)
-		session.SaveMessageToSession("Wrong credentials!", w, r)
+		_ = session.SetFlash("Wrong credentials!", w, r)
 		LoginGET(w, r) //try again
 		return
 	}
@@ -129,15 +127,15 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 
 	// Add new user to course, if he's not in the course
 	if hash != "" {
-		course := courseService.Exists(hash)
-		userInCourse, err := courseService.UserInCourse(currentUser.ID, course.ID)
+		course := services.Course.Exists(hash)
+		userInCourse, err := services.Course.UserInCourse(currentUser.ID, course.ID)
 		if err != nil {
 			log.Println("course service, user in course", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
 		if course.ID != -1 && !userInCourse {
-			err := courseService.AddUser(user.ID, course.ID)
+			err := services.Course.AddUser(user.ID, course.ID)
 
 			if err == service.ErrUserAlreadyInCourse {
 				http.Redirect(w, r, "/", http.StatusFound) //success, redirect to homepage
@@ -149,11 +147,17 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 				ErrorHandler(w, r, http.StatusInternalServerError)
 				return
 			}
+
+			// Log user join course
+			err = services.Logs.InsertJoinCourse(user.ID, course.ID)
+			if err != nil {
+				log.Println("log, join course ", err)
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
 		}
 	}
 
-	// Removes any messages saved earlier, in failed attempts
-	session.GetAndDeleteMessageFromSession(w, r)
 	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage //todo change redirection
 	//IndexGET(w, r) //redirect to homepage
 }

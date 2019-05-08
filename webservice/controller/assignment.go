@@ -133,8 +133,9 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	// TODO time-norwegian
 	var isDeadlineOver = assignment.Deadline.Before(util.GetTimeInCorrectTimeZone())
 
+	var isReviewDeadlineOver = assignment.ReviewDeadline.Before(util.GetTimeInCorrectTimeZone())
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
 
 	// Create view
 	v := view.New(r)
@@ -189,10 +190,12 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		v.Name = "assignment/index"
 	}
 
+	v.Vars["Message"] = session.GetFlash(w, r)
 	v.Vars["Assignment"] = assignment
 	v.Vars["Delivered"] = delivered
 	v.Vars["HasReview"] = hasReview
 	v.Vars["IsDeadlineOver"] = isDeadlineOver
+	v.Vars["IsReviewDeadlineOver"] = isReviewDeadlineOver
 	v.Vars["CourseID"] = course.ID
 	v.Vars["Reviews"] = reviewUsers
 	v.Vars["MyReviews"] = reviews
@@ -359,7 +362,6 @@ func AssignmentUploadGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
 
 	sess, err := session.Instance(r)
 	if err != nil {
@@ -412,12 +414,10 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	currentUser := session.GetUserFromSession(r)
 
 	// Services
-	assignmentService := service.NewAssignmentService(db.GetDB())
-	submissionAnswerService := service.NewSubmissionAnswerService(db.GetDB())
-	submissionService := service.NewSubmissionService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	// Get assignment and log possible error
-	assignment, err := assignmentService.Fetch(assignmentID)
+	assignment, err := services.Assignment.Fetch(assignmentID)
 	if err != nil {
 		log.Println("assignment service, fetch", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -457,7 +457,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get form and log possible error
-	submissionForm, err := submissionService.FetchFromAssignment(assignment.ID)
+	submissionForm, err := services.Submission.FetchFromAssignment(assignment.ID)
 	if err != nil {
 		log.Println("submission service, fetch from assignment", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -465,7 +465,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if user has uploaded already or not
-	delivered, err := submissionAnswerService.HasUserSubmitted(assignmentID, currentUser.ID)
+	delivered, err := services.SubmissionAnswer.HasUserSubmitted(assignmentID, currentUser.ID)
 	if err != nil {
 		log.Println("submission answer service, has user submitted", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -478,7 +478,7 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 	// Get answers WITH answerID if the user has delivered
 	if delivered {
 		// Fetch answers from the user
-		submissionAnswers, err = submissionAnswerService.FetchUserAnswers(currentUser.ID, assignment.ID)
+		submissionAnswers, err = services.SubmissionAnswer.FetchUserAnswers(currentUser.ID, assignment.ID)
 		if err != nil {
 			log.Println("submission answer service, fetch user answers", err.Error())
 			ErrorHandler(w, r, http.StatusInternalServerError)
@@ -550,31 +550,41 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 		item.SubmissionID = int(assignment.SubmissionID.Int64)
 	}
 
-	var activity model.Activity
-
 	// Insert or update answers
 	if !delivered {
-		err = submissionAnswerService.Insert(submissionAnswers)
-		activity = model.DeliveredAssignment
+
+		// Insert new answer
+		err = services.SubmissionAnswer.Insert(submissionAnswers)
+		if err != nil {
+			log.Println("submission answer service, upload", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		// Log inserting of new submission
+		err = services.Logs.InsertSubmission(currentUser.ID, assignment.ID, int(assignment.SubmissionID.Int64))
+		if err != nil {
+			log.Println("log, insert new submission", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 	} else {
-		err = submissionAnswerService.Update(submissionAnswers)
-		activity = model.UpdateAssignment
-	}
 
-	// Check for error
-	if err != nil {
-		log.Println("submission answer service, upload/update", err)
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
-	}
+		// Update answer
+		err = services.SubmissionAnswer.Update(submissionAnswers)
+		if err != nil {
+			log.Println("submission answer service, update", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 
-	// Log assignment delivery/update
-	logData := model.Log{UserID: currentUser.ID, Activity: activity, AssignmentID: assignment.ID, SubmissionID: int(assignment.SubmissionID.Int64)}
-	err = model.LogToDB(logData)
-	if err != nil {
-		log.Println(err.Error())
-		ErrorHandler(w, r, http.StatusInternalServerError)
-		return
+		// Log inserting of updated submission
+		err = services.Logs.InsertUpdateSubmission(currentUser.ID, assignment.ID, int(assignment.SubmissionID.Int64))
+		if err != nil {
+			log.Println("log, update submission", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
 	}
 
 	sess, err := session.Instance(r)
@@ -590,6 +600,9 @@ func AssignmentUploadPOST(w http.ResponseWriter, r *http.Request) {
 
 // AssignmentUserSubmissionGET serves one user submission to admin and the peer reviews
 func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
+	// Services
+	services := service.NewServices(db.GetDB())
+
 	// Get parameters in the URL
 	vars := mux.Vars(r)
 
@@ -608,15 +621,12 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get relevant user
-	user := model.GetUser(userID)
-	if !user.Authenticated {
+	user, err := services.User.Fetch(userID)
+	if err != nil {
 		log.Printf("Error: Could not get user (assignment.go)")
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	// Services
-	services := service.NewServices(db.GetDB())
 
 	// Current user
 	currentUser := session.GetUserFromSession(r)
@@ -637,10 +647,9 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check review deadline
-	now := time.Now().Add(1 * time.Hour) // TODO (Svein): Fix this
-	if assignment.ReviewDeadline.Before(now) {
-		log.Println("DEBUG:", assignment.ReviewDeadline.UTC(), "after", now.UTC())
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	if assignment.ReviewDeadline.Before(util.GetTimeInCorrectTimeZone()) {
+		log.Println("DEBUG:", assignment.ReviewDeadline.UTC(), "after", util.GetTimeInCorrectTimeZone())
+		ErrorHandler(w, r, http.StatusTeapot)
 		return
 	}
 
@@ -716,7 +725,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 
 	// Set header content-type and status code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
 
 	// Create view
 	v := view.New(r)
@@ -793,6 +801,8 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if hasBeenReviewed {
+
+		// Update answers/submission
 		for _, field := range form.Form.Fields {
 			answer := r.FormValue(field.Name)
 			comment := r.FormValue(field.Name + "_comment")
@@ -810,6 +820,14 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 				ErrorHandler(w, r, http.StatusInternalServerError)
 				return
 			}
+		}
+
+		// Log updated review
+		err = services.Logs.InsertUpdateOnePeerReview(currentUser.ID, assignmentID, targetID)
+		if err != nil {
+			log.Println("log, update review", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
 		}
 
 		http.Redirect(w, r, fmt.Sprintf("/assignment/%d", assignment.ID), http.StatusFound)
@@ -845,6 +863,7 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 		reviewAnswer = append(reviewAnswer, temp)
 	}
 
+	// Insert answers
 	for _, item := range reviewAnswer {
 		_, err = services.ReviewAnswer.Insert(item)
 		if err != nil {
@@ -852,6 +871,14 @@ func AssignmentUserSubmissionPOST(w http.ResponseWriter, r *http.Request) {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			return
 		}
+	}
+
+	// Log new review
+	err = services.Logs.InsertFinishedOnePeerReview(currentUser.ID, assignmentID, targetID)
+	if err != nil {
+		log.Println("log, update review", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/assignment/%d", assignment.ID), http.StatusFound)
@@ -875,6 +902,7 @@ func AssignmentWithdrawGET(w http.ResponseWriter, r *http.Request) {
 	// Services
 	services := service.NewServices(db.GetDB())
 
+	// Delete user submission
 	err = services.SubmissionAnswer.Delete(assignmentID, currentUser.ID)
 	if err != nil {
 		log.Println("services, submission answer, delete", err)
@@ -882,11 +910,18 @@ func AssignmentWithdrawGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Log assignment deletion
-	logData := model.Log{UserID: currentUser.ID, Activity: model.DeleteAssignment, AssignmentID: assignmentID, SubmissionID: -1} // TODO brede : get submission id here
-	err = model.LogToDB(logData)
+	// Fetch submission id for logging purposes
+	submission, err := services.Submission.FetchFromAssignment(assignmentID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("services, submission, fetchfromassignment", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Log deletion of submission
+	err = services.Logs.InsertDeleteSubmission(currentUser.ID, assignmentID, submission.ID)
+	if err != nil {
+		log.Println("log, delete submission", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -901,4 +936,109 @@ func AssignmentWithdrawGET(w http.ResponseWriter, r *http.Request) {
 	sess.AddFlash("Submission withdrawn!", "success")
 
 	IndexGET(w, r)
+}
+
+// AssignmentReviewRequestPOST requests a new review to be assigned
+func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
+	// Get URL variables
+	vars := mux.Vars(r)
+
+	assignmentID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Println("AssignmentReviewRequestPOST, strconv, atoi, id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	//get assignment info
+	assignment, err := services.Assignment.Fetch(assignmentID)
+	if err != nil {
+		log.Println("AssignmentReviewRequestPOST, services.Assignment.Fetch", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	//check that user is asking before the deadline
+	if assignment.ReviewDeadline.Before(util.GetTimeInCorrectTimeZone()) {
+		log.Println("AssignmentReviewRequestPOST, assignment.ReviewDeadline.Before", err)
+		ErrorHandler(w, r, http.StatusTeapot)
+		return
+	}
+
+	usersDelivered, err := services.SubmissionAnswer.FetchUsersDeliveredFromAssignment(assignmentID)
+	if err != nil {
+		log.Println("AssignmentReviewRequestPOST, services.Submission.FetchFromAssignment", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	//get all the users that the user is currently "reviewing"
+	alreadyTargets, err := services.PeerReview.FetchReviewTargetsToUser(currentUser.ID, assignmentID)
+	if err != nil {
+		log.Println("AssignmentReviewRequestPOST, services.Submission.FetchReviewTargetsToUser", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	//find the lowest amount of reviews
+	lowestNrReviews := 99999
+	usersAndReviews := make(map[int]int)
+
+	//set the review count on already reviewed users very high
+	for _, target := range alreadyTargets {
+		usersAndReviews[target.TargetID] = 99999
+	}
+
+	for _, user := range usersDelivered {
+		if user != currentUser.ID && usersAndReviews[user] != 99999 { //don't include self or already reviewed targets
+			reviewsDone, err := services.ReviewAnswer.FetchForTarget(user, assignmentID)
+			if err != nil {
+				log.Println("AssignmentReviewRequestPOST, services.ReviewAnswer.FetchForTarget", err)
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
+
+			usersAndReviews[user] = len(reviewsDone)
+
+			if len(reviewsDone) < lowestNrReviews {
+				lowestNrReviews = len(reviewsDone)
+			}
+		}
+	}
+
+	//if you have reviewed everyone
+	if lowestNrReviews > 99998 {
+		_ = session.SetFlash("Review Limit Reached: You have reviewed every possible submission.", w, r)
+		AssignmentSingleGET(w, r)
+
+		return
+	}
+
+	//filter the submissions with lowest reviewcount
+	submissionsFiltered := make([]int, 0)
+
+	for userID, reviews := range usersAndReviews {
+		if reviews == lowestNrReviews {
+			submissionsFiltered = append(submissionsFiltered, userID)
+		}
+	}
+
+	//shuffle slice
+	submissionsFiltered = util.ShuffleIntSlice(submissionsFiltered)
+
+	//save the 0 index as a new review pair
+	inserted, err := services.PeerReview.Insert(assignmentID, currentUser.ID, submissionsFiltered[0])
+
+	//redirect
+	if inserted {
+		http.Redirect(w, r, fmt.Sprintf("/assignment/%v/submission/%v", assignmentID, submissionsFiltered[0]), http.StatusFound)
+	} else {
+		ErrorHandler(w, r, http.StatusInternalServerError)
+	}
 }

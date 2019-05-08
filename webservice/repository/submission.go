@@ -67,6 +67,28 @@ func (repo *SubmissionRepository) Fetch(id int) (*model.Submission, error) {
 	return &result, err
 }
 
+// FetchFromFormID fetches submission from formID
+func (repo *SubmissionRepository) FetchFromFormID(formID int) (*model.Submission, error) {
+	result := model.Submission{}
+	query := "SELECT id, form_id FROM submissions WHERE form_id = ?"
+
+	rows, err := repo.db.Query(query, formID)
+	if err != nil {
+		return &result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&result.ID, &result.FormID)
+		if err != nil {
+			return &result, err
+		}
+	}
+
+	return &result, err
+}
+
 // Insert func
 func (repo *SubmissionRepository) Insert(form model.Form) (int, error) {
 	formRepo := NewFormRepository(repo.db)
@@ -106,7 +128,7 @@ func (repo *SubmissionRepository) Insert(form model.Form) (int, error) {
 // Update func
 func (repo *SubmissionRepository) Update(id int, submission model.Submission) error {
 	if id != submission.ID {
-		return errors.New("review repository update: id does not match")
+		return errors.New("submission repository update: id does not match")
 	}
 
 	query := "UPDATE submissions SET form_id = ? WHERE id = ?"
@@ -154,9 +176,32 @@ func (repo *SubmissionRepository) DeleteByFormID(id int) error {
 	return err
 }
 
+// DeleteWithFormID func
+func (repo *SubmissionRepository) DeleteWithFormID(id int) error {
+	query := "DELETE FROM submissions WHERE form_id = ?"
+
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+	}
+
+	return err
+}
+
 // IsUsed func
 func (repo *SubmissionRepository) IsUsed(id int) (bool, error) {
-	query := "SELECT s.form_id FROM assignments AS a INNER JOIN submissions AS s ON a.review_id = s.id"
+	query := "SELECT s.form_id FROM assignments AS a INNER JOIN submissions AS s ON a.submission_id = s.id"
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -176,4 +221,29 @@ func (repo *SubmissionRepository) IsUsed(id int) (bool, error) {
 	}
 
 	return false, err
+}
+
+// UsedInAssignment func
+func (repo *SubmissionRepository) UsedInAssignment(id int) (int, error) {
+	query := "SELECT a.id, s.form_id FROM assignments AS a INNER JOIN submissions AS s ON a.submission_id = s.id"
+
+	rows, err := repo.db.Query(query)
+	if err != nil {
+		return 0, err
+	}
+
+	for rows.Next() {
+		var assignmentID int
+		var submissionID int
+		err = rows.Scan(&assignmentID, &submissionID)
+		if err != nil {
+			return 0, err
+		}
+
+		if submissionID == id {
+			return assignmentID, nil
+		}
+	}
+
+	return 0, err
 }

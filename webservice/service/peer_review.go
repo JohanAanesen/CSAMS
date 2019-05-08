@@ -18,6 +18,11 @@ func NewPeerReviewService(db *sql.DB) *PeerReviewService {
 	}
 }
 
+// Insert func
+func (s *PeerReviewService) Insert(assignmentID int, userID int, targetUserID int) (bool, error) {
+	return s.peerReviewRepo.Insert(assignmentID, userID, targetUserID)
+}
+
 // TargetExists checks if the target exist in the table
 func (s *PeerReviewService) TargetExists(assignmentID int, userID int) (bool, error) {
 	return s.peerReviewRepo.TargetExists(assignmentID, userID)
@@ -25,16 +30,10 @@ func (s *PeerReviewService) TargetExists(assignmentID int, userID int) (bool, er
 
 // FetchAllFromAssignment func
 func (s *PeerReviewService) FetchAllFromAssignment(assignmentID int) ([]*model.PeerReview, error) {
-	result := make([]*model.PeerReview, 0)
+	return s.peerReviewRepo.FetchPeerReviewsFromAssignment(assignmentID)
+}
 
-	peerReviewPtr, err := s.peerReviewRepo.FetchPeerReviewsFromAssignment(assignmentID)
-	if err != nil {
-		return result, err
-	}
-
-	for _, peerReview := range peerReviewPtr {
-		result = append(result, peerReview)
-	}
-
-	return result, err
+// FetchReviewTargetsToUser func
+func (s *PeerReviewService) FetchReviewTargetsToUser(userID int, assignmentID int) ([]*model.PeerReview, error) {
+	return s.peerReviewRepo.FetchReviewTargetsToUser(userID, assignmentID)
 }

@@ -40,11 +40,6 @@ func (s *UserService) FetchAllFromCourse(courseID int) ([]*model.User, error) {
 	return s.userRepo.FetchAllFromCourse(courseID)
 }
 
-// FetchAllStudentsFromCourse func
-func (s *UserService) FetchAllStudentsFromCourse(courseID int) ([]*model.User, error) {
-	return s.userRepo.FetchAllStudentsFromCourse(courseID)
-}
-
 // EmailExists checks if the email exists in emailprivate and emailstudent
 func (s *UserService) EmailExists(email string) (bool, int, error) {
 	return s.userRepo.EmailExists(email)
@@ -117,4 +112,35 @@ func (s *UserService) UpdatePassword(id int, password string) error {
 	}
 
 	return s.userRepo.UpdatePassword(id, hash)
+}
+
+// FetchAllStudentEmails Fetches all student emails, primary default or secondary if not null
+func (s *UserService) FetchAllStudentEmails(courseID int) ([]string, error) {
+
+	// Create empty string array
+	var result []string
+
+	// Get all users from course
+	users, err := s.userRepo.FetchAllFromCourse(courseID)
+	if err != nil {
+		return result, err
+	}
+
+	// Loop through all users
+	for _, user := range users {
+
+		// only append to array if user is an student
+		if !user.Teacher {
+
+			// Check if user has secondary/private email and append if yes
+			if user.EmailPrivate.Valid {
+				result = append(result, user.EmailPrivate.String)
+			} else {
+				// Append primary/student email
+				result = append(result, user.EmailStudent)
+			}
+		}
+	}
+
+	return result, nil
 }

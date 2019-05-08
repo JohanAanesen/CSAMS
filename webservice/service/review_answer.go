@@ -139,6 +139,11 @@ func (s *ReviewAnswerService) CountReviewsDone(userID, assignmentID int) (int, e
 	return s.reviewAnswerRepo.CountReviewsDone(userID, assignmentID)
 }
 
+// CountReviewsDoneOnAssignment func
+func (s *ReviewAnswerService) CountReviewsDoneOnAssignment(assignmentID int) (int, error) {
+	return s.reviewAnswerRepo.CountReviewsDoneOnAssignment(assignmentID)
+}
+
 // Insert func
 func (s *ReviewAnswerService) Insert(answer model.ReviewAnswer) (int, error) {
 	return s.reviewAnswerRepo.Insert(answer)
@@ -165,7 +170,7 @@ func (s *ReviewAnswerService) FetchStatisticsForAssignment(assignmentID int) (*u
 		return nil, err
 	}
 	// Get users from course
-	users, err := s.userRepo.FetchAllStudentsFromCourse(assignment.CourseID)
+	users, err := s.courseRepo.FetchAllStudentsFromCourse(assignment.CourseID)
 	if err != nil {
 		return nil, err
 	}
@@ -239,7 +244,7 @@ func (s *ReviewAnswerService) FetchUserReportsForAssignment(assignmentID int) ([
 		return nil, err
 	}
 
-	users, err := s.userRepo.FetchAllStudentsFromCourse(assignment.CourseID)
+	users, err := s.courseRepo.FetchAllStudentsFromCourse(assignment.CourseID)
 	if err != nil {
 		return nil, err
 	}

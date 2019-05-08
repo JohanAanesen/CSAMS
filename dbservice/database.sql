@@ -105,6 +105,7 @@ CREATE TABLE `assignments`
     `deadline`        datetime    NOT NULL,
     `course_id`       int(11)     NOT NULL,
     `submission_id`   int(11)  DEFAULT NULL,
+    `review_enabled`  tinyint(1) NOT NULL DEFAULT 0,
     `review_id`       int(11)  DEFAULT NULL,
     `review_deadline` datetime DEFAULT NULL,
     `validation_id`   int(11)  DEFAULT NULL,
@@ -112,8 +113,7 @@ CREATE TABLE `assignments`
     `group_delivery`  int(1)   NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`course_id`) REFERENCES course (`id`),
-    FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`),
-    FOREIGN KEY (`review_id`) REFERENCES reviews (`id`)
+    FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`)
 );
 
 CREATE TABLE `peer_reviews`
@@ -165,19 +165,6 @@ CREATE TABLE `user_submissions`
     FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`)
 );
 
-CREATE TABLE `schedule_tasks`
-(
-    `id`             int(11)     NOT NULL AUTO_INCREMENT,
-    `submission_id`  int(11)     NOT NULL,
-    `assignment_id`  int(11)     NOT NULL,
-    `scheduled_time` datetime    NOT NULL,
-    `task`           varchar(32) NOT NULL,
-    `data`           blob        NOT NULL,
-    PRIMARY KEY (`id`),
-    FOREIGN KEY (`assignment_id`) REFERENCES assignments (`id`),
-    FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`)
-);
-
 CREATE TABLE `validation`
 (
     `id`        int(11)     NOT NULL AUTO_INCREMENT,
@@ -192,8 +179,8 @@ CREATE TABLE `users_pending`
 (
     `id`            int(11)     NOT NULL AUTO_INCREMENT,
     `name`          varchar(64) DEFAULT NULL,
-    `email_student` varchar(64) NOT NULL,
-    `password`      varchar(64) NOT NULL,
+    `email`         varchar(64) NOT NULL,
+    `password`      varchar(64) DEFAULT NULL,
     `validation_id` int(11)     NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`validation_id`) REFERENCES validation (`id`)
@@ -202,15 +189,18 @@ CREATE TABLE `users_pending`
 -- not attaching any foreign keys to log because we always want it to log something even if some of the data is missing
 CREATE TABLE `logs`
 (
-    `id`           int(11)                            NOT NULL AUTO_INCREMENT,
-    `userid`       int(11)                            NOT NULL,
-    `timestamp`    datetime                           NOT NULL,
-    `activity`     varchar(32) COLLATE utf8_danish_ci NOT NULL,
-    `assignmentid` int(11) DEFAULT NULL,
-    `courseid`     int(11) DEFAULT NULL,
-    `submissionid` int(11) DEFAULT NULL,
-    `oldvalue`     text    DEFAULT NULL,
-    `newValue`     text    DEFAULT NULL,
+    `id`               int(11)  NOT NULL AUTO_INCREMENT,
+    `user_id`          int(11)  NOT NULL,
+    `timestamp`        datetime NOT NULL,
+    `activity`         int(11)  NOT NULL,
+    `assignment_id`    int(11) DEFAULT NULL,
+    `course_id`        int(11) DEFAULT NULL,
+    `submission_id`    int(11) DEFAULT NULL,
+    `review_id`        int(11) DEFAULT NULL,
+    `group_id`         int(11) DEFAULT NULL,
+    `old_value`        text    DEFAULT NULL,
+    `new_value`        text    DEFAULT NULL,
+    `affected_user_id` int(11) DEFAULT NULL,
     PRIMARY KEY (`id`)
 );
 

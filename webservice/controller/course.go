@@ -121,7 +121,6 @@ func CourseGET(w http.ResponseWriter, r *http.Request) {
 
 	//all a-ok
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
 	v.Name = "course"

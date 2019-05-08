@@ -17,6 +17,31 @@ func NewPeerReviewRepository(db *sql.DB) *PeerReviewRepository {
 	}
 }
 
+// Insert func
+func (repo *PeerReviewRepository) Insert(assignmentID int, userID int, targetUserID int) (bool, error) {
+
+	query := "INSERT INTO peer_reviews(assignment_id, user_id, review_user_id) VALUES(?, ?, ?)"
+
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return false, err
+	}
+
+	_, err = tx.Exec(query, assignmentID, userID, targetUserID)
+	if err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
+	return true, err
+}
+
 // TargetExists Checks if the target exist in the table
 func (repo *PeerReviewRepository) TargetExists(assignmentID int, userID int) (bool, error) {
 	var result int
@@ -67,4 +92,30 @@ func (repo *PeerReviewRepository) FetchPeerReviewsFromAssignment(assignmentID in
 	}
 
 	return result, err
+}
+
+// FetchReviewTargetsToUser func
+func (repo *PeerReviewRepository) FetchReviewTargetsToUser(userID int, assignmentID int) ([]*model.PeerReview, error) {
+
+	result := make([]*model.PeerReview, 0)
+	query := "SELECT pr.id, pr.user_id, pr.review_user_id, pr.assignment_id FROM peer_reviews AS pr WHERE pr.user_id = ? AND pr.assignment_id = ?"
+
+	rows, err := repo.db.Query(query, userID, assignmentID)
+	if err != nil {
+		return result, err
+	}
+
+	for rows.Next() {
+		var temp model.PeerReview
+
+		err = rows.Scan(&temp.ID, &temp.ReviewerID, &temp.TargetID, &temp.AssignmentID)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, &temp)
+	}
+
+	return result, err
+
 }

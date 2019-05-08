@@ -48,11 +48,6 @@
                     <label for="publish">Publish</label>
                     <div class="input-group">
                         <input type="datetime-local" name="publish" id="publish" class="form-control" required>
-                        <!-- TODO uncomment after alpha
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button" id="publish_now">Now</button>
-                        </div>
-                        -->
                     </div>
                 </div>
 
@@ -138,6 +133,7 @@
 
         <div class="row mb-5">
             <div class="col">
+                <input type="hidden" id="review_enabled" name="review_enabled" value="false">
                 <input type="submit" class="btn btn-success btn-lg btn-block" id="submit">
             </div>
         </div>
@@ -148,8 +144,54 @@
     <script src="/static/js/simplemde.min.js"></script>
     <script src="/static/js/time.js"></script>
     <script>
-        (function () {
-            // Enable the SmpleMDE
+        let enabledInput = document.getElementById("review_enabled");
+        let btn = document.getElementById("reviewButton");
+        let reviewDeadline = document.getElementById('review_deadline');
+        let reviewDeadlineContainer = document.getElementById('review_deadline_container');
+        let reviewSelect = document.getElementById('review_id');
+        let reviewers = document.getElementById('reviewers');
+
+        function reviewButtonFunction(){
+
+            if(enabledInput.getAttribute("value") == "false"){
+                activateReviews();
+            }else if(enabledInput.getAttribute("value") == "true"){
+                deactiveReviews();
+            }
+        }
+
+        function activateReviews(){
+            btn.classList.remove("btn-success");
+            btn.classList.add("btn-danger");
+            btn.innerText = "Disable";
+
+            enabledInput.removeAttribute("value");
+            enabledInput.setAttribute("value", "true");
+
+            reviewDeadline.removeAttribute("disabled");
+            reviewDeadline.setAttribute("required", "");
+
+            reviewSelect.removeAttribute("readonly");
+            reviewers.removeAttribute("readonly");
+        }
+
+        function deactiveReviews(){
+            btn.classList.remove("btn-danger");
+            btn.classList.add("btn-success");
+            btn.innerText = "Enable";
+
+            enabledInput.removeAttribute("value");
+            enabledInput.setAttribute("value", "false");
+
+            reviewDeadline.setAttribute("disabled", "");
+            reviewDeadline.removeAttribute("required");
+
+            reviewSelect.setAttribute("readonly", "");
+            reviewers.setAttribute("readonly", "");
+        }
+
+        window.onload = function () {
+            // Enable the SimpleMDE
             let simplemde = new SimpleMDE({
                 element: document.getElementById('simplemde'),
                 hideIcons: ["side-by-side", "fullscreen"],
@@ -186,8 +228,8 @@
                 } else {
                     submissionContainer.classList.add('sr-only');
                 }
-
             });
-        })();
+        }
+
     </script>
 {{end}}

@@ -50,6 +50,7 @@ func routes() http.Handler {
 	userrouter.HandleFunc("/assignment/submission/update", controller.AssignmentUploadPOST).Methods("POST")
 	userrouter.HandleFunc("/assignment/{id:[0-9]+}/submission/{userid:[0-9]+}", controller.AssignmentUserSubmissionGET).Methods("GET")
 	userrouter.HandleFunc("/assignment/{id:[0-9]+}/submission/{userid:[0-9]+}", controller.AssignmentUserSubmissionPOST).Methods("POST")
+	userrouter.HandleFunc("/assignment/{id:[0-9]+}/requestreview", controller.AssignmentReviewRequestPOST).Methods("POST")
 
 	// Assignment-Group Handlers
 	userrouter.HandleFunc("/assignment/{id:[0-9]+}/group/create", controller.AssignmentGroupCreateGET).Methods("GET")
@@ -62,14 +63,20 @@ func routes() http.Handler {
 	userrouter.HandleFunc("/user", controller.UserGET).Methods("GET")
 	userrouter.HandleFunc("/user/update", controller.UserUpdatePOST).Methods("POST")
 
+	userrouter.HandleFunc("/confirmemail", controller.ConfirmEmailGET).Methods("GET")
+
 	// Admin-page Handlers
 	adminrouter.HandleFunc("/", controller.AdminGET).Methods("GET")
+
+	adminrouter.HandleFunc("/logs", controller.AdminLogsGet).Methods("GET")
 
 	adminrouter.HandleFunc("/course", controller.AdminCourseGET).Methods("GET")
 	adminrouter.HandleFunc("/course/create", controller.AdminCreateCourseGET).Methods("GET")
 	adminrouter.HandleFunc("/course/create", controller.AdminCreateCoursePOST).Methods("POST")
 	adminrouter.HandleFunc("/course/update/{id:[0-9]+}", controller.AdminUpdateCourseGET).Methods("GET")
 	adminrouter.HandleFunc("/course/update", controller.AdminUpdateCoursePOST).Methods("POST")
+	adminrouter.HandleFunc("/course/email/{id:[0-9]+}", controller.AdminEmailCourseGET).Methods("GET")
+	adminrouter.HandleFunc("/course/email/{id:[0-9]+}", controller.AdminEmailCoursePOST).Methods("POST")
 
 	adminrouter.HandleFunc("/course/{id:[0-9]+}/assignments", controller.AdminCourseAllAssignments).Methods("GET")
 
@@ -123,13 +130,11 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/review/update", controller.AdminReviewUpdatePOST).Methods("POST")
 	adminrouter.HandleFunc("/review/delete", controller.AdminReviewDELETE).Methods("DELETE")
 
-	adminrouter.HandleFunc("/scheduler", controller.AdminSchedulerGET).Methods("GET")
-	adminrouter.HandleFunc("/scheduler/delete", controller.AdminSchedulerDELETE).Methods("POST")
-
 	adminrouter.HandleFunc("/changepass", controller.AdminChangePassGET).Methods("GET")
 	adminrouter.HandleFunc("/changepass/list", controller.AdminGetUsersPOST).Methods("POST")
 
 	adminrouter.HandleFunc("/faq", controller.AdminFaqGET).Methods("GET")
+	adminrouter.HandleFunc("/faq/new", controller.AdminFaqNewGET).Methods("GET")
 	adminrouter.HandleFunc("/faq/edit", controller.AdminFaqEditGET).Methods("GET")
 	adminrouter.HandleFunc("/faq/update", controller.AdminFaqUpdatePOST).Methods("POST")
 

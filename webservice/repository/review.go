@@ -67,6 +67,28 @@ func (repo *ReviewRepository) Fetch(id int) (*model.Review, error) {
 	return &result, err
 }
 
+// FetchFromFormID fetches review from formID
+func (repo *ReviewRepository) FetchFromFormID(formID int) (*model.Review, error) {
+	result := model.Review{}
+	query := "SELECT id, form_id FROM reviews WHERE form_id = ?"
+
+	rows, err := repo.db.Query(query, formID)
+	if err != nil {
+		return &result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&result.ID, &result.FormID)
+		if err != nil {
+			return &result, err
+		}
+	}
+
+	return &result, err
+}
+
 // Insert func
 func (repo *ReviewRepository) Insert(form model.Form) (int, error) {
 	formRepo := NewFormRepository(repo.db)
@@ -131,8 +153,8 @@ func (repo *ReviewRepository) Update(id int, review model.Review) error {
 	return err
 }
 
-// DeleteByFormID func
-func (repo *ReviewRepository) DeleteByFormID(id int) error {
+// DeleteWithFormID func
+func (repo *ReviewRepository) DeleteWithFormID(id int) error {
 	query := "DELETE FROM reviews WHERE form_id = ?"
 
 	tx, err := repo.db.Begin()
@@ -227,4 +249,29 @@ func (repo *ReviewRepository) IsUsed(id int) (bool, error) {
 	}
 
 	return false, err
+}
+
+// UsedInAssignment func
+func (repo *ReviewRepository) UsedInAssignment(id int) (int, error) {
+	query := "SELECT a.id, s.form_id FROM assignments AS a INNER JOIN reviews AS s ON a.review_id = s.id"
+
+	rows, err := repo.db.Query(query)
+	if err != nil {
+		return 0, err
+	}
+
+	for rows.Next() {
+		var reviewID int
+		var submissionID int
+		err = rows.Scan(&reviewID, &submissionID)
+		if err != nil {
+			return 0, err
+		}
+
+		if submissionID == id {
+			return reviewID, nil
+		}
+	}
+
+	return 0, err
 }

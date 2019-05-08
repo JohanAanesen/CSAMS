@@ -56,6 +56,11 @@ func (s *SubmissionService) Fetch(id int) (*model.Submission, error) {
 	return s.submissionRepo.Fetch(id)
 }
 
+// FetchFromFormID fetches submission from form id
+func (s *SubmissionService) FetchFromFormID(formID int) (*model.Submission, error) {
+	return s.submissionRepo.FetchFromFormID(formID)
+}
+
 // FetchFromAssignment func
 func (s *SubmissionService) FetchFromAssignment(assignmentID int) (*model.Submission, error) {
 	result := model.Submission{}
@@ -120,7 +125,7 @@ func (s *SubmissionService) Update(form model.Form) error {
 
 // Delete func
 func (s *SubmissionService) Delete(id int) error {
-	err := s.submissionRepo.DeleteByFormID(id)
+	err := s.submissionRepo.DeleteWithFormID(id)
 	if err != nil {
 		return err
 	}
@@ -141,4 +146,9 @@ func (s *SubmissionService) Delete(id int) error {
 // IsUsed func
 func (s *SubmissionService) IsUsed(formID int) (bool, error) {
 	return s.submissionRepo.IsUsed(formID)
+}
+
+// UsedInAssignment func
+func (s *SubmissionService) UsedInAssignment(formID int) (int, error) {
+	return s.submissionRepo.UsedInAssignment(formID)
 }

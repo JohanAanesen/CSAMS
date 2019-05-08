@@ -103,7 +103,7 @@ func IndexGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["isStudent"] = !currentUser.Teacher
 	v.Vars["Courses"] = courses
 	v.Vars["Assignments"] = activeAssignments
-	v.Vars["Message"] = session.GetAndDeleteMessageFromSession(w, r)
+	v.Vars["Message"] = session.GetFlash(w, r)
 
 	v.Render(w)
 }
@@ -168,19 +168,16 @@ func JoinCoursePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO (Svein): Make this to a function, eg.: LogUserJoinedCourse(userID, courseID)
-	// Log joinedCourse in the database and give error if something went wrong
-	logData := model.Log{UserID: currentUser.ID, Activity: model.JoinedCourse, CourseID: course.ID}
-	err = model.LogToDB(logData)
-
+	// Log user join course
+	err = services.Logs.InsertJoinCourse(currentUser.ID, course.ID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("log, join course, ", err.Error())
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	// Give feedback to user
-	session.SaveMessageToSession("You joined "+course.Code+" - "+course.Name, w, r)
+	_ = session.SetFlash("You joined "+course.Code+" - "+course.Name, w, r)
 
 	//IndexGET(w, r)
 	http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage

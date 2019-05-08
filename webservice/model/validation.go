@@ -1,12 +1,15 @@
 package model
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
-// Validation struct for keeping the data for forgotten password
-type Validation struct {
-	ID        int       `json:"id"`
-	Hash      string    `json:"hash"`
-	UserID    int       `json:"userid"`
-	Valid     bool      `json:"valid"`
-	TimeStamp time.Time `json:"timestamp"`
+// ValidationEmail struct for keeping the data for the validation table for confirming email address, forgotten password and adding secondary email
+type ValidationEmail struct {
+	ID        int           `json:"id"`
+	Hash      string        `json:"hash"`
+	UserID    sql.NullInt64 `json:"userid"`
+	Valid     bool          `json:"valid"`
+	TimeStamp time.Time     `json:"timestamp"`
 }

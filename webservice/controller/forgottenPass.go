@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"database/sql"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/service"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
@@ -42,6 +43,14 @@ func ForgottenPOST(w http.ResponseWriter, r *http.Request) {
 	if email != "" {
 		sendEmailPOST(email, w, r)
 	} else if newPass != "" && confirmPass != "" && newPass == confirmPass {
+
+		// Check if the password is correct length
+		if len(newPass) < 6 {
+			ErrorHandler(w, r, http.StatusBadRequest)
+			log.Println("Password is to short, minimum 6 chars in length!")
+			return
+		}
+
 		changePasswordPOST(newPass, hash, w, r)
 	} else {
 		ErrorHandler(w, r, http.StatusBadRequest)
@@ -54,10 +63,9 @@ func ForgottenPOST(w http.ResponseWriter, r *http.Request) {
 func sendEmailPOST(email string, w http.ResponseWriter, r *http.Request) {
 
 	// Services
-	userService := service.NewUserService(db.GetDB())
-	forgottenService := service.NewValidationService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
-	exists, userID, err := userService.EmailExists(email)
+	exists, userID, err := services.User.EmailExists(email)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println("EmailExists, ", err.Error())
@@ -69,15 +77,19 @@ func sendEmailPOST(email string, w http.ResponseWriter, r *http.Request) {
 		// Get new hash in 20 chars
 		hash := xid.NewWithTime(time.Now()).String()
 
-		// Fill forgotten model for new insert in table
-		forgotten := model.Validation{
-			UserID:    userID,
+		// Fill validationEmail model for new insert in table
+		validationEmail := model.ValidationEmail{
 			Hash:      hash,
 			TimeStamp: util.GetTimeInCorrectTimeZone(),
 		}
 
+		validationEmail.UserID = sql.NullInt64{
+			Int64: int64(userID),
+			Valid: userID != 0,
+		}
+
 		// Insert into the db
-		_, err := forgottenService.Insert(forgotten)
+		_, err := services.Validation.Insert(validationEmail)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("EmailExists, ", err.Error())
@@ -98,7 +110,6 @@ func sendEmailPOST(email string, w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
 	v.Name = "forgotten"
@@ -113,11 +124,9 @@ func sendEmailPOST(email string, w http.ResponseWriter, r *http.Request) {
 func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *http.Request) {
 
 	// Services
-	//userService := service.NewUserService(db.GetDB())
-	forgottenService := service.NewValidationService(db.GetDB())
-	userService := service.NewUserService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
-	match, payload, err := forgottenService.Match(hash)
+	match, payload, err := services.Validation.Match(hash)
 	if err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		log.Println("hashMatch, ", err.Error())
@@ -132,7 +141,7 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 		// Check if the link has expired (after 12 hours)
 		if timeNow.After(payload.TimeStamp.Add(time.Hour * 12)) {
 			// Update forgottenPass table to be expired (one time use only!)
-			err = forgottenService.UpdateValidation(payload.ID, false)
+			err = services.Validation.UpdateValidation(payload.ID, false)
 			if err != nil {
 				ErrorHandler(w, r, http.StatusInternalServerError)
 				log.Println("forgotten, update validation, ", err.Error())
@@ -152,7 +161,7 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 		}
 
 		// Change password to user
-		err := userService.UpdatePassword(payload.UserID, password)
+		err := services.User.UpdatePassword(int(payload.UserID.Int64), password)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("user, change password, ", err.Error())
@@ -160,25 +169,23 @@ func changePasswordPOST(password string, hash string, w http.ResponseWriter, r *
 		}
 
 		// Update forgottenPass table to be expired (one time use only!)
-		err = forgottenService.UpdateValidation(payload.ID, false)
+		err = services.Validation.UpdateValidation(payload.ID, false)
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
 			log.Println("forgotten, update validation, ", err.Error())
 			return
 		}
 
-		// Add log for updated password
-		logData := model.Log{UserID: payload.UserID, Activity: model.ChangePassword}
-		err = model.LogToDB(logData)
+		// Log password change to db
+		err = services.Logs.InsertChangePasswordEmail(int(payload.UserID.Int64))
 		if err != nil {
 			ErrorHandler(w, r, http.StatusInternalServerError)
-			log.Println("log, user change password, ", err.Error())
+			log.Println("log, user change password with email, ", err.Error())
 			return
 		}
 
 		// Give feedback
-		session.GetAndDeleteMessageFromSession(w, r)
-		session.SaveMessageToSession("You can now log in with your new password", w, r)
+		_ = session.SetFlash("You can now log in with your new password", w, r)
 		http.Redirect(w, r, "/", http.StatusFound) //success redirect to homepage //todo change redirection
 
 	} else {
