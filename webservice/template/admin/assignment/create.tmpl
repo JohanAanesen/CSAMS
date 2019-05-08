@@ -213,9 +213,13 @@
                 if (e.target.value !== '0') {
                     reviewDeadlineContainer.classList.remove('sr-only');
                     reviewDeadline.setAttribute('required', '');
+                    enabledInput.removeAttribute("value");
+                    enabledInput.setAttribute("value", "true");
                 } else {
                     reviewDeadlineContainer.classList.add('sr-only');
                     reviewDeadline.removeAttribute('required');
+                    enabledInput.removeAttribute("value");
+                    enabledInput.setAttribute("value", "false");
                 }
             });
 
