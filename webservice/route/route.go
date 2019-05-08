@@ -76,6 +76,7 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/assignment", controller.AdminAssignmentGET).Methods("GET")
 
 	adminrouter.HandleFunc("/assignment/{id:[0-9]+}", controller.AdminSingleAssignmentGET).Methods("GET")
+	adminrouter.HandleFunc("/assignment/{id:[0-9]+}/report.xlsx", controller.AdminAssignmentGetReportGET).Methods("GET")
 
 	adminrouter.HandleFunc("/assignment/create", controller.AdminAssignmentCreateGET).Methods("GET")
 	adminrouter.HandleFunc("/assignment/create", controller.AdminAssignmentCreatePOST).Methods("POST")
