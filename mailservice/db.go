@@ -61,5 +61,8 @@ func GetDB() *sql.DB {
 
 //CloseDB closes db
 func CloseDB() {
-	db.Close()
+	err := db.Close()
+	if err != nil {
+		log.Println("Error: db.Close() (db.go)")
+	}
 }
