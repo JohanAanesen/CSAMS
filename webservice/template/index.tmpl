@@ -74,31 +74,33 @@
                                 <hr class="bg-light">
 
                                 <!-- Peer Review if student has delivered and deadline to assignment is due-->
-                                {{if (or (.Delivered) (not $s))}}
-                                    {{ if DEADLINEDUE .Assignment.Deadline}}
-                                        <h3 class="display-5">Peer Review</h3>
+                                {{if .Assignment.ReviewEnabled}}
+                                    {{if (or (.Delivered) (not $s))}}
+                                        {{ if DEADLINEDUE .Assignment.Deadline}}
+                                            <h3 class="display-5">Peer Review</h3>
 
-                                        {{ if $s}}
-                                            <h5>
-                                                {{if gt .Reviews 0}}
-                                                    <span class="badge badge-warning">Review{{ if ne .Reviews 1}}s{{end}} pending: {{.Reviews}}</span>
-                                                {{ else if eq .Reviews -404}}
-                                                    <span class="badge badge-warning">Reviews N/A</span>
-                                                {{else}}
-                                                    <span class="badge badge-success">Review done</span>
-                                                {{end}}
-                                            </h5>
-                                        {{ end}}
+                                            {{ if $s}}
+                                                <h5>
+                                                    {{if gt .Reviews 0}}
+                                                        <span class="badge badge-warning">Review{{ if ne .Reviews 1}}s{{end}} pending: {{.Reviews}}</span>
+                                                    {{ else if eq .Reviews -404}}
+                                                        <span class="badge badge-warning">Reviews N/A</span>
+                                                    {{else}}
+                                                        <span class="badge badge-success">Review done</span>
+                                                    {{end}}
+                                                </h5>
+                                            {{ end}}
 
-                                        {{if DEADLINEDUE .Assignment.ReviewDeadline}}
-                                            <h5>
-                                                <span class="badge badge-danger">Deadline passed</span>
-                                            </h5>
-                                        {{else}}
-                                            <p><strong>Deadline: </strong> {{PRETTYTIME .Assignment.ReviewDeadline}}</p>
-                                        {{end}}
+                                            {{if DEADLINEDUE .Assignment.ReviewDeadline}}
+                                                <h5>
+                                                    <span class="badge badge-danger">Deadline passed</span>
+                                                </h5>
+                                            {{else}}
+                                                <p><strong>Deadline: </strong> {{PRETTYTIME .Assignment.ReviewDeadline}}</p>
+                                            {{end}}
 
-                                        <hr class="bg-light">
+                                            <hr class="bg-light">
+                                        {{ end }}
                                     {{ end }}
                                 {{ end }}
 
