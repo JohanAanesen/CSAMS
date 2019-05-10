@@ -416,7 +416,7 @@ func AdminUpdateAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	v := view.New(r)
-	v.Name = "admin/assignment/update_new"
+	v.Name = "admin/assignment/update"
 
 	v.Vars["Assignment"] = assignment
 	v.Vars["SubmissionCount"] = submissionCount
