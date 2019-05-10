@@ -53,7 +53,7 @@ func (s *AssignmentService) HasReview(assignmentID int) (bool, error) {
 		return false, err
 	}
 
-	return assignment.ReviewID.Valid, err
+	return assignment.ReviewEnabled, err
 }
 
 // Insert an assignment to the database
