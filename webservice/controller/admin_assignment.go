@@ -744,9 +744,12 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 		for _, item := range rawUserReports {
 			// TODO (Svein): Check all slices, not only first and last
 			if len(item.ReviewScores) == int(assignment.Reviewers.Int64) && len(item.ReviewScores) != 0 {
-				if len(item.ReviewScores[0]) != len(item.ReviewScores[int(assignment.Reviewers.Int64-1)]) {
-					log.Println("raw user report, review scores are not same length")
-					return
+				//todo fix this hotfix svein
+				if int(assignment.Reviewers.Int64) > 0 { //avoiding index underflow
+					if len(item.ReviewScores[0]) != len(item.ReviewScores[int(assignment.Reviewers.Int64-1)]) {
+						log.Println("raw user report, review scores are not same length")
+						return
+					}
 				}
 			}
 
