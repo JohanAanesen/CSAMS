@@ -215,13 +215,13 @@
             });
 
             {{if not .ReviewDeadline}}
-                reviewDeadline.setAttribute("value", getDeadlinePlusOneMonth({{.Assignment.Deadline}}));
+            reviewDeadline.setAttribute("value", getDeadlinePlusOneMonth({{.Assignment.Deadline}}));
             {{end}}
 
             {{if .Assignment.ReviewEnabled}}
-                activateReviews();
+            activateReviews();
             {{else}}
-                deactiveReviews();
+            deactiveReviews();
             {{end}}
 
             // On submit form, call this function

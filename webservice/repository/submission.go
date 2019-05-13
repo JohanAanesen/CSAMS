@@ -153,9 +153,9 @@ func (repo *SubmissionRepository) Update(id int, submission model.Submission) er
 	return err
 }
 
-// Delete func
-func (repo *SubmissionRepository) Delete(id int) error {
-	query := "DELETE FROM submissions WHERE id = ?"
+// DeleteByFormID deletes submission based on form_id
+func (repo *SubmissionRepository) DeleteByFormID(id int) error {
+	query := "DELETE FROM submissions WHERE form_id = ?"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
@@ -176,7 +176,7 @@ func (repo *SubmissionRepository) Delete(id int) error {
 	return err
 }
 
-// DeleteWithFormID func
+// DeleteWithFormID deletes submission based on form_id
 func (repo *SubmissionRepository) DeleteWithFormID(id int) error {
 	query := "DELETE FROM submissions WHERE form_id = ?"
 
@@ -199,7 +199,7 @@ func (repo *SubmissionRepository) DeleteWithFormID(id int) error {
 	return err
 }
 
-// IsUsed func
+// IsUsed check if submission is used
 func (repo *SubmissionRepository) IsUsed(id int) (bool, error) {
 	query := "SELECT s.form_id FROM assignments AS a INNER JOIN submissions AS s ON a.submission_id = s.id"
 

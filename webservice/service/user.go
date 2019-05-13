@@ -13,29 +13,29 @@ type UserService struct {
 	userRepo *repository.UserRepository
 }
 
-// NewUserService func
+// NewUserService returns a pointer to a new UserService
 func NewUserService(db *sql.DB) *UserService {
 	return &UserService{
 		userRepo: repository.NewUserRepository(db),
 	}
 }
 
-// Fetch func
+// Fetch a single user
 func (s *UserService) Fetch(id int) (*model.User, error) {
 	return s.userRepo.Fetch(id)
 }
 
-// FetchHash func
+// FetchHash returns hashed password for a user
 func (s *UserService) FetchHash(id int) (string, error) {
 	return s.userRepo.FetchHash(id)
 }
 
-// FetchAll func
+// FetchAll all users
 func (s *UserService) FetchAll() ([]*model.User, error) {
 	return s.userRepo.FetchAll()
 }
 
-// FetchAllFromCourse func
+// FetchAllFromCourse all users from a course
 func (s *UserService) FetchAllFromCourse(courseID int) ([]*model.User, error) {
 	return s.userRepo.FetchAllFromCourse(courseID)
 }
@@ -45,7 +45,7 @@ func (s *UserService) EmailExists(email string) (bool, int, error) {
 	return s.userRepo.EmailExists(email)
 }
 
-// RegisterWithHashing func
+// RegisterWithHashing registers an user, and hash their password
 func (s *UserService) RegisterWithHashing(user model.User, password string) (int, error) {
 	hashed, err := util.GenerateFromPassword(password)
 	if err != nil {
@@ -55,12 +55,12 @@ func (s *UserService) RegisterWithHashing(user model.User, password string) (int
 	return s.userRepo.Insert(user, hashed)
 }
 
-// Register func
+// Register a new user
 func (s *UserService) Register(user model.User, hashedPass string) (int, error) {
 	return s.userRepo.Insert(user, hashedPass)
 }
 
-// Authenticate func
+// Authenticate a user
 func (s *UserService) Authenticate(email, password string) (model.User, error) {
 	// Create empty user
 	result := model.User{}
@@ -99,12 +99,12 @@ func (s *UserService) Authenticate(email, password string) (model.User, error) {
 	return result, err
 }
 
-// Update func
+// Update an user
 func (s *UserService) Update(id int, user model.User) error {
 	return s.userRepo.Update(id, user)
 }
 
-// UpdatePassword func
+// UpdatePassword for an user
 func (s *UserService) UpdatePassword(id int, password string) error {
 	hash, err := util.GenerateFromPassword(password)
 	if err != nil {

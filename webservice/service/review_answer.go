@@ -16,7 +16,7 @@ type ReviewAnswerService struct {
 	userRepo         *repository.UserRepository
 }
 
-// NewReviewAnswerService func
+// NewReviewAnswerService returns a pointer to a new ReviewAnswerService
 func NewReviewAnswerService(db *sql.DB) *ReviewAnswerService {
 	return &ReviewAnswerService{
 		reviewAnswerRepo: repository.NewReviewAnswerRepository(db),
@@ -26,22 +26,22 @@ func NewReviewAnswerService(db *sql.DB) *ReviewAnswerService {
 	}
 }
 
-// FetchForAssignment func
+// FetchForAssignment fetches all for a given assignment
 func (s *ReviewAnswerService) FetchForAssignment(assignmentID int) ([]*model.ReviewAnswer, error) {
 	return s.reviewAnswerRepo.FetchForAssignment(assignmentID)
 }
 
-// FetchForTarget func
+// FetchForTarget fetches all for a given target and assignment
 func (s *ReviewAnswerService) FetchForTarget(target, assignmentID int) ([]*model.ReviewAnswer, error) {
 	return s.reviewAnswerRepo.FetchForTarget(target, assignmentID)
 }
 
-// FetchForReviewer func
+// FetchForReviewer fetches all for a given reviewer and assignment
 func (s *ReviewAnswerService) FetchForReviewer(reviewer, assignmentID int) ([]*model.ReviewAnswer, error) {
 	return s.reviewAnswerRepo.FetchForReviewer(reviewer, assignmentID)
 }
 
-// FetchForUser func
+// FetchForUser fetches all for a given user and assignment
 func (s *ReviewAnswerService) FetchForUser(userID, assignmentID int) ([][]*model.ReviewAnswer, error) {
 	result := make([][]*model.ReviewAnswer, 0)
 
@@ -62,7 +62,7 @@ func (s *ReviewAnswerService) FetchForUser(userID, assignmentID int) ([][]*model
 	return result, err
 }
 
-// FetchForReviewUser func
+// FetchForReviewUser fetches all for a given reviewer and assignment
 func (s *ReviewAnswerService) FetchForReviewUser(userID, assignmentID int) ([][]*model.ReviewAnswer, error) {
 	result := make([][]*model.ReviewAnswer, 0)
 
@@ -83,7 +83,7 @@ func (s *ReviewAnswerService) FetchForReviewUser(userID, assignmentID int) ([][]
 	return result, err
 }
 
-// FetchReviewUsers func
+// FetchReviewUsers fetches all users who are reviewers for a target, for a given assignment
 func (s *ReviewAnswerService) FetchReviewUsers(target, assignmentID int) ([]int, error) {
 	users := make([]int, 0)
 
@@ -101,7 +101,7 @@ func (s *ReviewAnswerService) FetchReviewUsers(target, assignmentID int) ([]int,
 	return users, err
 }
 
-// FetchUsersTargets func
+// FetchUsersTargets fetches all users (target) for a reviewer for a given assignment
 func (s *ReviewAnswerService) FetchUsersTargets(userID, assignmentID int) ([]int, error) {
 	users := make([]int, 0)
 
@@ -119,12 +119,12 @@ func (s *ReviewAnswerService) FetchUsersTargets(userID, assignmentID int) ([]int
 	return users, err
 }
 
-// FetchForReviewerAndTarget func
+// FetchForReviewerAndTarget fetches review for a given reviewer, target and assignment
 func (s *ReviewAnswerService) FetchForReviewerAndTarget(reviewer, target, assignmentID int) ([]*model.ReviewAnswer, error) {
 	return s.reviewAnswerRepo.FetchForReviewerAndTarget(reviewer, target, assignmentID)
 }
 
-// HasBeenReviewed func
+// HasBeenReviewed checks if a reviewer has reviewed a target for a given assignment
 func (s *ReviewAnswerService) HasBeenReviewed(target, reviewer, assignmentID int) (bool, error) {
 	temp, err := s.reviewAnswerRepo.FetchForReviewerAndTarget(reviewer, target, assignmentID)
 	if err != nil {
@@ -134,27 +134,27 @@ func (s *ReviewAnswerService) HasBeenReviewed(target, reviewer, assignmentID int
 	return len(temp) > 0, err
 }
 
-// CountReviewsDone func
+// CountReviewsDone return amount of reviews done by an user for a given assignment
 func (s *ReviewAnswerService) CountReviewsDone(userID, assignmentID int) (int, error) {
 	return s.reviewAnswerRepo.CountReviewsDone(userID, assignmentID)
 }
 
-// CountReviewsDoneOnAssignment func
+// CountReviewsDoneOnAssignment return amount of reviews done totally for a given assignment
 func (s *ReviewAnswerService) CountReviewsDoneOnAssignment(assignmentID int) (int, error) {
 	return s.reviewAnswerRepo.CountReviewsDoneOnAssignment(assignmentID)
 }
 
-// Insert func
+// Insert to the database
 func (s *ReviewAnswerService) Insert(answer model.ReviewAnswer) (int, error) {
 	return s.reviewAnswerRepo.Insert(answer)
 }
 
-// FetchMaxScoreFromAssignment func
+// FetchMaxScoreFromAssignment returns max score from any reviews
 func (s *ReviewAnswerService) FetchMaxScoreFromAssignment(assignmentID int) (int, error) {
 	return s.reviewAnswerRepo.MaxScore(assignmentID)
 }
 
-// FetchStatisticsForAssignment func
+// FetchStatisticsForAssignment return statistics for reviews for a given assignment
 func (s *ReviewAnswerService) FetchStatisticsForAssignment(assignmentID int) (*util.Statistics, error) {
 	// Get max score from assignment
 	absMax, err := s.FetchMaxScoreFromAssignment(assignmentID)
@@ -191,7 +191,7 @@ func (s *ReviewAnswerService) FetchStatisticsForAssignment(assignmentID int) (*u
 	return result, nil
 }
 
-// FetchStatisticsForAssignmentAndUser func
+// FetchStatisticsForAssignmentAndUser return statistics for reviews for a given assignment and user
 func (s *ReviewAnswerService) FetchStatisticsForAssignmentAndUser(assignmentID, userID int) (*util.Statistics, error) {
 	// Get max score from assignment
 	absMax, err := s.FetchMaxScoreFromAssignment(assignmentID)
@@ -220,7 +220,7 @@ func (s *ReviewAnswerService) FetchStatisticsForAssignmentAndUser(assignmentID, 
 	return result, nil
 }
 
-// FetchScoreFromReview func
+// FetchScoreFromReview return score for reviews for a given assignment and user
 func (s *ReviewAnswerService) FetchScoreFromReview(assignmentID, userID int) ([]float64, error) {
 	result := make([]float64, 0)
 
@@ -237,7 +237,7 @@ func (s *ReviewAnswerService) FetchScoreFromReview(assignmentID, userID int) ([]
 	return result, err
 }
 
-// FetchUserReportsForAssignment func
+// FetchUserReportsForAssignment returns user reports for a given assignment
 func (s *ReviewAnswerService) FetchUserReportsForAssignment(assignmentID int) ([]model.RawUserReport, error) {
 	assignment, err := s.assignmentRepo.Fetch(assignmentID)
 	if err != nil {

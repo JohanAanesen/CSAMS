@@ -23,4 +23,5 @@ type Assignment struct {
 	ReviewDeadline time.Time     `json:"review_deadline"`
 	Reviewers      sql.NullInt64 `json:"reviewers"`
 	ValidationID   sql.NullInt64 `json:"validation_id"`
+	GroupDelivery  bool          `json:"group_delivery"`
 }

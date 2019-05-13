@@ -3,6 +3,7 @@ package controller
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 	"github.com/JohanAanesen/CSAMS/webservice/service"
@@ -13,8 +14,10 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/tealeg/xlsx"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -24,14 +27,13 @@ import (
 // AdminAssignmentGET handles GET-request at /admin/assignment
 func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	// Services
-	courseService := service.NewCourseService(db.GetDB())
-	assignmentService := service.NewAssignmentService(db.GetDB())
+	services := service.NewServices(db.GetDB())
 
 	// Current user
 	currentUser := session.GetUserFromSession(r)
 
 	//get courses to user/teacher
-	courses, err := courseService.FetchAllForUserOrdered(currentUser.ID)
+	courses, err := services.Course.FetchAllForUserOrdered(currentUser.ID)
 	if err != nil {
 		log.Println("course service fetch all for user ordered", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
@@ -47,7 +49,7 @@ func AdminAssignmentGET(w http.ResponseWriter, r *http.Request) {
 	var activeAssignments []ActiveAssignment
 
 	for _, course := range courses { //iterate all courses
-		assignments, err := assignmentService.FetchFromCourse(course.ID)
+		assignments, err := services.Assignment.FetchFromCourse(course.ID)
 		if err != nil {
 			log.Println("fetch from course", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
@@ -188,6 +190,13 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		reviewEnabled = true
 	}
 
+	var groupAssignment bool
+
+	groupAssignmentValue := r.FormValue("group_assignment")
+	if groupAssignmentValue == "on" {
+		groupAssignment = true
+	}
+
 	val = 0
 
 	if r.FormValue("review_id") != "" {
@@ -285,6 +294,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	assignment.ReviewEnabled = reviewEnabled
 	assignment.ReviewID = reviewID
 	assignment.Reviewers = reviewers
+	assignment.GroupDelivery = groupAssignment
 
 	// Insert data to database
 	assignmentID, err := services.Assignment.Insert(assignment)
@@ -573,6 +583,11 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		Valid: val >= 0,
 	}
 
+	groupDelivery := r.FormValue("group_assignment")
+	if groupDelivery == "on" {
+		assignment.GroupDelivery = true
+	}
+
 	assignment.ID = id
 	assignment.Name = p.Sanitize(r.FormValue("name"))
 	assignment.Description = p.Sanitize(r.FormValue("description"))
@@ -826,27 +841,229 @@ func AdminAssignmentSubmissionsGET(w http.ResponseWriter, r *http.Request) {
 	v.Render(w)
 }
 
-func foo(report []model.ProcessedUserReport, length int) error {
+// AdminAssignmentGetReportGET handles GET-request to /admin/assignment/{id}/report
+func AdminAssignmentGetReportGET(w http.ResponseWriter, r *http.Request) {
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	vars := mux.Vars(r)
+	assignmentID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Println("strconv, id", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	assignment, err := services.Assignment.Fetch(assignmentID)
+	if err != nil {
+		log.Println("assignment service, fetch", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	students, err := services.Course.FetchAllStudentsFromCourse(assignment.CourseID)
+	if err != nil {
+		log.Println("user service, fetch all from course", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+	if len(students) < 0 {
+		log.Println("Error: could not get students from course! (admin_assignment.go)")
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	type UserSubmissionData struct {
+		User          model.User
+		SubmittedTime time.Time
+		Submitted     bool
+		Reviewed      bool
+		ReviewsDone   int
+	}
+
+	var users []UserSubmissionData
+	var anyReviewsDone = false
+
+	for _, student := range students {
+		submitTime, submitted, err := services.SubmissionAnswer.FetchSubmittedTime(student.ID, assignment.ID)
+		if err != nil {
+			log.Println("services submission answer, fetch submitted time", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		reviews, err := services.ReviewAnswer.FetchForTarget(student.ID, assignment.ID)
+		if err != nil {
+			log.Println("services, review answer, fetch for target", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		var data = UserSubmissionData{
+			User:      *student,
+			Submitted: false,
+			Reviewed:  len(reviews) > 0,
+		}
+
+		if submitted {
+			data.SubmittedTime = submitTime
+			data.Submitted = true
+		}
+
+		data.ReviewsDone, err = services.ReviewAnswer.CountReviewsDone(student.ID, assignment.ID)
+		if err != nil {
+			log.Println("services, submission answer, count for assignment", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		if data.ReviewsDone > 0 {
+			anyReviewsDone = true
+		}
+
+		users = append(users, data)
+	}
+
+	//Sort slice by submitted time
+	sort.Slice(users, func(i, j int) bool {
+		return users[i].SubmittedTime.After(users[j].SubmittedTime)
+	})
+
+	var processedUserReports = make([]model.ProcessedUserReport, 0)
+	var processedLength = 0
+	var itemMaxLength = 0
+
+	if anyReviewsDone {
+		rawUserReports, err := services.ReviewAnswer.FetchUserReportsForAssignment(assignment.ID)
+		if err != nil {
+			log.Println("services, review answer, fetch user reports for assignment", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		for _, item := range rawUserReports {
+			// TODO (Svein): Check more slices, not only first and last
+			if len(item.ReviewScores) == int(assignment.Reviewers.Int64) {
+				if len(item.ReviewScores[0]) != len(item.ReviewScores[int(assignment.Reviewers.Int64-1)]) {
+					log.Println("raw user report, review scores are not same length")
+					return
+				}
+			}
+
+			temp := model.ProcessedUserReport{
+				Name:        item.Name,
+				Email:       item.Email,
+				ReviewsDone: item.ReviewsDone,
+			}
+
+			scores := item.ReviewScores
+			if len(scores) > 0 {
+				for i := 0; i < len(scores[0]); i++ {
+					data := make([]float64, 0)
+
+					for j := range scores {
+						data = append(data, scores[j][i])
+					}
+
+					stats := util.Statistics{
+						Entries: data,
+					}
+
+					mean, _ := stats.Average()
+					stdDev, _ := stats.StandardDeviation()
+
+					t := model.ProcessedReviewItem{
+						Mean:   mean,
+						StdDev: stdDev,
+					}
+
+					temp.ReviewItems = append(temp.ReviewItems, t)
+				}
+
+				if len(temp.ReviewItems) > itemMaxLength {
+					itemMaxLength = len(temp.ReviewItems)
+				}
+
+				if processedLength == 0 {
+					processedLength = len(temp.ReviewItems)
+				}
+			}
+
+			processedUserReports = append(processedUserReports, temp)
+		}
+	}
+
+	var reportString = "Name;Email;Reviews Done"
+
+	for i := 0; i < itemMaxLength; i++ {
+		a := i + 1
+		reportString += fmt.Sprintf(";RevItem %d Mean;RevItem %d Std Dev", a, a)
+	}
+	reportString += ";Mean Total"
+	reportString += "\r\n"
+	for _, item := range processedUserReports {
+		// Print out Name, Email, Reviews Done
+		reportString += fmt.Sprintf("%s;%s;%d", item.Name, item.Email, item.ReviewsDone)
+		if len(item.ReviewItems) > 0 {
+			var totalMean = 0.0
+			for _, v := range item.ReviewItems {
+				totalMean += v.Mean
+				str := fmt.Sprintf(";%.2f;%.2f", v.Mean, v.StdDev)
+				str = strings.Replace(str, ".", ",", -1)
+				reportString += str
+			}
+			reportString += strings.Replace(fmt.Sprintf(";%.2f", totalMean), ".", ",", -1)
+		} else {
+			for i := 0; i < itemMaxLength; i++ {
+				reportString += ";0;0"
+			}
+			reportString += ";0"
+		}
+		reportString += "\r\n"
+	}
+
+	report, err := generateReport(processedUserReports, processedLength, assignment.Name)
+	if err != nil {
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(report))
+}
+
+func generateReport(report []model.ProcessedUserReport, length int, fileName string) (string, error) {
+	// Check if filename is blank
+	if fileName == "" {
+		return "", errors.New("file name cannot be blank")
+	}
+
 	var file *xlsx.File
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
 	var cell *xlsx.Cell
 	var err error
 
+	// Create new xlsx file
 	file = xlsx.NewFile()
+	// Add cheat
 	sheet, err = file.AddSheet("Sheet1")
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	rowIndex := 1
 
 	// HEADER ROW START
+	// Add new row
 	row = sheet.AddRow()
+	// Add "Name" column
 	cell = row.AddCell()
 	cell.Value = "Name"
+	// Add "Email" column
 	cell = row.AddCell()
 	cell.Value = "Email"
+	// Add "Reviews Done" column
 	cell = row.AddCell()
 	cell.Value = "Reviews Done"
 
@@ -856,31 +1073,52 @@ func foo(report []model.ProcessedUserReport, length int) error {
 		cell = row.AddCell()
 		cell.Value = fmt.Sprintf("ReviewItem %d Std Dev", i+1)
 	}
+	// Add "Total Mean" column
+	cell = row.AddCell()
+	cell.Value = "Total Mean"
 	// HEADER ROW END
 
 	// WEIGHT ROW START
+	// Add new row
 	row = sheet.AddRow()
+	// Add "Weight" column
 	cell = row.AddCell()
 	cell.Value = "Weights"
 	// WEIGHT ROW END
 
 	// DATA ROWS START
 	for _, item := range report {
+		// Increment row index
 		rowIndex++
+		// Add new row
 		row = sheet.AddRow()
+		// Add Name
 		cell = row.AddCell()
 		cell.Value = item.Name
+		// Add Email
 		cell = row.AddCell()
 		cell.Value = item.Email
+		// Add Reviews Done
 		cell = row.AddCell()
 		cell.SetInt(item.ReviewsDone)
+		// Initialize total mean
+		var totalMean = 0.0
 
+		// Add all means and std dev
 		for _, k := range item.ReviewItems {
+			// Add mean
 			cell = row.AddCell()
 			cell.SetFloat(k.Mean)
+			// Add Std Dev
 			cell = row.AddCell()
 			cell.SetFloat(k.StdDev)
+			// Add mean to total mean
+			totalMean += k.Mean
 		}
+
+		// Add total mean
+		cell = row.AddCell()
+		cell.SetFloat(totalMean)
 	}
 	// DATA ROWS END
 
@@ -977,12 +1215,24 @@ func foo(report []model.ProcessedUserReport, length int) error {
 	}
 	// MAX VALUE ROW END
 
-	err = file.Save("test.xlsx")
+	err = file.Save(fileName + ".xlsx")
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	fileBytes, err := ioutil.ReadFile(fileName + ".xlsx")
+	if err != nil {
+		return "", err
+	}
+
+	fileContent := string(fileBytes)
+
+	err = os.Remove(fileName + ".xlsx")
+	if err != nil {
+		return "", err
+	}
+
+	return fileContent, nil
 }
 
 // AdminAssignmentReviewGET handles request to /admin/assignment/{id}/review

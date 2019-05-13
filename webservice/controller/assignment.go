@@ -102,19 +102,21 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filteredSubmissionReviews := make([]model.User, 0)
-	for _, user := range reviewUsers {
-		check, err := services.ReviewAnswer.HasBeenReviewed(user.ID, currentUser.ID, assignmentID)
-		if err != nil {
-			log.Println("services, review answer, has been reviewed", err)
-			ErrorHandler(w, r, http.StatusInternalServerError)
-			return
-		}
+	/*
+		filteredSubmissionReviews := make([]model.User, 0)
+		for _, user := range reviewUsers {
+			check, err := services.ReviewAnswer.HasBeenReviewed(user.ID, currentUser.ID, assignmentID)
+			if err != nil {
+				log.Println("services, review answer, has been reviewed", err)
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
 
-		if !check {
-			filteredSubmissionReviews = append(filteredSubmissionReviews, *user)
+			if !check {
+				filteredSubmissionReviews = append(filteredSubmissionReviews, *user)
+			}
 		}
-	}
+	*/
 
 	course, err := services.Course.Fetch(assignment.CourseID)
 	if err != nil {
@@ -135,14 +137,60 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 
 	var isReviewDeadlineOver = assignment.ReviewDeadline.Before(util.GetTimeInCorrectTimeZone())
 
-	// TODO : make this dynamic
-	var hasBeenValidated = false
-
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	// Create view
 	v := view.New(r)
-	v.Name = "assignment/index"
+
+	// Check if assignment has group delivery
+	if assignment.GroupDelivery {
+		v.Name = "assignment/index_group"
+
+		// Check if current user has group
+		hasGroup, err := services.GroupService.UserInAnyGroup(currentUser.ID, assignment.ID)
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		// Fetch all groups
+		groups, err := services.GroupService.FetchAll(assignment.ID)
+		if err != nil {
+			log.Println(err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+
+		v.Vars["HasGroup"] = hasGroup
+		v.Vars["Groups"] = groups
+
+		// Check if current user has a group
+		if hasGroup {
+			// Fetch group for current user
+			group, err := services.GroupService.FetchGroupForUser(currentUser.ID, assignment.ID)
+			if err != nil {
+				log.Println(err.Error())
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
+			// Fetch group members for group
+			groupMembers, err := services.GroupService.FetchUsersFromGroup(group.ID)
+			if err != nil {
+				log.Println(err.Error())
+				ErrorHandler(w, r, http.StatusInternalServerError)
+				return
+			}
+			// Put members into group
+			for _, user := range groupMembers {
+				group.Users = append(group.Users, *user)
+			}
+
+			v.Vars["Group"] = group
+		}
+	} else { // Not group delivery
+		v.Name = "assignment/index"
+	}
 
 	v.Vars["Message"] = session.GetFlash(w, r)
 	v.Vars["Assignment"] = assignment
@@ -152,7 +200,6 @@ func AssignmentSingleGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["IsReviewDeadlineOver"] = isReviewDeadlineOver
 	v.Vars["CourseID"] = course.ID
 	v.Vars["Reviews"] = reviewUsers
-	v.Vars["HasBeenValidated"] = hasBeenValidated
 	v.Vars["MyReviews"] = reviews
 	v.Vars["IsTeacher"] = currentUser.Teacher
 
@@ -989,6 +1036,11 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 
 	//save the 0 index as a new review pair
 	inserted, err := services.PeerReview.Insert(assignmentID, currentUser.ID, submissionsFiltered[0])
+	if err != nil {
+		log.Println("AssignmentReviewRequestPOST, services.PeerReview.Insert", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
 
 	//redirect
 	if inserted {

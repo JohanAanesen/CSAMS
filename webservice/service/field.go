@@ -11,14 +11,14 @@ type FieldService struct {
 	repo *repository.FieldRepository
 }
 
-// NewFieldService func
+// NewFieldService returns a new pointer to a FieldService
 func NewFieldService(db *sql.DB) *FieldService {
 	return &FieldService{
 		repo: repository.NewFieldRepository(db),
 	}
 }
 
-// FetchAllWithFormID func
+// FetchAllWithFormID fetches all fields from a form with a given ID
 func (fs *FieldService) FetchAllWithFormID(formID int) ([]model.Field, error) {
 	ptr, err := fs.repo.FetchAll()
 
@@ -33,7 +33,7 @@ func (fs *FieldService) FetchAllWithFormID(formID int) ([]model.Field, error) {
 	return fields, err
 }
 
-// FetchAll func
+// FetchAll all fields
 func (fs *FieldService) FetchAll() ([]model.Field, error) {
 	ptr, err := fs.repo.FetchAll()
 
@@ -45,24 +45,24 @@ func (fs *FieldService) FetchAll() ([]model.Field, error) {
 	return fields, err
 }
 
-// Fetch func
+// Fetch a sinle field
 func (fs *FieldService) Fetch(id int) (*model.Field, error) {
 	field, err := fs.repo.Fetch(id)
 
 	return field, err
 }
 
-// Insert func
+// Insert field to database
 func (fs *FieldService) Insert(field model.Field) (int, error) {
 	return fs.repo.Insert(&field)
 }
 
-// Update func
+// Update field in the database
 func (fs *FieldService) Update(id int, field model.Field) error {
 	return fs.repo.Update(id, &field)
 }
 
-// Delete func
+// Delete field from the database
 func (fs *FieldService) Delete(id int) error {
 	return fs.repo.DeleteAll(id)
 }

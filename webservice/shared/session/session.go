@@ -101,6 +101,7 @@ func SaveUserToSession(user model.User, w http.ResponseWriter, r *http.Request) 
 	return true
 }
 
+// SetFlash sets a flash-message
 func SetFlash(message string, w http.ResponseWriter, r *http.Request) error {
 	session, err := Instance(r)
 	if err != nil {
@@ -111,6 +112,7 @@ func SetFlash(message string, w http.ResponseWriter, r *http.Request) error {
 	return session.Save(r, w)
 }
 
+// GetFlash returns the value of a flash-message
 func GetFlash(w http.ResponseWriter, r *http.Request) string {
 	session, err := Instance(r)
 	if err != nil {

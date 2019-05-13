@@ -11,14 +11,14 @@ type UserRepository struct {
 	db *sql.DB
 }
 
-// NewUserRepository func
+// NewUserRepository return a pointer to a new UserRepository
 func NewUserRepository(db *sql.DB) *UserRepository {
 	return &UserRepository{
 		db: db,
 	}
 }
 
-// Fetch func
+// Fetch a user
 func (repo *UserRepository) Fetch(id int) (*model.User, error) {
 	result := model.User{}
 	result.Authenticated = false
@@ -44,7 +44,7 @@ func (repo *UserRepository) Fetch(id int) (*model.User, error) {
 	return &result, err
 }
 
-// FetchHash func
+// FetchHash hashed password for a user
 func (repo *UserRepository) FetchHash(id int) (string, error) {
 	var result string
 
@@ -67,7 +67,7 @@ func (repo *UserRepository) FetchHash(id int) (string, error) {
 	return result, err
 }
 
-// FetchAll func
+// FetchAll users from the database
 func (repo *UserRepository) FetchAll() ([]*model.User, error) {
 	result := make([]*model.User, 0)
 
@@ -150,7 +150,7 @@ func (repo *UserRepository) EmailExists(email string) (bool, int, error) {
 	return false, -1, err
 }
 
-// Insert func
+// Insert user to the database
 func (repo *UserRepository) Insert(user model.User, password string) (int, error) {
 	var id int64
 
@@ -182,7 +182,7 @@ func (repo *UserRepository) Insert(user model.User, password string) (int, error
 	return int(id), err
 }
 
-// Update func
+// Update user in the database
 func (repo *UserRepository) Update(id int, user model.User) error {
 	if id != user.ID {
 		return errors.New("update user, id mismatch")
@@ -210,7 +210,7 @@ func (repo *UserRepository) Update(id int, user model.User) error {
 	return err
 }
 
-// UpdatePassword func
+// UpdatePassword for a user
 func (repo *UserRepository) UpdatePassword(id int, hashedPassword string) error {
 	query := "UPDATE users SET password = ? WHERE id = ?"
 
@@ -234,7 +234,7 @@ func (repo *UserRepository) UpdatePassword(id int, hashedPassword string) error 
 	return err
 }
 
-// Delete func
+// Delete a user
 func (repo *UserRepository) Delete(id int) error {
 	query := "DELETE FROM users WHERE id = ?"
 

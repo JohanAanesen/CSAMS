@@ -52,6 +52,13 @@ func routes() http.Handler {
 	userrouter.HandleFunc("/assignment/{id:[0-9]+}/submission/{userid:[0-9]+}", controller.AssignmentUserSubmissionPOST).Methods("POST")
 	userrouter.HandleFunc("/assignment/{id:[0-9]+}/requestreview", controller.AssignmentReviewRequestPOST).Methods("POST")
 
+	// Assignment-Group Handlers
+	userrouter.HandleFunc("/assignment/{id:[0-9]+}/group/create", controller.AssignmentGroupCreateGET).Methods("GET")
+	userrouter.HandleFunc("/assignment/{id:[0-9]+}/group/create", controller.AssignmentGroupCreatePOST).Methods("POST")
+
+	userrouter.HandleFunc("/assignment/{aid:[0-9]+}/join_group/{gid:[0-9]+}", controller.AssignmentGroupJoinGET).Methods("GET")
+	userrouter.HandleFunc("/assignment/{aid:[0-9]+}/leave_group", controller.AssignmentGroupLeaveGET).Methods("GET")
+
 	// User-page Handlers
 	userrouter.HandleFunc("/user", controller.UserGET).Methods("GET")
 	userrouter.HandleFunc("/user/update", controller.UserUpdatePOST).Methods("POST")
@@ -76,6 +83,7 @@ func routes() http.Handler {
 	adminrouter.HandleFunc("/assignment", controller.AdminAssignmentGET).Methods("GET")
 
 	adminrouter.HandleFunc("/assignment/{id:[0-9]+}", controller.AdminSingleAssignmentGET).Methods("GET")
+	adminrouter.HandleFunc("/assignment/{id:[0-9]+}/report.xlsx", controller.AdminAssignmentGetReportGET).Methods("GET")
 
 	adminrouter.HandleFunc("/assignment/create", controller.AdminAssignmentCreateGET).Methods("GET")
 	adminrouter.HandleFunc("/assignment/create", controller.AdminAssignmentCreatePOST).Methods("POST")

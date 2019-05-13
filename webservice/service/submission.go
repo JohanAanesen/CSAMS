@@ -14,7 +14,7 @@ type SubmissionService struct {
 	assignmentRepo *repository.AssignmentRepository
 }
 
-// NewSubmissionService func
+// NewSubmissionService returns a pointer to a new SubmissionService
 func NewSubmissionService(db *sql.DB) *SubmissionService {
 	return &SubmissionService{
 		submissionRepo: repository.NewSubmissionRepository(db),
@@ -24,7 +24,7 @@ func NewSubmissionService(db *sql.DB) *SubmissionService {
 	}
 }
 
-// FetchAll func
+// FetchAll return all submissions from the database
 func (s *SubmissionService) FetchAll() ([]model.Submission, error) {
 	result := make([]model.Submission, 0)
 
@@ -51,7 +51,7 @@ func (s *SubmissionService) FetchAll() ([]model.Submission, error) {
 	return result, err
 }
 
-// Fetch func
+// Fetch a single submission
 func (s *SubmissionService) Fetch(id int) (*model.Submission, error) {
 	return s.submissionRepo.Fetch(id)
 }
@@ -61,7 +61,7 @@ func (s *SubmissionService) FetchFromFormID(formID int) (*model.Submission, erro
 	return s.submissionRepo.FetchFromFormID(formID)
 }
 
-// FetchFromAssignment func
+// FetchFromAssignment submission-form for a given assignment
 func (s *SubmissionService) FetchFromAssignment(assignmentID int) (*model.Submission, error) {
 	result := model.Submission{}
 
@@ -94,12 +94,12 @@ func (s *SubmissionService) FetchFromAssignment(assignmentID int) (*model.Submis
 	return temp, err
 }
 
-// Insert func
+// Insert submission-form to the database
 func (s *SubmissionService) Insert(form model.Form) (int, error) {
 	return s.submissionRepo.Insert(form)
 }
 
-// Update func
+// Update submission-form in the database
 func (s *SubmissionService) Update(form model.Form) error {
 	err := s.formRepo.Update(form.ID, &form)
 	if err != nil {
@@ -123,7 +123,7 @@ func (s *SubmissionService) Update(form model.Form) error {
 	return err
 }
 
-// Delete func
+// Delete submission from the database
 func (s *SubmissionService) Delete(id int) error {
 	err := s.submissionRepo.DeleteWithFormID(id)
 	if err != nil {
@@ -140,15 +140,15 @@ func (s *SubmissionService) Delete(id int) error {
 		return err
 	}
 
-	return err
+	return nil
 }
 
-// IsUsed func
+// IsUsed checks if submission-form is in use
 func (s *SubmissionService) IsUsed(formID int) (bool, error) {
 	return s.submissionRepo.IsUsed(formID)
 }
 
-// UsedInAssignment func
+// UsedInAssignment checks if submission-for is used by any assignment
 func (s *SubmissionService) UsedInAssignment(formID int) (int, error) {
 	return s.submissionRepo.UsedInAssignment(formID)
 }

@@ -45,9 +45,7 @@
 {{end}}
 {{define "content"}}
     {{$id := .Assignment.ID}}
-    {{$reviewsDone := len .Reviews}}
-    {{$reviewsLeft := NULLINT64MINUSINT .Assignment.Reviewers $reviewsDone}}
-    {{$reviewDeadlineOver := .IsReviewDeadlineOver}}
+    {{$length := len .Reviews}}
     <div class="container pt-3">
         {{if .Delivered}}
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -74,12 +72,16 @@
                            aria-controls="home" aria-selected="true">Assignment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{if or (not .HasReview) (not .IsDeadlineOver)}}disabled{{end}}" id="peerReview-tab" data-toggle="tab" href="#peerReview" role="tab" aria-controls="peerReview" aria-selected="false">Peer Review {{if and .HasReview (gt $reviewsLeft 0)}}<span class="badge badge-danger">{{$reviewsLeft}}</span>{{end}}</a>
+                        <a class="nav-link {{if eq $length 0}}disabled{{end}}" id="peerReview-tab" data-toggle="tab" href="#peerReview" role="tab" aria-controls="peerReview" aria-selected="false">Peer Review {{if gt $length 0}}<span class="badge badge-danger">{{$length}}</span>{{end}}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link{{if or (or (not .HasReview) (not .IsDeadlineOver)) (.IsTeacher)}} disabled{{end}}" id="viewReview-tab" data-toggle="tab" href="#viewReview" role="tab" aria-controls="viewReview" aria-selected="false">Received Reviews {{if gt (len .MyReviews) 0}}<span class="badge badge-success">{{len .MyReviews}}</span>{{end}}</a>
+                        <a class="nav-link{{if or (not .HasReview) (.IsTeacher)}} disabled{{end}}" id="viewReview-tab" data-toggle="tab" href="#viewReview" role="tab" aria-controls="viewReview" aria-selected="false">View Reviews</a>
                     </li>
-
+                    {{if .Assignment.GroupDelivery}}
+                        <li class="nav-item">
+                            <a class="nav-link" id="group-tab" data-toggle="tab" href="#group" role="tab" aria-controls="home" aria-selected="true">Groups</a>
+                        </li>
+                    {{end}}
                     {{if .IsTeacher}}
                         <li class="nav-item">
                             <a href="/admin/assignment/{{.Assignment.ID}}/submissions" class="nav-link">See submissions</a>
@@ -91,11 +93,17 @@
                     <li>
                         {{if .Assignment.SubmissionID.Valid}}
                             {{if not .IsTeacher}}
-                                {{if not .Delivered}}
-                                    <a style="float:right;" href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-success {{if .IsDeadlineOver}}disabled{{end}}">Deliver assignment</a>
+
+                                {{if not .HasGroup}}
+                                    <a class="btn btn-outline-primary" id="group-tab" data-toggle="tab" href="#group" role="tab" aria-controls="home" aria-selected="true">Join Group</a>
                                 {{else}}
-                                    <a href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-warning {{if .IsDeadlineOver}}disabled{{end}}">Change your submission</a>
+                                    {{if not .Delivered}}
+                                        <a style="float:right;" href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-success {{if .IsDeadlineOver}}disabled{{end}}">Deliver assignment</a>
+                                    {{else}}
+                                        <a href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-warning {{if .IsDeadlineOver}}disabled{{end}}">Change your submission</a>
+                                    {{end}}
                                 {{end}}
+
                             {{end}}
                         {{end}}
                     </li>
@@ -111,18 +119,10 @@
                     </div>
 
                     <div class="tab-pane fade" id="peerReview" role="tabpanel" aria-labelledby="home-tab">
-                        {{if gt .Assignment.Reviewers.Value $reviewsDone }}
-                            <p>You have <span style="color: red;">{{$reviewsLeft}}</span> reviews left to do!</p>
-                        {{end}}
-                        {{if not $reviewDeadlineOver}}
-                            <form action="/assignment/{{.Assignment.ID}}/requestreview" id="newReviewForm" method="post">
-                                <button type="submit" form="newReviewForm" class="btn btn-outline-success my-3">New Review</button>
-                            </form>
-                        {{end}}
                         <div class="row">
                             {{$UID := .CurrentUser.ID}}
                             {{$AID := .Assignment.ID}}
-                            {{if gt $reviewsDone 0}}
+                            {{if gt $length 0}}
                                 {{range .Reviews}}
                                     <div class="col-md-6 col-sm-12 mb-3">
                                         <div class="card shadow-sm">
@@ -130,13 +130,13 @@
                                                 <h2 class="display-4">Review</h2>
                                                 <h6>
                                                     <span class="badge badge-info">Peer-Review</span>
-                                                    {{if HasBeenReviewed .ID $UID $AID}}<span class="badge badge-success">Reviewed</span>{{end}}
+                                                    {{if HasBeenReviewed .ID $UID $AID}}<span class="badge badge-success">Performed</span>{{end}}
                                                 </h6>
                                                 <hr class="bg-light">
-                                                {{if and (HasBeenReviewed .ID $UID $AID) (not $reviewDeadlineOver)}}
+                                                {{if HasBeenReviewed .ID $UID $AID}}
                                                     <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-info">Update Review</a>
-                                                {{else if not $reviewDeadlineOver}}
-                                                    <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-dark">Do Review</a>
+                                                {{else}}
+                                                    <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-dark">Perform Review</a>
                                                 {{end}}
                                             </div>
                                         </div>
@@ -238,6 +238,69 @@
                             {{end}}
                         </div>
                     </div>
+
+                    {{if .Assignment.GroupDelivery}}
+                        <div class="tab-pane fade" id="group" role="tabpanel" aria-labelledby="group-tab">
+
+                            {{if .HasGroup}}
+                                {{$CID := .CurrentUser.ID}}
+                                {{$GCID := .Group.Creator}}
+
+                                <h2>{{.Group.Name}}</h2>
+                                {{if ne $CID $GCID}}
+                                    <a href="/assignment/{{.Assignment.ID}}/leave_group" class="btn btn-danger btn-sm mb-3">Leave Group</a>
+                                {{end}}
+
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        {{if eq .CurrentUser.ID .Group.Creator}}
+                                        <th>Action</th>
+                                        {{end}}
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                    {{range .Group.Users}}
+                                        <tr>
+                                            <td>{{.Name}}</td>
+                                            {{if eq $CID $GCID}}
+                                            <td>Foo</td>
+                                            {{end}}
+                                        </tr>
+                                    {{end}}
+                                    </tbody>
+                                </table>
+
+                            {{else}}
+                            <h2>Groups</h2>
+
+                            <hr>
+
+                            <a href="/assignment/{{.Assignment.ID}}/group/create" class="btn btn-primary mb-3">Create new</a>
+
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Group Name</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                {{range .Groups}}
+                                    <tr>
+                                        <td>{{.Name}}</td>
+                                        <td><a href="/assignment/{{$AID}}/join_group/{{.ID}}" class="btn btn-info btn-sm">Join</a></td>
+                                    </tr>
+                                {{end}}
+                                </tbody>
+                            </table>
+                            {{end}}
+                        </div>
+                    {{end}}
 
                 </div>
             </div>

@@ -1496,6 +1496,8 @@ function Field(args) {
      */
     this.get = function() {
         this.choicesArray = this.choices.split('\n');
+        // Filter out all empty lines
+        this.choicesArray = this.choicesArray.filter(item => item !== '');
 
         return {
             type:           this.type,

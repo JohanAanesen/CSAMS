@@ -17,39 +17,39 @@ type CourseService struct {
 	courseRepo *repository.CourseRepository
 }
 
-// NewCourseService func
+// NewCourseService returns a pointer to a new CourseService
 func NewCourseService(db *sql.DB) *CourseService {
 	return &CourseService{
 		courseRepo: repository.NewCourseRepository(db),
 	}
 }
 
-// Fetch func
+// Fetch a single course
 func (s *CourseService) Fetch(id int) (*model.Course, error) {
 	return s.courseRepo.Fetch(id)
 }
 
-// FetchAll func
+// FetchAll all courses
 func (s *CourseService) FetchAll() ([]*model.Course, error) {
 	return s.courseRepo.FetchAll()
 }
 
-// FetchAllForUser func
+// FetchAllForUser all courses for a given user
 func (s *CourseService) FetchAllForUser(userID int) ([]*model.Course, error) {
 	return s.courseRepo.FetchAllForUser(userID)
 }
 
-// FetchAllForUserOrdered func
+// FetchAllForUserOrdered all courses in order for a given user
 func (s *CourseService) FetchAllForUserOrdered(userID int) ([]*model.Course, error) {
 	return s.courseRepo.FetchAllForUserOrdered(userID)
 }
 
-// FetchAllStudentsFromCourse func
+// FetchAllStudentsFromCourse all students from a course
 func (s *CourseService) FetchAllStudentsFromCourse(courseID int) ([]*model.User, error) {
 	return s.courseRepo.FetchAllStudentsFromCourse(courseID)
 }
 
-// Exists func
+// Exists checks if a course exists
 func (s *CourseService) Exists(hash string) *model.Course {
 	result := model.Course{
 		ID: -1,

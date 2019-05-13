@@ -102,7 +102,7 @@ func (v *View) Render(w http.ResponseWriter) {
 		var children []string
 
 		// Check request
-		if adminRequest {
+		if adminRequest { // TODO (Svein): Check if status-code is good
 			root = adminRootTemplate
 			children = adminChildTemplates
 		} else {
