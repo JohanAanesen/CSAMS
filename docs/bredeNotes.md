@@ -1,4 +1,4 @@
-# The Log of Bread
+# Brede's Daily Log
 <!-- By BredeFK -->
 ## Week One
 ### Monday - 04/02/19
@@ -468,32 +468,4 @@ KickedFromGroup
 * Changed name to managae_students from change_pass
 * When giving students a new password, it's generated from js and is random each time now
 * Added functionality for adding new faq and also log the event
-
-### Tuesday - 30/04/19
-
-### Wednesday - 01/05/19
-
-### Thursday - 02/05/19
-
-### Friday - 03/05/19
-
-## Week Thirteen
-### Monday - 06/05/19
-
-### Tuesday - 07/05/19
-
-### Wednesday - 08/05/19
-
-### Thursday - 09/05/19
-
-### Friday - 10/05/19
-
-## Week Fourteen
-### Monday - 13/05/19
-
-## Tuesday - 14/05/19
-
-## Wednesday - 15/05/19
-
-## Thursday - DEADLINE - 16/05/19
    
