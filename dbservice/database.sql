@@ -69,12 +69,12 @@ CREATE TABLE `fields`
     `type`        varchar(64)  NOT NULL,
     `name`        varchar(256) NOT NULL,
     `description` text         NOT NULL,
-    `label`       text    DEFAULT NULL,
+    `label`       text                  DEFAULT NULL,
     `hasComment`  int(1)       NOT NULL,
     `priority`    int(11)      NOT NULL,
-    `weight`      int(11) DEFAULT NULL,
-    `choices`     text    DEFAULT NULL,
-    `required`    int(1)  NOT NULL DEFAULT 0,
+    `weight`      int(11)               DEFAULT NULL,
+    `choices`     text                  DEFAULT NULL,
+    `required`    int(1)       NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`form_id`) REFERENCES forms (`id`)
 );
@@ -104,13 +104,13 @@ CREATE TABLE `assignments`
     `publish`         datetime    NOT NULL,
     `deadline`        datetime    NOT NULL,
     `course_id`       int(11)     NOT NULL,
-    `submission_id`   int(11)  DEFAULT NULL,
-    `review_enabled`  tinyint(1) NOT NULL DEFAULT 0,
-    `review_id`       int(11)  DEFAULT NULL,
-    `review_deadline` datetime DEFAULT NULL,
-    `validation_id`   int(11)  DEFAULT NULL,
-    `reviewers`       int(11)  DEFAULT NULL,
-    `group_delivery`  int(1)   NOT NULL DEFAULT 0,
+    `submission_id`   int(11)              DEFAULT NULL,
+    `review_enabled`  tinyint(1)  NOT NULL DEFAULT 0,
+    `review_id`       int(11)              DEFAULT NULL,
+    `review_deadline` datetime             DEFAULT NULL,
+    `validation_id`   int(11)              DEFAULT NULL,
+    `reviewers`       int(11)              DEFAULT NULL,
+    `group_delivery`  int(1)      NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`course_id`) REFERENCES course (`id`),
     FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`)
@@ -139,7 +139,7 @@ CREATE TABLE `user_reviews`
     `name`          text        NOT NULL,
     `label`         text        NOT NULL,
     `answer`        text        NOT NULL,
-    `comment`       text    DEFAULT NULL,
+    `comment`       text DEFAULT NULL,
     `submitted`     datetime    NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`assignment_id`) REFERENCES assignments (`id`),
@@ -157,8 +157,8 @@ CREATE TABLE `user_submissions`
     `type`          varchar(64) NOT NULL,
     `name`          text        NOT NULL,
     `label`         text        NOT NULL,
-    `answer`        text            NULL,
-    `comment`       text    DEFAULT NULL,
+    `answer`        text        NULL,
+    `comment`       text DEFAULT NULL,
     `submitted`     timestamp   NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`assignment_id`) REFERENCES assignments (`id`),
@@ -206,10 +206,10 @@ CREATE TABLE `logs`
 
 CREATE TABLE `groups`
 (
-    `id`            int(11)         NOT NULL AUTO_INCREMENT,
-    `assignment_id` int(11)         NOT NULL,
-    `name`          varchar(255)    NOT NULL,
-    `user_id`       int(11)         NOT NULL,
+    `id`            int(11)      NOT NULL AUTO_INCREMENT,
+    `assignment_id` int(11)      NOT NULL,
+    `name`          varchar(255) NOT NULL,
+    `user_id`       int(11)      NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`assignment_id`) REFERENCES assignments (`id`),
     FOREIGN KEY (`user_id`) REFERENCES users (`id`)
@@ -217,10 +217,20 @@ CREATE TABLE `groups`
 
 CREATE TABLE `user_groups`
 (
-    `id`            int(11) NOT NULL AUTO_INCREMENT,
-    `user_id`       int(11) NOT NULL,
-    `group_id`      int(11) NOT NULL,
+    `id`       int(11) NOT NULL AUTO_INCREMENT,
+    `user_id`  int(11) NOT NULL,
+    `group_id` int(11) NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`user_id`) REFERENCES users (`id`),
     FOREIGN KEY (`group_id`) REFERENCES groups (`id`)
 );
+
+CREATE TABLE `notifications`
+(
+    `id`      int(11)      NOT NULL AUTO_INCREMENT,
+    `user_id` int(11)      NOT NULL,
+    `url`     varchar(128) NOT NULL,
+    `message` varchar(255) NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`user_id`) REFERENCES users (`id`)
+)
