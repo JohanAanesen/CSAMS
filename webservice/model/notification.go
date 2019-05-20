@@ -6,4 +6,5 @@ type Notification struct {
 	UserID  int    `json:"user_id" db:"user_id"`
 	URL     string `json:"url" db:"url"`
 	Message string `json:"message" db:"message"`
+	Active  bool   `json:"active" db:"active"`
 }

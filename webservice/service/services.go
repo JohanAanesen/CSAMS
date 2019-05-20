@@ -20,6 +20,7 @@ type Services struct {
 	Logs             *LogsService
 	FAQ              *FAQService
 	Notification     *NotificationService
+	ReviewMessage    *ReviewMessageService
 }
 
 // NewServices returns a pointer to a new Services
@@ -41,5 +42,6 @@ func NewServices(db *sql.DB) *Services {
 		Logs:             NewLogsService(db),
 		FAQ:              NewFAQService(db),
 		Notification:     NewNotificationService(db),
+		ReviewMessage:    NewReviewMessageService(db),
 	}
 }

@@ -231,7 +231,7 @@ CREATE TABLE `notifications`
     `user_id` int(11)      NOT NULL,
     `url`     varchar(128) NOT NULL,
     `message` varchar(255) NOT NULL,
-    `read`    tinyint(1)   NOT NULL DEFAULT 0,
+    `active`    tinyint(1)   NOT NULL DEFAULT 1,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`user_id`) REFERENCES users (`id`)
 );
