@@ -99,3 +99,25 @@ func (repo *NotificationRepository) MarkAsRead(notificationID int) (error){
 
 	return nil
 }
+
+func (repo *NotificationRepository) CountUnreadNotifications(userID int) (int, error){
+	count := 0
+
+	query := "SELECT SUM(active) FROM notifications WHERE user_id = ?"
+
+	rows, err := repo.db.Query(query, userID)
+	if err != nil {
+		return count, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&count)
+		if err != nil {
+			return count, err
+		}
+	}
+
+	return count, err
+}

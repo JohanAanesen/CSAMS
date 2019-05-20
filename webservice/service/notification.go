@@ -21,3 +21,7 @@ func NewNotificationService(db *sql.DB) *NotificationService {
 func (s *NotificationService) FetchAllForUser(UserID int) ([]*model.Notification, error) {
 	return s.notificationRepo.FetchAllForUser(UserID)
 }
+
+func (s *NotificationService) CountUnreadNotifications(UserID int) (int, error){
+	return s.notificationRepo.CountUnreadNotifications(UserID)
+}

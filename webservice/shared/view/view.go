@@ -1,6 +1,8 @@
 package view
 
 import (
+	"github.com/JohanAanesen/CSAMS/webservice/service"
+	"github.com/JohanAanesen/CSAMS/webservice/shared/db"
 	"github.com/JohanAanesen/CSAMS/webservice/shared/session"
 	"html/template"
 	"log"
@@ -74,10 +76,19 @@ func New(r *http.Request) *View {
 
 	v.request = r
 
+	notificationService := service.NewNotificationService(db.GetDB())
+
+	user := session.GetUserFromSession(r)
+
+	notifications, _ := notificationService.FetchAllForUser(user.ID)
+	unreadNotifications, _ := notificationService.CountUnreadNotifications(user.ID)
+
 	v.Vars["Auth"] = session.IsLoggedIn(r)
 	v.Vars["IsTeacher"] = session.IsTeacher(r)
-	v.Vars["CurrentUser"] = session.GetUserFromSession(r)
+	v.Vars["CurrentUser"] = user
 	v.Vars["RequestURI"] = r.RequestURI
+	v.Vars["Notifications"] = notifications
+	v.Vars["UnreadNotifications"] = unreadNotifications
 
 	return v
 }
