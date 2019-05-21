@@ -37,3 +37,7 @@ func (s *NotificationService) CountUnreadNotifications(UserID int) (int, error){
 func (s *NotificationService) MarkAsRead(NotificationID int) error{
 	return s.notificationRepo.MarkAsRead(NotificationID)
 }
+
+func (s *NotificationService) Insert(notification model.Notification) (int, error){
+	return s.notificationRepo.Insert(notification)
+}

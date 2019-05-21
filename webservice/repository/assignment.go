@@ -31,7 +31,7 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 	// Initialize an empty assignment
 	result := model.Assignment{}
 
-	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_enabled, review_id, review_deadline, reviewers, validation_id FROM assignments WHERE id = ?"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_enabled, review_id, review_deadline, reviewers, validation_id, messages_enabled FROM assignments WHERE id = ?"
 
 	rows, err := repo.db.Query(query, id)
 	if err != nil {
@@ -46,7 +46,7 @@ func (repo *AssignmentRepository) Fetch(id int) (*model.Assignment, error) {
 		// Scan columns from the row
 		err = rows.Scan(&result.ID, &result.Name, &result.Description, &result.Created,
 			&result.Publish, &result.Deadline, &result.CourseID, &result.SubmissionID, &result.ReviewEnabled,
-			&result.ReviewID, &reviewDeadline, &result.Reviewers, &result.ValidationID)
+			&result.ReviewID, &reviewDeadline, &result.Reviewers, &result.ValidationID, &result.MessagesEnabled)
 
 		if err != nil {
 			return nil, err
@@ -69,7 +69,7 @@ func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 	// Create empty assignment slice
 	result := make([]*model.Assignment, 0)
 
-	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_enabled, review_id, review_deadline, reviewers, validation_id FROM assignments"
+	query := "SELECT id, name, description, created, publish, deadline, course_id, submission_id, review_enabled, review_id, review_deadline, reviewers, validation_id, messages_enabled FROM assignments"
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -85,7 +85,7 @@ func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 		// Scan all columns from row
 		err = rows.Scan(&temp.ID, &temp.Name, &temp.Description, &temp.Created,
 			&temp.Publish, &temp.Deadline, &temp.CourseID, &temp.SubmissionID, &temp.ReviewEnabled,
-			&temp.ReviewID, &reviewDeadline, &temp.Reviewers, &temp.ValidationID)
+			&temp.ReviewID, &reviewDeadline, &temp.Reviewers, &temp.ValidationID, &temp.MessagesEnabled)
 		if err != nil {
 			return nil, err
 		}
@@ -108,7 +108,7 @@ func (repo *AssignmentRepository) FetchAll() ([]*model.Assignment, error) {
 func (repo *AssignmentRepository) Insert(assignment model.Assignment) (int, error) {
 	// Integer to hold the id of last inserted row
 	var id int64
-	query := "INSERT INTO assignments (name, description, created, publish, deadline, course_id, review_enabled) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	query := "INSERT INTO assignments (name, description, created, publish, deadline, course_id, review_enabled, messages_enabled) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
@@ -118,7 +118,7 @@ func (repo *AssignmentRepository) Insert(assignment model.Assignment) (int, erro
 	created := util.ConvertTimeStampToString(util.GetTimeInCorrectTimeZone())
 	// Execute transaction
 	rows, err := tx.Exec(query, assignment.Name, assignment.Description, created,
-		assignment.Publish, assignment.Deadline, assignment.CourseID, assignment.ReviewEnabled)
+		assignment.Publish, assignment.Deadline, assignment.CourseID, assignment.ReviewEnabled, assignment.MessagesEnabled)
 	if err != nil {
 		tx.Rollback()
 		return int(id), err
@@ -179,7 +179,7 @@ func (repo *AssignmentRepository) Insert(assignment model.Assignment) (int, erro
 
 // Update assignment in the database
 func (repo *AssignmentRepository) Update(assignment model.Assignment) error {
-	query := "UPDATE assignments SET name = ?, description = ?, publish = ?, deadline = ?, course_id = ?, review_enabled = ? WHERE id = ?"
+	query := "UPDATE assignments SET name = ?, description = ?, publish = ?, deadline = ?, course_id = ?, review_enabled = ?, messages_enabled = ? WHERE id = ?"
 
 	tx, err := repo.db.Begin()
 	if err != nil {
@@ -187,7 +187,7 @@ func (repo *AssignmentRepository) Update(assignment model.Assignment) error {
 	}
 	// Execute query
 	_, err = tx.Exec(query, assignment.Name, assignment.Description,
-		assignment.Publish, assignment.Deadline, assignment.CourseID, assignment.ReviewEnabled, assignment.ID)
+		assignment.Publish, assignment.Deadline, assignment.CourseID, assignment.ReviewEnabled, assignment.MessagesEnabled, assignment.ID)
 	if err != nil {
 		tx.Rollback()
 		return err

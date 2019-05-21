@@ -139,6 +139,11 @@
                         </select>
                     </div>
                     <hr>
+                    <div class="form-group">
+                        <h5>Messages on submissions</h5>
+                        <button type="button" onclick="messagesEnabledFunction()" id="messagesEnabledButton" class="btn btn-danger btn-sm">Disabled</button>
+                        <input type="hidden" id="messages_enabled" name="messages_enabled" value="false">
+                    </div>
                 </div>
 
             </div>
@@ -166,6 +171,29 @@
         let reviewDeadlineContainer = document.getElementById('review_deadline_container');
         let reviewSelect = document.getElementById('review_id');
         let reviewers = document.getElementById('reviewers');
+
+        let messagesEnabled = document.getElementById("messages_enabled");
+        let messageEnabledBtn = document.getElementById("messagesEnabledButton");
+
+        function messagesEnabledFunction(){
+
+            if(messagesEnabled.getAttribute("value") == "false"){
+                messagesEnabled.removeAttribute("value");
+                messagesEnabled.setAttribute("value", "true");
+
+                messageEnabledBtn.classList.remove("btn-danger");
+                messageEnabledBtn.classList.add("btn-success");
+                messageEnabledBtn.innerText = "Enabled"
+
+            }else if(messagesEnabled.getAttribute("value") == "true"){
+                messagesEnabled.removeAttribute("value");
+                messagesEnabled.setAttribute("value", "false");
+
+                messageEnabledBtn.classList.remove("btn-success");
+                messageEnabledBtn.classList.add("btn-danger");
+                messageEnabledBtn.innerText = "Disabled"
+            }
+        }
 
         function reviewButtonFunction(){
 

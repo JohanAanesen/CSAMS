@@ -190,6 +190,11 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 		reviewEnabled = true
 	}
 
+	messagesEnabled := false
+	if r.FormValue("messages_enabled") == "true"{
+		messagesEnabled = true
+	}
+
 	var groupAssignment bool
 
 	groupAssignmentValue := r.FormValue("group_assignment")
@@ -295,6 +300,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	assignment.ReviewID = reviewID
 	assignment.Reviewers = reviewers
 	assignment.GroupDelivery = groupAssignment
+	assignment.MessagesEnabled = messagesEnabled
 
 	// Insert data to database
 	assignmentID, err := services.Assignment.Insert(assignment)
@@ -535,6 +541,11 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 		reviewEnabled = true
 	}
 
+	messagesEnabled := false
+	if r.FormValue("messages_enabled") == "true"{
+		messagesEnabled = true
+	}
+
 	val = 0
 
 	if r.FormValue("review_id") != "" {
@@ -598,6 +609,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	assignment.ReviewEnabled = reviewEnabled
 	assignment.ReviewID = reviewID
 	assignment.Reviewers = reviewers
+	assignment.MessagesEnabled = messagesEnabled
 
 	// Update assignment
 	err = services.Assignment.Update(assignment)

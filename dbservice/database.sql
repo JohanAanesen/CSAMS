@@ -97,20 +97,21 @@ CREATE TABLE `submissions`
 
 CREATE TABLE `assignments`
 (
-    `id`              int(11)     NOT NULL AUTO_INCREMENT,
-    `name`            varchar(64) NOT NULL,
-    `description`     text,
-    `created`         timestamp   NOT NULL,
-    `publish`         datetime    NOT NULL,
-    `deadline`        datetime    NOT NULL,
-    `course_id`       int(11)     NOT NULL,
-    `submission_id`   int(11)              DEFAULT NULL,
-    `review_enabled`  tinyint(1)  NOT NULL DEFAULT 0,
-    `review_id`       int(11)              DEFAULT NULL,
-    `review_deadline` datetime             DEFAULT NULL,
-    `validation_id`   int(11)              DEFAULT NULL,
-    `reviewers`       int(11)              DEFAULT NULL,
-    `group_delivery`  int(1)      NOT NULL DEFAULT 0,
+    `id`               int(11)     NOT NULL AUTO_INCREMENT,
+    `name`             varchar(64) NOT NULL,
+    `description`      text,
+    `created`          timestamp   NOT NULL,
+    `publish`          datetime    NOT NULL,
+    `deadline`         datetime    NOT NULL,
+    `course_id`        int(11)     NOT NULL,
+    `submission_id`    int(11)              DEFAULT NULL,
+    `review_enabled`   tinyint(1)  NOT NULL DEFAULT 0,
+    `review_id`        int(11)              DEFAULT NULL,
+    `review_deadline`  datetime             DEFAULT NULL,
+    `validation_id`    int(11)              DEFAULT NULL,
+    `reviewers`        int(11)              DEFAULT NULL,
+    `group_delivery`   int(1)      NOT NULL DEFAULT 0,
+    `messages_enabled` tinyint(1)  NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`course_id`) REFERENCES course (`id`),
     FOREIGN KEY (`submission_id`) REFERENCES submissions (`id`)
@@ -231,22 +232,20 @@ CREATE TABLE `notifications`
     `user_id` int(11)      NOT NULL,
     `url`     varchar(128) NOT NULL,
     `message` varchar(255) NOT NULL,
-    `active`    tinyint(1)   NOT NULL DEFAULT 1,
+    `active`  tinyint(1)   NOT NULL DEFAULT 1,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`user_id`) REFERENCES users (`id`)
 );
 
 CREATE TABLE `review_messages`
 (
-    `id`      int(11)      NOT NULL AUTO_INCREMENT,
-    `user_reviewer` int(11)     NOT NULL,
-    `user_target`   int(11)     NOT NULL,
-    `review_id`     int(11)     NOT NULL,
-    `assignment_id` int(11)     NOT NULL,
-    `message` varchar(255) NOT NULL,
+    `id`            int(11)      NOT NULL AUTO_INCREMENT,
+    `user_reviewer` int(11)      NOT NULL,
+    `user_target`   int(11)      NOT NULL,
+    `assignment_id` int(11)      NOT NULL,
+    `message`       varchar(255) NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`assignment_id`) REFERENCES assignments (`id`),
-    FOREIGN KEY (`review_id`) REFERENCES reviews (`id`),
     FOREIGN KEY (`user_reviewer`) REFERENCES users (`id`),
     FOREIGN KEY (`user_target`) REFERENCES users (`id`)
 );

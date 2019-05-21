@@ -663,8 +663,13 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	isUserTheOwner := false
+	if userID == currentUser.ID{
+		isUserTheOwner = true
+	}
+
 	//if !currentUser.Teacher && !model.UserIsReviewer(currentUser.ID, assignment.ID, assignment.SubmissionID.Int64, userID) {
-	if !currentUser.Teacher && !isUserTheReviewer {
+	if !currentUser.Teacher && !isUserTheReviewer && !isUserTheOwner{
 		log.Println("Error: Unauthorized access!")
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
@@ -725,6 +730,14 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	reviewMessages, err := services.ReviewMessage.FetchAllForAssignmentUser(assignmentID, userID)
+	if err != nil {
+		log.Println("AssignmnetUserSubmissionGET, fetch review messages, ", err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+
 	// Set header content-type and status code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
@@ -740,6 +753,8 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	v.Vars["IsTeacher"] = currentUser.Teacher
 	v.Vars["Fields"] = form.Form.Fields
 	v.Vars["Answers"] = assignmentAnswers
+	v.Vars["IsOwner"] = isUserTheOwner
+	v.Vars["ReviewMessages"] = reviewMessages
 
 	v.Vars["Review"] = review
 
@@ -1048,4 +1063,83 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 	} else {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 	}
+}
+
+func AssignmentUserSubmissionMessagePOST(w http.ResponseWriter, r *http.Request) {
+	// Sanitizer
+	p := bluemonday.UGCPolicy()
+
+	// Get URL variables
+	vars := mux.Vars(r)
+
+	assignmentID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Println("strconv, atoi, assignmentID", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	userID, err := strconv.Atoi(vars["userid"])
+	if err != nil {
+		log.Println("strconv, atoi, userID", err.Error())
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	// Services
+	services := service.NewServices(db.GetDB())
+
+	// double check that messages are enabled in assignment
+	assignment, err := services.Assignment.Fetch(assignmentID)
+	if err != nil {
+		log.Println("assignmentUserSubmissionMessagePost, serivces, assignmetn, fetc, ",err)
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	if !assignment.ReviewEnabled{
+		log.Println("reviewMessages is not enabled")
+		ErrorHandler(w, r, http.StatusBadRequest)
+		return
+	}
+
+	// Get current user
+	currentUser := session.GetUserFromSession(r)
+
+	// Get message from form
+	message := p.Sanitize(r.FormValue("message_field"))
+
+	//reviewMessage object
+	reviewMessage := model.ReviewMessage{}
+	//fill with data
+	reviewMessage.AssignmentID = assignmentID
+	reviewMessage.UserTarget = userID
+	reviewMessage.UserReviewer = currentUser.ID
+	reviewMessage.Message = message
+
+	err = services.ReviewMessage.Insert(reviewMessage)
+	if err != nil {
+		log.Println("reviewMessage, insert, ", err)
+		//todo use log service
+		ErrorHandler(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	//dont notify yourself
+	if userID != currentUser.ID {
+		//creating notification for owner of the assignment
+		notification := model.Notification{}
+		notification.UserID = userID
+		notification.Message = "A message has been posted on your assignment."
+		notification.URL = fmt.Sprintf("/assignment/%v/submission/%v", assignmentID, userID)
+
+		_, err = services.Notification.Insert(notification)
+		if err != nil {
+			log.Println("reviewMessage, notificaiton, insert ", err)
+			ErrorHandler(w, r, http.StatusInternalServerError)
+		}
+	}
+
+	//redirect back
+	AssignmentUserSubmissionGET(w,r)
 }
