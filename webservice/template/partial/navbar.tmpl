@@ -1,4 +1,9 @@
 {{define "navbar"}}
+    <style type="text/css">
+        .popover{
+            width:50%;
+        }
+    </style>
     <header>
         <nav class="navbar navbar-expand-md navbar-dark bg-dark">
             <div class="container">
@@ -43,7 +48,7 @@
     <div id="popover-content" class="hide sr-only">
         {{range .Notifications}}
             <a href="/notification/{{.ID}}" class="{{if .Active}}text-white{{end}}">
-                <div class="card {{if .Active}} bg-danger{{end}}" style="margin-bottom: 3px; width: 150px;">
+                <div class="card {{if .Active}} bg-danger{{end}}" style="margin-bottom: 3px;">
                     <div class="card-body {{if .Active}}text-white{{else}}text-dark{{end}}">
                         {{.Message}}
                     </div>
