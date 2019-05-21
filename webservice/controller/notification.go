@@ -10,6 +10,7 @@ import (
 	"strconv"
 )
 
+// NotificationGET marks notification as unactive and redirects user
 func NotificationGET(w http.ResponseWriter, r *http.Request) {
 	// Get current user
 	currentUser := session.GetUserFromSession(r)
@@ -27,7 +28,7 @@ func NotificationGET(w http.ResponseWriter, r *http.Request) {
 	services := service.NewServices(db.GetDB())
 
 	//fetch notification //also doubles as check that the notification belongs to user
-	notification, err := services.Notification.FetchNotificationForUSer(currentUser.ID, notificationID)
+	notification, err := services.Notification.FetchNotificationForUser(currentUser.ID, notificationID)
 	if err != nil {
 		log.Println("services, notification, FetchNotificationForUSer", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)

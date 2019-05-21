@@ -1064,6 +1064,7 @@ func AssignmentReviewRequestPOST(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// AssignmentUserSubmissionMessagePOST function saves message and creates notification
 func AssignmentUserSubmissionMessagePOST(w http.ResponseWriter, r *http.Request) {
 	// Sanitizer
 	p := bluemonday.UGCPolicy()

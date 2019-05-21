@@ -5,12 +5,12 @@ import (
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 )
 
-// UserRepository struct
+// NotificationRepository struct
 type NotificationRepository struct {
 	db *sql.DB
 }
 
-// NewUserRepository return a pointer to a new UserRepository
+// NewNotificationRepository return a pointer to a new NotificationRepository
 func NewNotificationRepository(db *sql.DB) *NotificationRepository {
 	return &NotificationRepository{
 		db: db,
@@ -46,7 +46,7 @@ func (repo *NotificationRepository) FetchAllForUser(userID int) ([]*model.Notifi
 }
 
 // FetchNotificationForUser function fetches single notification from userid and notifyID
-func (repo *NotificationRepository) FetchNotificationForUSer(userID int, notificationID int) (*model.Notification, error) {
+func (repo *NotificationRepository) FetchNotificationForUser(userID int, notificationID int) (*model.Notification, error) {
 	result := model.Notification{}
 
 	query := "SELECT id, user_id, url, message, active FROM notifications WHERE user_id = ? AND id = ?"
@@ -101,6 +101,7 @@ func (repo *NotificationRepository) Insert(notification model.Notification) (int
 	return int(id), err
 }
 
+// MarkAsRead func updates notifiction in db as unactive/read
 func (repo *NotificationRepository) MarkAsRead(notificationID int) error {
 	query := "UPDATE notifications SET active = 0 WHERE id = ?"
 
@@ -124,6 +125,7 @@ func (repo *NotificationRepository) MarkAsRead(notificationID int) error {
 	return nil
 }
 
+// CountUnreadNotifications func returns nr of unread notifications for a user
 func (repo *NotificationRepository) CountUnreadNotifications(userID int) (int, error) {
 	count := 0
 

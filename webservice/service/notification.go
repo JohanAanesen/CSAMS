@@ -6,12 +6,12 @@ import (
 	"github.com/JohanAanesen/CSAMS/webservice/repository"
 )
 
-// UserService struct
+// NotificationService struct
 type NotificationService struct {
 	notificationRepo *repository.NotificationRepository
 }
 
-// NewUserService returns a pointer to a new NotificationService
+// NewNotificationService returns a pointer to a new NotificationService
 func NewNotificationService(db *sql.DB) *NotificationService {
 	return &NotificationService{
 		notificationRepo: repository.NewNotificationRepository(db),
@@ -23,9 +23,9 @@ func (s *NotificationService) FetchAllForUser(UserID int) ([]*model.Notification
 	return s.notificationRepo.FetchAllForUser(UserID)
 }
 
-// FetchNotificationForUSer func
-func (s *NotificationService) FetchNotificationForUSer(UserID int, NotificationID int) (*model.Notification, error) {
-	return s.notificationRepo.FetchNotificationForUSer(UserID, NotificationID)
+// FetchNotificationForUser func
+func (s *NotificationService) FetchNotificationForUser(UserID int, NotificationID int) (*model.Notification, error) {
+	return s.notificationRepo.FetchNotificationForUser(UserID, NotificationID)
 }
 
 // CountUnreadNotifications func
@@ -38,6 +38,7 @@ func (s *NotificationService) MarkAsRead(NotificationID int) error {
 	return s.notificationRepo.MarkAsRead(NotificationID)
 }
 
+// Insert func
 func (s *NotificationService) Insert(notification model.Notification) (int, error) {
 	return s.notificationRepo.Insert(notification)
 }

@@ -5,12 +5,12 @@ import (
 	"github.com/JohanAanesen/CSAMS/webservice/model"
 )
 
-// UserRepository struct
+// ReviewMessageRepository struct
 type ReviewMessageRepository struct {
 	db *sql.DB
 }
 
-// NewUserRepository return a pointer to a new UserRepository
+// NewReviewMessageRepository return a pointer to a new ReviewMessageRepository
 func NewReviewMessageRepository(db *sql.DB) *ReviewMessageRepository {
 	return &ReviewMessageRepository{
 		db: db,

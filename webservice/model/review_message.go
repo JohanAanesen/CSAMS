@@ -1,5 +1,6 @@
 package model
 
+// ReviewMessage struct
 type ReviewMessage struct {
 	ID           int    `json:"id" db:"id"`
 	UserReviewer int    `json:"user_reviewer" db:"user_reviewer"`
