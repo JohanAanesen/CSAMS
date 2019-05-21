@@ -63,6 +63,10 @@ func routes() http.Handler {
 	userrouter.HandleFunc("/user", controller.UserGET).Methods("GET")
 	userrouter.HandleFunc("/user/update", controller.UserUpdatePOST).Methods("POST")
 
+	// Notification handler
+	userrouter.HandleFunc("/notification/{id:[0-9]+}", controller.NotificationGET).Methods("GET")
+
+	// Confirm email handler
 	userrouter.HandleFunc("/confirmemail", controller.ConfirmEmailGET).Methods("GET")
 
 	// Admin-page Handlers

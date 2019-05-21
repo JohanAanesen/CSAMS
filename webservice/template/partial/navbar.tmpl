@@ -25,8 +25,9 @@
                             {{end}}
 
                             <li class="nav-item">
-                                <a tabindex="0" class="nav-link" role="button" data-toggle="popover" data-trigger="focus">
-                                    Notifications <span class="badge badge-danger">{{.UnreadNotifications}}</span>
+                                <a tabindex="0" class="nav-link" role="button" data-toggle="popover"
+                                   data-trigger="focus">
+                                    Notifications {{if gt .UnreadNotifications 0}}<span class="badge badge-danger">{{.UnreadNotifications}}</span>{{end}}
                                 </a>
                             </li>
 
@@ -41,13 +42,13 @@
     </header>
     <div id="popover-content" class="hide sr-only">
         {{range .Notifications}}
-        <a href="{{.URL}}">
-            <div class="card"  style="margin-bottom: 3px;">
-                <div class="card-body text-dark">
-                    {{.Message}}
+            <a href="/notification/{{.ID}}">
+                <div class="card" style="margin-bottom: 3px; width: 150px;">
+                    <div class="card-body text-dark">
+                        {{.Message}}
+                    </div>
                 </div>
-            </div>
-        </a>
+            </a>
         {{end}}
     </div>
 {{end}}

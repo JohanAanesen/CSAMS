@@ -45,6 +45,30 @@ func (repo *NotificationRepository) FetchAllForUser(userID int) ([]*model.Notifi
 	return result, err
 }
 
+// FetchNotificationForUser function fetches single notification from userid and notifyID
+func (repo *NotificationRepository) FetchNotificationForUSer(userID int, notificationID int) (*model.Notification, error){
+	result := model.Notification{}
+
+	query := "SELECT id, user_id, url, message, active FROM notifications WHERE user_id = ? AND id = ?"
+
+	rows, err := repo.db.Query(query, userID, notificationID)
+	if err != nil {
+		return &result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&result.ID, &result.UserID, &result.URL,
+			&result.Message, &result.Active)
+		if err != nil {
+			return &result, err
+		}
+	}
+
+	return &result, err
+}
+
 // Insert func
 func (repo *NotificationRepository) Insert(notification model.Notification) (int, error){
 	var id int64
