@@ -46,7 +46,7 @@ func (repo *NotificationRepository) FetchAllForUser(userID int) ([]*model.Notifi
 }
 
 // FetchNotificationForUser function fetches single notification from userid and notifyID
-func (repo *NotificationRepository) FetchNotificationForUSer(userID int, notificationID int) (*model.Notification, error){
+func (repo *NotificationRepository) FetchNotificationForUSer(userID int, notificationID int) (*model.Notification, error) {
 	result := model.Notification{}
 
 	query := "SELECT id, user_id, url, message, active FROM notifications WHERE user_id = ? AND id = ?"
@@ -70,7 +70,7 @@ func (repo *NotificationRepository) FetchNotificationForUSer(userID int, notific
 }
 
 // Insert func
-func (repo *NotificationRepository) Insert(notification model.Notification) (int, error){
+func (repo *NotificationRepository) Insert(notification model.Notification) (int, error) {
 	var id int64
 
 	query := "INSERT INTO notifications (user_id, url, message) VALUES (?, ?, ?)"
@@ -101,7 +101,7 @@ func (repo *NotificationRepository) Insert(notification model.Notification) (int
 	return int(id), err
 }
 
-func (repo *NotificationRepository) MarkAsRead(notificationID int) (error){
+func (repo *NotificationRepository) MarkAsRead(notificationID int) error {
 	query := "UPDATE notifications SET active = 0 WHERE id = ?"
 
 	tx, err := repo.db.Begin()
@@ -124,7 +124,7 @@ func (repo *NotificationRepository) MarkAsRead(notificationID int) (error){
 	return nil
 }
 
-func (repo *NotificationRepository) CountUnreadNotifications(userID int) (int, error){
+func (repo *NotificationRepository) CountUnreadNotifications(userID int) (int, error) {
 	count := 0
 
 	query := "SELECT SUM(active) FROM notifications WHERE user_id = ?"

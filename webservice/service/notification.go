@@ -24,20 +24,20 @@ func (s *NotificationService) FetchAllForUser(UserID int) ([]*model.Notification
 }
 
 // FetchNotificationForUSer func
-func (s *NotificationService) FetchNotificationForUSer(UserID int, NotificationID int) (*model.Notification, error){
+func (s *NotificationService) FetchNotificationForUSer(UserID int, NotificationID int) (*model.Notification, error) {
 	return s.notificationRepo.FetchNotificationForUSer(UserID, NotificationID)
 }
 
 // CountUnreadNotifications func
-func (s *NotificationService) CountUnreadNotifications(UserID int) (int, error){
+func (s *NotificationService) CountUnreadNotifications(UserID int) (int, error) {
 	return s.notificationRepo.CountUnreadNotifications(UserID)
 }
 
 // MarkAsRead func
-func (s *NotificationService) MarkAsRead(NotificationID int) error{
+func (s *NotificationService) MarkAsRead(NotificationID int) error {
 	return s.notificationRepo.MarkAsRead(NotificationID)
 }
 
-func (s *NotificationService) Insert(notification model.Notification) (int, error){
+func (s *NotificationService) Insert(notification model.Notification) (int, error) {
 	return s.notificationRepo.Insert(notification)
 }

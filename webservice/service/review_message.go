@@ -19,11 +19,11 @@ func NewReviewMessageService(db *sql.DB) *ReviewMessageService {
 }
 
 // FetchAllForAssignmentUser func
-func (s *ReviewMessageService) FetchAllForAssignmentUser(assignmentID int, userID int) ([]*model.ReviewMessage, error){
+func (s *ReviewMessageService) FetchAllForAssignmentUser(assignmentID int, userID int) ([]*model.ReviewMessage, error) {
 	return s.reviewMessageRepo.FetchAllForAssignmentUser(assignmentID, userID)
 }
 
 // Insert func
-func (s *ReviewMessageService) Insert(message model.ReviewMessage) error{
+func (s *ReviewMessageService) Insert(message model.ReviewMessage) error {
 	return s.reviewMessageRepo.Insert(message)
 }

@@ -191,7 +191,7 @@ func AdminAssignmentCreatePOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	messagesEnabled := false
-	if r.FormValue("messages_enabled") == "true"{
+	if r.FormValue("messages_enabled") == "true" {
 		messagesEnabled = true
 	}
 
@@ -542,7 +542,7 @@ func AdminUpdateAssignmentPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	messagesEnabled := false
-	if r.FormValue("messages_enabled") == "true"{
+	if r.FormValue("messages_enabled") == "true" {
 		messagesEnabled = true
 	}
 

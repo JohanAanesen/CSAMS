@@ -664,12 +664,12 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	isUserTheOwner := false
-	if userID == currentUser.ID{
+	if userID == currentUser.ID {
 		isUserTheOwner = true
 	}
 
 	//if !currentUser.Teacher && !model.UserIsReviewer(currentUser.ID, assignment.ID, assignment.SubmissionID.Int64, userID) {
-	if !currentUser.Teacher && !isUserTheReviewer && !isUserTheOwner{
+	if !currentUser.Teacher && !isUserTheReviewer && !isUserTheOwner {
 		log.Println("Error: Unauthorized access!")
 		ErrorHandler(w, r, http.StatusUnauthorized)
 		return
@@ -736,7 +736,6 @@ func AssignmentUserSubmissionGET(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
 
 	// Set header content-type and status code
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -1092,12 +1091,12 @@ func AssignmentUserSubmissionMessagePOST(w http.ResponseWriter, r *http.Request)
 	// double check that messages are enabled in assignment
 	assignment, err := services.Assignment.Fetch(assignmentID)
 	if err != nil {
-		log.Println("assignmentUserSubmissionMessagePost, serivces, assignmetn, fetc, ",err)
+		log.Println("assignmentUserSubmissionMessagePost, serivces, assignmetn, fetc, ", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	if !assignment.ReviewEnabled{
+	if !assignment.ReviewEnabled {
 		log.Println("reviewMessages is not enabled")
 		ErrorHandler(w, r, http.StatusBadRequest)
 		return
@@ -1141,5 +1140,5 @@ func AssignmentUserSubmissionMessagePOST(w http.ResponseWriter, r *http.Request)
 	}
 
 	//redirect back
-	AssignmentUserSubmissionGET(w,r)
+	AssignmentUserSubmissionGET(w, r)
 }

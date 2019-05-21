@@ -43,7 +43,7 @@ func (repo *ReviewMessageRepository) Insert(message model.ReviewMessage) error {
 }
 
 // FetchAllForAssignmentUser messages function
-func (repo *ReviewMessageRepository) FetchAllForAssignmentUser(assignmentID int, userID int) ([]*model.ReviewMessage, error){
+func (repo *ReviewMessageRepository) FetchAllForAssignmentUser(assignmentID int, userID int) ([]*model.ReviewMessage, error) {
 	result := make([]*model.ReviewMessage, 0)
 
 	query := "SELECT id, user_reviewer, user_target, assignment_id, message FROM review_messages WHERE assignment_id = ? AND user_target = ?"
