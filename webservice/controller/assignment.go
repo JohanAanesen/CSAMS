@@ -1086,6 +1086,28 @@ func AssignmentUserSubmissionMessagePOST(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	//fetch URL get parameters
+	getKeys := r.URL.Query()
+
+	replyID := 0
+	replyStringID := getKeys.Get("reply")
+
+	if replyStringID != ""{
+		replyID, err = strconv.Atoi(replyStringID)
+		if err != nil {
+			log.Println("strconv, atoi, replyStringID", err.Error())
+			ErrorHandler(w, r, http.StatusInternalServerError)
+			return
+		}
+	}
+
+	notifyAll := false
+	notifyAllString := getKeys.Get("notifyAll")
+
+	if notifyAllString != ""{
+		notifyAll = true
+	}
+
 	// Services
 	services := service.NewServices(db.GetDB())
 
@@ -1126,20 +1148,25 @@ func AssignmentUserSubmissionMessagePOST(w http.ResponseWriter, r *http.Request)
 	}
 
 	//dont notify yourself
-	if userID != currentUser.ID {
+	if userID != currentUser.ID && replyID != 0 {
 		//creating notification for owner of the assignment
 		notification := model.Notification{}
-		notification.UserID = userID
-		notification.Message = "A message has been posted on your assignment."
+		notification.UserID = replyID
+		notification.Message = "There has been posted a reply on your comment."
 		notification.URL = fmt.Sprintf("/assignment/%v/submission/%v", assignmentID, userID)
 
 		_, err = services.Notification.Insert(notification)
 		if err != nil {
-			log.Println("reviewMessage, notificaiton, insert ", err)
+			log.Println("reviewMessage, notification, insert ", err)
 			ErrorHandler(w, r, http.StatusInternalServerError)
 		}
 	}
 
+	if notifyAll{
+		//todo fetch all reviewers on submission and send them a notification
+
+	}
+
 	//redirect back
-	AssignmentUserSubmissionGET(w, r)
+	http.Redirect(w, r, fmt.Sprintf("/assignment/%v/submission/%v", assignmentID, userID), http.StatusFound)
 }
