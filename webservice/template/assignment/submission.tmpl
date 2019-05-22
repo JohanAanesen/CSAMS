@@ -103,7 +103,7 @@
                     {{end}}
 
                     {{if .Assignment.MessagesEnabled}}
-                        <form action="/assignment/{{.Assignment.ID}}/submission/{{.User.ID}}/message" method="POST">
+                        <form action="/assignment/{{.Assignment.ID}}/submission/{{.User.ID}}/message" id="messageForm" method="POST">
                             <label for="message_field">Comments regarding this submission:</label>
                             <textarea name="message_field" id="message_field" rows="2" class="form-control"></textarea>
                             <button class="btn btn-primary" style="margin-top: 5px;" type="submit">Comment</button>
@@ -111,6 +111,19 @@
 
                         {{range .ReviewMessages}}
                             <div class="card" style="margin-top: 5px;">
+                                <div class="card-header">
+                                    <h6>
+                                        {{if eq .UserReviewer .UserTarget}}
+                                            Submitter
+                                        {{else}}
+                                            Reviewer {{.UserReviewer}}
+                                        {{end}}
+                                    </h6>
+                                    {{if not eq .UserReviewer .UserTarget}}
+                                        <button class="btn btn-primary" onclick="replyToThis({{.UserReviewer}})">Reply
+                                        </button>
+                                    {{end}}
+                                </div>
                                 <div class="card-body">
                                     <p>{{.Message}}</p>
                                 </div>
@@ -196,4 +209,18 @@
         </div>
     </main>
 {{end}}
-{{define "foot"}}{{end}}
+{{define "foot"}}
+
+    <script type="javascript">
+
+        let messageForm = document.getElementById("messageForm");
+
+        function replyToThis(id){
+            messageForm.removeAttribute("action");
+
+            messageForm.setAttribute("action", "/assignment/{{.Assignment.ID}}/submission/{{.User.ID}}/message?reply="+id)
+            
+        }
+    </script>
+
+{{end}}

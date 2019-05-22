@@ -47,9 +47,9 @@
     </header>
     <div id="popover-content" class="hide sr-only">
         {{range .Notifications}}
-            <a href="/notification/{{.ID}}" class="{{if .Active}}text-white{{end}}">
-                <div class="card {{if .Active}} bg-danger{{end}}" style="margin-bottom: 3px;">
-                    <div class="card-body {{if .Active}}text-white{{else}}text-dark{{end}}">
+            <a href="/notification/{{.ID}}">
+                <div class="card {{if .Active}} border-danger{{end}}" style="margin-bottom: 3px;">
+                    <div class="card-body text-dark">
                         {{.Message}}
                     </div>
                 </div>
