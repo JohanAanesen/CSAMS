@@ -110,7 +110,7 @@ func AdminSubmissionCreatePOST(w http.ResponseWriter, r *http.Request) {
 	currentUser := session.GetUserFromSession(r)
 
 	// Insert new submission form
-	submissionID, err := services.Review.Insert(form)
+	submissionID, err := services.Submission.Insert(form)
 	if err != nil {
 		log.Println("insert submission", err)
 		ErrorHandler(w, r, http.StatusInternalServerError)
