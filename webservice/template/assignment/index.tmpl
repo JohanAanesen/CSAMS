@@ -68,21 +68,31 @@
         <p class="lead"><strong>Deadline:</strong> {{PRETTYTIME .Assignment.Deadline}}</p>
         <div class="card mb-5">
             <div class="card-header">
-                <ul class="nav nav-pills card-header-tabs pull-right mb-0" id="myTab" role="tablist" style="float:left;">
+                <ul class="nav nav-pills card-header-tabs pull-right mb-0" id="myTab" role="tablist"
+                    style="float:left;">
                     <li class="nav-item">
                         <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
                            aria-controls="home" aria-selected="true">Assignment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{if or (not .HasReview) (not .IsDeadlineOver)}}disabled{{end}}" id="peerReview-tab" data-toggle="tab" href="#peerReview" role="tab" aria-controls="peerReview" aria-selected="false">Peer Review {{if and .HasReview (gt $reviewsLeft 0)}}<span class="badge badge-danger">{{$reviewsLeft}}</span>{{end}}</a>
+                        <a class="nav-link {{if or (not .HasReview) (not .IsDeadlineOver)}}disabled{{end}}"
+                           id="peerReview-tab" data-toggle="tab" href="#peerReview" role="tab"
+                           aria-controls="peerReview" aria-selected="false">Peer
+                            Review {{if and .HasReview (gt $reviewsLeft 0)}}<span
+                                    class="badge badge-danger">{{$reviewsLeft}}</span>{{end}}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link{{if or (or (not .HasReview) (not .IsDeadlineOver)) (.IsTeacher)}} disabled{{end}}" id="viewReview-tab" data-toggle="tab" href="#viewReview" role="tab" aria-controls="viewReview" aria-selected="false">Received Reviews {{if gt (len .MyReviews) 0}}<span class="badge badge-success">{{len .MyReviews}}</span>{{end}}</a>
+                        <a class="nav-link{{if or (or (not .HasReview) (not .IsDeadlineOver)) (.IsTeacher)}} disabled{{end}}"
+                           id="viewReview-tab" data-toggle="tab" href="#viewReview" role="tab"
+                           aria-controls="viewReview" aria-selected="false">Received
+                            Reviews {{if gt (len .MyReviews) 0}}<span
+                                    class="badge badge-success">{{len .MyReviews}}</span>{{end}}</a>
                     </li>
 
                     {{if .IsTeacher}}
                         <li class="nav-item">
-                            <a href="/admin/assignment/{{.Assignment.ID}}/submissions" class="nav-link">See submissions</a>
+                            <a href="/admin/assignment/{{.Assignment.ID}}/submissions" class="nav-link">See
+                                submissions</a>
                         </li>
                     {{end}}
                 </ul>
@@ -92,9 +102,13 @@
                         {{if .Assignment.SubmissionID.Valid}}
                             {{if not .IsTeacher}}
                                 {{if not .Delivered}}
-                                    <a style="float:right;" href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-success {{if .IsDeadlineOver}}disabled{{end}}">Deliver assignment</a>
+                                    <a style="float:right;" href="/assignment/submission?id={{.Assignment.ID}}"
+                                       class="btn btn-outline-light btn-success {{if .IsDeadlineOver}}disabled{{end}}">Deliver
+                                        assignment</a>
                                 {{else}}
-                                    <a href="/assignment/submission?id={{.Assignment.ID}}" class="btn btn-outline-light btn-warning {{if .IsDeadlineOver}}disabled{{end}}">Change your submission</a>
+                                    <a href="/assignment/submission?id={{.Assignment.ID}}"
+                                       class="btn btn-outline-light btn-warning {{if .IsDeadlineOver}}disabled{{end}}">Change
+                                        your submission</a>
                                 {{end}}
                             {{end}}
                         {{end}}
@@ -115,8 +129,11 @@
                             <p>You have <span style="color: red;">{{$reviewsLeft}}</span> reviews left to do!</p>
                         {{end}}
                         {{if not $reviewDeadlineOver}}
-                            <form action="/assignment/{{.Assignment.ID}}/requestreview" id="newReviewForm" method="post">
-                                <button type="submit" form="newReviewForm" class="btn btn-outline-success my-3">New Review</button>
+                            <form action="/assignment/{{.Assignment.ID}}/requestreview" id="newReviewForm"
+                                  method="post">
+                                <button type="submit" form="newReviewForm" class="btn btn-outline-success my-3">New
+                                    Review
+                                </button>
                             </form>
                         {{end}}
                         <div class="row">
@@ -130,13 +147,16 @@
                                                 <h2 class="display-4">Review</h2>
                                                 <h6>
                                                     <span class="badge badge-info">Peer-Review</span>
-                                                    {{if HasBeenReviewed .ID $UID $AID}}<span class="badge badge-success">Reviewed</span>{{end}}
+                                                    {{if HasBeenReviewed .ID $UID $AID}}<span
+                                                            class="badge badge-success">Reviewed</span>{{end}}
                                                 </h6>
                                                 <hr class="bg-light">
                                                 {{if and (HasBeenReviewed .ID $UID $AID) (not $reviewDeadlineOver)}}
-                                                    <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-info">Update Review</a>
+                                                    <a href="/assignment/{{$id}}/submission/{{.ID}}"
+                                                       class="btn btn-outline-info">Update Review</a>
                                                 {{else if not $reviewDeadlineOver}}
-                                                    <a href="/assignment/{{$id}}/submission/{{.ID}}" class="btn btn-outline-dark">Do Review</a>
+                                                    <a href="/assignment/{{$id}}/submission/{{.ID}}"
+                                                       class="btn btn-outline-dark">Do Review</a>
                                                 {{end}}
                                             </div>
                                         </div>
@@ -153,82 +173,107 @@
                             </div>
                             {{$i := 1}}
                             {{range $index, $R := .MyReviews}}
-                                <div class="col-12">
-                                    <div class="card mb-3">
-                                        {{$temp := index . 0}}
-                                        <div class="card-header bg-secondary">
-                                            <h5 class="card-title text-light mb-0">Review no. {{$i}}</h5>{{$i = INCREMENT $i}}
-                                        </div>
-                                        <div class="card-body">
-                                            {{range $R}}
-                                                {{if eq .Type "radio"}}
-                                                    {{$A := .}}
-                                                    {{$Answer := ATOI .Answer}}
-                                                    {{$V := 1}}
-                                                    <fieldset class="mb-3">
-                                                        <legend>{{.Label}}</legend>
-                                                        {{range .Choices}}
-                                                            <div class="form-check form-check-inline">
-                                                                <input class="form-check-input" type="radio" name="{{$A.Name}}" id="{{$A.Name}}_{{$V}}" value="{{$V}}"{{if eq $V $Answer}} checked{{end}} disabled>
-                                                                <label class="form-check-label" for="{{$A.Name}}_{{$V}}">{{.}}</label>
-                                                            </div>
-                                                            {{$V = INCREMENT $V}}
-                                                        {{end}}
-                                                        <small class="form-text text-muted">{{.Description}}</small>
-                                                    </fieldset>
-                                                {{else if eq .Type "multi-checkbox"}}
-                                                    {{$A := .Answer}}
-                                                    {{$Value := SPLIT_STRING $A.Value ","}}
-                                                    {{$V := 1}}
-                                                    <fieldset class="mb-3">
-                                                        <legend>{{.Label}}</legend>
-                                                        {{range SPLIT_CHOICES .Choices}}
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox" name="{{.Name}}" id="{{.Name}}_{{$V}}" value="{{$V}}"{{if CONTAINS (ITOA $V) $Value}} checked{{end}} disabled>
-                                                                <label class="form-check-label" for="{{.Name}}_{{$V}}">{{.}}</label>
-                                                            </div>
-                                                            {{$V = INCREMENT $V}}
-                                                        {{end}}
-                                                        <small class="form-text text-muted">{{.Description}}</small>
-                                                    </fieldset>
-                                                {{else}}
-                                                    <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
-                                                        {{if eq .Type "text"}}
-                                                            <label for="{{.Name}}">{{.Label}}</label>
-                                                            <input type="text" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
-                                                        {{else if eq .Type "url"}}
-                                                            <label for="{{.Name}}">{{.Label}}</label>
-                                                            <input type="url" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
-                                                            <a href="{{.Answer}}" target="_blank">Open in new tab</a>
-                                                        {{else if eq .Type "textarea"}}
-                                                            <label for="{{.Name}}">{{.Label}}</label>
-                                                            <textarea name="{{.Name}}" id="{{.Name}}" class="form-control" rows="5" disabled>{{.Answer}}</textarea>
-                                                        {{else if eq .Type "number"}}
-                                                            <label for="{{.Name}}">{{.Label}}</label>
-                                                            <input type="number" name="{{.Name}}" id="{{.Name}}" class="form-control" value="{{.Answer}}" disabled>
-                                                        {{else if eq .Type "checkbox"}}
-                                                            <input type="checkbox" name="{{.Name}}" id="{{.Name}}" class="form-check-input"{{if eq .Answer "on"}} checked{{end}} disabled>
-                                                            <label class="form-check-inline" for="{{.Name}}">{{.Label}}</label>
-                                                        {{else if eq .Type "paragraph"}}
+                                <form>
+                                    <div class="col-12">
+                                        <div class="card mb-3">
+                                            {{$temp := index . 0}}
+                                            <div class="card-header bg-secondary">
+                                                <h5 class="card-title text-light mb-0">Review
+                                                    no. {{$i}}</h5>{{$i = INCREMENT $i}}
+                                            </div>
+                                            <div class="card-body">
+                                                {{range $R}}
+                                                    {{if eq .Type "radio"}}
+                                                        {{$A := .}}
+                                                        {{$Answer := ATOI .Answer}}
+                                                        {{$V := 1}}
+                                                        <fieldset class="mb-3">
                                                             <legend>{{.Label}}</legend>
-                                                            <p class="lead">{{.Description}}</p>
-                                                        {{end}}
-
-                                                        {{if ne .Type "paragraph"}}
+                                                            {{range .Choices}}
+                                                                <div class="form-check form-check-inline">
+                                                                    <input class="form-check-input" type="radio"
+                                                                           name="{{$A.Name}}" id="{{$A.Name}}_{{$V}}"
+                                                                           value="{{$V}}"{{if eq $V $Answer}} checked{{end}}
+                                                                           disabled>
+                                                                    <label class="form-check-label"
+                                                                           for="{{$A.Name}}_{{$V}}">{{.}}</label>
+                                                                </div>
+                                                                {{$V = INCREMENT $V}}
+                                                            {{end}}
                                                             <small class="form-text text-muted">{{.Description}}</small>
-                                                        {{end}}
-                                                    </div>
+                                                        </fieldset>
+                                                    {{else if eq .Type "multi-checkbox"}}
+                                                        {{$A := .Answer}}
+                                                        {{$Value := SPLIT_STRING $A.Value ","}}
+                                                        {{$V := 1}}
+                                                        <fieldset class="mb-3">
+                                                            <legend>{{.Label}}</legend>
+                                                            {{range SPLIT_CHOICES .Choices}}
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                           name="{{.Name}}" id="{{.Name}}_{{$V}}"
+                                                                           value="{{$V}}"{{if CONTAINS (ITOA $V) $Value}} checked{{end}}
+                                                                           disabled>
+                                                                    <label class="form-check-label"
+                                                                           for="{{.Name}}_{{$V}}">{{.}}</label>
+                                                                </div>
+                                                                {{$V = INCREMENT $V}}
+                                                            {{end}}
+                                                            <small class="form-text text-muted">{{.Description}}</small>
+                                                        </fieldset>
+                                                    {{else}}
+                                                        <div class="form-group{{if eq .Type "checkbox"}} form-check{{end}} mb-3">
+                                                            {{if eq .Type "text"}}
+                                                                <label for="{{.Name}}">{{.Label}}</label>
+                                                                <input type="text" name="{{.Name}}" id="{{.Name}}"
+                                                                       class="form-control" value="{{.Answer}}"
+                                                                       disabled>
+                                                            {{else if eq .Type "url"}}
+                                                                <label for="{{.Name}}">{{.Label}}</label>
+                                                                <input type="url" name="{{.Name}}" id="{{.Name}}"
+                                                                       class="form-control" value="{{.Answer}}"
+                                                                       disabled>
+                                                                <a href="{{.Answer}}" target="_blank">Open in new
+                                                                    tab</a>
+                                                            {{else if eq .Type "textarea"}}
+                                                                <label for="{{.Name}}">{{.Label}}</label>
+                                                                <textarea name="{{.Name}}" id="{{.Name}}"
+                                                                          class="form-control" rows="5"
+                                                                          disabled>{{.Answer}}</textarea>
+                                                            {{else if eq .Type "number"}}
+                                                                <label for="{{.Name}}">{{.Label}}</label>
+                                                                <input type="number" name="{{.Name}}" id="{{.Name}}"
+                                                                       class="form-control" value="{{.Answer}}"
+                                                                       disabled>
+                                                            {{else if eq .Type "checkbox"}}
+                                                                <input type="checkbox" name="{{.Name}}" id="{{.Name}}"
+                                                                       class="form-check-input"{{if eq .Answer "on"}} checked{{end}}
+                                                                       disabled>
+                                                                <label class="form-check-inline"
+                                                                       for="{{.Name}}">{{.Label}}</label>
+                                                            {{else if eq .Type "paragraph"}}
+                                                                <legend>{{.Label}}</legend>
+                                                                <p class="lead">{{.Description}}</p>
+                                                            {{end}}
+
+                                                            {{if ne .Type "paragraph"}}
+                                                                <small class="form-text text-muted">{{.Description}}</small>
+                                                            {{end}}
+                                                        </div>
+                                                    {{end}}
+                                                    {{if .HasComment}}
+                                                        <div class="form-group form-check">
+                                                            <label for="{{.Name}}_comment">Comment <em>({{.Label}})</em></label>
+                                                            <textarea name="{{.Name}}_comment" id="{{.Name}}_comment"
+                                                                      rows="3" class="form-control"
+                                                                      disabled>{{.Comment.String}}</textarea>
+                                                        </div>
+                                                    {{end}}
                                                 {{end}}
-                                                {{if .HasComment}}
-                                                    <div class="form-group form-check">
-                                                        <label for="{{.Name}}_comment">Comment <em>({{.Label}})</em></label>
-                                                        <textarea name="{{.Name}}_comment" id="{{.Name}}_comment" rows="3" class="form-control" disabled>{{.Comment.String}}</textarea>
-                                                    </div>
-                                                {{end}}
-                                            {{end}}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </form>
                             {{end}}
 
                             {{if eq $i 1}}
