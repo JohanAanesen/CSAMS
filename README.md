@@ -37,6 +37,17 @@
 - If it still doesn't work, run 'sudo make stop' and 'sudo make run'
 - It's recommended to do a database export when the server is running again to assure data won't be lost.
 
+### When updating the code/server
+- Export the database before updating the server (as a precausion)
+- Store your makefile changes somewhere, copy paste or whatever
+- run sudo git pull
+- Forfeit any local changes
+- might have to run git pull again to make it pull after local changes forfeited
+- update the makefile again, run 'sudo make new'
+- once it's running, run 'sudo make resart' to restart the service and attach the already existing database
+- Verify that the database has been attached (try to login or check adminer)
+- If not import the database previously exported.
+
 ## Links
 * [Github](https://github.com/JohanAanesen/CSAMS)
 * [Trello](https://trello.com/bachelor531)
