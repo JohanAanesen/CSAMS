@@ -11,6 +11,7 @@
 - ``` sudo apt-get install git ```
 - Clone this repo through https: ``` git clone https://github.com/JohanAanesen/CSAMS.git ```
 - Edit the Makefile to change envvars for passwords and email authentication (do not commit these changes to git)
+- Save the changes locally so you can copy paste them in again if you're running a new instance.
 - run 'sudo make new' to apply envvars and build the service
 - I highly recommend mounting the server instance to physical storage through openstack, this way you should be able to extract the database even if everything crashes.
 
@@ -39,11 +40,9 @@
 
 ### When updating the code/server
 - Export the database before updating the server (as a precausion)
-- Store your makefile changes somewhere, copy paste or whatever
 - run sudo git pull
 - Forfeit any local changes
-- might have to run git pull again to make it pull after local changes forfeited
-- update the makefile again, run 'sudo make new'
+- Run the server with 'sudo make build'
 - once it's running, run 'sudo make resart' to restart the service and attach the already existing database
 - Verify that the database has been attached (try to login or check adminer)
 - If not import the database previously exported.
