@@ -225,7 +225,7 @@ func sendMail(toType string, recipients []string, subject string, message string
 	msg := []byte(toType + ": " + users + "\nSubject:" + subject + "\n" + message)
 
 	// Send mail and check for errors
-	err := smtp.SendMail(os.Getenv("MAILPROVIDER")+":587", auth, os.Getenv("USERNAME"), recipients, msg)
+	err := smtp.SendMail(os.Getenv("MAIL_PROVIDER")+":587", auth, os.Getenv("USERNAME"), recipients, msg)
 	if err != nil {
 		return err
 	}
