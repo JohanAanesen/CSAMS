@@ -4,25 +4,38 @@
 ## Setup guides
 - In openstack, create instance and security group.
 - Security group should open port 80 (for http access) and possibly 8080 if you want to access adminer for database management
-- In a fresh linux instance, install Docker and Git
-- Pull this repo
+- In a fresh linux instance, install Docker, Git and Make
+- ``` sudo apt-get update ```
+- ``` sudo apt-get install docker-ce docker-ce-cli containerd.io ```
+- ``` sudo apt-get install build-essential ```
+- ``` sudo apt-get install git ```
+- Clone this repo through https: ``` git clone https://github.com/JohanAanesen/CSAMS.git ```
 - Edit the Makefile to change envvars for passwords and email authentication (do not commit these changes to git)
 - run 'sudo make new' to apply envvars and build the service
+- I highly recommend mounting the server instance to physical storage through openstack, this way you should be able to extract the database even if everything crashes.
 
 ### Importing old database
 - If this is a fresh instance then you will have to open port 8080 and access adminer
-- Then you want to run SQL query and copy paste the old database file there.
+- Click 'SQL Command'
+- Open your exported database file and paste it in there
+- There will probably be some issue because of FAQ table, but that doesn't matter unless you have updated anything, then you should manually override it somehow.
 
 ### Exporting database
 - Access adminer through port 8080
-- The should be a export button somewhere
-- Export all table data, do not include the tables themselves. you want this either as sql text in browser or as a downloadable txt file.
-- Save it somewhere safe
+- Click the 'Export' button
+- Output should be 'open'
+- Format SQL
+- Database BLANK
+- Tables BLANK
+- Data INSERT
+- Select all tables
+- Click export and use ctrl+s to save the data
 
 ### Service crash recover
 - If the server crashes for some unknown reason, run 'sudo make restart'
-- Verify that the database has been attached
-- if not, run 'sudo make stop' and 'sudo make run'
+- Verify that the database has been attached/re-mounted, if this doesn't work, restart it again.
+- If it still doesn't work, run 'sudo make stop' and 'sudo make run'
+- It's recommended to do a database export when the server is running again to assure data won't be lost.
 
 ## Links
 * [Github](https://github.com/JohanAanesen/CSAMS)
