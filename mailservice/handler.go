@@ -219,7 +219,7 @@ func sendMail(toType string, recipients []string, subject string, message string
 	users := strings.Join(recipients, ",")
 
 	// Get authentication
-	auth := smtp.PlainAuth("", os.Getenv("USERNAME"), os.Getenv("PASSWORD"), os.Getenv("MAILPROVIDER"))
+	auth := smtp.PlainAuth("", os.Getenv("USERNAME"), os.Getenv("PASSWORD"), os.Getenv("MAIL_PROVIDER"))
 
 	// Write message
 	msg := []byte(toType + ": " + users + "\nSubject:" + subject + "\n" + message)
