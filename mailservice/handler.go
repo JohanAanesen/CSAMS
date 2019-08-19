@@ -219,13 +219,13 @@ func sendMail(toType string, recipients []string, subject string, message string
 	users := strings.Join(recipients, ",")
 
 	// Get authentication
-	auth := smtp.PlainAuth("", os.Getenv("USERNAME"), os.Getenv("PASSWORD"), "smtp.gmail.com")
+	auth := smtp.PlainAuth("", os.Getenv("USERNAME"), os.Getenv("PASSWORD"), os.Getenv("MAILPROVIDER"))
 
 	// Write message
 	msg := []byte(toType + ": " + users + "\nSubject:" + subject + "\n" + message)
 
 	// Send mail and check for errors
-	err := smtp.SendMail("smtp.gmail.com:587", auth, os.Getenv("USERNAME"), recipients, msg)
+	err := smtp.SendMail(os.Getenv("MAILPROVIDER")+":587", auth, os.Getenv("USERNAME"), recipients, msg)
 	if err != nil {
 		return err
 	}

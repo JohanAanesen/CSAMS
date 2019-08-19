@@ -7,6 +7,7 @@ new:
     export MAILAUTH="CHANGE THIS to whatever you like"
     export MAILUSER="csams.noreply@gmail.com"
     export MAILPW="CHANGE THIS to actual password"
+    export MAILPROVIDER="smtp.gmail.com"
 
     sudo docker-compose up --build -d
 
