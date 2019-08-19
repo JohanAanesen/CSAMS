@@ -1,6 +1,29 @@
 # ~NTNU-Bachelor-Management-System-For-CS-Assignments~
 # Computer Science Assignment Management System
 
+## Setup guides
+- In openstack, create instance and security group.
+- Security group should open port 80 (for http access) and possibly 8080 if you want to access adminer for database management
+- In a fresh linux instance, install Docker and Git
+- Pull this repo
+- Edit the Makefile to change envvars for passwords and email authentication (do not commit these changes to git)
+- run 'sudo make new' to apply envvars and build the service
+
+### Importing old database
+- If this is a fresh instance then you will have to open port 8080 and access adminer
+- Then you want to run SQL query and copy paste the old database file there.
+
+### Exporting database
+- Access adminer through port 8080
+- The should be a export button somewhere
+- Export all table data, do not include the tables themselves. you want this either as sql text in browser or as a downloadable txt file.
+- Save it somewhere safe
+
+### Service crash recover
+- If the server crashes for some unknown reason, run 'sudo make restart'
+- Verify that the database has been attached
+- if not, run 'sudo make stop' and 'sudo make run'
+
 ## Links
 * [Github](https://github.com/JohanAanesen/CSAMS)
 * [Trello](https://trello.com/bachelor531)

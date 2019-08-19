@@ -11,11 +11,11 @@ services:
     links:
       - database
     environment:
-      MAIL_AUTH: "RqHDMR6WfMd9zMhr^kgDA4kZ0DJbEElu7Sb^B!#1uXVzDy%zW85yGIL#iI6D2%S*"
+      MAIL_AUTH: $MAILAUTH
       DATABASE_URL: database:3306
-      DATABASE_USER: root
-      DATABASE_PASSWORD: root
-      DATABASE_DATABASE: cs53
+      DATABASE_USER: $DBUSER
+      DATABASE_PASSWORD: $DBPW
+      DATABASE_DATABASE: $DATABASEDB
       MAIL_SERVICE: mailservice:8085
       TIME_ZONE: "Europe/Oslo"
     restart: always
@@ -30,12 +30,12 @@ services:
       - database
     environment:
       DATABASE_URL: database:3306
-      DATABASE_USER: root
-      DATABASE_PASSWORD: root
-      DATABASE_DATABASE: cs53
-      MAIL_AUTH: "RqHDMR6WfMd9zMhr^kgDA4kZ0DJbEElu7Sb^B!#1uXVzDy%zW85yGIL#iI6D2%S*"
-      USERNAME: csams.noreply@gmail.com
-      PASSWORD: $mail_pwd
+      DATABASE_USER: $DBUSER
+      DATABASE_PASSWORD: $DBPW
+      DATABASE_DATABASE: $DATABASEDB
+      MAIL_AUTH: $MAILAUTH
+      USERNAME: $MAILUSER
+      PASSWORD: $MAILPW
     restart: always
 
   adminer:
@@ -52,7 +52,7 @@ services:
     ports:
       - 3306:3306
     environment:
-      MYSQL_DATABASE: cs53
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: $DATABASEDB
+      MYSQL_ROOT_PASSWORD: $DBPW
     volumes:
       - ./dbservice/data:/var/lib/mysql
